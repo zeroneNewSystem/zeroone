@@ -71,7 +71,7 @@
     <div id="app">
         <example-component></example-component>
     </div>
-    <script src="{{m ix('js/app.js')}}">
+    <script src="{{mix('js/app.js')}}">
     </script>
 </body>
 
