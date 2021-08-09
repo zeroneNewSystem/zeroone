@@ -24,6 +24,7 @@ import App from './App.vue'
 import router from './router'
 
 
+
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 
 /**
