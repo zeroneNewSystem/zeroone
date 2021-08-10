@@ -82,7 +82,7 @@ const router = new VueRouter({
 });
 
 function loggedIn() {
-    return false;
+    return localStorage.getItem("token");
 }
 router.beforeEach((to, from, next) => {
     if (to.matched.some(record => record.meta.requiresAuth)) {

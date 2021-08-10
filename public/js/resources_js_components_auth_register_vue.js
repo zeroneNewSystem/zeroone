@@ -13,6 +13,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _apis_User__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../apis/User */ "./resources/js/apis/User.js");
 /* harmony import */ var _apis_Csrf__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../apis/Csrf */ "./resources/js/apis/Csrf.js");
+/* harmony import */ var _apis_Api__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../apis/Api */ "./resources/js/apis/Api.js");
 //
 //
 //
@@ -83,6 +84,21 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -93,15 +109,38 @@ __webpack_require__.r(__webpack_exports__);
         name: "nibras",
         password: "password",
         password_confirmation: "password"
-      }
+      },
+      errors: "",
+      snackbar: false,
+      isloading: false
     };
   },
   methods: {
     register: function register() {
-      _apis_User__WEBPACK_IMPORTED_MODULE_0__.default.register(this.form);
-      _apis_Csrf__WEBPACK_IMPORTED_MODULE_1__.default.getCookie().then(function (response) {
-        console.log(response);
+      var _this = this;
+
+      this.isloading = 'red';
+      _apis_User__WEBPACK_IMPORTED_MODULE_0__.default.register(this.form).then(function (response) {
+        _this.isloading = false;
+        _this.errors = "";
+
+        _this.$refs.form.reset();
+
+        _this.$refs.form.resetValidation();
+      })["catch"](function (errors) {
+        _this.errors = errors.response.data.errors;
+        console.log(errors.response.data);
+      })["finally"](function () {
+        _this.isloading = false;
       });
+    },
+    login: function login() {
+      var _this2 = this;
+
+      this.snackbar = false;
+      setTimeout(function () {
+        _this2.$router.push("/login");
+      }, 300);
     }
   }
 });
@@ -123,7 +162,15 @@ __webpack_require__.r(__webpack_exports__);
 
 var getUrl = window.location;
 var Api = axios__WEBPACK_IMPORTED_MODULE_0___default().create({
-  baseURL: getUrl.protocol + "//" + getUrl.host + "/api"
+  baseURL: getUrl.protocol + "//" + getUrl.host + "/api",
+  headers: {
+    'Content-Type': 'application/json'
+  }
+});
+Api.interceptors.request.use(function (config) {
+  var token = localStorage.getItem('token');
+  config.headers.Authorization = token ? "Bearer ".concat(token) : '';
+  return config;
 });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Api);
 
@@ -167,6 +214,12 @@ __webpack_require__.r(__webpack_exports__);
   },
   login: function login(form) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post('/login', form);
+  },
+  getUser: function getUser() {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get('/user');
+  },
+  logout: function logout() {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post('/logout', form);
   }
 });
 
@@ -277,7 +330,10 @@ var render = function() {
                     [
                       _c(
                         "v-card",
-                        { staticClass: "elevation-12" },
+                        {
+                          staticClass: "elevation-12",
+                          attrs: { loading: _vm.isloading }
+                        },
                         [
                           _c(
                             "v-toolbar",
@@ -304,7 +360,6 @@ var render = function() {
                                             _vm._g(
                                               {
                                                 attrs: {
-                                                  href: _vm.source,
                                                   icon: "",
                                                   large: "",
                                                   target: "_blank"
@@ -335,11 +390,13 @@ var render = function() {
                             [
                               _c(
                                 "v-form",
+                                { ref: "form" },
                                 [
                                   _c("v-text-field", {
                                     attrs: {
                                       label: "Name",
-                                      name: "login",
+                                      name: "name",
+                                      "error-messages": _vm.errors.name,
                                       "prepend-icon": "mdi-account",
                                       type: "text"
                                     },
@@ -355,7 +412,8 @@ var render = function() {
                                   _c("v-text-field", {
                                     attrs: {
                                       label: "Email",
-                                      name: "login",
+                                      name: "email",
+                                      "error-messages": _vm.errors.email,
                                       "prepend-icon": "mdi-email",
                                       type: "text"
                                     },
@@ -373,6 +431,7 @@ var render = function() {
                                       id: "password",
                                       label: "Password",
                                       name: "password",
+                                      "error-messages": _vm.errors.password,
                                       "prepend-icon": "mdi-lock",
                                       type: "password"
                                     },
@@ -389,7 +448,9 @@ var render = function() {
                                     attrs: {
                                       id: "password",
                                       label: "Confirmation Password",
-                                      name: "password",
+                                      "error-messages":
+                                        _vm.errors.password_confirmation,
+                                      name: "Confirmation_Password",
                                       "prepend-icon": "mdi-lock-question",
                                       type: "password"
                                     },
@@ -421,14 +482,23 @@ var render = function() {
                                   staticClass: "ml-3",
                                   attrs: { to: "/login" }
                                 },
-                                [_vm._v(" Already has account!")]
+                                [
+                                  _vm._v(
+                                    "\n                Already has account!"
+                                  )
+                                ]
                               ),
                               _vm._v(" "),
                               _c("v-spacer"),
                               _vm._v(" "),
-                              _c("v-btn", { attrs: { color: "primary" } }, [
-                                _vm._v("Register")
-                              ])
+                              _c(
+                                "v-btn",
+                                {
+                                  attrs: { color: "primary" },
+                                  on: { click: _vm.register }
+                                },
+                                [_vm._v("Register")]
+                              )
                             ],
                             1
                           )
@@ -446,6 +516,44 @@ var render = function() {
           )
         ],
         1
+      ),
+      _vm._v(" "),
+      _c(
+        "v-snackbar",
+        {
+          attrs: { top: "", color: "success", timeout: "-1" },
+          scopedSlots: _vm._u([
+            {
+              key: "action",
+              fn: function(ref) {
+                var attrs = ref.attrs
+                return [
+                  _c(
+                    "v-btn",
+                    _vm._b(
+                      {
+                        attrs: { color: "primary", text: "" },
+                        on: { click: _vm.login }
+                      },
+                      "v-btn",
+                      attrs,
+                      false
+                    ),
+                    [_vm._v("\n        تسجيل الدخول.\n      ")]
+                  )
+                ]
+              }
+            }
+          ]),
+          model: {
+            value: _vm.snackbar,
+            callback: function($$v) {
+              _vm.snackbar = $$v
+            },
+            expression: "snackbar"
+          }
+        },
+        [_vm._v("\n    تم التسجيل بنجاح\n\n    ")]
       )
     ],
     1

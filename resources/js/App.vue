@@ -17,6 +17,11 @@
 </template>
 
 <script>
+export default {
+  created(){
+    this.$vuetify.rtl = true
+  }
+}
 </script>
 
 

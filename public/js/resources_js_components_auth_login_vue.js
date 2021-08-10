@@ -11,6 +11,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+/* harmony import */ var _apis_User__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../apis/User */ "./resources/js/apis/User.js");
+/* harmony import */ var _apis_Csrf__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../apis/Csrf */ "./resources/js/apis/Csrf.js");
+/* harmony import */ var _apis_Api__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../apis/Api */ "./resources/js/apis/Api.js");
 //
 //
 //
@@ -56,22 +59,119 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+
+
+
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  props: {
-    source: String
+  data: function data() {
+    return {
+      form: {
+        email: "nib@mail.ru",
+        password: "password",
+        device_name: "browser"
+      },
+      errors: "",
+      snackbar: false,
+      isloading: false
+    };
+  },
+  mounted: function mounted() {
+    setTimeout(function () {
+      M.updateTextFields();
+    });
+  },
+  methods: {
+    login: function login() {
+      var _this = this;
+
+      this.isloading = "red";
+      _apis_User__WEBPACK_IMPORTED_MODULE_0__.default.login(this.form).then(function (response) {
+        localStorage.setItem("token", response.data);
+
+        _this.$router.push("/dashboard");
+      })["catch"](function (errors) {
+        _this.errors = errors.response.data.errors;
+        console.log(errors.response.data);
+      });
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./resources/js/apis/Api.js":
+/*!**********************************!*\
+  !*** ./resources/js/apis/Api.js ***!
+  \**********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
+
+var getUrl = window.location;
+var Api = axios__WEBPACK_IMPORTED_MODULE_0___default().create({
+  baseURL: getUrl.protocol + "//" + getUrl.host + "/api",
+  headers: {
+    'Content-Type': 'application/json'
+  }
+});
+Api.interceptors.request.use(function (config) {
+  var token = localStorage.getItem('token');
+  config.headers.Authorization = token ? "Bearer ".concat(token) : '';
+  return config;
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Api);
+
+/***/ }),
+
+/***/ "./resources/js/apis/Csrf.js":
+/*!***********************************!*\
+  !*** ./resources/js/apis/Csrf.js ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _Api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Api */ "./resources/js/apis/Api.js");
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  getCookie: function getCookie(form) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get('/csrf-cookie');
+  }
+});
+
+/***/ }),
+
+/***/ "./resources/js/apis/User.js":
+/*!***********************************!*\
+  !*** ./resources/js/apis/User.js ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _Api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Api */ "./resources/js/apis/Api.js");
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  register: function register(form) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post('/register', form);
+  },
+  login: function login(form) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post('/login', form);
+  },
+  getUser: function getUser() {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get('/user');
+  },
+  logout: function logout() {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post('/logout', form);
   }
 });
 
@@ -182,7 +282,10 @@ var render = function() {
                     [
                       _c(
                         "v-card",
-                        { staticClass: "elevation-12" },
+                        {
+                          staticClass: "elevation-12",
+                          attrs: { loading: _vm.isloading, flat: "" }
+                        },
                         [
                           _c(
                             "v-toolbar",
@@ -190,45 +293,7 @@ var render = function() {
                             [
                               _c("v-toolbar-title", [_vm._v("Login form")]),
                               _vm._v(" "),
-                              _c("v-spacer"),
-                              _vm._v(" "),
-                              _c(
-                                "v-tooltip",
-                                {
-                                  attrs: { bottom: "" },
-                                  scopedSlots: _vm._u([
-                                    {
-                                      key: "activator",
-                                      fn: function(ref) {
-                                        var on = ref.on
-                                        return [
-                                          _c(
-                                            "v-btn",
-                                            _vm._g(
-                                              {
-                                                attrs: {
-                                                  href: _vm.source,
-                                                  icon: "",
-                                                  large: "",
-                                                  target: "_blank"
-                                                }
-                                              },
-                                              on
-                                            ),
-                                            [
-                                              _c("v-icon", [
-                                                _vm._v("mdi-code-tags")
-                                              ])
-                                            ],
-                                            1
-                                          )
-                                        ]
-                                      }
-                                    }
-                                  ])
-                                },
-                                [_vm._v(" "), _c("span", [_vm._v("Source")])]
-                              )
+                              _c("v-spacer")
                             ],
                             1
                           ),
@@ -238,6 +303,7 @@ var render = function() {
                             [
                               _c(
                                 "v-form",
+                                { ref: "form" },
                                 [
                                   _c("v-text-field", {
                                     attrs: {
@@ -245,6 +311,13 @@ var render = function() {
                                       name: "login",
                                       "prepend-icon": "mdi-account",
                                       type: "text"
+                                    },
+                                    model: {
+                                      value: _vm.form.email,
+                                      callback: function($$v) {
+                                        _vm.$set(_vm.form, "email", $$v)
+                                      },
+                                      expression: "form.email"
                                     }
                                   }),
                                   _vm._v(" "),
@@ -255,6 +328,13 @@ var render = function() {
                                       name: "password",
                                       "prepend-icon": "mdi-lock",
                                       type: "password"
+                                    },
+                                    model: {
+                                      value: _vm.form.password,
+                                      callback: function($$v) {
+                                        _vm.$set(_vm.form, "password", $$v)
+                                      },
+                                      expression: "form.password"
                                     }
                                   })
                                 ],
@@ -273,14 +353,19 @@ var render = function() {
                                   staticClass: "ml-3",
                                   attrs: { to: "/register" }
                                 },
-                                [_vm._v(" Sign up !")]
+                                [_vm._v("\n                Sign up !")]
                               ),
                               _vm._v(" "),
                               _c("v-spacer"),
                               _vm._v(" "),
-                              _c("v-btn", { attrs: { color: "primary" } }, [
-                                _vm._v("Login")
-                              ])
+                              _c(
+                                "v-btn",
+                                {
+                                  attrs: { color: "primary" },
+                                  on: { click: _vm.login }
+                                },
+                                [_vm._v("Login")]
+                              )
                             ],
                             1
                           )

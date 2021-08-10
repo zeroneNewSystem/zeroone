@@ -11,6 +11,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+/* harmony import */ var _apis_Api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../apis/Api */ "./resources/js/apis/Api.js");
+/* harmony import */ var _apis_User__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../apis/User */ "./resources/js/apis/User.js");
 //
 //
 //
@@ -74,14 +76,105 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+
+
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   props: {
     source: String
   },
   data: function data() {
     return {
-      drawer: null
+      drawer: true,
+      currentUser: ""
     };
+  },
+  methods: {
+    getUser: function getUser() {
+      return _apis_User__WEBPACK_IMPORTED_MODULE_1__.default.getUser();
+    },
+    logout: function logout() {
+      var _this = this;
+
+      _apis_User__WEBPACK_IMPORTED_MODULE_1__.default.getUser().then(function (response) {
+        localStorage.removeItem("token");
+
+        _this.$router.push("login"); //this.currentUser = response.data;
+
+      })["catch"](function (errors) {
+        _this.errors = errors.response.data.errors;
+        console.log(errors.response.data);
+      });
+    }
+  },
+  created: function created() {
+    var _this2 = this;
+
+    this.getUser().then(function (response) {
+      _this2.currentUser = response.data;
+    })["catch"](function (errors) {
+      _this2.errors = errors.response.data.errors;
+      console.log(errors.response.data);
+    });
+  }
+});
+
+/***/ }),
+
+/***/ "./resources/js/apis/Api.js":
+/*!**********************************!*\
+  !*** ./resources/js/apis/Api.js ***!
+  \**********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
+
+var getUrl = window.location;
+var Api = axios__WEBPACK_IMPORTED_MODULE_0___default().create({
+  baseURL: getUrl.protocol + "//" + getUrl.host + "/api",
+  headers: {
+    'Content-Type': 'application/json'
+  }
+});
+Api.interceptors.request.use(function (config) {
+  var token = localStorage.getItem('token');
+  config.headers.Authorization = token ? "Bearer ".concat(token) : '';
+  return config;
+});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Api);
+
+/***/ }),
+
+/***/ "./resources/js/apis/User.js":
+/*!***********************************!*\
+  !*** ./resources/js/apis/User.js ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _Api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Api */ "./resources/js/apis/Api.js");
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  register: function register(form) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post('/register', form);
+  },
+  login: function login(form) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post('/login', form);
+  },
+  getUser: function getUser() {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get('/user');
+  },
+  logout: function logout() {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post('/logout', form);
   }
 });
 
@@ -182,7 +275,7 @@ var render = function() {
           _c(
             "v-navigation-drawer",
             {
-              attrs: { app: "" },
+              attrs: { app: "", right: _vm.$vuetify.rtl },
               model: {
                 value: _vm.drawer,
                 callback: function($$v) {
@@ -196,6 +289,55 @@ var render = function() {
                 "v-list",
                 { attrs: { dense: "" } },
                 [
+                  _c(
+                    "v-list-item",
+                    { attrs: { "two-line": "" } },
+                    [
+                      _c("v-list-item-avatar", [
+                        _c("img", {
+                          attrs: {
+                            src:
+                              "https://randomuser.me/api/portraits/women/81.jpg"
+                          }
+                        })
+                      ]),
+                      _vm._v(" "),
+                      _c(
+                        "v-list-item-content",
+                        [
+                          _c("v-list-item-title", [
+                            _vm._v(" " + _vm._s(_vm.currentUser.name) + " ")
+                          ]),
+                          _vm._v(" "),
+                          _c("v-list-item-subtitle", [_vm._v("Logged In")])
+                        ],
+                        1
+                      )
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c("v-divider"),
+                  _vm._v(" "),
+                  _c(
+                    "v-list-item",
+                    { attrs: { link: "", to: "/dashboard" } },
+                    [
+                      _c(
+                        "v-list-item-action",
+                        [_c("v-icon", [_vm._v("mdi-email")])],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-list-item-content",
+                        [_c("v-list-item-title", [_vm._v("dashboard")])],
+                        1
+                      )
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
                   _c(
                     "v-list-item",
                     { attrs: { link: "", to: "/accounts" } },
@@ -213,23 +355,31 @@ var render = function() {
                       )
                     ],
                     1
+                  )
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "v-list-item",
+                { attrs: { link: "" }, on: { click: _vm.logout } },
+                [
+                  _c(
+                    "v-list-item-action",
+                    [
+                      _c("v-icon", { attrs: { color: "red" } }, [
+                        _vm._v("mdi-power")
+                      ])
+                    ],
+                    1
                   ),
                   _vm._v(" "),
                   _c(
-                    "v-list-item",
-                    { attrs: { link: "", to: "/dashboard" } },
+                    "v-list-item-content",
                     [
-                      _c(
-                        "v-list-item-action",
-                        [_c("v-icon", [_vm._v("mdi-email")])],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "v-list-item-content",
-                        [_c("v-list-item-title", [_vm._v("dashboard")])],
-                        1
-                      )
+                      _c("v-list-item-title", { staticClass: "red--text" }, [
+                        _vm._v("logout")
+                      ])
                     ],
                     1
                   )

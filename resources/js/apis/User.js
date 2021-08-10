@@ -6,7 +6,13 @@ export default {
     },
     login(form) {
         return Api.post('/login', form);
-    }
+    },
+    getUser() {
+        return Api.get('/user');
+    },
+    logout() {
+        return Api.post('/logout', form);
+    },
 
 
 }
