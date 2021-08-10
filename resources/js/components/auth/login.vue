@@ -6,7 +6,7 @@
           <v-col cols="12" sm="8" md="6">
             <v-card class="elevation-12" :loading="isloading" flat>
               <v-toolbar color="primary" dark flat>
-                <v-toolbar-title>Login form</v-toolbar-title>
+                <v-toolbar-title>{{  $t("Sign in") }}</v-toolbar-title>
                 <v-spacer></v-spacer>
               </v-toolbar>
               <v-card-text>

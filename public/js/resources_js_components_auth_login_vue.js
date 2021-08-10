@@ -116,7 +116,8 @@ var getUrl = window.location;
 var Api = axios__WEBPACK_IMPORTED_MODULE_0___default().create({
   baseURL: getUrl.protocol + "//" + getUrl.host + "/api",
   headers: {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'Accept-Language': localStorage.getItem('token') || 'ar'
   }
 });
 Api.interceptors.request.use(function (config) {
@@ -291,7 +292,9 @@ var render = function() {
                             "v-toolbar",
                             { attrs: { color: "primary", dark: "", flat: "" } },
                             [
-                              _c("v-toolbar-title", [_vm._v("Login form")]),
+                              _c("v-toolbar-title", [
+                                _vm._v(_vm._s(_vm.$t("Sign in")))
+                              ]),
                               _vm._v(" "),
                               _c("v-spacer")
                             ],

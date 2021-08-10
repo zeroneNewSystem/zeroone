@@ -22,6 +22,8 @@ window.Vue = require('vue').default;
 import vuetify from './vuetify';
 import App from './App.vue'
 import router from './router'
+import i18n from './i18n'
+
 
 
 
@@ -34,6 +36,7 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
  */
 
 const app = new Vue({
+    i18n,
     router,
     vuetify,
     render: h => h(App)

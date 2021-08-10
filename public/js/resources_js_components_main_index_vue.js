@@ -139,7 +139,8 @@ var getUrl = window.location;
 var Api = axios__WEBPACK_IMPORTED_MODULE_0___default().create({
   baseURL: getUrl.protocol + "//" + getUrl.host + "/api",
   headers: {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'Accept-Language': localStorage.getItem('token') || 'ar'
   }
 });
 Api.interceptors.request.use(function (config) {
