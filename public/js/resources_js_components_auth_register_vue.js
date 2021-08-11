@@ -92,12 +92,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
 
 
 
@@ -119,7 +113,7 @@ __webpack_require__.r(__webpack_exports__);
     register: function register() {
       var _this = this;
 
-      this.isloading = 'red';
+      this.isloading = "red";
       _apis_User__WEBPACK_IMPORTED_MODULE_0__.default.register(this.form).then(function (response) {
         _this.isloading = false;
         _this.errors = "";
@@ -341,47 +335,10 @@ var render = function() {
                             { attrs: { color: "primary", dark: "", flat: "" } },
                             [
                               _c("v-toolbar-title", [
-                                _vm._v("Registeration form")
+                                _vm._v(_vm._s(_vm.$t("Registeration form")))
                               ]),
                               _vm._v(" "),
-                              _c("v-spacer"),
-                              _vm._v(" "),
-                              _c(
-                                "v-tooltip",
-                                {
-                                  attrs: { bottom: "" },
-                                  scopedSlots: _vm._u([
-                                    {
-                                      key: "activator",
-                                      fn: function(ref) {
-                                        var on = ref.on
-                                        return [
-                                          _c(
-                                            "v-btn",
-                                            _vm._g(
-                                              {
-                                                attrs: {
-                                                  icon: "",
-                                                  large: "",
-                                                  target: "_blank"
-                                                }
-                                              },
-                                              on
-                                            ),
-                                            [
-                                              _c("v-icon", [
-                                                _vm._v("mdi-code-tags")
-                                              ])
-                                            ],
-                                            1
-                                          )
-                                        ]
-                                      }
-                                    }
-                                  ])
-                                },
-                                [_vm._v(" "), _c("span", [_vm._v("Source")])]
-                              )
+                              _c("v-spacer")
                             ],
                             1
                           ),
@@ -485,7 +442,8 @@ var render = function() {
                                 },
                                 [
                                   _vm._v(
-                                    "\n                Already has account!"
+                                    "\n                " +
+                                      _vm._s(_vm.$t("Already has an account"))
                                   )
                                 ]
                               ),
@@ -498,7 +456,7 @@ var render = function() {
                                   attrs: { color: "primary" },
                                   on: { click: _vm.register }
                                 },
-                                [_vm._v("Register")]
+                                [_vm._v(" " + _vm._s(_vm.$t("Register")) + " ")]
                               )
                             ],
                             1

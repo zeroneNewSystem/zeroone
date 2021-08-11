@@ -31,10 +31,10 @@
               </v-card-text>
               <v-card-actions>
                 <router-link to="/register" class="ml-3">
-                  Sign up !</router-link
+                 {{ $t("Sign up") }}  !</router-link
                 >
                 <v-spacer></v-spacer>
-                <v-btn color="primary" @click="login">Login</v-btn>
+                <v-btn color="primary" @click="login">{{ $t("Login") }}</v-btn>
               </v-card-actions>
             </v-card>
           </v-col>

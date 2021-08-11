@@ -1,5 +1,6 @@
 {
     "title": "مرحبا!",
+    "zerone": "نظام ZerOne",
     "Message": "هذه هي اللغة العربي",
     "companyName": "salam",
     "Choose Language": "اختر اللغة",
@@ -25,7 +26,11 @@
     "Yes": "نعم",
     "No": "لا",
     "Are you sure you want to log out": "هل أنت متأكد من تسجيل الخروج",
+    "Registeration form": "نموذج التسجيل",
+    "Already has an account": "مسجل مسبقا",
+    "Register": "موافق",
     "Sign in": "تسجيل الدخول",
+    "Sign up": "تسجيل جديد",
     "Email": "البريد",
     "Email is not Correct": "البريد غير صالح",
     "Worong Password": "كلمة مرور خاطئة",

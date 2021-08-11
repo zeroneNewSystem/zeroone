@@ -13,6 +13,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _apis_Api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../apis/Api */ "./resources/js/apis/Api.js");
 /* harmony import */ var _apis_User__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../apis/User */ "./resources/js/apis/User.js");
+/* harmony import */ var _components_DrawerItems_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./components/DrawerItems.vue */ "./resources/js/components/main/components/DrawerItems.vue");
 //
 //
 //
@@ -64,25 +65,15 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   props: {
     source: String
+  },
+  components: {
+    DrawerItems: _components_DrawerItems_vue__WEBPACK_IMPORTED_MODULE_2__.default
   },
   data: function data() {
     return {
@@ -276,7 +267,12 @@ var render = function() {
           _c(
             "v-navigation-drawer",
             {
-              attrs: { app: "", right: _vm.$vuetify.rtl },
+              attrs: {
+                app: "",
+                right: _vm.$vuetify.rtl,
+                dark: "",
+                width: "225"
+              },
               model: {
                 value: _vm.drawer,
                 callback: function($$v) {
@@ -320,43 +316,7 @@ var render = function() {
                   _vm._v(" "),
                   _c("v-divider"),
                   _vm._v(" "),
-                  _c(
-                    "v-list-item",
-                    { attrs: { link: "", to: "/dashboard" } },
-                    [
-                      _c(
-                        "v-list-item-action",
-                        [_c("v-icon", [_vm._v("mdi-email")])],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "v-list-item-content",
-                        [_c("v-list-item-title", [_vm._v("dashboard")])],
-                        1
-                      )
-                    ],
-                    1
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "v-list-item",
-                    { attrs: { link: "", to: "/accounts" } },
-                    [
-                      _c(
-                        "v-list-item-action",
-                        [_c("v-icon", [_vm._v("mdi-home")])],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "v-list-item-content",
-                        [_c("v-list-item-title", [_vm._v("Accounts")])],
-                        1
-                      )
-                    ],
-                    1
-                  )
+                  _c("drawer-items")
                 ],
                 1
               ),
@@ -393,7 +353,7 @@ var render = function() {
           _vm._v(" "),
           _c(
             "v-app-bar",
-            { attrs: { app: "", color: "indigo", dark: "" } },
+            { attrs: { app: "", color: "pink", dark: "", height: "50" } },
             [
               _c("v-app-bar-nav-icon", {
                 on: {
@@ -404,7 +364,7 @@ var render = function() {
                 }
               }),
               _vm._v(" "),
-              _c("v-toolbar-title", [_vm._v("Application")])
+              _c("v-toolbar-title", [_vm._v(_vm._s(_vm.$t("zerone")))])
             ],
             1
           ),
@@ -414,7 +374,7 @@ var render = function() {
             [
               _c(
                 "v-container",
-                { staticClass: "fill-height", attrs: { fluid: "" } },
+                { attrs: { fluid: "" } },
                 [
                   _c(
                     "v-row",
@@ -441,7 +401,7 @@ var render = function() {
             1
           ),
           _vm._v(" "),
-          _c("v-footer", { attrs: { color: "indigo", app: "" } }, [
+          _c("v-footer", { attrs: { color: "pink", app: "" } }, [
             _c("span", { staticClass: "white--text" }, [
               _vm._v("© " + _vm._s(new Date().getFullYear()))
             ])

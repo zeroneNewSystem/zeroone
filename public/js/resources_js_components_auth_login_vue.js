@@ -356,7 +356,13 @@ var render = function() {
                                   staticClass: "ml-3",
                                   attrs: { to: "/register" }
                                 },
-                                [_vm._v("\n                Sign up !")]
+                                [
+                                  _vm._v(
+                                    "\n               " +
+                                      _vm._s(_vm.$t("Sign up")) +
+                                      "  !"
+                                  )
+                                ]
                               ),
                               _vm._v(" "),
                               _c("v-spacer"),
@@ -367,7 +373,7 @@ var render = function() {
                                   attrs: { color: "primary" },
                                   on: { click: _vm.login }
                                 },
-                                [_vm._v("Login")]
+                                [_vm._v(_vm._s(_vm.$t("Login")))]
                               )
                             ],
                             1

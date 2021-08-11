@@ -34,6 +34,17 @@ const router = new VueRouter({
                         mainView: () =>
                             import ("./components/main/accounts")
                     }
+                },
+                {
+                    path: "/product",
+                    name: "product",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import ("./components/main/products/product"),
+                        mainView: () =>
+                            import ("./components/main/products/product")
+                    }
                 }
             ]
         },

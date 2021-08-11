@@ -6,16 +6,10 @@
           <v-col cols="12" sm="8" md="6">
             <v-card class="elevation-12" :loading="isloading">
               <v-toolbar color="primary" dark flat>
-                <v-toolbar-title>Registeration form</v-toolbar-title>
+                <v-toolbar-title>{{
+                  $t("Registeration form")
+                }}</v-toolbar-title>
                 <v-spacer></v-spacer>
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on }">
-                    <v-btn icon large target="_blank" v-on="on">
-                      <v-icon>mdi-code-tags</v-icon>
-                    </v-btn>
-                  </template>
-                  <span>Source</span>
-                </v-tooltip>
               </v-toolbar>
               <v-card-text>
                 <v-form ref="form">
@@ -59,11 +53,11 @@
               </v-card-text>
               <v-card-actions>
                 <router-link to="/login" class="ml-3">
-                  Already has account!</router-link
+                  {{ $t("Already has an account") }}</router-link
                 >
 
                 <v-spacer></v-spacer>
-                <v-btn color="primary" @click="register">Register</v-btn>
+                <v-btn color="primary" @click="register"> {{ $t('Register') }} </v-btn>
               </v-card-actions>
             </v-card>
           </v-col>
@@ -102,7 +96,7 @@ export default {
   },
   methods: {
     register() {
-      this.isloading = 'red';
+      this.isloading = "red";
       User.register(this.form)
         .then((response) => {
           this.isloading = false;

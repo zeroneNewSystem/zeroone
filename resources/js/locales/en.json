@@ -1,4 +1,5 @@
 {
+    "zerone": "ZerOne System",
     "title": "hi!",
     "Message": "هذه هي اللغة العربي",
     "companyName": "salam",
@@ -25,7 +26,12 @@
     "Yes": "Yes",
     "No": "No",
     "Are you sure you want to log out": "Are you sure you want to log out",
+    "Registeration form": "Registeration form",
+    "Register": "Register",
+    "Already has an account": "Already has an account",
+    "Registration": "Registration",
     "Sign in": "Sign in",
+    "Sign up": "Sign up",
     "Email": "Email",
     "Email is not Correct": "Email is not Correct",
     "Worong Password": "Worong Password",
