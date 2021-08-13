@@ -417,11 +417,11 @@
                           ></v-text-field>
                         </v-col>
                         <v-col>
-                          <v-text-field
+                          <v-text-fielde
                             autocomplete="off"
                             v-model="product.country"
                             label="حساب المبيعات"
-                          ></v-text-field
+                          ></v-text-fielde
                         ></v-col>
                       </v-row>
                     </v-col>

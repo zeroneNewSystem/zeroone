@@ -2463,7 +2463,7 @@ var render = function() {
                                                   _c(
                                                     "v-col",
                                                     [
-                                                      _c("v-text-field", {
+                                                      _c("v-text-fielde", {
                                                         attrs: {
                                                           autocomplete: "off",
                                                           label: "حساب المبيعات"
