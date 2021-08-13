@@ -46,6 +46,15 @@
         <v-card>
           <v-card-title>
             <span>{{ formTitle }}</span>
+            <v-col cols="12" lg="6">
+              <v-checkbox
+                v-model="product.is_active"
+                style="white-space: nowrap; margin-left: 5px; margin-right: 5px"
+                color="#e91e63"
+                label="إيقاف التعامل بالمنتج"
+                @change="selling_priceaccount(item)"
+              ></v-checkbox>
+            </v-col>
           </v-card-title>
           <v-card-text>
             <v-container>
@@ -55,7 +64,7 @@
                     autocomplete="off"
                     v-model="product.ar_name"
                     label="الاسم العربي"
-                    :rules="vld_minlingth.concat(isunique)"
+                    :rules="required.concat(isunique)"
                     @blur="
                       checkExecting({
                         ar_name: product.ar_name,
@@ -69,7 +78,7 @@
                     autocomplete="off"
                     v-model="product.en_name"
                     label="الاسم الانجليزي"
-                    :rules="vld_minlingth.concat(isunique)"
+                    :rules="required.concat(isunique)"
                     @blur="
                       checkExecting({
                         en_name: product.en_name,
@@ -85,8 +94,8 @@
                     @click:append="toggleMarker(12, 'serial number')"
                     v-model="product.serial_number"
                     label=" الرقم التسلسلي (اضغط على G لتوليد رقم عشوائي)"
-                    :rules="vld_minlingth.concat(isunique)"
-                    @blur=" 
+                    :rules="required.concat(isunique)"
+                    @blur="
                       checkExecting({
                         barcode: product.barcode,
                         flag: 'checkproducts',
@@ -100,39 +109,13 @@
                     v-model="product.groupIDs"
                     :disabled="isUpdating"
                     :items="prdct_groups"
-                    item-text="name"
+                    item-text="ar_name"
                     item-value="id"
                     :rules="vld_minlingth_one"
                     label="مجموعات الصنف"
                     multiple
                     @change="unitsadded()"
                   >
-                    <template v-slot:selection="data">
-                      <v-chip
-                        v-bind="data.attrs"
-                        :input-value="data.selected"
-                        close
-                        @click="data.select"
-                        @click:close="
-                          removeSelectedItem(selectedGroups, data.item.name)
-                        "
-                        >{{ data.item.name }}</v-chip
-                      >
-                    </template>
-                    <template v-slot:item="data">
-                      <template v-if="typeof data.item !== 'object'">
-                        <v-list-item-content
-                          v-text="data.item"
-                        ></v-list-item-content>
-                      </template>
-                      <template v-else>
-                        <v-list-item-content>
-                          <v-list-item-title
-                            v-html="data.item.name"
-                          ></v-list-item-title>
-                        </v-list-item-content>
-                      </template>
-                    </template>
                   </v-autocomplete>
                 </v-col>
                 <v-col cols="12" lg="6">
@@ -142,7 +125,7 @@
                     :items="prdct_types"
                     item-text="ar_name"
                     item-value="id"
-                    :rules="vld_minlingth"
+                    :rules="required"
                   ></v-autocomplete>
                 </v-col>
                 <v-col cols="12" lg="6">
@@ -154,38 +137,8 @@
                     item-value="id"
                     :rules="vld_minlingth_one"
                     label=" الشكل الدوائي الدواء اختيار متعدد  "
-                    multiple
                     @change="addForm()"
                   >
-                    <template v-slot:selection="data">
-                      <v-chip
-                        v-bind="data.attrs"
-                        :input-value="data.selected"
-                        close
-                        @click="data.select"
-                        @click:close="
-                          removeSelectedItem(
-                            product.selectedForms,
-                            data.item.name
-                          )
-                        "
-                        >{{ data.item.name }}</v-chip
-                      >
-                    </template>
-                    <template v-slot:item="data">
-                      <template v-if="typeof data.item !== 'object'">
-                        <v-list-item-content
-                          v-text="data.item"
-                        ></v-list-item-content>
-                      </template>
-                      <template v-else>
-                        <v-list-item-content>
-                          <v-list-item-title
-                            v-html="data.item.name"
-                          ></v-list-item-title>
-                        </v-list-item-content>
-                      </template>
-                    </template>
                   </v-autocomplete>
                 </v-col>
 
@@ -194,14 +147,16 @@
                     label="الضريبة"
                     v-model="product.taxID"
                     :items="taxes"
-                    :item-text="item => item.ar_name + ' ' + item.percentage +'%'"
+                    :item-text="
+                      (item) => item.ar_name + ' ' + item.percentage + '%'
+                    "
                     item-value="id"
-                    :rules="vld_minlingth"
+                    :rules="required"
                   ></v-autocomplete>
                 </v-col>
 
                 <v-col cols="12" align="right">
-                  <label for="">وحدات الصنف</label>
+                  <label for=""> وحدات الصنف مرتبة من الأصغر للأعلى</label>
                 </v-col>
                 <v-col cols="12" align="right">
                   <v-row>
@@ -211,11 +166,93 @@
                       :items="product.prdct_units"
                       style="width: 95%"
                     >
+                      <template v-slot:item.main_unit="{ item }">
+                        <v-radio-group
+                          v-model="item.main_unit"
+                          @change="uncheckAnotherRadioButtons(item)"
+                        >
+                          <div
+                            style="
+                              font-size: 18px;
+                              padding-right: 20px;
+                              padding-bottom: 23px;
+                            "
+                          >
+                            <v-radio value="main_unit"></v-radio>
+                          </div>
+                        </v-radio-group>
+                      </template>
+                      <template v-slot:item.equals="{ item }">
+                        <div style="font-size: 18px; padding-bottom: 23px">
+                          =
+                        </div>
+                      </template>
+
+                      <template v-slot:item.ar_name="{ item }">
+                        <v-autocomplete
+                          outlined
+                          v-model="item.ar_name"
+                          :items="prdct_units"
+                          item-text="ar_name"
+                          return-object
+                          append-icon=""
+                          :rules="required"
+                          @change="printUnitObjects"
+                        ></v-autocomplete>
+                      </template>
+                      <template v-slot:item.from_unit="{ item }">
+                        <v-text-field
+                          disabled
+                          outlined
+                          v-model="product.prdct_units[0].ar_name.ar_name"
+                          :rules="required"
+                        ></v-text-field>
+                      </template>
+                      <template v-slot:item.contains="{ item }">
+                        <v-text-field
+                          outlined
+                          :disabled="product.prdct_units.indexOf(item) == 0"
+                          v-model="item.contains"
+                          :rules="required"
+                        ></v-text-field>
+                      </template>
+                      <template v-slot:item.purchase_price="{ item }">
+                        <v-text-field
+                          outlined
+                          v-model="item.purchase_price"
+                          :rules="required"
+                        ></v-text-field>
+                      </template>
+                      <template v-slot:item.sale_price="{ item }">
+                        <v-text-field
+                          outlined
+                          v-model="item.sale_price"
+                          :rules="required"
+                        ></v-text-field>
+                      </template>
+                      <template v-slot:item.barcode="{ item }">
+                        <v-text-field
+                          outlined
+                          v-model="item.barcode"
+                          :rules="required"
+                        ></v-text-field>
+                      </template>
+                      <template v-slot:item.actions="{ item }">
+                        <v-icon
+                          color="red"
+                          small
+                          @click="deleteItem(item)"
+                          style="margin-bottom: 20px"
+                          >mdi-delete</v-icon
+                        >
+                      </template>
+                      <template v-slot:footer>
+                        <v-btn color="pink" dark class="mb-2" @click="addUnit"
+                          >إضافة وحدة</v-btn
+                        >
+                      </template>
                     </v-data-table>
                   </v-row>
-                  <v-btn color="pink" dark class="mb-2" v-bind="attrs" v-on="on"
-                    >إضافة وحدة</v-btn
-                  >
                 </v-col>
 
                 <v-col cols="12">
@@ -249,7 +286,7 @@
                               border-radius: 10px;
                               border: 1px solid #eee;
                             "
-                            src="images/no-image.png"
+                            :src="product.imageURL"
                             alt="NO Image"
                           />
                           <div
@@ -262,7 +299,15 @@
                               right: 0;
                             "
                           >
-                            <v-icon> mdi-close </v-icon>
+                            <v-icon
+                              v-show="
+                                item.imageURL != '' &&
+                                item.imageURL != 'no-image.png'
+                              "
+                              @click="removeImage(item, index)"
+                            >
+                              mdi-close
+                            </v-icon>
                           </div>
                         </div>
 
@@ -293,7 +338,7 @@
                 <v-col cols="12" lg="4">
                   <v-text-field
                     autocomplete="off"
-                    v-model="product.min_alert"
+                    v-model="product.max_alert"
                     label="حد التنبيه الأعلى"
                     :rules="vld_numbering"
                     value="0"
@@ -302,7 +347,7 @@
                 <v-col cols="12" lg="4">
                   <v-text-field
                     autocomplete="off"
-                    v-model="product.min_alert"
+                    v-model="product.stagnation_period"
                     label="فترة الركود بالأيام"
                     :rules="vld_numbering"
                     value="0"
@@ -314,6 +359,7 @@
 
                 <v-col cols="12" lg="12">
                   <v-checkbox
+                    v-model="product.is_storable"
                     class
                     style="
                       white-space: nowrap;
@@ -322,11 +368,15 @@
                     "
                     color="#e91e63"
                     label="المنتج مخزون"
-                    @change="selling_priceaccount(item)"
+                    @change="
+                      product.is_sellable = product.is_purchasable = true
+                    "
                   ></v-checkbox>
                 </v-col>
                 <v-col cols="12" lg="6">
                   <v-checkbox
+                    :disabled="product.is_storable"
+                    v-model="product.is_sellable"
                     style="
                       white-space: nowrap;
                       margin-left: 5px;
@@ -339,6 +389,8 @@
                 </v-col>
                 <v-col cols="12" lg="6">
                   <v-checkbox
+                    :disabled="product.is_storable"
+                    v-model="product.is_purchasable"
                     style="
                       white-space: nowrap;
                       margin-left: 5px;
@@ -353,7 +405,7 @@
                 <v-col cols="12" lg="12">
                   <v-row>
                     <v-col>
-                      <v-row>
+                      <v-row v-if="product.is_sellable">
                         <v-col>
                           <v-text-field
                             autocomplete="off"
@@ -372,7 +424,7 @@
                       </v-row>
                     </v-col>
                     <v-col>
-                      <v-row>
+                      <v-row v-if="product.is_purchasable">
                         <v-col>
                           <v-text-field
                             autocomplete="off"
@@ -397,6 +449,7 @@
                 </v-col>
                 <v-col cols="12" lg="6">
                   <v-checkbox
+                    v-model="product.is_returnable"
                     style="
                       white-space: nowrap;
                       margin-left: 5px;
@@ -507,7 +560,9 @@
   </div>
 </template>
 <script>
+import axios from "axios";
 import { mapActions } from "vuex";
+import Product from "../../../apis/Product";
 
 export default {
   props: ["editedproduct"],
@@ -515,34 +570,33 @@ export default {
   data() {
     return {
       /*-----------------------taxes---------------------------*/
-      taxes: [
-        {
-          id: 1,
-          ar_name: "الضريبة الصفرية",
-          en_name: "null tax",
-          percentage: 12,
-        },
-      ],
+      taxes: [],
 
       /*-----------------------extra units---------------------------*/
       extra_units_headers: [
         {
-          text: "اسم الوحدة",
+          text: " الأساسية",
           align: "center",
           sortable: false,
-          value: "unit_ar_name",
+          value: "main_unit",
         },
         {
-          text: "",
+          text: " الوحدة",
           align: "center",
           sortable: false,
-          value: "unit_en_name",
+          value: "ar_name",
+        },
+        {
+          text: "تساوي",
+          align: "center",
+          sortable: false,
+          value: "equals",
         },
         {
           text: "عدد",
           align: "center",
           sortable: false,
-          value: "unit_quantity",
+          value: "contains",
         },
         {
           text: "من الوحدة",
@@ -554,25 +608,36 @@ export default {
           text: "سعر الشراء",
           align: "center",
           sortable: false,
-          value: "unit_purchase_price",
+          value: "purchase_price",
         },
         {
           text: "سعر البيع",
           align: "center",
           sortable: false,
-          value: "unit_sale_price",
+          value: "sale_price",
         },
         {
           text: "الباركود",
           align: "center",
           sortable: false,
-          value: "unit_barcode",
+          value: "barcode",
         },
         { text: "actions ", align: "center", value: "actions" },
       ],
 
       /*-----------------------units---------------------------*/
-      prdct_units: [],
+      prdct_units: [
+        {
+          main_unit: "2",
+          ar_name: "salam",
+          en_name: "kk",
+          contains: 1,
+          from_unit: "salam",
+          purchase_price: "20",
+          sale_price: "25",
+          barcode: "129101101",
+        },
+      ],
 
       /*-----------------------groups---------------------------*/
       prdct_groups: [],
@@ -581,21 +646,33 @@ export default {
       prdct_forms: [],
 
       /*-----------------------types---------------------------*/
-      c: [],
+      prdct_types: [],
 
       /*-------------------validators---------------------------*/
       vld_minlingth_one: [(v) => v.length >= 1 || "أدخل قيمة"],
-      vld_minlingth: [(v) => v.length >= 2 || "أدخل قيمة"],
+      required: [(value) => !!value || "الحقل مطلوب."],
       isunique: [],
       vld_numbering: [(v) => /^-?\d+\.?\d*$/.test(v) || "أدخل قيمة عددية"],
 
       /*-----------------------product---------------------------*/
       product: {
         company_id: "",
-        
+
         serial_number: "",
         ar_name: "",
         en_name: "",
+        prdct_units: [
+          {
+            main_unit: "main_unit",
+            ar_name: "",
+            en_name: "",
+            contains: 1,
+            from_unit: "",
+            purchase_price: "",
+            sale_price: "",
+            barcode: "",
+          },
+        ],
 
         prdct_form_id: "",
         prdct_type_id: "",
@@ -621,14 +698,14 @@ export default {
         inventory_id: "",
         imgae: "",
         distribution_policy_id: "",
-        is_free: "",
-        is_bonus: "",
-        is_active: "",
-        is_avilable_in_POS: "",
-        is_sellable: "",
-        is_purchasable: "",
-        is_returnable: "",
-        is_storable: "",
+        is_free: false,
+        is_bonus: false,
+        is_active: true,
+        is_avilable_in_POS: true,
+        is_sellable: true,
+        is_purchasable: true,
+        is_returnable: true,
+        is_storable: true,
         has_expiration_date: true,
       },
 
@@ -668,53 +745,66 @@ export default {
   },
   mounted() {},
   created() {
-    this.getGroups();
-    this.getUnits();
-    this.getForms();
-
-    if (this.$route.params.id) {
-      console.log("mmmmkkmkmkmkkm");
-      console.log(this.editedproduct);
-      delete this.editedproduct.printing_dialog;
-      this.product = this.editedproduct;
-      for (var i = 0; i < this.product.selectedGroups.length; i++) {
-        this.selectedGroups.push(this.product.selectedGroups[i]["name"]);
-        // this.selectedGroups.push(
-        //   this.this.product.selectedGroups.filter(
-        //     (p) => p.id == this.product.selectedGroups[i]["unit_id"]
-        //   )[0]["name"]
-        // );
-      }
-
-      this.title = "تعديل بيانات الصنف";
-      this.editedIndex = 1;
-
-      console.log(this.title);
-      console.log(this.product);
-    }
-  },
-  createdl() {
-    if (this.$route.params.id) {
-      this.title = "تعديل بيانات الصنف";
-      this.editedIndex = 1;
-
-      this.product = this.product = JSON.parse(JSON.stringify(med_rug));
-      for (var i = 0; i < this.product.selectedGroups.length; i++) {
-        this.selectedGroups.push(
-          this.selectedGroups.filter(
-            (p) => p.id == this.product.selectedGroups[i]["unit_id"]
-          )[0]["name"]
-        );
-      }
-      console.log(this.selectedGroups);
-
-      console.log(this.product.selectedGroups);
-      console.log(this.selectedGroups);
-    }
+    Product.getCreate()
+      .then((response) => {
+        this.prdct_forms = response.data.prdct_forms;
+        this.prdct_groups = response.data.prdct_groups;
+        this.prdct_units = response.data.prdct_units;
+        this.prdct_types = response.data.prdct_types;
+        this.taxes = response.data.taxes;
+      })
+      .catch((errors) => {
+        this.errors = errors.response.data.errors;
+        console.log(errors.response.data);
+      })
+      .finally();
   },
 
   methods: {
+    deleteItem(item) {
+      let index = this.product.prdct_units.indexOf(item);
+      this.product.prdct_units.splice(index, 1);
+
+      if (this.product.prdct_units.length == 0)
+        this.product.prdct_units.push({
+          main_unit: "main_unit",
+          ar_name: "",
+          en_name: "",
+          contains: 1,
+          from_unit: "",
+          purchase_price: "",
+          sale_price: "",
+          barcode: "",
+        });
+      if (item.main_unit == "main_unit") {
+        this.product.prdct_units[0].main_unit = "main_unit";
+      }
+    },
+    uncheckAnotherRadioButtons(item) {
+      //alert('sdsdsd')
+
+      this.product.prdct_units.forEach((element) => {
+        console.log(element);
+        element.main_unit = "";
+      });
+      item.main_unit = "main_unit";
+    },
+    printUnitObjects() {
+      console.log(this.product.prdct_units);
+    },
     add_extra_unit() {},
+    addUnit() {
+      this.product.prdct_units.push({
+        main_unit: "2",
+        ar_name: "salam",
+        en_name: "kk",
+        contains: 1,
+        from_unit: "salam",
+        purchase_price: "12",
+        sale_price: "25",
+        barcode: "129101101",
+      });
+    },
 
     toggleMarker(length, type) {
       if (type == "serial number")
@@ -755,38 +845,6 @@ export default {
       var number = Math.floor(Math.random() * (max - min + 1)) + min;
 
       return ("" + number).substring(add);
-    },
-    getGroups() {
-      axios
-        .post("router.php", {
-          flag: "getdruggroups",
-          filename: "product-groups",
-        })
-        .then((response) => {
-          this.groups = response.data;
-          console.log(this.groups);
-        });
-    },
-    getForms() {
-      axios
-        .post("router.php", {
-          flag: "getdrugforms",
-          filename: "product-forms",
-        })
-        .then((response) => {
-          this.forms = response.data;
-          console.log(this.groups);
-        });
-    },
-    getUnits() {
-      axios
-        .post("router.php", {
-          flag: "getdrugunits",
-          filename: "product-units",
-        })
-        .then((response) => {
-          this.units = response.data;
-        });
     },
 
     setdrugname(item) {
@@ -912,30 +970,6 @@ export default {
       console.log(this.product.selectedGroups);
     },
 
-    removeSelectedItem(ArrayOfItems, item) {
-      const index = ArrayOfItems.indexOf(item);
-      ArrayOfItems.splice(index, 1);
-      if (this.selectedGroups == ArrayOfItems) {
-        this.product.selectedGroups.splice(index, 1);
-      }
-    },
-
-    removeuni(item) {
-      const index = this.selectedGroups.indexOf(item.name);
-
-      if (index >= 0) {
-        this.selectedGroups.splice(index, 1);
-        this.product.selectedGroups.splice(index, 1);
-      }
-      if (index == 0) {
-        this.product.selectedGroups.push({
-          unit_id: "empty",
-          ordering_number: "0",
-          contains: "1",
-          cost: "0",
-        });
-      }
-    },
     setproduction_date() {
       this.product.production_date = this.date;
     },

@@ -433,3 +433,23 @@ input {
 .invoice-percent .mdi-percent::before {
     margin-top: 9px;
 }
+
+.v-input__control {
+    min-height: 30px !important;
+}
+
+.v-input__slot {
+    box-shadow: 0 0 0 !important;
+    margin-bottom: 0px;
+    min-height: 34px !important;
+    min-width: 50px;
+}
+
+.v-text-field {
+    padding-top: 0px !important;
+    margin-top: 0px !important;
+}
+
+.v-input__slot input {
+    color: rgb(27, 27, 27) !important;
+}
