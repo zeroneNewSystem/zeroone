@@ -46,20 +46,19 @@
         <v-card>
           <v-card-title>
             <span>{{ formTitle }}</span>
-            <v-col cols="12" lg="6">
+            <v-col cols="12" lg="4">
               <v-checkbox
                 v-model="product.is_active"
                 style="white-space: nowrap; margin-left: 5px; margin-right: 5px"
                 color="#e91e63"
                 label="إيقاف التعامل بالمنتج"
-                @change="selling_priceaccount(item)"
               ></v-checkbox>
             </v-col>
           </v-card-title>
           <v-card-text>
             <v-container>
               <v-row>
-                <v-col cols="12" lg="6">
+                <v-col cols="12" lg="4">
                   <v-text-field
                     autocomplete="off"
                     v-model="product.ar_name"
@@ -73,7 +72,7 @@
                     "
                   ></v-text-field>
                 </v-col>
-                <v-col cols="12" lg="6">
+                <v-col cols="12" lg="4">
                   <v-text-field
                     autocomplete="off"
                     v-model="product.en_name"
@@ -87,7 +86,7 @@
                     "
                   ></v-text-field>
                 </v-col>
-                <v-col cols="12" lg="6">
+                <v-col cols="12" lg="4">
                   <v-text-field
                     autocomplete="off"
                     append-icon="mdi-alpha-g-circle"
@@ -104,7 +103,7 @@
                   ></v-text-field>
                 </v-col>
 
-                <v-col cols="12" lg="6">
+                <v-col cols="12" lg="4">
                   <v-autocomplete
                     v-model="product.groupIDs"
                     :disabled="isUpdating"
@@ -118,7 +117,7 @@
                   >
                   </v-autocomplete>
                 </v-col>
-                <v-col cols="12" lg="6">
+                <v-col cols="12" lg="4">
                   <v-autocomplete
                     label="نوع الصنف"
                     v-model="product.prdct_type_id"
@@ -128,7 +127,7 @@
                     :rules="required"
                   ></v-autocomplete>
                 </v-col>
-                <v-col cols="12" lg="6">
+                <v-col cols="12" lg="4">
                   <v-autocomplete
                     v-model="product.prdct_form_id"
                     :disabled="isUpdating"
@@ -141,11 +140,10 @@
                   >
                   </v-autocomplete>
                 </v-col>
-
-                <v-col cols="12" lg="6">
+                <v-col cols="12" lg="3">
                   <v-autocomplete
                     label="الضريبة"
-                    v-model="product.taxID"
+                    v-model="product.sales_tax_id"
                     :items="taxes"
                     :item-text="
                       (item) => item.ar_name + ' ' + item.percentage + '%'
@@ -153,6 +151,34 @@
                     item-value="id"
                     :rules="required"
                   ></v-autocomplete>
+                </v-col>
+
+                <v-col cols="12" lg="3">
+                  <v-text-field
+                    autocomplete="off"
+                    v-model="product.min_alert"
+                    label="حد التنبيه الأدني"
+                    :rules="vld_numbering"
+                    value="0"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" lg="3">
+                  <v-text-field
+                    autocomplete="off"
+                    v-model="product.max_alert"
+                    label="حد التنبيه الأعلى"
+                    :rules="vld_numbering"
+                    value="0"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" lg="3">
+                  <v-text-field
+                    autocomplete="off"
+                    v-model="product.stagnation_period"
+                    label="فترة الركود بالأيام"
+                    :rules="vld_numbering"
+                    value="0"
+                  ></v-text-field>
                 </v-col>
 
                 <v-col cols="12" align="right">
@@ -165,11 +191,15 @@
                       :headers="extra_units_headers"
                       :items="product.prdct_units"
                       style="width: 95%"
+                      :item-key="
+                        toString(Math.floor(Math.random(1, 100) * 100))
+                      "
                     >
-                      <template v-slot:item.main_unit="{ item }">
+                      <template v-slot:item.sale_main_unit="{ item }">
                         <v-radio-group
-                          v-model="item.main_unit"
-                          @change="uncheckAnotherRadioButtons(item)"
+                          class="product-radio"
+                          v-model="item.sale_main_unit"
+                          @change="uncheckAnotherRadioButtons(item, 'sale')"
                         >
                           <div
                             style="
@@ -178,7 +208,24 @@
                               padding-bottom: 23px;
                             "
                           >
-                            <v-radio value="main_unit"></v-radio>
+                            <v-radio value="sale_main_unit"></v-radio>
+                          </div>
+                        </v-radio-group>
+                      </template>
+                      <template v-slot:item.purchase_main_unit="{ item }">
+                        <v-radio-group
+                          class="product-radio"
+                          v-model="item.purchase_main_unit"
+                          @change="uncheckAnotherRadioButtons(item, 'purchase')"
+                        >
+                          <div
+                            style="
+                              font-size: 18px;
+                              padding-right: 20px;
+                              padding-bottom: 23px;
+                            "
+                          >
+                            <v-radio value="purchase_main_unit"></v-radio>
                           </div>
                         </v-radio-group>
                       </template>
@@ -188,25 +235,23 @@
                         </div>
                       </template>
 
-                      <template v-slot:item.ar_name="{ item }">
+                      <template v-slot:item.id="{ item }">
                         <v-autocomplete
+                          placeholder="اختر وحدة"
                           outlined
-                          v-model="item.ar_name"
+                          v-model="item.id"
                           :items="prdct_units"
+                          item-value="id"
                           item-text="ar_name"
-                          return-object
                           append-icon=""
                           :rules="required"
                           @change="printUnitObjects"
                         ></v-autocomplete>
                       </template>
                       <template v-slot:item.from_unit="{ item }">
-                        <v-text-field
-                          disabled
-                          outlined
-                          v-model="product.prdct_units[0].ar_name.ar_name"
-                          :rules="required"
-                        ></v-text-field>
+                        <div style="margin-bottom: 20px">
+                          {{ fromUnit }}
+                        </div>
                       </template>
                       <template v-slot:item.contains="{ item }">
                         <v-text-field
@@ -257,36 +302,20 @@
 
                 <v-col cols="12">
                   <v-row>
-                    <v-col cols="12" lg="6">
+                    <v-col cols="12" lg="4">
                       <v-textarea
                         autocomplete="off"
                         v-model="product.description"
                         label="الوصف"
                       ></v-textarea>
                     </v-col>
-                    <v-col cols="12" lg="6">
-                      <v-col
-                        class="d-flex flex-column align-center justify-center"
-                        cols="5"
-                      >
-                        <div
-                          style="
-                            position: relative;
-                            width: 200px;
-                            height: 150px;
-                          "
-                        >
+                    <v-col cols="12" lg="4">
+                      <v-row justify="center" align="center">
+                        <v-col cols="12" sm="4" style="position: relative">
                           <img
-                            style="
-                              position: absolute;
-                              top: 0;
-                              left: 0;
-                              max-width: 200px;
-                              max-height: 150px;
-                              border-radius: 10px;
-                              border: 1px solid #eee;
-                            "
-                            :src="product.imageURL"
+                            @click="pickFile"
+                            class="product_image"
+                            :src="product.image"
                             alt="NO Image"
                           />
                           <div
@@ -294,65 +323,38 @@
                               position: absolute;
                               width: 24px;
                               height: 27px;
-                              background: white;
+
                               bottom: 0;
                               right: 0;
                             "
                           >
                             <v-icon
+                              style="background: "
+                              color="red"
                               v-show="
-                                item.imageURL != '' &&
-                                item.imageURL != 'no-image.png'
+                                product.image != '' &&
+                                product.image != 'no-image.png'
                               "
-                              @click="removeImage(item, index)"
+                              @click="removeImage()"
                             >
                               mdi-close
                             </v-icon>
                           </div>
-                        </div>
-
-                        <div style="margin: 10px auto">
                           <input
+                            style="display: none"
                             type="file"
                             name=""
-                            :id="index"
+                            id="image-upload"
                             accept="image/png, image/jpeg"
                             ref="imageRef"
                             @change="fileinfo($event, item)"
                           />
-                        </div>
-                      </v-col>
+                        </v-col>
+                      </v-row>
                     </v-col>
                   </v-row>
                 </v-col>
 
-                <v-col cols="12" lg="4">
-                  <v-text-field
-                    autocomplete="off"
-                    v-model="product.min_alert"
-                    label="حد التنبيه الأدني"
-                    :rules="vld_numbering"
-                    value="0"
-                  ></v-text-field>
-                </v-col>
-                <v-col cols="12" lg="4">
-                  <v-text-field
-                    autocomplete="off"
-                    v-model="product.max_alert"
-                    label="حد التنبيه الأعلى"
-                    :rules="vld_numbering"
-                    value="0"
-                  ></v-text-field>
-                </v-col>
-                <v-col cols="12" lg="4">
-                  <v-text-field
-                    autocomplete="off"
-                    v-model="product.stagnation_period"
-                    label="فترة الركود بالأيام"
-                    :rules="vld_numbering"
-                    value="0"
-                  ></v-text-field>
-                </v-col>
                 <v-col cols="12" lg="12">
                   <v-divider></v-divider>
                 </v-col>
@@ -384,7 +386,6 @@
                     "
                     color="#e91e63"
                     label="قابل للبيع"
-                    @change="selling_priceaccount(item)"
                   ></v-checkbox>
                 </v-col>
                 <v-col cols="12" lg="6">
@@ -398,7 +399,6 @@
                     "
                     color="#e91e63"
                     label="قابل للشراء"
-                    @change="selling_priceaccount(item)"
                   ></v-checkbox>
                 </v-col>
 
@@ -409,11 +409,13 @@
                         <v-col>
                           <v-text-field
                             autocomplete="off"
-                            v-model="product.country"
+                            v-model="
+                              product.prdct_units[indexOfSaleMainUnit]
+                                .sale_price
+                            "
                             label="سعر البيع"
                           ></v-text-field>
                         </v-col>
-
                         <v-col>
                           <v-text-field
                             autocomplete="off"
@@ -428,7 +430,10 @@
                         <v-col>
                           <v-text-field
                             autocomplete="off"
-                            v-model="product.country"
+                            v-model="
+                              product.prdct_units[indexOfPurchaseMainUnit]
+                                .purchase_price
+                            "
                             label="سعر الشراء"
                           ></v-text-field>
                         </v-col>
@@ -444,10 +449,12 @@
                     </v-col>
                   </v-row>
                 </v-col>
+
                 <v-col cols="12" lg="12">
                   <v-divider></v-divider>
                 </v-col>
-                <v-col cols="12" lg="6">
+
+                <v-col cols="12" lg="3">
                   <v-checkbox
                     v-model="product.is_returnable"
                     style="
@@ -457,11 +464,12 @@
                     "
                     color="#e91e63"
                     label="قابل للاسترجاع بعد البيع"
-                    @change="selling_priceaccount(item)"
                   ></v-checkbox>
                 </v-col>
-                <v-col cols="12" lg="6">
+
+                <v-col cols="12" lg="3">
                   <v-checkbox
+                    v-model="product.is_free"
                     style="
                       white-space: nowrap;
                       margin-left: 5px;
@@ -469,11 +477,11 @@
                     "
                     color="#e91e63"
                     label="هذا الصنف مجاني"
-                    @change="selling_priceaccount(item)"
                   ></v-checkbox>
                 </v-col>
-                <v-col cols="12" lg="6">
+                <v-col cols="12" lg="3">
                   <v-checkbox
+                    v-model="product.is_bonus"
                     style="
                       white-space: nowrap;
                       margin-left: 5px;
@@ -481,10 +489,9 @@
                     "
                     color="#e91e63"
                     label="لديه بونص"
-                    @change="selling_priceaccount(item)"
                   ></v-checkbox>
                 </v-col>
-                <v-col cols="12" lg="6">
+                <v-col cols="12" lg="3">
                   <v-checkbox
                     v-model="product.has_expiration_date"
                     style="
@@ -496,7 +503,7 @@
                     label="لديه تاريخ انتهاء"
                   ></v-checkbox>
                 </v-col>
-                <v-col cols="12" lg="6">
+                <v-col cols="12" lg="4">
                   <v-text-field
                     autocomplete="off"
                     v-model="product.country"
@@ -504,7 +511,7 @@
                   ></v-text-field>
                 </v-col>
 
-                <v-col cols="12" lg="6">
+                <v-col cols="12" lg="4">
                   <v-text-field
                     autocomplete="off"
                     v-model="product.brand_name"
@@ -512,14 +519,14 @@
                   ></v-text-field>
                 </v-col>
 
-                <v-col cols="12" lg="6">
+                <v-col cols="12" lg="4">
                   <v-text-field
                     autocomplete="off"
                     v-model="product.side_effect"
                     label="التأثيرات الجانبية"
                   ></v-text-field>
                 </v-col>
-                <v-col cols="12" lg="6">
+                <v-col cols="12" lg="4">
                   <v-text-field
                     autocomplete="off"
                     v-model="product.alternative"
@@ -535,10 +542,9 @@
             <v-btn
               v-if="editedIndex === -1"
               class="btn btn-info m-b-5 m-r-2 white--text"
-              type="submit"
               color="text--white"
               text
-              @click="save(product)"
+              @click="submit()"
             >
               <v-icon class="white--text">mdi-plus-box</v-icon>حفظ وإضافة صنف
               جديد
@@ -563,6 +569,7 @@
 import axios from "axios";
 import { mapActions } from "vuex";
 import Product from "../../../apis/Product";
+import Api from "../../../apis/Api";
 
 export default {
   props: ["editedproduct"],
@@ -575,16 +582,22 @@ export default {
       /*-----------------------extra units---------------------------*/
       extra_units_headers: [
         {
-          text: " الأساسية",
+          text: " افتراضية البيع ",
           align: "center",
           sortable: false,
-          value: "main_unit",
+          value: "sale_main_unit",
+        },
+        {
+          text: " افتراضية الشراء ",
+          align: "center",
+          sortable: false,
+          value: "purchase_main_unit",
         },
         {
           text: " الوحدة",
           align: "center",
           sortable: false,
-          value: "ar_name",
+          value: "id",
         },
         {
           text: "تساوي",
@@ -628,7 +641,9 @@ export default {
       /*-----------------------units---------------------------*/
       prdct_units: [
         {
-          main_unit: "2",
+          sale_main_unit: "2",
+          purchase_main_unit: "2",
+
           ar_name: "salam",
           en_name: "kk",
           contains: 1,
@@ -656,49 +671,52 @@ export default {
 
       /*-----------------------product---------------------------*/
       product: {
-        company_id: "",
+        company_id: "1",
 
-        serial_number: "",
-        ar_name: "",
-        en_name: "",
+        serial_number: "serial_number",
+        ar_name: "ar_name",
+        en_name: "en_name",
         prdct_units: [
           {
-            main_unit: "main_unit",
-            ar_name: "",
+            sale_main_unit: "sale_main_unit",
+            purchase_main_unit: "purchase_main_unit",
+            id: "",
             en_name: "",
             contains: 1,
             from_unit: "",
-            purchase_price: "",
-            sale_price: "",
+            purchase_price: "9",
+            sale_price: "8",
             barcode: "",
           },
         ],
 
-        prdct_form_id: "",
-        prdct_type_id: "",
-        main_sales_unit_id: "",
-        main_purchase_unit_id: "",
+        groupIDs: [1, 2],
+        prdct_form_id: 1,
+        prdct_type_id: 1,
+        main_sales_unit_id: "main_sales_unit_id",
+        main_purchase_unit_id: "main_purchase_unit_id",
 
-        product_cogs_account_id: "",
-        product_sales_account_id: "",
+        product_cogs_account_id: "product_cogs_account_id",
+        product_sales_account_id: "product_sales_account_id",
 
-        sales_discount: "",
-        sales_discount_type_id: "",
-        purchase_discount: "",
-        purchase_tax_id: "",
-        sales_tax_id: "",
-        min_alert: "",
-        max_alert: "",
-        stagnation_period: "",
-        opening_balance_quantity: "",
-        opening_balance_cost: "",
-        profit_ratio: "",
-        side_effect: "",
-        description: "",
-        inventory_id: "",
-        imgae: "",
-        distribution_policy_id: "",
-        is_free: false,
+        sales_discount: "sales_discount",
+        sales_discount_type_id: "sales_discount_type_id",
+        purchase_discount: "purchase_discount",
+        purchase_tax_id: "purchase_tax_id",
+        sales_tax_id: 1,
+        min_alert: 1,
+        max_alert: 10,
+        stagnation_period: 100,
+        opening_balance_quantity: "opening_balance_quantity",
+        opening_balance_cost: "opening_balance_cost",
+        profit_ratio: "profit_ratio",
+        side_effect: "side_effect",
+        description: "description",
+        inventory_id: "inventory_id",
+        image: "no-image.png",
+
+        distribution_policy_id: "distribution_policy_id",
+        is_free: true,
         is_bonus: false,
         is_active: true,
         is_avilable_in_POS: true,
@@ -739,6 +757,25 @@ export default {
   },
 
   computed: {
+    indexOfPurchaseMainUnit() {
+      return this.product.prdct_units.indexOf(
+        this.product.prdct_units.find((elem) => {
+          return elem.purchase_main_unit == "purchase_main_unit";
+        })
+      );
+    },
+    indexOfSaleMainUnit() {
+      return this.product.prdct_units.indexOf(
+        this.product.prdct_units.find((elem) => {
+          return elem.sale_main_unit == "sale_main_unit";
+        })
+      );
+    },
+    fromUnit() {
+      if (this.product.prdct_units[0].id == "") return "-";
+
+      return this.prdct_units[this.product.prdct_units[0].id - 1].ar_name;
+    },
     formTitle() {
       return this.editedIndex === -1 ? "إضافة صنف جديد" : "تعديل البيانات";
     },
@@ -761,14 +798,51 @@ export default {
   },
 
   methods: {
+    pickFile() {
+      this.$refs.imageRef.click();
+    },
+    removeImage() {
+      this.product.image = "no-image.png";
+
+      this.product.image_name = "no-image.png";
+      document.getElementById("image-upload").value = null;
+    },
+    saveImage() {
+      Api.post("/save-image", {
+        image: this.product.image,
+        image_name: this.product.image_name,
+      }).then((response) => {
+        console.log(response.data);
+        if (response.data.length !== 0) this.items = response.data;
+        this.loading = false;
+      });
+    },
+    fileinfo(event) {
+      let files = event.target.files;
+      let filename = files[0]?.name;
+      if (filename?.lastIndexOf(".") <= 0) {
+        return alert("add a valid file");
+      }
+      const fileReader = new FileReader();
+      fileReader.addEventListener("load", () => {
+        this.product.image = fileReader?.result;
+      });
+      fileReader?.readAsDataURL(files[0]);
+
+      this.product.image_name = filename;
+    },
     deleteItem(item) {
       let index = this.product.prdct_units.indexOf(item);
       this.product.prdct_units.splice(index, 1);
 
+      if (index == 0) {
+        this.product.prdct_units[0].contains = 1;
+      }
       if (this.product.prdct_units.length == 0)
         this.product.prdct_units.push({
-          main_unit: "main_unit",
-          ar_name: "",
+          sale_main_unit: "sale_main_unit",
+          purchase_main_unit: "purchase_main_unit",
+          id: "",
           en_name: "",
           contains: 1,
           from_unit: "",
@@ -776,18 +850,29 @@ export default {
           sale_price: "",
           barcode: "",
         });
-      if (item.main_unit == "main_unit") {
-        this.product.prdct_units[0].main_unit = "main_unit";
+      if (item.sale_main_unit == "sale_main_unit") {
+        this.product.prdct_units[0].sale_main_unit = "sale_main_unit";
+      }
+      if (item.purchase_main_unit == "purchase_main_unit") {
+        this.product.prdct_units[0].purchase_main_unit = "purchase_main_unit";
       }
     },
-    uncheckAnotherRadioButtons(item) {
+    uncheckAnotherRadioButtons(item, type) {
       //alert('sdsdsd')
-
-      this.product.prdct_units.forEach((element) => {
-        console.log(element);
-        element.main_unit = "";
-      });
-      item.main_unit = "main_unit";
+      if (type == "sale") {
+        this.product.prdct_units.forEach((element) => {
+          console.log(element);
+          element.sale_main_unit = "";
+        });
+        item.sale_main_unit = "sale_main_unit";
+      }
+      if (type == "purchase") {
+        this.product.prdct_units.forEach((element) => {
+          console.log(element);
+          element.purchase_main_unit = "";
+        });
+        item.purchase_main_unit = "purchase_main_unit";
+      }
     },
     printUnitObjects() {
       console.log(this.product.prdct_units);
@@ -795,9 +880,10 @@ export default {
     add_extra_unit() {},
     addUnit() {
       this.product.prdct_units.push({
-        main_unit: "2",
-        ar_name: "salam",
-        en_name: "kk",
+        sale_main_unit: "2",
+        purchase_main_unit: "2",
+        id: "",
+        en_name: "",
         contains: 1,
         from_unit: "salam",
         purchase_price: "12",
@@ -991,10 +1077,10 @@ export default {
         this.editedIndex = -1;
       });
     },
-    save(item) {
-      item.flag = "addproducts";
-      item.filename = "products";
+    submit() {
+      console.log(this.product);
 
+      return;
       if (this.$refs.form.validate()) {
         axios.post("router.php", item).then((response) => {
           this.snackbar = true;
@@ -1038,4 +1124,18 @@ export default {
 };
 </script>
 <style>
+.theme--light.v-input--selection-controls.v-input--is-disabled:not(.v-input--indeterminate)
+  .v-icon {
+  color: rgb(111, 98, 228) !important;
+}
+.product_image {
+  position: relative;
+  top: 0;
+  left: 0;
+  max-width: 200px;
+  max-height: 150px;
+  border-radius: 10px;
+  border: 1px solid #eee;
+  cursor: pointer;
+}
 </style>

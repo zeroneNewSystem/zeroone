@@ -49,7 +49,7 @@ class ProductFactory extends Factory
             'side_effect'  => $this->faker->paragraph(),
             'description'  => $this->faker->paragraph(),
             'inventory_id'  => 1,
-            'imgae'  => $this->faker->text(),
+            'image'  => $this->faker->text(),
             'distribution_policy_id'  => 1,
             'is_free'  => 0,
 

@@ -8,10 +8,40 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use PHPUnit\Util\Xml\ValidationResult;
 
 class AuthController extends Controller
 {
+
+
+    public function save_image(Request $request)
+    {
+
+
+        $random_name_prefix = generateRandomString(10);
+
+
+
+        $image = $request->image;  // your base64 encoded
+        $extension = explode('/', mime_content_type($image))[1];
+
+        $image = str_replace('data:image/' . $extension . ';base64,', '', $image);
+        $image = str_replace(' ', '+', $image);
+        $filename = $random_name_prefix . $request->image_name;
+
+
+
+      
+
+        $filePath = 'products_images/' . $filename;
+        $disk = Storage::put($filePath, base64_decode($image));
+
+
+
+
+        return $random_name_prefix;
+    }
     public function register(Request $request)
     {
 

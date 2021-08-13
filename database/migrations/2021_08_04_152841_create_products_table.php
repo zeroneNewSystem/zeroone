@@ -54,7 +54,7 @@ class CreateProductsTable extends Migration
             $table->integer('inventory_id',)->default(0
         );
 
-            $table->string('imgae')->nullable();
+            $table->string('image')->nullable();
 
             $table->integer('distribution_policy_id',)->nullable();
 
