@@ -584,6 +584,57 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -593,6 +644,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   components: {},
   data: function data() {
     return {
+      /*-----------------------inventories-----------------------*/
+      inventories: [],
+
+      /*-----------------------distribution_policies-----------------------*/
+      distribution_policies: [],
+
       /*-----------------------taxes---------------------------*/
       taxes: [],
 
@@ -601,12 +658,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         text: " افتراضية البيع ",
         align: "center",
         sortable: false,
-        value: "sale_main_unit"
+        value: "main_sales_unit"
       }, {
         text: " افتراضية الشراء ",
         align: "center",
         sortable: false,
-        value: "purchase_main_unit"
+        value: "main_purchase_unit"
       }, {
         text: " الوحدة",
         align: "center",
@@ -636,7 +693,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         text: "سعر البيع",
         align: "center",
         sortable: false,
-        value: "sale_price"
+        value: "sales_price"
       }, {
         text: "الباركود",
         align: "center",
@@ -650,14 +707,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       /*-----------------------units---------------------------*/
       prdct_units: [{
-        sale_main_unit: "2",
-        purchase_main_unit: "2",
+        main_sales_unit: "2",
+        main_purchase_unit: "2",
         ar_name: "salam",
         en_name: "kk",
         contains: 1,
         from_unit: "salam",
         purchase_price: "20",
-        sale_price: "25",
+        sales_price: "25",
         barcode: "129101101"
       }],
 
@@ -669,6 +726,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       /*-----------------------types---------------------------*/
       prdct_types: [],
+
+      /*----------------sales_discount_types--------------------*/
+      sales_discount_types: [{
+        id: 1,
+        ar_name: "%",
+        en_name: "%"
+      }, {
+        id: 2,
+        ar_name: "قيمة",
+        en_name: "amount"
+      }],
 
       /*-------------------validators---------------------------*/
       vld_minlingth_one: [function (v) {
@@ -689,39 +757,39 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         ar_name: "ar_name",
         en_name: "en_name",
         prdct_units: [{
-          sale_main_unit: "sale_main_unit",
-          purchase_main_unit: "purchase_main_unit",
+          main_sales_unit: "main_sales_unit",
+          main_purchase_unit: "main_purchase_unit",
           id: "",
           en_name: "",
           contains: 1,
           from_unit: "",
           purchase_price: "9",
-          sale_price: "8",
+          sales_price: "8",
           barcode: ""
         }],
-        groupIDs: [1, 2],
+        prdct_group_ids: [1, 2],
         prdct_form_id: 1,
         prdct_type_id: 1,
-        main_sales_unit_id: "main_sales_unit_id",
-        main_purchase_unit_id: "main_purchase_unit_id",
-        product_cogs_account_id: "product_cogs_account_id",
-        product_sales_account_id: "product_sales_account_id",
-        sales_discount: "sales_discount",
-        sales_discount_type_id: "sales_discount_type_id",
+        main_sales_unit_id: 1,
+        main_purchase_unit_id: 1,
+        product_cogs_account_id: 1,
+        product_sales_account_id: 1,
+        sales_discount: 10,
+        sales_discount_type_id: 1,
         purchase_discount: "purchase_discount",
-        purchase_tax_id: "purchase_tax_id",
+        purchase_tax_id: 1,
         sales_tax_id: 1,
         min_alert: 1,
         max_alert: 10,
         stagnation_period: 100,
-        opening_balance_quantity: "opening_balance_quantity",
-        opening_balance_cost: "opening_balance_cost",
+        opening_balance_quantity: 200,
+        opening_balance_cost: 150,
         profit_ratio: "profit_ratio",
         side_effect: "side_effect",
         description: "description",
-        inventory_id: "inventory_id",
+        inventory_id: 1,
         image: "no-image.png",
-        distribution_policy_id: "distribution_policy_id",
+        distribution_policy_id: 1,
         is_free: true,
         is_bonus: false,
         is_active: true,
@@ -759,12 +827,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   computed: {
     indexOfPurchaseMainUnit: function indexOfPurchaseMainUnit() {
       return this.product.prdct_units.indexOf(this.product.prdct_units.find(function (elem) {
-        return elem.purchase_main_unit == "purchase_main_unit";
+        return elem.main_purchase_unit == "main_purchase_unit";
       }));
     },
-    indexOfSaleMainUnit: function indexOfSaleMainUnit() {
+    indexOfsales_MainUnit: function indexOfsales_MainUnit() {
       return this.product.prdct_units.indexOf(this.product.prdct_units.find(function (elem) {
-        return elem.sale_main_unit == "sale_main_unit";
+        return elem.main_sales_unit == "main_sales_unit";
       }));
     },
     fromUnit: function fromUnit() {
@@ -784,6 +852,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       _this.prdct_groups = response.data.prdct_groups;
       _this.prdct_units = response.data.prdct_units;
       _this.prdct_types = response.data.prdct_types;
+      _this.inventories = response.data.inventories;
+      _this.distribution_policies = response.data.distribution_policies;
       _this.taxes = response.data.taxes;
     })["catch"](function (errors) {
       _this.errors = errors.response.data.errors;
@@ -833,62 +903,73 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var index = this.product.prdct_units.indexOf(item);
       this.product.prdct_units.splice(index, 1);
 
+      if (this.product.prdct_units.length == 0) {
+        this.product.prdct_units.push({
+          main_sales_unit: 1,
+          main_purchase_unit: 1,
+          id: "",
+          en_name: "",
+          contains: 1,
+          from_unit: "",
+          purchase_price: "",
+          sales_price: "",
+          barcode: ""
+        });
+        return;
+      }
+
       if (index == 0) {
         this.product.prdct_units[0].contains = 1;
       }
 
-      if (this.product.prdct_units.length == 0) this.product.prdct_units.push({
-        sale_main_unit: "sale_main_unit",
-        purchase_main_unit: "purchase_main_unit",
-        id: "",
-        en_name: "",
-        contains: 1,
-        from_unit: "",
-        purchase_price: "",
-        sale_price: "",
-        barcode: ""
-      });
-
-      if (item.sale_main_unit == "sale_main_unit") {
-        this.product.prdct_units[0].sale_main_unit = "sale_main_unit";
+      if (index + 1 == this.product.main_sales_unit_id) {
+        this.product.main_sales_unit_id = 1;
       }
 
-      if (item.purchase_main_unit == "purchase_main_unit") {
-        this.product.prdct_units[0].purchase_main_unit = "purchase_main_unit";
+      if (index + 1 == this.product.main_purchase_unit_id) {
+        this.product.main_purchase_unit_id = 1;
       }
     },
     uncheckAnotherRadioButtons: function uncheckAnotherRadioButtons(item, type) {
       //alert('sdsdsd')
-      if (type == "sale") {
+      if (type == "sales_") {
         this.product.prdct_units.forEach(function (element) {
           console.log(element);
-          element.sale_main_unit = "";
+          element.main_sales_unit = "";
         });
-        item.sale_main_unit = "sale_main_unit";
+        item.main_sales_unit = "main_sales_unit";
       }
 
       if (type == "purchase") {
         this.product.prdct_units.forEach(function (element) {
           console.log(element);
-          element.purchase_main_unit = "";
+          element.main_purchase_unit = "";
         });
-        item.purchase_main_unit = "purchase_main_unit";
+        item.main_purchase_unit = "main_purchase_unit";
       }
     },
-    printUnitObjects: function printUnitObjects() {
-      console.log(this.product.prdct_units);
+    prventTwiseUnitSelection: function prventTwiseUnitSelection(item) {
+      var index = this.product.prdct_units.indexOf(item);
+      var sameunits = this.product.prdct_units.filter(function (elem) {
+        return elem.id == item.id;
+      });
+
+      if (sameunits.length > 1) {
+        alert("لايمكن تكرار الوحدات!");
+        item.id = 0;
+      }
     },
     add_extra_unit: function add_extra_unit() {},
     addUnit: function addUnit() {
       this.product.prdct_units.push({
-        sale_main_unit: "2",
-        purchase_main_unit: "2",
+        main_sales_unit: "2",
+        main_purchase_unit: "2",
         id: "",
         en_name: "",
         contains: 1,
         from_unit: "salam",
         purchase_price: "12",
-        sale_price: "25",
+        sales_price: "25",
         barcode: "129101101"
       });
     },
@@ -1583,11 +1664,15 @@ var render = function() {
                                       }
                                     },
                                     model: {
-                                      value: _vm.product.groupIDs,
+                                      value: _vm.product.prdct_group_ids,
                                       callback: function($$v) {
-                                        _vm.$set(_vm.product, "groupIDs", $$v)
+                                        _vm.$set(
+                                          _vm.product,
+                                          "prdct_group_ids",
+                                          $$v
+                                        )
                                       },
-                                      expression: "product.groupIDs"
+                                      expression: "product.prdct_group_ids"
                                     }
                                   })
                                 ],
@@ -1798,7 +1883,7 @@ var render = function() {
                                         },
                                         scopedSlots: _vm._u([
                                           {
-                                            key: "item.sale_main_unit",
+                                            key: "item.main_sales_unit",
                                             fn: function(ref) {
                                               var item = ref.item
                                               return [
@@ -1807,26 +1892,19 @@ var render = function() {
                                                   {
                                                     staticClass:
                                                       "product-radio",
-                                                    on: {
-                                                      change: function($event) {
-                                                        return _vm.uncheckAnotherRadioButtons(
-                                                          item,
-                                                          "sale"
-                                                        )
-                                                      }
-                                                    },
                                                     model: {
                                                       value:
-                                                        item.sale_main_unit,
+                                                        _vm.product
+                                                          .main_sales_unit_id,
                                                       callback: function($$v) {
                                                         _vm.$set(
-                                                          item,
-                                                          "sale_main_unit",
+                                                          _vm.product,
+                                                          "main_sales_unit_id",
                                                           $$v
                                                         )
                                                       },
                                                       expression:
-                                                        "item.sale_main_unit"
+                                                        "product.main_sales_unit_id"
                                                     }
                                                   },
                                                   [
@@ -1845,7 +1923,9 @@ var render = function() {
                                                         _c("v-radio", {
                                                           attrs: {
                                                             value:
-                                                              "sale_main_unit"
+                                                              _vm.product.prdct_units.indexOf(
+                                                                item
+                                                              ) + 1
                                                           }
                                                         })
                                                       ],
@@ -1857,7 +1937,7 @@ var render = function() {
                                             }
                                           },
                                           {
-                                            key: "item.purchase_main_unit",
+                                            key: "item.main_purchase_unit",
                                             fn: function(ref) {
                                               var item = ref.item
                                               return [
@@ -1866,26 +1946,19 @@ var render = function() {
                                                   {
                                                     staticClass:
                                                       "product-radio",
-                                                    on: {
-                                                      change: function($event) {
-                                                        return _vm.uncheckAnotherRadioButtons(
-                                                          item,
-                                                          "purchase"
-                                                        )
-                                                      }
-                                                    },
                                                     model: {
                                                       value:
-                                                        item.purchase_main_unit,
+                                                        _vm.product
+                                                          .main_purchase_unit_id,
                                                       callback: function($$v) {
                                                         _vm.$set(
-                                                          item,
-                                                          "purchase_main_unit",
+                                                          _vm.product,
+                                                          "main_purchase_unit_id",
                                                           $$v
                                                         )
                                                       },
                                                       expression:
-                                                        "item.purchase_main_unit"
+                                                        "product.main_purchase_unit_id"
                                                     }
                                                   },
                                                   [
@@ -1904,7 +1977,9 @@ var render = function() {
                                                         _c("v-radio", {
                                                           attrs: {
                                                             value:
-                                                              "purchase_main_unit"
+                                                              _vm.product.prdct_units.indexOf(
+                                                                item
+                                                              ) + 1
                                                           }
                                                         })
                                                       ],
@@ -1953,7 +2028,11 @@ var render = function() {
                                                     rules: _vm.required
                                                   },
                                                   on: {
-                                                    change: _vm.printUnitObjects
+                                                    change: function($event) {
+                                                      return _vm.prventTwiseUnitSelection(
+                                                        item
+                                                      )
+                                                    }
                                                   },
                                                   model: {
                                                     value: item.id,
@@ -1971,21 +2050,23 @@ var render = function() {
                                             fn: function(ref) {
                                               var item = ref.item
                                               return [
-                                                _c(
-                                                  "div",
-                                                  {
-                                                    staticStyle: {
-                                                      "margin-bottom": "20px"
-                                                    }
+                                                _c("v-text-field", {
+                                                  attrs: {
+                                                    outlined: "",
+                                                    disabled:
+                                                      _vm.product.prdct_units.indexOf(
+                                                        item
+                                                      ) == 0,
+                                                    rules: _vm.required
                                                   },
-                                                  [
-                                                    _vm._v(
-                                                      "\n                        " +
-                                                        _vm._s(_vm.fromUnit) +
-                                                        "\n                      "
-                                                    )
-                                                  ]
-                                                )
+                                                  model: {
+                                                    value: _vm.fromUnit,
+                                                    callback: function($$v) {
+                                                      _vm.fromUnit = $$v
+                                                    },
+                                                    expression: "fromUnit"
+                                                  }
+                                                })
                                               ]
                                             }
                                           },
@@ -2045,7 +2126,7 @@ var render = function() {
                                             }
                                           },
                                           {
-                                            key: "item.sale_price",
+                                            key: "item.sales_price",
                                             fn: function(ref) {
                                               var item = ref.item
                                               return [
@@ -2055,16 +2136,16 @@ var render = function() {
                                                     rules: _vm.required
                                                   },
                                                   model: {
-                                                    value: item.sale_price,
+                                                    value: item.sales_price,
                                                     callback: function($$v) {
                                                       _vm.$set(
                                                         item,
-                                                        "sale_price",
+                                                        "sales_price",
                                                         $$v
                                                       )
                                                     },
                                                     expression:
-                                                      "item.sale_price"
+                                                      "item.sales_price"
                                                   }
                                                 })
                                               ]
@@ -2154,6 +2235,615 @@ var render = function() {
                               _vm._v(" "),
                               _c(
                                 "v-col",
+                                { attrs: { cols: "12", lg: "12" } },
+                                [_c("v-divider")],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "v-col",
+                                { attrs: { cols: "12", lg: "12" } },
+                                [
+                                  _c("v-checkbox", {
+                                    staticStyle: {
+                                      "white-space": "nowrap",
+                                      "margin-left": "5px",
+                                      "margin-right": "5px"
+                                    },
+                                    attrs: {
+                                      color: "#e91e63",
+                                      label: "المنتج مخزون"
+                                    },
+                                    on: {
+                                      change: function($event) {
+                                        _vm.product.is_sellable = _vm.product.is_purchasable = true
+                                      }
+                                    },
+                                    model: {
+                                      value: _vm.product.is_storable,
+                                      callback: function($$v) {
+                                        _vm.$set(
+                                          _vm.product,
+                                          "is_storable",
+                                          $$v
+                                        )
+                                      },
+                                      expression: "product.is_storable"
+                                    }
+                                  })
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "v-col",
+                                { attrs: { cols: "12", lg: "6" } },
+                                [
+                                  _c(
+                                    "v-row",
+                                    [
+                                      _c(
+                                        "v-col",
+                                        [
+                                          _c("v-checkbox", {
+                                            staticStyle: {
+                                              "white-space": "nowrap",
+                                              "margin-left": "5px",
+                                              "margin-right": "5px",
+                                              "margin-top": "0px"
+                                            },
+                                            attrs: {
+                                              disabled: _vm.product.is_storable,
+                                              color: "#e91e63",
+                                              label: "قابل للبيع"
+                                            },
+                                            model: {
+                                              value: _vm.product.is_sellable,
+                                              callback: function($$v) {
+                                                _vm.$set(
+                                                  _vm.product,
+                                                  "is_sellable",
+                                                  $$v
+                                                )
+                                              },
+                                              expression: "product.is_sellable"
+                                            }
+                                          })
+                                        ],
+                                        1
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "v-col",
+                                        [
+                                          _vm.product.is_sellable
+                                            ? _c("v-autocomplete", {
+                                                attrs: {
+                                                  label: "حساب المبيعات",
+                                                  items: _vm.accounts,
+                                                  "item-text": "ar_name",
+                                                  "item-value": "id",
+                                                  rules: _vm.required
+                                                },
+                                                model: {
+                                                  value:
+                                                    _vm.product
+                                                      .product_sales_account_id,
+                                                  callback: function($$v) {
+                                                    _vm.$set(
+                                                      _vm.product,
+                                                      "product_sales_account_id",
+                                                      $$v
+                                                    )
+                                                  },
+                                                  expression:
+                                                    "product.product_sales_account_id"
+                                                }
+                                              })
+                                            : _vm._e()
+                                        ],
+                                        1
+                                      )
+                                    ],
+                                    1
+                                  )
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "v-col",
+                                { attrs: { cols: "12", lg: "6" } },
+                                [
+                                  _c(
+                                    "v-row",
+                                    [
+                                      _c(
+                                        "v-col",
+                                        [
+                                          _c("v-checkbox", {
+                                            staticStyle: {
+                                              "white-space": "nowrap",
+                                              "margin-left": "5px",
+                                              "margin-right": "5px",
+                                              "margin-top": "0px"
+                                            },
+                                            attrs: {
+                                              disabled: _vm.product.is_storable,
+                                              color: "#e91e63",
+                                              label: "قابل للشراء"
+                                            },
+                                            model: {
+                                              value: _vm.product.is_purchasable,
+                                              callback: function($$v) {
+                                                _vm.$set(
+                                                  _vm.product,
+                                                  "is_purchasable",
+                                                  $$v
+                                                )
+                                              },
+                                              expression:
+                                                "product.is_purchasable"
+                                            }
+                                          })
+                                        ],
+                                        1
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "v-col",
+                                        [
+                                          _vm.product.is_purchasable
+                                            ? _c("v-autocomplete", {
+                                                attrs: {
+                                                  label: "حساب تكلفة المبيعات",
+                                                  items: _vm.accounts,
+                                                  "item-text": "ar_name",
+                                                  "item-value": "id",
+                                                  rules: _vm.required
+                                                },
+                                                model: {
+                                                  value:
+                                                    _vm.product
+                                                      .product_cogs_account_id,
+                                                  callback: function($$v) {
+                                                    _vm.$set(
+                                                      _vm.product,
+                                                      "product_cogs_account_id",
+                                                      $$v
+                                                    )
+                                                  },
+                                                  expression:
+                                                    "product.product_cogs_account_id"
+                                                }
+                                              })
+                                            : _vm._e()
+                                        ],
+                                        1
+                                      )
+                                    ],
+                                    1
+                                  )
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "v-col",
+                                { attrs: { cols: "12", lg: "12" } },
+                                [
+                                  _c(
+                                    "v-row",
+                                    [
+                                      _c(
+                                        "v-col",
+                                        { attrs: { cols: "12", lg: "6" } },
+                                        [
+                                          _vm.product.is_sellable
+                                            ? _c(
+                                                "v-row",
+                                                [
+                                                  _c(
+                                                    "v-col",
+                                                    { attrs: { cols: "8" } },
+                                                    [
+                                                      _c("v-text-field", {
+                                                        attrs: {
+                                                          autocomplete: "off",
+                                                          label: "خصم عند البيع"
+                                                        },
+                                                        model: {
+                                                          value:
+                                                            _vm.product
+                                                              .sales_discount,
+                                                          callback: function(
+                                                            $$v
+                                                          ) {
+                                                            _vm.$set(
+                                                              _vm.product,
+                                                              "sales_discount",
+                                                              $$v
+                                                            )
+                                                          },
+                                                          expression:
+                                                            "product.sales_discount"
+                                                        }
+                                                      })
+                                                    ],
+                                                    1
+                                                  ),
+                                                  _vm._v(" "),
+                                                  _c(
+                                                    "v-col",
+                                                    { attrs: { cols: "4" } },
+                                                    [
+                                                      _c("v-autocomplete", {
+                                                        attrs: {
+                                                          label: "طريقة الحساب",
+                                                          items:
+                                                            _vm.sales_discount_types,
+                                                          "item-text":
+                                                            "ar_name",
+                                                          "item-value": "id",
+                                                          rules: _vm.required
+                                                        },
+                                                        model: {
+                                                          value:
+                                                            _vm.product
+                                                              .sales_discount_type_id,
+                                                          callback: function(
+                                                            $$v
+                                                          ) {
+                                                            _vm.$set(
+                                                              _vm.product,
+                                                              "sales_discount_type_id",
+                                                              $$v
+                                                            )
+                                                          },
+                                                          expression:
+                                                            "product.sales_discount_type_id"
+                                                        }
+                                                      })
+                                                    ],
+                                                    1
+                                                  )
+                                                ],
+                                                1
+                                              )
+                                            : _vm._e()
+                                        ],
+                                        1
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "v-col",
+                                        { attrs: { cols: "12", lg: "6" } },
+                                        [
+                                          _vm.product.is_purchasable
+                                            ? _c(
+                                                "v-row",
+                                                [
+                                                  _c(
+                                                    "v-col",
+                                                    { attrs: { cols: "8" } },
+                                                    [
+                                                      _c("v-text-field", {
+                                                        attrs: {
+                                                          autocomplete: "off",
+                                                          label:
+                                                            "خصم عند الشراء"
+                                                        },
+                                                        model: {
+                                                          value:
+                                                            _vm.product
+                                                              .sales_discount,
+                                                          callback: function(
+                                                            $$v
+                                                          ) {
+                                                            _vm.$set(
+                                                              _vm.product,
+                                                              "sales_discount",
+                                                              $$v
+                                                            )
+                                                          },
+                                                          expression:
+                                                            "product.sales_discount"
+                                                        }
+                                                      })
+                                                    ],
+                                                    1
+                                                  ),
+                                                  _vm._v(" "),
+                                                  _c(
+                                                    "v-col",
+                                                    { attrs: { cols: "4" } },
+                                                    [
+                                                      _c("v-autocomplete", {
+                                                        attrs: {
+                                                          label: "طريقة الحساب",
+                                                          items:
+                                                            _vm.sales_discount_types,
+                                                          "item-text":
+                                                            "ar_name",
+                                                          "item-value": "id",
+                                                          rules: _vm.required
+                                                        },
+                                                        model: {
+                                                          value:
+                                                            _vm.product
+                                                              .sales_discount_type_id,
+                                                          callback: function(
+                                                            $$v
+                                                          ) {
+                                                            _vm.$set(
+                                                              _vm.product,
+                                                              "sales_discount_type_id",
+                                                              $$v
+                                                            )
+                                                          },
+                                                          expression:
+                                                            "product.sales_discount_type_id"
+                                                        }
+                                                      })
+                                                    ],
+                                                    1
+                                                  )
+                                                ],
+                                                1
+                                              )
+                                            : _vm._e()
+                                        ],
+                                        1
+                                      )
+                                    ],
+                                    1
+                                  )
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c("v-col", { attrs: { cols: "12", lg: "12" } }),
+                              _vm._v(" "),
+                              _c("v-col", { attrs: { cols: "12", lg: "12" } }),
+                              _vm._v(" "),
+                              _c(
+                                "v-col",
+                                { attrs: { cols: "12", lg: "3" } },
+                                [
+                                  _c("v-text-field", {
+                                    attrs: {
+                                      autocomplete: "off",
+                                      label:
+                                        " الرصيد الافتتاحي من وحدة الشراء الافتراضية"
+                                    },
+                                    model: {
+                                      value:
+                                        _vm.product.opening_balance_quantity,
+                                      callback: function($$v) {
+                                        _vm.$set(
+                                          _vm.product,
+                                          "opening_balance_quantity",
+                                          $$v
+                                        )
+                                      },
+                                      expression:
+                                        "product.opening_balance_quantity"
+                                    }
+                                  })
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "v-col",
+                                { attrs: { cols: "12", lg: "3" } },
+                                [
+                                  _c("v-autocomplete", {
+                                    attrs: {
+                                      label: "اسم المخزن",
+                                      items: _vm.inventories,
+                                      "item-text": "ar_name",
+                                      "item-value": "id",
+                                      rules: _vm.required
+                                    },
+                                    model: {
+                                      value: _vm.product.inventory_id,
+                                      callback: function($$v) {
+                                        _vm.$set(
+                                          _vm.product,
+                                          "inventory_id",
+                                          $$v
+                                        )
+                                      },
+                                      expression: "product.inventory_id"
+                                    }
+                                  })
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "v-col",
+                                { attrs: { cols: "12", lg: "3" } },
+                                [
+                                  _c("v-text-field", {
+                                    attrs: {
+                                      autocomplete: "off",
+                                      label: " متوسط تكلفة الوحدة"
+                                    },
+                                    model: {
+                                      value: _vm.product.opening_balance_cost,
+                                      callback: function($$v) {
+                                        _vm.$set(
+                                          _vm.product,
+                                          "opening_balance_cost",
+                                          $$v
+                                        )
+                                      },
+                                      expression: "product.opening_balance_cost"
+                                    }
+                                  })
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "v-col",
+                                { attrs: { cols: "12", lg: "3" } },
+                                [
+                                  _c("v-autocomplete", {
+                                    attrs: {
+                                      label: "سياسة التوزيع",
+                                      items: _vm.distribution_policies,
+                                      "item-text": "ar_name",
+                                      "item-value": "id",
+                                      rules: _vm.required
+                                    },
+                                    model: {
+                                      value: _vm.product.distribution_policy_id,
+                                      callback: function($$v) {
+                                        _vm.$set(
+                                          _vm.product,
+                                          "distribution_policy_id",
+                                          $$v
+                                        )
+                                      },
+                                      expression:
+                                        "product.distribution_policy_id"
+                                    }
+                                  })
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "v-col",
+                                { attrs: { cols: "12", lg: "12" } },
+                                [_c("v-divider")],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "v-col",
+                                { attrs: { cols: "12", lg: "3" } },
+                                [
+                                  _c("v-checkbox", {
+                                    staticStyle: {
+                                      "white-space": "nowrap",
+                                      "margin-left": "5px",
+                                      "margin-right": "5px"
+                                    },
+                                    attrs: {
+                                      color: "#e91e63",
+                                      label: "قابل للاسترجاع بعد البيع"
+                                    },
+                                    model: {
+                                      value: _vm.product.is_returnable,
+                                      callback: function($$v) {
+                                        _vm.$set(
+                                          _vm.product,
+                                          "is_returnable",
+                                          $$v
+                                        )
+                                      },
+                                      expression: "product.is_returnable"
+                                    }
+                                  })
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "v-col",
+                                { attrs: { cols: "12", lg: "3" } },
+                                [
+                                  _c("v-checkbox", {
+                                    staticStyle: {
+                                      "white-space": "nowrap",
+                                      "margin-left": "5px",
+                                      "margin-right": "5px"
+                                    },
+                                    attrs: {
+                                      color: "#e91e63",
+                                      label: "هذا الصنف مجاني"
+                                    },
+                                    model: {
+                                      value: _vm.product.is_free,
+                                      callback: function($$v) {
+                                        _vm.$set(_vm.product, "is_free", $$v)
+                                      },
+                                      expression: "product.is_free"
+                                    }
+                                  })
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "v-col",
+                                { attrs: { cols: "12", lg: "3" } },
+                                [
+                                  _c("v-checkbox", {
+                                    staticStyle: {
+                                      "white-space": "nowrap",
+                                      "margin-left": "5px",
+                                      "margin-right": "5px"
+                                    },
+                                    attrs: {
+                                      color: "#e91e63",
+                                      label: "لديه بونص"
+                                    },
+                                    model: {
+                                      value: _vm.product.is_bonus,
+                                      callback: function($$v) {
+                                        _vm.$set(_vm.product, "is_bonus", $$v)
+                                      },
+                                      expression: "product.is_bonus"
+                                    }
+                                  })
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "v-col",
+                                { attrs: { cols: "12", lg: "3" } },
+                                [
+                                  _c("v-checkbox", {
+                                    staticStyle: {
+                                      "white-space": "nowrap",
+                                      "margin-left": "5px",
+                                      "margin-right": "5px"
+                                    },
+                                    attrs: {
+                                      color: "#e91e63",
+                                      label: "لديه تاريخ انتهاء"
+                                    },
+                                    model: {
+                                      value: _vm.product.has_expiration_date,
+                                      callback: function($$v) {
+                                        _vm.$set(
+                                          _vm.product,
+                                          "has_expiration_date",
+                                          $$v
+                                        )
+                                      },
+                                      expression: "product.has_expiration_date"
+                                    }
+                                  })
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "v-col",
+                                { attrs: { cols: "12", lg: "12" } },
+                                [_c("v-divider")],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "v-col",
                                 { attrs: { cols: "12" } },
                                 [
                                   _c(
@@ -2161,10 +2851,11 @@ var render = function() {
                                     [
                                       _c(
                                         "v-col",
-                                        { attrs: { cols: "12", lg: "4" } },
+                                        { attrs: { cols: "12", lg: "6" } },
                                         [
                                           _c("v-textarea", {
                                             attrs: {
+                                              outlined: "",
                                               autocomplete: "off",
                                               label: "الوصف"
                                             },
@@ -2310,484 +3001,6 @@ var render = function() {
                                 "v-col",
                                 { attrs: { cols: "12", lg: "12" } },
                                 [_c("v-divider")],
-                                1
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "v-col",
-                                { attrs: { cols: "12", lg: "12" } },
-                                [
-                                  _c("v-checkbox", {
-                                    staticStyle: {
-                                      "white-space": "nowrap",
-                                      "margin-left": "5px",
-                                      "margin-right": "5px"
-                                    },
-                                    attrs: {
-                                      color: "#e91e63",
-                                      label: "المنتج مخزون"
-                                    },
-                                    on: {
-                                      change: function($event) {
-                                        _vm.product.is_sellable = _vm.product.is_purchasable = true
-                                      }
-                                    },
-                                    model: {
-                                      value: _vm.product.is_storable,
-                                      callback: function($$v) {
-                                        _vm.$set(
-                                          _vm.product,
-                                          "is_storable",
-                                          $$v
-                                        )
-                                      },
-                                      expression: "product.is_storable"
-                                    }
-                                  })
-                                ],
-                                1
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "v-col",
-                                { attrs: { cols: "12", lg: "6" } },
-                                [
-                                  _c("v-checkbox", {
-                                    staticStyle: {
-                                      "white-space": "nowrap",
-                                      "margin-left": "5px",
-                                      "margin-right": "5px"
-                                    },
-                                    attrs: {
-                                      disabled: _vm.product.is_storable,
-                                      color: "#e91e63",
-                                      label: "قابل للبيع"
-                                    },
-                                    model: {
-                                      value: _vm.product.is_sellable,
-                                      callback: function($$v) {
-                                        _vm.$set(
-                                          _vm.product,
-                                          "is_sellable",
-                                          $$v
-                                        )
-                                      },
-                                      expression: "product.is_sellable"
-                                    }
-                                  })
-                                ],
-                                1
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "v-col",
-                                { attrs: { cols: "12", lg: "6" } },
-                                [
-                                  _c("v-checkbox", {
-                                    staticStyle: {
-                                      "white-space": "nowrap",
-                                      "margin-left": "5px",
-                                      "margin-right": "5px"
-                                    },
-                                    attrs: {
-                                      disabled: _vm.product.is_storable,
-                                      color: "#e91e63",
-                                      label: "قابل للشراء"
-                                    },
-                                    model: {
-                                      value: _vm.product.is_purchasable,
-                                      callback: function($$v) {
-                                        _vm.$set(
-                                          _vm.product,
-                                          "is_purchasable",
-                                          $$v
-                                        )
-                                      },
-                                      expression: "product.is_purchasable"
-                                    }
-                                  })
-                                ],
-                                1
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "v-col",
-                                { attrs: { cols: "12", lg: "12" } },
-                                [
-                                  _c(
-                                    "v-row",
-                                    [
-                                      _c(
-                                        "v-col",
-                                        [
-                                          _vm.product.is_sellable
-                                            ? _c(
-                                                "v-row",
-                                                [
-                                                  _c(
-                                                    "v-col",
-                                                    [
-                                                      _c("v-text-field", {
-                                                        attrs: {
-                                                          autocomplete: "off",
-                                                          label: "سعر البيع"
-                                                        },
-                                                        model: {
-                                                          value:
-                                                            _vm.product
-                                                              .prdct_units[
-                                                              _vm
-                                                                .indexOfSaleMainUnit
-                                                            ].sale_price,
-                                                          callback: function(
-                                                            $$v
-                                                          ) {
-                                                            _vm.$set(
-                                                              _vm.product
-                                                                .prdct_units[
-                                                                _vm
-                                                                  .indexOfSaleMainUnit
-                                                              ],
-                                                              "sale_price",
-                                                              $$v
-                                                            )
-                                                          },
-                                                          expression:
-                                                            "\n                            product.prdct_units[indexOfSaleMainUnit]\n                              .sale_price\n                          "
-                                                        }
-                                                      })
-                                                    ],
-                                                    1
-                                                  ),
-                                                  _vm._v(" "),
-                                                  _c(
-                                                    "v-col",
-                                                    [
-                                                      _c("v-text-fielde", {
-                                                        attrs: {
-                                                          autocomplete: "off",
-                                                          label: "حساب المبيعات"
-                                                        },
-                                                        model: {
-                                                          value:
-                                                            _vm.product.country,
-                                                          callback: function(
-                                                            $$v
-                                                          ) {
-                                                            _vm.$set(
-                                                              _vm.product,
-                                                              "country",
-                                                              $$v
-                                                            )
-                                                          },
-                                                          expression:
-                                                            "product.country"
-                                                        }
-                                                      })
-                                                    ],
-                                                    1
-                                                  )
-                                                ],
-                                                1
-                                              )
-                                            : _vm._e()
-                                        ],
-                                        1
-                                      ),
-                                      _vm._v(" "),
-                                      _c(
-                                        "v-col",
-                                        [
-                                          _vm.product.is_purchasable
-                                            ? _c(
-                                                "v-row",
-                                                [
-                                                  _c(
-                                                    "v-col",
-                                                    [
-                                                      _c("v-text-field", {
-                                                        attrs: {
-                                                          autocomplete: "off",
-                                                          label: "سعر الشراء"
-                                                        },
-                                                        model: {
-                                                          value:
-                                                            _vm.product
-                                                              .prdct_units[
-                                                              _vm
-                                                                .indexOfPurchaseMainUnit
-                                                            ].purchase_price,
-                                                          callback: function(
-                                                            $$v
-                                                          ) {
-                                                            _vm.$set(
-                                                              _vm.product
-                                                                .prdct_units[
-                                                                _vm
-                                                                  .indexOfPurchaseMainUnit
-                                                              ],
-                                                              "purchase_price",
-                                                              $$v
-                                                            )
-                                                          },
-                                                          expression:
-                                                            "\n                            product.prdct_units[indexOfPurchaseMainUnit]\n                              .purchase_price\n                          "
-                                                        }
-                                                      })
-                                                    ],
-                                                    1
-                                                  ),
-                                                  _vm._v(" "),
-                                                  _c(
-                                                    "v-col",
-                                                    [
-                                                      _c("v-text-field", {
-                                                        attrs: {
-                                                          autocomplete: "off",
-                                                          label:
-                                                            "حساب تكلفة المبيعات"
-                                                        },
-                                                        model: {
-                                                          value:
-                                                            _vm.product.country,
-                                                          callback: function(
-                                                            $$v
-                                                          ) {
-                                                            _vm.$set(
-                                                              _vm.product,
-                                                              "country",
-                                                              $$v
-                                                            )
-                                                          },
-                                                          expression:
-                                                            "product.country"
-                                                        }
-                                                      })
-                                                    ],
-                                                    1
-                                                  )
-                                                ],
-                                                1
-                                              )
-                                            : _vm._e()
-                                        ],
-                                        1
-                                      )
-                                    ],
-                                    1
-                                  )
-                                ],
-                                1
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "v-col",
-                                { attrs: { cols: "12", lg: "12" } },
-                                [_c("v-divider")],
-                                1
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "v-col",
-                                { attrs: { cols: "12", lg: "3" } },
-                                [
-                                  _c("v-checkbox", {
-                                    staticStyle: {
-                                      "white-space": "nowrap",
-                                      "margin-left": "5px",
-                                      "margin-right": "5px"
-                                    },
-                                    attrs: {
-                                      color: "#e91e63",
-                                      label: "قابل للاسترجاع بعد البيع"
-                                    },
-                                    model: {
-                                      value: _vm.product.is_returnable,
-                                      callback: function($$v) {
-                                        _vm.$set(
-                                          _vm.product,
-                                          "is_returnable",
-                                          $$v
-                                        )
-                                      },
-                                      expression: "product.is_returnable"
-                                    }
-                                  })
-                                ],
-                                1
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "v-col",
-                                { attrs: { cols: "12", lg: "3" } },
-                                [
-                                  _c("v-checkbox", {
-                                    staticStyle: {
-                                      "white-space": "nowrap",
-                                      "margin-left": "5px",
-                                      "margin-right": "5px"
-                                    },
-                                    attrs: {
-                                      color: "#e91e63",
-                                      label: "هذا الصنف مجاني"
-                                    },
-                                    model: {
-                                      value: _vm.product.is_free,
-                                      callback: function($$v) {
-                                        _vm.$set(_vm.product, "is_free", $$v)
-                                      },
-                                      expression: "product.is_free"
-                                    }
-                                  })
-                                ],
-                                1
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "v-col",
-                                { attrs: { cols: "12", lg: "3" } },
-                                [
-                                  _c("v-checkbox", {
-                                    staticStyle: {
-                                      "white-space": "nowrap",
-                                      "margin-left": "5px",
-                                      "margin-right": "5px"
-                                    },
-                                    attrs: {
-                                      color: "#e91e63",
-                                      label: "لديه بونص"
-                                    },
-                                    model: {
-                                      value: _vm.product.is_bonus,
-                                      callback: function($$v) {
-                                        _vm.$set(_vm.product, "is_bonus", $$v)
-                                      },
-                                      expression: "product.is_bonus"
-                                    }
-                                  })
-                                ],
-                                1
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "v-col",
-                                { attrs: { cols: "12", lg: "3" } },
-                                [
-                                  _c("v-checkbox", {
-                                    staticStyle: {
-                                      "white-space": "nowrap",
-                                      "margin-left": "5px",
-                                      "margin-right": "5px"
-                                    },
-                                    attrs: {
-                                      color: "#e91e63",
-                                      label: "لديه تاريخ انتهاء"
-                                    },
-                                    model: {
-                                      value: _vm.product.has_expiration_date,
-                                      callback: function($$v) {
-                                        _vm.$set(
-                                          _vm.product,
-                                          "has_expiration_date",
-                                          $$v
-                                        )
-                                      },
-                                      expression: "product.has_expiration_date"
-                                    }
-                                  })
-                                ],
-                                1
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "v-col",
-                                { attrs: { cols: "12", lg: "4" } },
-                                [
-                                  _c("v-text-field", {
-                                    attrs: {
-                                      autocomplete: "off",
-                                      label: "بلد الصنع"
-                                    },
-                                    model: {
-                                      value: _vm.product.country,
-                                      callback: function($$v) {
-                                        _vm.$set(_vm.product, "country", $$v)
-                                      },
-                                      expression: "product.country"
-                                    }
-                                  })
-                                ],
-                                1
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "v-col",
-                                { attrs: { cols: "12", lg: "4" } },
-                                [
-                                  _c("v-text-field", {
-                                    attrs: {
-                                      autocomplete: "off",
-                                      label: "الاسم العلمي"
-                                    },
-                                    model: {
-                                      value: _vm.product.brand_name,
-                                      callback: function($$v) {
-                                        _vm.$set(_vm.product, "brand_name", $$v)
-                                      },
-                                      expression: "product.brand_name"
-                                    }
-                                  })
-                                ],
-                                1
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "v-col",
-                                { attrs: { cols: "12", lg: "4" } },
-                                [
-                                  _c("v-text-field", {
-                                    attrs: {
-                                      autocomplete: "off",
-                                      label: "التأثيرات الجانبية"
-                                    },
-                                    model: {
-                                      value: _vm.product.side_effect,
-                                      callback: function($$v) {
-                                        _vm.$set(
-                                          _vm.product,
-                                          "side_effect",
-                                          $$v
-                                        )
-                                      },
-                                      expression: "product.side_effect"
-                                    }
-                                  })
-                                ],
-                                1
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "v-col",
-                                { attrs: { cols: "12", lg: "4" } },
-                                [
-                                  _c("v-text-field", {
-                                    attrs: {
-                                      autocomplete: "off",
-                                      label: "البديل"
-                                    },
-                                    model: {
-                                      value: _vm.product.alternative,
-                                      callback: function($$v) {
-                                        _vm.$set(
-                                          _vm.product,
-                                          "alternative",
-                                          $$v
-                                        )
-                                      },
-                                      expression: "product.alternative"
-                                    }
-                                  })
-                                ],
                                 1
                               )
                             ],

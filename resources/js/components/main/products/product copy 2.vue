@@ -661,7 +661,7 @@ export default {
           text: "سعر البيع",
           align: "center",
           sortable: false,
-          value: "unit_sale_price",
+          value: "unit_sales_price",
         },
         {
           text: "الباركود",

@@ -15,10 +15,10 @@ class CreatePrdctGroupsProductsTable extends Migration
     {
         Schema::create('prdct_groups_products', function (Blueprint $table) {
             $table->id();
-            $table->integer('company_id');
+            $table->unsignedInteger ('company_id');
 
-            $table->integer('product_id',);
-            $table->integer('prdct_group_id',);
+            $table->unsignedInteger ('product_id',);
+            $table->unsignedInteger ('prdct_group_id',);
 
             $table->timestamps();
             $table->softDeletes();

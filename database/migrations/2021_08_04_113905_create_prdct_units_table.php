@@ -15,7 +15,7 @@ class CreatePrdctUnitsTable extends Migration
     {
         Schema::create('prdct_units', function (Blueprint $table) {
             $table->id();
-            $table->integer('company_id');
+            $table->unsignedInteger ('company_id');
 
             $table->string('ar_name');
             $table->string('en_name');

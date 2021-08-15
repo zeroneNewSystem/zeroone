@@ -3,6 +3,8 @@
 namespace App\Modules\Admin\Products\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\DistributionPolicy;
+use App\Models\Inventory;
 use App\Models\Tax;
 use App\Modules\Admin\Products\Models\PrdctForm;
 use App\Modules\Admin\Products\Models\PrdctGroup;
@@ -40,6 +42,8 @@ class ProductController extends Controller
                 'prdct_groups' => PrdctGroup::all(),
                 'prdct_forms' => PrdctForm::all(),
                 'prdct_types' => PrdctType::all(),
+                'inventories' => Inventory::all(),
+                'distribution_policies' => DistributionPolicy::all(),
                 'taxes' => Tax::all(),
             ]
 

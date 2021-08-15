@@ -22,7 +22,7 @@ class CreatePrdctUnitsProductsTable extends Migration
             $table->integer('contains',);
             $table->integer('from_unit_id',);
             $table->float('purchase_price');
-            $table->float('sale_price');
+            $table->float('sales_price');
             
             $table->timestamps();
             $table->softDeletes();

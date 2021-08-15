@@ -15,15 +15,15 @@ class CreateInventoriesTable extends Migration
     {
         Schema::create('inventories', function (Blueprint $table) {
             $table->id();
-            $table->integer('company_id');
+            $table->unsignedInteger ('company_id');
 
             $table->string('ar_name');
             $table->string('en_name');
 
-            $table->integer('account_id');
+            $table->unsignedInteger ('account_id');
            
-            $table->integer('country_id');
-            $table->integer('city_id');
+            $table->unsignedInteger ('country_id');
+            $table->unsignedInteger ('city_id');
             $table->string('address');
 
             $table->timestamps();
