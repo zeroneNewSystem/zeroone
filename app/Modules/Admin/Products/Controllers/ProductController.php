@@ -10,11 +10,12 @@ use App\Modules\Admin\Products\Models\PrdctForm;
 use App\Modules\Admin\Products\Models\PrdctGroup;
 use App\Modules\Admin\Products\Models\PrdctUnit;
 use App\Modules\Admin\Products\Models\PrdctType;
-
+use App\Traits\AccountTrait;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
+    use AccountTrait;
     /**
      * Display a listing of the resource.
      *
@@ -34,6 +35,7 @@ class ProductController extends Controller
     public function getCreate()
     {
         
+
         // return another table like groups forms ....
 
         return response()->json(
@@ -45,6 +47,10 @@ class ProductController extends Controller
                 'inventories' => Inventory::all(),
                 'distribution_policies' => DistributionPolicy::all(),
                 'taxes' => Tax::all(),
+                'product_sales_accounts' =>  $this->showAccounts(4),
+                //'product_sales_return_accounts' =>  $this->showAccounts(4),
+                'product_cogs_accounts' =>  $this->showAccounts(5),
+                //'product_purchase_return_accounts' =>  $this->showAccounts(4),
             ]
 
         );

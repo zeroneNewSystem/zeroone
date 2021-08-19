@@ -141,36 +141,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./resources/js/apis/Api.js":
-/*!**********************************!*\
-  !*** ./resources/js/apis/Api.js ***!
-  \**********************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
-
-var getUrl = window.location;
-var Api = axios__WEBPACK_IMPORTED_MODULE_0___default().create({
-  baseURL: getUrl.protocol + "//" + getUrl.host + "/api",
-  headers: {
-    'Content-Type': 'application/json',
-    'Accept-Language': localStorage.getItem('token') || 'ar'
-  }
-});
-Api.interceptors.request.use(function (config) {
-  var token = localStorage.getItem('token');
-  config.headers.Authorization = token ? "Bearer ".concat(token) : '';
-  return config;
-});
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Api);
-
-/***/ }),
-
 /***/ "./resources/js/apis/Csrf.js":
 /*!***********************************!*\
   !*** ./resources/js/apis/Csrf.js ***!

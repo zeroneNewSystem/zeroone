@@ -24,17 +24,7 @@ const router = new VueRouter({
                             import ("./components/main/dashboard")
                     }
                 },
-                {
-                    path: "/accounts",
-                    name: "accounts",
-                    meta: { requiresAuth: true },
-                    components: {
-                        default: () =>
-                            import ("./components/main/index"),
-                        mainView: () =>
-                            import ("./components/main/accounts")
-                    }
-                },
+
                 {
                     path: "/product",
                     name: "product",
@@ -44,6 +34,17 @@ const router = new VueRouter({
                             import ("./components/main/products/product"),
                         mainView: () =>
                             import ("./components/main/products/product")
+                    }
+                },
+                {
+                    path: "/accounts",
+                    name: "accounts",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import ("./components/main/accounts/accounts"),
+                        mainView: () =>
+                            import ("./components/main/accounts/accounts")
                     }
                 }
             ]

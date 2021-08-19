@@ -309,25 +309,29 @@
                 </v-col>
 
                 <v-col cols="12" lg="12">
-                  <v-checkbox
-                    v-model="product.is_storable"
-                    class
-                    style="
-                      white-space: nowrap;
-                      margin-left: 5px;
-                      margin-right: 5px;
-                    "
-                    color="#e91e63"
-                    label="المنتج مخزون"
-                    @change="
-                      product.is_sellable = product.is_purchasable = true
-                    "
-                  ></v-checkbox>
+                  <v-row>
+                    <v-col cols="12" lg="2">
+                      <v-checkbox
+                        v-model="product.is_storable"
+                        class
+                        style="
+                          white-space: nowrap;
+                          margin-left: 5px;
+                          margin-right: 5px;
+                        "
+                        color="#e91e63"
+                        label="المنتج مخزون"
+                        @change="
+                          product.is_sellable = product.is_purchasable = true
+                        "
+                      ></v-checkbox>
+                    </v-col>
+                  </v-row>
                 </v-col>
 
-                <v-col cols="12" lg="6">
+                <v-col cols="12">
                   <v-row>
-                    <v-col
+                    <v-col cols="12" lg="2"
                       ><v-checkbox
                         :disabled="product.is_storable"
                         v-model="product.is_sellable"
@@ -342,22 +346,50 @@
                       ></v-checkbox
                     ></v-col>
 
-                    <v-col
+                    <v-col cols="6" lg="3"
                       ><v-autocomplete
                         label="حساب المبيعات"
                         v-model="product.product_sales_account_id"
-                        :items="accounts"
+                        :items="product_sales_accounts"
                         item-text="ar_name"
                         item-value="id"
                         :rules="required"
                         v-if="product.is_sellable"
                       ></v-autocomplete
                     ></v-col>
+                    <v-col cols="6" lg="3"
+                      ><v-autocomplete
+                        label="حساب مردود المبيعات"
+                        v-model="product.product_sales_return_account_id"
+                        :items="product_sales_return_accounts"
+                        item-text="ar_name"
+                        item-value="id"
+                        :rules="required"
+                        v-if="product.is_sellable"
+                      ></v-autocomplete
+                    ></v-col>
+                    <v-col cols="6" lg="2">
+                      <v-text-field
+                        autocomplete="off"
+                        v-model="product.sales_discount"
+                        label="خصم عند البيع"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="6" lg="2">
+                      <v-autocomplete
+                        label="طريقة الحساب"
+                        v-model="product.sales_discount_type_id"
+                        :items="discount_types"
+                        item-text="ar_name"
+                        item-value="id"
+                        :rules="required"
+                      ></v-autocomplete>
+                    </v-col>
                   </v-row>
                 </v-col>
-                <v-col cols="12" lg="6">
+                <v-col cols="12">
                   <v-row>
-                    <v-col
+                    <v-col cols="12" lg="2"
                       ><v-checkbox
                         :disabled="product.is_storable"
                         v-model="product.is_purchasable"
@@ -371,62 +403,45 @@
                         label="قابل للشراء"
                       ></v-checkbox
                     ></v-col>
-                    <v-col
+
+                    <v-col cols="6" lg="3"
                       ><v-autocomplete
                         label="حساب تكلفة المبيعات"
                         v-model="product.product_cogs_account_id"
-                        :items="accounts"
+                        :items="product_cogs_accounts"
                         item-text="ar_name"
                         item-value="id"
                         :rules="required"
                         v-if="product.is_purchasable"
                       ></v-autocomplete
                     ></v-col>
-                  </v-row>
-                </v-col>
-                <v-col cols="12" lg="12">
-                  <v-row>
-                    <v-col cols="12" lg="6">
-                      <v-row v-if="product.is_sellable">
-                        <v-col cols="8">
-                          <v-text-field
-                            autocomplete="off"
-                            v-model="product.sales_discount"
-                            label="خصم عند البيع"
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="4">
-                          <v-autocomplete
-                            label="طريقة الحساب"
-                            v-model="product.sales_discount_type_id"
-                            :items="sales_discount_types"
-                            item-text="ar_name"
-                            item-value="id"
-                            :rules="required"
-                          ></v-autocomplete>
-                        </v-col>
-                      </v-row>
+                    <v-col cols="6" lg="3"
+                      ><v-autocomplete
+                        label="حساب مردود المشتتريات"
+                        v-model="product.product_purchase_return_account_id"
+                        :items="product_purchase_return_accounts"
+                        item-text="ar_name"
+                        item-value="id"
+                        :rules="required"
+                        v-if="product.is_purchasable"
+                      ></v-autocomplete
+                    ></v-col>
+                    <v-col cols="6" lg="2">
+                      <v-text-field
+                        autocomplete="off"
+                        v-model="product.purchase_discount"
+                        label="خصم عند الشراء"
+                      ></v-text-field>
                     </v-col>
-                    <v-col cols="12" lg="6">
-                      <v-row v-if="product.is_purchasable">
-                        <v-col cols="8">
-                          <v-text-field
-                            autocomplete="off"
-                            v-model="product.sales_discount"
-                            label="خصم عند الشراء"
-                          ></v-text-field>
-                        </v-col>
-                        <v-col cols="4">
-                          <v-autocomplete
-                            label="طريقة الحساب"
-                            v-model="product.sales_discount_type_id"
-                            :items="sales_discount_types"
-                            item-text="ar_name"
-                            item-value="id"
-                            :rules="required"
-                          ></v-autocomplete>
-                        </v-col>
-                      </v-row>
+                    <v-col cols="6" lg="2">
+                      <v-autocomplete
+                        label="طريقة الحساب"
+                        v-model="product.purchase_discount_type_id"
+                        :items="discount_types"
+                        item-text="ar_name"
+                        item-value="id"
+                        :rules="required"
+                      ></v-autocomplete>
                     </v-col>
                   </v-row>
                 </v-col>
@@ -620,6 +635,7 @@
 import axios from "axios";
 import { mapActions } from "vuex";
 import Product from "../../../apis/Product";
+import Account from "../../../apis/Account";
 import Api from "../../../apis/Api";
 
 export default {
@@ -633,6 +649,10 @@ export default {
       distribution_policies: [],
       /*-----------------------taxes---------------------------*/
       taxes: [],
+      /*-----------------------accounts---------------------------*/
+      product_sales_accounts: [],
+      product_sales_return_accounts: [],
+      product_cogs_accounts: [],
 
       /*-----------------------extra units---------------------------*/
       extra_units_headers: [
@@ -718,8 +738,8 @@ export default {
       /*-----------------------types---------------------------*/
       prdct_types: [],
 
-      /*----------------sales_discount_types--------------------*/
-      sales_discount_types: [
+      /*----------------discount_types--------------------*/
+      discount_types: [
         { id: 1, ar_name: "%", en_name: "%" },
         { id: 2, ar_name: "قيمة", en_name: "amount" },
       ],
@@ -762,7 +782,8 @@ export default {
 
         sales_discount: 10,
         sales_discount_type_id: 1,
-        purchase_discount: "purchase_discount",
+        purchase_discount: 10,
+        purchase_discount_type_id: 1,
         purchase_tax_id: 1,
         sales_tax_id: 1,
         min_alert: 1,
@@ -843,6 +864,10 @@ export default {
   },
   mounted() {},
   created() {
+    // Account.showAccountsByType(4).then((response) => {
+    //   this.accounts = response.data.accounts;
+
+    // });
     Product.getCreate()
       .then((response) => {
         this.prdct_forms = response.data.prdct_forms;
@@ -852,6 +877,12 @@ export default {
         this.inventories = response.data.inventories;
         this.distribution_policies = response.data.distribution_policies;
         this.taxes = response.data.taxes;
+        this.product_sales_accounts = response.data.product_sales_accounts;
+        this.product_sales_return_accounts =
+          response.data.product_sales_accounts;
+        this.product_purchase_return_accounts =
+          response.data.product_cogs_accounts;
+        this.product_cogs_accounts = response.data.product_cogs_accounts;
       })
       .catch((errors) => {
         this.errors = errors.response.data.errors;

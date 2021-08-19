@@ -17,7 +17,7 @@ class CreateAccountsTable extends Migration
             $table->id();
             $table->unsignedInteger('company_id');
             
-            $table->string('account_number',20);
+            $table->string('account_id',20);
             $table->string('ar_name');
             $table->string('en_name');
             

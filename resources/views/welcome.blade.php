@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>Laravel</title>
-
+    <link rel="shortcut icon" type="image/png" href="/favicon.png" />
     <!-- Fonts -->
     <link href="font-awesome.min.css" rel="stylesheet">
     <!--link href="http://www.fontstatic.com/f=flat-jooza" rel="stylesheet"-->

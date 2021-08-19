@@ -17,7 +17,7 @@ class CreateAccountsTable extends Migration
             $table->id();
             $table->unsignedInteger('company_id');
             
-            $table->string('account_number',20);
+            $table->string('account_id',20);
             $table->string('ar_name');
             $table->string('en_name');
             
@@ -36,12 +36,12 @@ class CreateAccountsTable extends Migration
 
             $table->unsignedInteger('level',);
             
-            $table->unsignedInteger('currency_id');
+            $table->unsignedInteger('currency_id')->default(1);
             $table->boolean('is_active');
 
             
             $table->unsignedInteger('accountable_id')->nullable();
-            $table->string('accountable_ type')->nullable();
+            $table->string('accountable_type')->nullable();
 
 
             $table->unsignedInteger('create_by_user_id');
@@ -57,6 +57,7 @@ class CreateAccountsTable extends Migration
 
             $table->id();
             $table->unsignedInteger('company_id');
+            $table->unsignedInteger('type_id');
             
             $table->string('ar_name');
             $table->string('en_name');
@@ -64,7 +65,7 @@ class CreateAccountsTable extends Migration
             
            
 
-            $table->unsignedInteger('create_by_user_id');
+            
             $table->timestamps();
             $table->softDeletes();
 
@@ -80,6 +81,6 @@ class CreateAccountsTable extends Migration
     public function down()
     {
         Schema::dropIfExists('accounts');
-        Schema::dropIfExists('accounts');
+        Schema::dropIfExists('account_types');
     }
 }

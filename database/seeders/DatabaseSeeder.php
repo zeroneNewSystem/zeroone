@@ -31,6 +31,8 @@ class DatabaseSeeder extends Seeder
                 DistributionPolicySeeder::class,
                 TaxSeeder::class,
                 PrdctTypeSeeder::class,
+                AccountSeeder::class,
+                AccountTypeSeeder::class,
 
             ]
         );

@@ -15,7 +15,9 @@ return [
 
     'modules' => [
         "Admin" => [
+            'Accounts',
             'Products',
+
 
 
         ],
