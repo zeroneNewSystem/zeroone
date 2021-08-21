@@ -19,9 +19,9 @@ class AccountsExport implements FromCollection, WithHeadings
     public function headings(): array
     {
         return [
-            "id", "company_id", "account_id",
+            "id", "company_id", "account_code",
             "ar_name", "en_name", "description", "payable_receivable", "editable", "cashable", "parent_id",
-            "type_id", "level", "currency_id",
+            "type_code", "level", "currency_id",
             "is_active", "accountable_id", "accountable_type",
             "create_by_user_id", "created_at", "updated_at",
             "deleted_at",

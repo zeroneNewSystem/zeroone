@@ -16,14 +16,14 @@ trait AccountTrait
     {
         $accounts = DB::select("
             SELECT * FROM accounts as acc
-            WHERE acc.type_id LIKE '$type%' 
-            AND LENGTH(acc.account_id) >2 
+            WHERE acc.type_code LIKE '$type%' 
+            AND LENGTH(acc.account_code) >2 
             AND NOT EXISTS (
                 SELECT 1
                 FROM
                     accounts
-                WHERE type_id LIKE 'acc.type%'
-                AND LENGTH(account_id) > LENGTH(acc.account_id)
+                WHERE type_code LIKE 'acc.type%'
+                AND LENGTH(account_code) > LENGTH(acc.account_code)
             ) 
         ");
         return  $accounts;

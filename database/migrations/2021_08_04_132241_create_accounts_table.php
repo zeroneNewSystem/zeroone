@@ -17,7 +17,7 @@ class CreateAccountsTable extends Migration
             $table->id();
             $table->unsignedInteger('company_id');
             
-            $table->string('account_id',20);
+            $table->string('account_code',20);
             $table->string('ar_name');
             $table->string('en_name');
             
@@ -29,15 +29,15 @@ class CreateAccountsTable extends Migration
             $table->boolean('payable_receivable')->default(1);//ممكن تضع فيه فلوس وتاخذ منه فلوس ويعني انه غير قابل للتفريع مثل البنك والصندوق
             
             $table->boolean('editable')->default(1);
-            $table->boolean('cashable')->default(1);//نقدية ومافي حكمها
+                
             
             $table->unsignedInteger('parent_id');
-            $table->string('type_id');
+            $table->string('type_code');
 
             $table->unsignedInteger('level',);
             
             $table->unsignedInteger('currency_id')->default(1);
-            $table->boolean('is_active');
+            $table->boolean('is_active')->default(1);
 
             
             $table->unsignedInteger('accountable_id')->nullable();
@@ -57,7 +57,7 @@ class CreateAccountsTable extends Migration
 
             $table->id();
             $table->unsignedInteger('company_id');
-            $table->string('type_id');
+            $table->string('type_code');
             
             $table->string('ar_name');
             $table->string('en_name');

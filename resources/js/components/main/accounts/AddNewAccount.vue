@@ -18,17 +18,17 @@
                   label="الحساب الرئيسي"
                   v-model="new_account.parent_id"
                   :items="this.$store.state.accounts"
-                  :item-text="(item) => item.account_id + ' ' + item.ar_name"
+                  :item-text="(item) => item.account_code + ' ' + item.ar_name"
                   item-value="id"
                   @change="onParentChange"
                 >
                   <template v-slot:item="data">
                     <div
                       :key="account_div_update"
-                      :id="'nib' + data.item.account_id"
+                      :id="'nib' + data.item.account_code"
                       :style="bgblue(data.item) + 'font-size:12px'"
                     >
-                      {{ data.item.account_id + " " + data.item.ar_name }}
+                      {{ data.item.account_code + " " + data.item.ar_name }}
                     </div>
                   </template>
                 </v-autocomplete>
@@ -36,10 +36,10 @@
               <v-col cols="12">
                 <v-autocomplete
                   label="نوع الحساب "
-                  v-model="new_account.type_id"
+                  v-model="new_account.type_code"
                   :items="account_types"
-                  :item-text="(item) => item.type_id + ' - ' + item.ar_name"
-                  item-value="type_id"
+                  :item-text="(item) => item.type_code + ' - ' + item.ar_name"
+                  item-value="type_code"
                 ></v-autocomplete>
               </v-col>
               <v-row class="justify-space-between">
@@ -61,7 +61,7 @@
 
               <v-col cols="12">
                 <v-text-field
-                  v-model="new_account.account_id"
+                  v-model="new_account.account_code"
                   label="رقم الحساب *"
                   required
                 ></v-text-field>
@@ -109,10 +109,10 @@ export default {
     account_div_update: 0,
     new_account: {
       parent_id: "",
-      account_type_id: "",
+      account_type_code: "",
       ar_name: "",
       en_name: "",
-      account_id: "",
+      account_code: "",
       description: "",
     },
     dialog: false,
@@ -121,38 +121,34 @@ export default {
   methods: {
     saveNewAccount() {
       Account.saveNewAccount(this.new_account).then((this.dialog = false));
+      this.load_accounts();
     },
     onParentChange() {
-      
-      let parent_level = this.$store.state.accounts.find(
-        (elem) => elem.id == 1
-      ).level;
+      let parent = this.$store.state.accounts.find((elem) => elem.id == this.new_account.parent_id);
+    console.log(parent.type_code);
+      this.new_account.level = parseInt(parent.level + 1);
 
-      this.new_account.level = parseInt(parent_level + 1);
       this.account_types = this.$store.state.account_types.filter((elem) => {
         let length = 2;
 
-        if (
-          Math.ceil(Math.log10(parseInt(this.new_account.parent_id) + 1)) == 2
-        )
+        if (parent.level >= 2) {
           length = 4;
-
+        }
+        //alert(length);
         return (
-          elem.type_id
-            .toString()
-            .startsWith(this.new_account.parent_id.toString()) &&
-          elem.type_id.toString().length == length
+          elem.type_code.toString().startsWith(parent.type_code.toString()) &&
+          elem.type_code.toString().length == length
         );
       });
     },
 
     bgblue(item) {
-      if (Math.ceil(Math.log10(item.account_id + 1)) <= 2) {
-        $("#nib" + item.account_id)
+      if (Math.ceil(Math.log10(item.account_code + 1)) <= 2) {
+        $("#nib" + item.account_code)
           .parent()
           .addClass("first-level");
-      } else if (Math.ceil(Math.log10(item.account_id + 1)) <= 3) {
-        $("#nib" + item.account_id)
+      } else if (Math.ceil(Math.log10(item.account_code + 1)) <= 3) {
+        $("#nib" + item.account_code)
           .parent()
           .addClass("second-level");
       }

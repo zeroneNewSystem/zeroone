@@ -20,6 +20,12 @@ export default new Vuex.Store({
         },
         change_accountsVDTloading: (state, payload) => {
             state.accountsVDTloading = false;
+        },
+        delete_account: (state, payload) => {
+            state.accounts.splice(state.accounts.indexOf(payload), 1);
+        },
+        archive_account: (state, payload) => {
+            state.accounts.splice(state.accounts.indexOf(payload), 1);
         }
     },
     getters: {
@@ -40,6 +46,16 @@ export default new Vuex.Store({
             Accounts.get().then(response => {
                 cxt.commit("load_accounts", response.data.accounts);
                 cxt.commit("change_accountsVDTloading");
+            });
+        },
+        delete_account: (cxt, payload) => {
+            Accounts.delete(payload.id).then(response => {
+                cxt.commit("delete_account", payload);
+            });
+        },
+        archive_account: (cxt, payload) => {
+            Accounts.archive(payload.id).then(response => {
+                cxt.commit("archive_account", payload);
             });
         },
         load_account_types: cxt => {

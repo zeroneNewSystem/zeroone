@@ -9,9 +9,13 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(["prefix" => "accounts"], function() {
 
-    
+        
+
     Route::get('/','AccountController@index');
     Route::post('/','AccountController@store');
+    Route::post('/archive/{id}','AccountController@archive');
+    
+    Route::delete('/{id}','AccountController@destroy');
 
     Route::get('/types','AccountTypeController@index');
     Route::get('/export','AccountController@export');

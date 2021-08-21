@@ -23,7 +23,7 @@ class DistributionPolicySeeder extends Seeder
                 'return_deducted' => 0,
                 'active' => 1,
                 'account_method_id' => 1,
-                'account_id' => '211101',
+                'account_code' => '211101',
                 'discription' => 'some policy'
             ],
             [
@@ -34,7 +34,7 @@ class DistributionPolicySeeder extends Seeder
                 'return_deducted' => 0,
                 'active' => 1,
                 'account_method_id' => 1,
-                'account_id' => '211101',
+                'account_code' => '211101',
                 'discription' => 'some policy'
             ],
 

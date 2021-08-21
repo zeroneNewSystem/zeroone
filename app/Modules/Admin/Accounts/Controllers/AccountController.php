@@ -45,8 +45,8 @@ class AccountController extends Controller
     public function index()
     {
 
-        //$accounts = Account::orderBy('type_id')->get();
-        $accounts = Account::with('type')->orderBy('type_id')->get();
+        //$accounts = Account::orderBy('type_code')->get();
+        $accounts = Account::with('type')->orderBy('type_code')->orderBy('id')->get();
 
         //return response()->json(['accounts' => $accounts], 200);
         return response()->json(['accounts' => AccountResource::collection($accounts)], 200);
@@ -126,8 +126,29 @@ class AccountController extends Controller
      * @param  \App\Models\Account  $account
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Account $account)
+    public function destroy($id)
     {
         //
+        
+
+        $res=Account::where('id',$id)->forceDelete();
+        
+
+        return $res;
+    }
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Account  $account
+     * @return \Illuminate\Http\Response
+     */
+    public function archive($id)
+    {
+        //
+        
+
+        $res=Account::where('id',$id)->delete();
+
+        return $res;
     }
 }

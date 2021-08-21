@@ -14,17 +14,17 @@
                     label="الحساب الرئيسي"
                     v-model="updated_account.parent_id"
                     :items="this.$store.state.accounts"
-                    :item-text="(item) => item.account_id + ' ' + item.ar_name"
-                    item-value="account_id"
+                    :item-text="(item) => item.account_code + ' ' + item.ar_name"
+                    item-value="account_code"
                     @change="changeAccountypes"
                   >
                     <template v-slot:item="data">
                       <div
                         :key="account_div_update"
-                        :id="'nib' + data.item.account_id"
+                        :id="'nib' + data.item.account_code"
                         :style="bgblue(data.item) + 'font-size:12px'"
                       >
-                        {{ data.item.account_id + " " + data.item.ar_name }}
+                        {{ data.item.account_code + " " + data.item.ar_name }}
                       </div>
                     </template>
                   </v-autocomplete>
@@ -32,10 +32,10 @@
                 <v-col cols="12" lg="5">
                   <v-autocomplete
                     label="نوع الحساب "
-                    v-model="updated_account.type_id"
+                    v-model="updated_account.type_code"
                     :items="account_types"
-                    :item-text="(item) => item.type_id + ' - ' + item.ar_name"
-                    item-value="type_id"
+                    :item-text="(item) => item.type_code + ' - ' + item.ar_name"
+                    item-value="type_code"
                   ></v-autocomplete>
                 </v-col>
               </v-row>
@@ -58,7 +58,7 @@
 
               <v-col cols="12">
                 <v-text-field
-                  v-model="updated_account.account_id"
+                  v-model="updated_account.account_code"
                   label="رقم الحساب *"
                   required
                 ></v-text-field>
@@ -122,21 +122,21 @@ export default {
           length = 4;
 
         return (
-          elem.type_id
+          elem.type_code
             .toString()
             .startsWith(this.updated_account.parent_id.toString()) &&
-          elem.type_id.toString().length == length
+          elem.type_code.toString().length == length
         );
       });
     },
 
     bgblue(item) {
-      if (Math.ceil(Math.log10(item.account_id + 1)) <= 2) {
-        $("#nib" + item.account_id)
+      if (Math.ceil(Math.log10(item.account_code + 1)) <= 2) {
+        $("#nib" + item.account_code)
           .parent()
           .addClass("first-level");
-      } else if (Math.ceil(Math.log10(item.account_id + 1)) <= 3) {
-        $("#nib" + item.account_id)
+      } else if (Math.ceil(Math.log10(item.account_code + 1)) <= 3) {
+        $("#nib" + item.account_code)
           .parent()
           .addClass("second-level");
       }

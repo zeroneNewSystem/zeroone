@@ -123,10 +123,10 @@ __webpack_require__.r(__webpack_exports__);
       account_div_update: 0,
       new_account: {
         parent_id: "",
-        account_type_id: "",
+        account_type_code: "",
         ar_name: "",
         en_name: "",
-        account_id: "",
+        account_code: "",
         description: ""
       },
       dialog: false
@@ -136,25 +136,32 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     saveNewAccount: function saveNewAccount() {
       _apis_Account__WEBPACK_IMPORTED_MODULE_0__.default.saveNewAccount(this.new_account).then(this.dialog = false);
+      this.load_accounts();
     },
     onParentChange: function onParentChange() {
       var _this = this;
 
-      var parent_level = this.$store.state.accounts.find(function (elem) {
-        return elem.id == 1;
-      }).level;
-      this.new_account.level = parseInt(parent_level + 1);
+      var parent = this.$store.state.accounts.find(function (elem) {
+        return elem.id == _this.new_account.parent_id;
+      });
+      console.log(parent.type_code);
+      this.new_account.level = parseInt(parent.level + 1);
       this.account_types = this.$store.state.account_types.filter(function (elem) {
         var length = 2;
-        if (Math.ceil(Math.log10(parseInt(_this.new_account.parent_id) + 1)) == 2) length = 4;
-        return elem.type_id.toString().startsWith(_this.new_account.parent_id.toString()) && elem.type_id.toString().length == length;
+
+        if (parent.level >= 2) {
+          length = 4;
+        } //alert(length);
+
+
+        return elem.type_code.toString().startsWith(parent.type_code.toString()) && elem.type_code.toString().length == length;
       });
     },
     bgblue: function bgblue(item) {
-      if (Math.ceil(Math.log10(item.account_id + 1)) <= 2) {
-        $("#nib" + item.account_id).parent().addClass("first-level");
-      } else if (Math.ceil(Math.log10(item.account_id + 1)) <= 3) {
-        $("#nib" + item.account_id).parent().addClass("second-level");
+      if (Math.ceil(Math.log10(item.account_code + 1)) <= 2) {
+        $("#nib" + item.account_code).parent().addClass("first-level");
+      } else if (Math.ceil(Math.log10(item.account_code + 1)) <= 3) {
+        $("#nib" + item.account_code).parent().addClass("second-level");
       }
 
       if (this.account_div_update == 0) this.account_div_update += 1;
@@ -405,14 +412,14 @@ __webpack_require__.r(__webpack_exports__);
       this.account_types = this.$store.state.account_types.filter(function (elem) {
         var length = 2;
         if (Math.ceil(Math.log10(parseInt(_this.updated_account.parent_id) + 1)) == 2) length = 4;
-        return elem.type_id.toString().startsWith(_this.updated_account.parent_id.toString()) && elem.type_id.toString().length == length;
+        return elem.type_code.toString().startsWith(_this.updated_account.parent_id.toString()) && elem.type_code.toString().length == length;
       });
     },
     bgblue: function bgblue(item) {
-      if (Math.ceil(Math.log10(item.account_id + 1)) <= 2) {
-        $("#nib" + item.account_id).parent().addClass("first-level");
-      } else if (Math.ceil(Math.log10(item.account_id + 1)) <= 3) {
-        $("#nib" + item.account_id).parent().addClass("second-level");
+      if (Math.ceil(Math.log10(item.account_code + 1)) <= 2) {
+        $("#nib" + item.account_code).parent().addClass("first-level");
+      } else if (Math.ceil(Math.log10(item.account_code + 1)) <= 3) {
+        $("#nib" + item.account_code).parent().addClass("second-level");
       }
 
       if (this.account_div_update == 0) this.account_div_update += 1;
@@ -541,6 +548,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
 
 
 
@@ -569,7 +580,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         text: "نوع الحساب",
         align: "right",
         sortable: false,
-        value: "type_id"
+        value: "type_code"
       }, {
         text: "الوصف",
         align: "center",
@@ -601,36 +612,43 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.load_account_types();
     }
   },
-  methods: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_4__.mapActions)(["load_accounts", "load_account_types"])), {}, {
+  methods: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_4__.mapActions)(["load_accounts", "load_account_types", "delete_account", "archive_account"])), {}, {
+    deleteAccount: function deleteAccount(item) {
+      this.delete_account(item);
+    },
+    archiveAccount: function archiveAccount(item) {
+      this.archive_account(item);
+    },
     updateAccountDialog: function updateAccountDialog(item) {
       this.update_account_dialog = true;
       this.updated_account = item;
     },
     hasChild: function hasChild(item) {
-      item = item.toString();
-      this.accounts.forEach(function (element) {});
-      return false;
+      return this.$store.state.accounts.find(function (element) {
+        return element.parent_id == item.id;
+      });
     },
     canBeBranched: function canBeBranched(item) {
-      if (Math.ceil(Math.log10(item.account_id + 1)) >= 6) return false;
-      if (this.hasChild(item)) return false;
+      if (Math.ceil(Math.log10(item.account_code + 1)) >= 6) return false;
       return true;
     },
     canBeModefied: function canBeModefied(item) {
-      if (Math.ceil(Math.log10(item.account_id + 1)) <= 2) return false;
+      if (Math.ceil(Math.log10(item.account_code + 1)) <= 2) return false;
       return true;
     },
     canBeDeleted: function canBeDeleted(item) {
-      if (Math.ceil(Math.log10(item.account_id + 1)) <= 3) return false;
+      if (this.hasChild(item)) return false;
+      if (Math.ceil(Math.log10(item.account_code + 1)) <= 3) return false;
       return true;
     },
     canBeArchived: function canBeArchived(item) {
-      if (Math.ceil(Math.log10(item.account_id + 1)) <= 2) return false;
+      if (this.hasChild(item)) return false;
+      if (Math.ceil(Math.log10(item.account_code + 1)) <= 2) return false;
       if (this.canBeDeleted(item)) return false;
       return true;
     },
     computed_margin: function computed_margin(item) {
-      return (//"margin-right:" + Math.ceil(Math.log10(item.account_id + 1)) * 10 + "px"
+      return (//"margin-right:" + Math.ceil(Math.log10(item.account_code + 1)) * 10 + "px"
         "margin-right:" + item.level * 10 + "px"
       );
     }
@@ -1195,7 +1213,9 @@ var render = function() {
                                   label: "الحساب الرئيسي",
                                   items: this.$store.state.accounts,
                                   "item-text": function(item) {
-                                    return item.account_id + " " + item.ar_name
+                                    return (
+                                      item.account_code + " " + item.ar_name
+                                    )
                                   },
                                   "item-value": "id"
                                 },
@@ -1213,14 +1233,14 @@ var render = function() {
                                               _vm.bgblue(data.item) +
                                               "font-size:12px",
                                             attrs: {
-                                              id: "nib" + data.item.account_id
+                                              id: "nib" + data.item.account_code
                                             }
                                           },
                                           [
                                             _vm._v(
                                               "\n                    " +
                                                 _vm._s(
-                                                  data.item.account_id +
+                                                  data.item.account_code +
                                                     " " +
                                                     data.item.ar_name
                                                 ) +
@@ -1253,16 +1273,16 @@ var render = function() {
                                   label: "نوع الحساب ",
                                   items: _vm.account_types,
                                   "item-text": function(item) {
-                                    return item.type_id + " - " + item.ar_name
+                                    return item.type_code + " - " + item.ar_name
                                   },
-                                  "item-value": "type_id"
+                                  "item-value": "type_code"
                                 },
                                 model: {
-                                  value: _vm.new_account.type_id,
+                                  value: _vm.new_account.type_code,
                                   callback: function($$v) {
-                                    _vm.$set(_vm.new_account, "type_id", $$v)
+                                    _vm.$set(_vm.new_account, "type_code", $$v)
                                   },
-                                  expression: "new_account.type_id"
+                                  expression: "new_account.type_code"
                                 }
                               })
                             ],
@@ -1333,11 +1353,15 @@ var render = function() {
                               _c("v-text-field", {
                                 attrs: { label: "رقم الحساب *", required: "" },
                                 model: {
-                                  value: _vm.new_account.account_id,
+                                  value: _vm.new_account.account_code,
                                   callback: function($$v) {
-                                    _vm.$set(_vm.new_account, "account_id", $$v)
+                                    _vm.$set(
+                                      _vm.new_account,
+                                      "account_code",
+                                      $$v
+                                    )
                                   },
-                                  expression: "new_account.account_id"
+                                  expression: "new_account.account_code"
                                 }
                               })
                             ],
@@ -1783,10 +1807,10 @@ var render = function() {
                                       items: this.$store.state.accounts,
                                       "item-text": function(item) {
                                         return (
-                                          item.account_id + " " + item.ar_name
+                                          item.account_code + " " + item.ar_name
                                         )
                                       },
-                                      "item-value": "account_id"
+                                      "item-value": "account_code"
                                     },
                                     on: { change: _vm.changeAccountypes },
                                     scopedSlots: _vm._u([
@@ -1803,14 +1827,15 @@ var render = function() {
                                                   "font-size:12px",
                                                 attrs: {
                                                   id:
-                                                    "nib" + data.item.account_id
+                                                    "nib" +
+                                                    data.item.account_code
                                                 }
                                               },
                                               [
                                                 _vm._v(
                                                   "\n                      " +
                                                     _vm._s(
-                                                      data.item.account_id +
+                                                      data.item.account_code +
                                                         " " +
                                                         data.item.ar_name
                                                     ) +
@@ -1848,21 +1873,21 @@ var render = function() {
                                       items: _vm.account_types,
                                       "item-text": function(item) {
                                         return (
-                                          item.type_id + " - " + item.ar_name
+                                          item.type_code + " - " + item.ar_name
                                         )
                                       },
-                                      "item-value": "type_id"
+                                      "item-value": "type_code"
                                     },
                                     model: {
-                                      value: _vm.updated_account.type_id,
+                                      value: _vm.updated_account.type_code,
                                       callback: function($$v) {
                                         _vm.$set(
                                           _vm.updated_account,
-                                          "type_id",
+                                          "type_code",
                                           $$v
                                         )
                                       },
-                                      expression: "updated_account.type_id"
+                                      expression: "updated_account.type_code"
                                     }
                                   })
                                 ],
@@ -1936,15 +1961,15 @@ var render = function() {
                               _c("v-text-field", {
                                 attrs: { label: "رقم الحساب *", required: "" },
                                 model: {
-                                  value: _vm.updated_account.account_id,
+                                  value: _vm.updated_account.account_code,
                                   callback: function($$v) {
                                     _vm.$set(
                                       _vm.updated_account,
-                                      "account_id",
+                                      "account_code",
                                       $$v
                                     )
                                   },
-                                  expression: "updated_account.account_id"
+                                  expression: "updated_account.account_code"
                                 }
                               })
                             ],
@@ -2122,7 +2147,7 @@ var render = function() {
                 _c("div", { style: _vm.computed_margin(item) }, [
                   _vm._v(
                     "\n        " +
-                      _vm._s(item.account_id + "- " + item.ar_name) +
+                      _vm._s(item.account_code + "- " + item.ar_name) +
                       "\n      "
                   )
                 ])
@@ -2130,7 +2155,7 @@ var render = function() {
             }
           },
           {
-            key: "item.type_id",
+            key: "item.type_code",
             fn: function(ref) {
               var item = ref.item
               return [
@@ -2332,7 +2357,14 @@ var render = function() {
                               _vm.canBeDeleted(item)
                                 ? _c(
                                     "v-btn",
-                                    { attrs: { icon: "", to: "/home" } },
+                                    {
+                                      attrs: { icon: "" },
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.deleteAccount(item)
+                                        }
+                                      }
+                                    },
                                     [
                                       _c(
                                         "v-icon",
@@ -2385,7 +2417,14 @@ var render = function() {
                               _vm.canBeArchived(item)
                                 ? _c(
                                     "v-btn",
-                                    { attrs: { icon: "", to: "/home" } },
+                                    {
+                                      attrs: { icon: "" },
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.archiveAccount(item)
+                                        }
+                                      }
+                                    },
                                     [
                                       _c(
                                         "v-icon",

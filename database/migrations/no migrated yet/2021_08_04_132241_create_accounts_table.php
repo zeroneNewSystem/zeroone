@@ -17,7 +17,7 @@ class CreateAccountsTable extends Migration
             $table->id();
             $table->unsignedInteger('company_id');
             
-            $table->string('account_id',20);
+            $table->string('account_code',20);
             $table->string('ar_name');
             $table->string('en_name');
             
@@ -32,7 +32,7 @@ class CreateAccountsTable extends Migration
             $table->boolean('cashable')->default(1);//نقدية ومافي حكمها
             
             $table->unsignedInteger('parent_id');
-            $table->unsignedInteger('type_id', 100);
+            $table->unsignedInteger('type_code', 100);
 
             $table->unsignedInteger('level',);
             

@@ -23,10 +23,10 @@
       </template>
       <template v-slot:item.ar_name="{ item }">
         <div :style="computed_margin(item)">
-          {{ item.account_id + "- " + item.ar_name }}
+          {{ item.account_code + "- " + item.ar_name }}
         </div>
       </template>
-      <template v-slot:item.type_id="{ item }">
+      <template v-slot:item.type_code="{ item }">
         {{ item.type && item.type.ar_name }}
       </template>
       <template v-slot:item.actions="{ item }">
@@ -67,7 +67,7 @@
         </v-tooltip>
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
-            <v-btn icon to="/home" v-if="canBeDeleted(item)">
+            <v-btn icon v-if="canBeDeleted(item)" @click="deleteAccount(item)">
               <v-icon v-bind="attrs" v-on="on" class="outlined font-size-12"
                 >mdi-delete</v-icon
               ></v-btn
@@ -77,7 +77,11 @@
         </v-tooltip>
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
-            <v-btn icon to="/home" v-if="canBeArchived(item)">
+            <v-btn
+              icon
+              v-if="canBeArchived(item)"
+              @click="archiveAccount(item)"
+            >
               <v-icon v-bind="attrs" v-on="on" class="outlined font-size-12"
                 >mdi-archive</v-icon
               ></v-btn
@@ -128,7 +132,7 @@ export default {
           text: "نوع الحساب",
           align: "right",
           sortable: false,
-          value: "type_id",
+          value: "type_code",
         },
         {
           text: "الوصف",
@@ -168,37 +172,50 @@ export default {
   },
 
   methods: {
-    ...mapActions(["load_accounts", "load_account_types"]),
+    ...mapActions([
+      "load_accounts",
+      "load_account_types",
+      "delete_account",
+      "archive_account",
+    ]),
+
+    deleteAccount(item) {
+      this.delete_account(item);
+    },
+    archiveAccount(item) {
+      this.archive_account(item);
+    },
+
     updateAccountDialog(item) {
       this.update_account_dialog = true;
       this.updated_account = item;
     },
 
     hasChild(item) {
-      item = item.toString();
-
-      this.accounts.forEach((element) => {});
-
-      return false;
+      return this.$store.state.accounts.find(
+        (element) => element.parent_id == item.id
+      );
     },
 
     canBeBranched(item) {
-      if (Math.ceil(Math.log10(item.account_id + 1)) >= 6) return false;
-      if (this.hasChild(item)) return false;
+      if (Math.ceil(Math.log10(item.account_code + 1)) >= 6) return false;
+      
       return true;
     },
     canBeModefied(item) {
-      if (Math.ceil(Math.log10(item.account_id + 1)) <= 2) return false;
+      if (Math.ceil(Math.log10(item.account_code + 1)) <= 2) return false;
 
       return true;
     },
     canBeDeleted(item) {
-      if (Math.ceil(Math.log10(item.account_id + 1)) <= 3) return false;
+      if (this.hasChild(item)) return false;
+      if (Math.ceil(Math.log10(item.account_code + 1)) <= 3) return false;
 
       return true;
     },
     canBeArchived(item) {
-      if (Math.ceil(Math.log10(item.account_id + 1)) <= 2) return false;
+      if (this.hasChild(item)) return false;
+      if (Math.ceil(Math.log10(item.account_code + 1)) <= 2) return false;
       if (this.canBeDeleted(item)) return false;
 
       return true;
@@ -206,8 +223,8 @@ export default {
 
     computed_margin(item) {
       return (
-        //"margin-right:" + Math.ceil(Math.log10(item.account_id + 1)) * 10 + "px"
-        "margin-right:" + item.level  * 10 + "px"
+        //"margin-right:" + Math.ceil(Math.log10(item.account_code + 1)) * 10 + "px"
+        "margin-right:" + item.level * 10 + "px"
       );
     },
   },

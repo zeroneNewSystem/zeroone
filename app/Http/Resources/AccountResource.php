@@ -13,27 +13,27 @@ class AccountResource extends JsonResource
      * @param  \Illuminate\Http\Request  $request
      * @return array
      */
-    public function hasChildreen($account_id)
+    public function hasChildreen($account_code)
 
     {
-        //$lengthOfAccountID  = ceil(log10($account_id)); if id is number
-        $lengthOfAccountID  = strlen($account_id); //if id is number
+        //$lengthOfAccountID  = ceil(log10($account_code)); if id is number
+        $lengthOfAccountID  = strlen($account_code); //if id is number
         $accounts = DB::select("
             SELECT * FROM accounts as acc
-            WHERE acc.account_id LIKE '$account_id%' 
-            AND LENGTH(acc.account_id) > $lengthOfAccountID
+            WHERE acc.account_code LIKE '$account_code%' 
+            AND LENGTH(acc.account_code) > $lengthOfAccountID
         ");
         if ($accounts) return true;
         return false;
     }
-    public function hasTransaction($account_id)
+    public function hasTransaction($account_code)
 
     {
-        $lengthOfAccountID  = ceil(log10($account_id));
+        $lengthOfAccountID  = ceil(log10($account_code));
         $accounts = DB::select("
             SELECT * FROM accounts as acc
-            WHERE acc.account_id LIKE '$account_id%' 
-            AND LENGTH(acc.account_id) > $lengthOfAccountID
+            WHERE acc.account_code LIKE '$account_code%' 
+            AND LENGTH(acc.account_code) > $lengthOfAccountID
         ");
         if ($accounts) return true;
         return false;
@@ -42,13 +42,17 @@ class AccountResource extends JsonResource
     {
         return array_merge(
             parent::toArray($request),
-            ['nib' =>  $this->hasChildreen($this->account_id)]
+
+
+            //check if this account was engaged in transaction!
+
+            // test ['nib' =>  $this->hasChildreen($this->account_code)]
         );
         // return [
         //     'id' => $this->id,
         //     'description' =>  $this->description,
         //     'type' =>  $this->type,
-        //     'nib' =>  $this->hasChildreen($this->account_id),
+        //     'nib' =>  $this->hasChildreen($this->account_code),
 
         // ];
     }

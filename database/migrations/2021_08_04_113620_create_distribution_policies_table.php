@@ -24,7 +24,7 @@ class CreateDistributionPoliciesTable extends Migration
             $table->boolean('return_deducted')->comment('0-no, 1-yes');
             $table->boolean('active');
             $table->unsignedInteger ('account_method_id')->comment('1-percentage 2-amount');
-            $table->unsignedInteger ('account_id')->comment('حساب التحصيل');
+            $table->unsignedInteger ('account_code')->comment('حساب التحصيل');
             $table->text('discription');
 
             $table->timestamps();
