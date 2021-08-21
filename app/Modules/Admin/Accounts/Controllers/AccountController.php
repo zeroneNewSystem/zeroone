@@ -2,13 +2,14 @@
 
 namespace App\Modules\Admin\Accounts\Controllers;
 
-
+use App\Exports\AccountsExport;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\AccountResource;
 use App\Modules\Admin\Accounts\Models\Account;
 use App\Traits\AccountTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AccountController extends Controller
 {
@@ -44,13 +45,20 @@ class AccountController extends Controller
     public function index()
     {
 
-        $accounts = Account::with('type')->get();
-
+        //$accounts = Account::orderBy('type_id')->get();
+        $accounts = Account::with('type')->orderBy('type_id')->get();
 
         //return response()->json(['accounts' => $accounts], 200);
         return response()->json(['accounts' => AccountResource::collection($accounts)], 200);
         //
 
+    }
+
+    public function export() 
+    {
+
+        
+        return Excel::download(new AccountsExport, 'accounts.xlsx');
     }
 
     /**
@@ -71,7 +79,11 @@ class AccountController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request = $request->all();
+        $request['company_id'] = 1;
+        
+        $request['create_by_user_id'] = 1;
+        Account::create($request);
     }
 
     /**

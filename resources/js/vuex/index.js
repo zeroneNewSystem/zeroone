@@ -8,7 +8,8 @@ Vue.use(Vuex);
 export default new Vuex.Store({
     state: {
         accounts: [],
-        account_types: []
+        account_types: [],
+        accountsVDTloading: true
     },
     mutations: {
         load_accounts: (state, payload) => {
@@ -16,6 +17,9 @@ export default new Vuex.Store({
         },
         load_account_types: (state, payload) => {
             state.account_types = payload;
+        },
+        change_accountsVDTloading: (state, payload) => {
+            state.accountsVDTloading = false;
         }
     },
     getters: {
@@ -33,13 +37,12 @@ export default new Vuex.Store({
     actions: {
         /*----------------------load accounts and types------------------------*/
         load_accounts: cxt => {
-
             Accounts.get().then(response => {
                 cxt.commit("load_accounts", response.data.accounts);
+                cxt.commit("change_accountsVDTloading");
             });
         },
         load_account_types: cxt => {
-
             Accounts.types().then(response => {
                 cxt.commit("load_account_types", response.data.account_types);
             });

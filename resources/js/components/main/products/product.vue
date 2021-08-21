@@ -45,15 +45,23 @@
       <v-form @submit.prevent ref="form">
         <v-card>
           <v-card-title>
-            <span>{{ formTitle }}</span>
-            <v-col cols="12" lg="4">
-              <v-checkbox
-                v-model="product.is_active"
-                style="white-space: nowrap; margin-left: 5px; margin-right: 5px"
-                color="#e91e63"
-                label="إيقاف التعامل بالمنتج"
-              ></v-checkbox>
-            </v-col>
+            <v-row class="justify-space-between" justify="center" align="center">
+              <v-col cols="12" lg="3">
+                {{ formTitle }}
+              </v-col>
+              <v-col cols="12" lg="4">
+                <v-checkbox
+                  v-model="product.is_active"
+                  style="
+                    white-space: nowrap;
+                    margin-left: 5px;
+                    margin-right: 5px;
+                  "
+                  color="#e91e63"
+                  label="إيقاف التعامل بالمنتج"
+                ></v-checkbox>
+              </v-col>
+            </v-row>
           </v-card-title>
           <v-card-text>
             <v-container>
@@ -522,7 +530,7 @@
                       margin-right: 5px;
                     "
                     color="#e91e63"
-                    label="لديه بونص"
+                    label="السماح بالبونص عند البيع"
                   ></v-checkbox>
                 </v-col>
                 <v-col cols="12" lg="3">

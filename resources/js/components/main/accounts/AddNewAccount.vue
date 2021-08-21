@@ -13,14 +13,14 @@
         <v-card-text>
           <v-container>
             <v-row>
-              <v-col cols="12">
+              <v-col cols="12" class="pt-0">
                 <v-autocomplete
                   label="الحساب الرئيسي"
-                  v-model="new_account.main_account_id"
+                  v-model="new_account.parent_id"
                   :items="this.$store.state.accounts"
                   :item-text="(item) => item.account_id + ' ' + item.ar_name"
-                  item-value="account_id"
-                  @change="changeAccountypes"
+                  item-value="id"
+                  @change="onParentChange"
                 >
                   <template v-slot:item="data">
                     <div
@@ -33,60 +33,68 @@
                   </template>
                 </v-autocomplete>
               </v-col>
-              <v-col cols="12" lg="6">
+              <v-col cols="12">
                 <v-autocomplete
                   label="نوع الحساب "
                   v-model="new_account.type_id"
-                  :items="filteredAccountTypes()"
+                  :items="account_types"
                   :item-text="(item) => item.type_id + ' - ' + item.ar_name"
                   item-value="type_id"
                 ></v-autocomplete>
               </v-col>
-              <v-col cols="12">
-                <v-text-field label="Email*" required></v-text-field>
-              </v-col>
+              <v-row class="justify-space-between">
+                <v-col cols="12" lg="5">
+                  <v-text-field
+                    label="اسم الحساب بالعربي*"
+                    v-model="new_account.ar_name"
+                    required
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" lg="5">
+                  <v-text-field
+                    v-model="new_account.en_name"
+                    label="اسم الحساب بالانجليزي*"
+                    required
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+
               <v-col cols="12">
                 <v-text-field
-                  label="Password*"
-                  type="password"
+                  v-model="new_account.account_id"
+                  label="رقم الحساب *"
                   required
                 ></v-text-field>
               </v-col>
-              <v-col cols="12" lg="6">
-                <v-select
-                  :items="['0-17', '18-29', '30-54', '54+']"
-                  label="Age*"
-                  required
-                ></v-select>
+              <v-col cols="12">
+                <v-textarea
+                  rows="2"
+                  v-model="new_account.description"
+                  label="الوصف"
+                ></v-textarea>
               </v-col>
-              <v-col cols="12" lg="6">
-                <v-autocomplete
-                  :items="[
-                    'Skiing',
-                    'Ice hockey',
-                    'Soccer',
-                    'Basketball',
-                    'Hockey',
-                    'Reading',
-                    'Writing',
-                    'Coding',
-                    'Basejump',
-                  ]"
-                  label="Interests"
-                  multiple
-                ></v-autocomplete>
+              <v-col cols="12" lg="6" class="pa-0 ma-0">
+                <v-checkbox
+                  v-model="new_account.is_active"
+                  style="
+                    white-space: nowrap;
+                    margin-left: 5px;
+                    margin-right: 5px;
+                  "
+                  color="#e91e63"
+                  label="يمكن التحصيل بهذالحساب"
+                ></v-checkbox>
               </v-col>
             </v-row>
           </v-container>
-          <small>*indicates required field</small>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="blue darken-1" text @click="dialog = false">
-            Close
+            إلغاء
           </v-btn>
-          <v-btn color="blue darken-1" text @click="dialog = false">
-            Save
+          <v-btn color="blue darken-1" text @click="saveNewAccount()">
+            حفظ
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -94,31 +102,47 @@
   </v-row>
 </template>
 <script>
+import Account from "../../../apis/Account";
 export default {
   data: () => ({
     account_types: [],
     account_div_update: 0,
     new_account: {
-      main_account_id: "",
+      parent_id: "",
+      account_type_id: "",
+      ar_name: "",
+      en_name: "",
+      account_id: "",
+      description: "",
     },
     dialog: false,
   }),
   computed: {},
   methods: {
-    changeAccountypes() {
+    saveNewAccount() {
+      Account.saveNewAccount(this.new_account).then((this.dialog = false));
+    },
+    onParentChange() {
+      
+      let parent_level = this.$store.state.accounts.find(
+        (elem) => elem.id == 1
+      ).level;
+
+      this.new_account.level = parseInt(parent_level + 1);
       this.account_types = this.$store.state.account_types.filter((elem) => {
-        let level = 1;
-        console.log(
-          Math.ceil(Math.log10(this.new_account.main_account_id + 1))
+        let length = 2;
+
+        if (
+          Math.ceil(Math.log10(parseInt(this.new_account.parent_id) + 1)) == 2
+        )
+          length = 4;
+
+        return (
+          elem.type_id
+            .toString()
+            .startsWith(this.new_account.parent_id.toString()) &&
+          elem.type_id.toString().length == length
         );
-        if (Math.ceil(Math.log10(this.new_account.main_account_id + 1)) == 2)
-          return false;
-
-        //if ()
-
-        return elem.type_id
-          .toString()
-          .startsWith(this.new_account.main_account_id.toString());
       });
     },
 

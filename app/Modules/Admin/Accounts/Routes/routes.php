@@ -11,7 +11,10 @@ Route::group(["prefix" => "accounts"], function() {
 
     
     Route::get('/','AccountController@index');
+    Route::post('/','AccountController@store');
+
     Route::get('/types','AccountTypeController@index');
+    Route::get('/export','AccountController@export');
     Route::get('/type/{type}','AccountController@showAccountsByType');//accounts started with
     Route::post('/create','AccountController@postCreate');
 });

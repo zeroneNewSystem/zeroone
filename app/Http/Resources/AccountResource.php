@@ -16,7 +16,8 @@ class AccountResource extends JsonResource
     public function hasChildreen($account_id)
 
     {
-        $lengthOfAccountID  = ceil(log10($account_id));
+        //$lengthOfAccountID  = ceil(log10($account_id)); if id is number
+        $lengthOfAccountID  = strlen($account_id); //if id is number
         $accounts = DB::select("
             SELECT * FROM accounts as acc
             WHERE acc.account_id LIKE '$account_id%' 

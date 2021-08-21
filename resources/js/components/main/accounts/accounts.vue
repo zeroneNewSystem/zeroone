@@ -1,14 +1,26 @@
 <template>
   <div>
-    <add-new-account></add-new-account>
+    <update-account
+      :dialog="update_account_dialog"
+      :updated_account="updated_account"
+    ></update-account>
+    <show-account :dialog="show_account_dialog"></show-account>
+
     <v-data-table
+      :loading="this.$store.state.accountsVDTloading"
       disable-pagination
       hide-default-footer
       :headers="accounts_header"
       :items="this.$store.state.accounts"
-      style="width: 95%"
-      :item-key="toString(Math.floor(Math.random(1, 100) * 100))"
+      item-key="id"
     >
+      <template v-slot:top>
+        <v-toolbar flat color="white">
+          <v-divider class="mx-4" inset vertical></v-divider>
+          <add-new-account></add-new-account>
+          <v-spacer></v-spacer>
+        </v-toolbar>
+      </template>
       <template v-slot:item.ar_name="{ item }">
         <div :style="computed_margin(item)">
           {{ item.account_id + "- " + item.ar_name }}
@@ -31,7 +43,7 @@
 
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
-            <v-btn icon to="/home">
+            <v-btn icon @click.stop="show_account_dialog = true">
               <v-icon v-bind="attrs" v-on="on" class="outlined font-size-12"
                 >mdi-eye</v-icon
               >
@@ -41,7 +53,11 @@
         </v-tooltip>
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
-            <v-btn icon to="/home" v-if="canBeModefied(item)">
+            <v-btn
+              icon
+              @click.stop="updateAccountDialog(item)"
+              v-if="canBeModefied(item)"
+            >
               <v-icon v-bind="attrs" v-on="on" class="outlined font-size-12"
                 >mdi-pencil</v-icon
               ></v-btn
@@ -82,13 +98,21 @@
 <script>
 import Account from "../../../apis/Account";
 import AddNewAccount from "./AddNewAccount";
+import UpdateAccount from "./UpdateAccount";
+import ShowAccount from "./ShowAccount";
 import { mapActions } from "vuex";
 export default {
   components: {
     AddNewAccount,
+    UpdateAccount,
+    ShowAccount,
   },
   data() {
     return {
+      updated_account: "",
+      progress: true,
+      update_account_dialog: false,
+      show_account_dialog: false,
       computedk: "margin-right:20px",
       accounts: [],
 
@@ -145,7 +169,11 @@ export default {
 
   methods: {
     ...mapActions(["load_accounts", "load_account_types"]),
-    
+    updateAccountDialog(item) {
+      this.update_account_dialog = true;
+      this.updated_account = item;
+    },
+
     hasChild(item) {
       item = item.toString();
 
@@ -178,7 +206,8 @@ export default {
 
     computed_margin(item) {
       return (
-        "margin-right:" + Math.ceil(Math.log10(item.account_id + 1)) * 10 + "px"
+        //"margin-right:" + Math.ceil(Math.log10(item.account_id + 1)) * 10 + "px"
+        "margin-right:" + item.level  * 10 + "px"
       );
     },
   },

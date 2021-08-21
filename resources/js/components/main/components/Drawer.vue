@@ -11,16 +11,16 @@
     mini-variant-width="60"
   >
     <v-list dense nav>
-      <v-list-item two-line :class="miniVariant && 'px-0'" >
-        <img style="margin:0 auto;text-align:center;"
+      <v-list-item two-line :class="miniVariant && 'px-0'">
+        <img
+          style="margin: 0 auto; text-align: center"
           src="mypharm.png"
           :class="{ smallavator: miniVariant, bigavator: !miniVariant }"
         />
-
       </v-list-item>
 
       <v-divider></v-divider>
-      <drawer-items/>
+      <drawer-items />
     </v-list>
   </v-navigation-drawer>
 </template>

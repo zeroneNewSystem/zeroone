@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Account extends Model
 {
+    protected $guarded = ['id'];
     use HasFactory;
 
     public function type()

@@ -651,6 +651,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -1502,30 +1510,46 @@ var render = function() {
                   _c(
                     "v-card-title",
                     [
-                      _c("span", [_vm._v(_vm._s(_vm.formTitle))]),
-                      _vm._v(" "),
                       _c(
-                        "v-col",
-                        { attrs: { cols: "12", lg: "4" } },
+                        "v-row",
+                        {
+                          staticClass: "justify-space-between",
+                          attrs: { justify: "center", align: "center" }
+                        },
                         [
-                          _c("v-checkbox", {
-                            staticStyle: {
-                              "white-space": "nowrap",
-                              "margin-left": "5px",
-                              "margin-right": "5px"
-                            },
-                            attrs: {
-                              color: "#e91e63",
-                              label: "إيقاف التعامل بالمنتج"
-                            },
-                            model: {
-                              value: _vm.product.is_active,
-                              callback: function($$v) {
-                                _vm.$set(_vm.product, "is_active", $$v)
-                              },
-                              expression: "product.is_active"
-                            }
-                          })
+                          _c("v-col", { attrs: { cols: "12", lg: "3" } }, [
+                            _vm._v(
+                              "\n              " +
+                                _vm._s(_vm.formTitle) +
+                                "\n            "
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c(
+                            "v-col",
+                            { attrs: { cols: "12", lg: "4" } },
+                            [
+                              _c("v-checkbox", {
+                                staticStyle: {
+                                  "white-space": "nowrap",
+                                  "margin-left": "5px",
+                                  "margin-right": "5px"
+                                },
+                                attrs: {
+                                  color: "#e91e63",
+                                  label: "إيقاف التعامل بالمنتج"
+                                },
+                                model: {
+                                  value: _vm.product.is_active,
+                                  callback: function($$v) {
+                                    _vm.$set(_vm.product, "is_active", $$v)
+                                  },
+                                  expression: "product.is_active"
+                                }
+                              })
+                            ],
+                            1
+                          )
                         ],
                         1
                       )
@@ -2820,7 +2844,7 @@ var render = function() {
                                     },
                                     attrs: {
                                       color: "#e91e63",
-                                      label: "لديه بونص"
+                                      label: "السماح بالبونص عند البيع"
                                     },
                                     model: {
                                       value: _vm.product.is_bonus,

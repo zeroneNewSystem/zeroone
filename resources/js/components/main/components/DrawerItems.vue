@@ -1,7 +1,7 @@
 <template>
   <v-list dark>
     <v-list-item color="black--text" to="/" class="text-right align-self-start">
-      <v-list-item-icon >
+      <v-list-item-icon>
         <v-icon>mdi-view-dashboard</v-icon>
       </v-list-item-icon>
       <v-list-item-title>لوحة التحكم</v-list-item-title>
@@ -35,9 +35,7 @@
 </template>
 
 <script>
-
 export default {
-  
   data: () => ({
     admins: [
       ["Management", "mdi-border-color"],
@@ -50,8 +48,17 @@ export default {
       ["Delete", "mdi-delete"],
     ],
     sidebaritems: [
-      ["البيع", "mdi-border-color", "إضافة فاتورة جديدة", "إدارة الفواتير"],
-      ["العملاء", "mdi-group", "إدارة العملاء"],
+      [
+        "البيع",
+        "mdi-border-color",
+        "إضافة فاتورة جديدة",
+        "إدارة الفواتير"
+      ],
+      [
+        "العملاء",
+        "mdi-group",
+        "إدارة العملاء"
+      ],
       [
         "الأصناف",
         "mdi-source-fork",
@@ -73,6 +80,15 @@ export default {
       ],
       ["الشراء", "mdi-shopping", "إضافة مشتريات", "إدارة فواتير الشراء"],
       [
+        "الحسابات",
+        "mdi-keyboard-return",
+        "شجرة الحسابات",
+        "إدارة مرتجع البيع",
+        "مرتجع الشراء",
+        "إدارة مرتجع الشراء",
+      ],
+
+      [
         "الاسترجاع",
         "mdi-keyboard-return",
         "مرتجع البيع",
@@ -82,7 +98,9 @@ export default {
       ],
     ],
     sidebarroutes: [
-      ["addupdateinvoice", "invoicemanagement"],
+      ["addupdateinvoice",
+       "invoicemanagement"
+      ],
       ["customermanagement"],
       [
         "unitmanagement",
@@ -100,7 +118,13 @@ export default {
         "addoutcomeitem",
       ],
       ["addupdatepurchase", "purchasemanagement"],
-      ["addupdateinvoice", "invoicemanagement"],
+      
+      [
+        "accounts",
+        "returninvoicemanagement",
+        "addupdatepurchasereturn",
+        "returnpurchasemanagement",
+      ],
       [
         "addupdateinvoicereturn",
         "returninvoicemanagement",
