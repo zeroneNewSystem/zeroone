@@ -123,7 +123,7 @@ __webpack_require__.r(__webpack_exports__);
       account_div_update: 0,
       new_account: {
         parent_id: "",
-        account_type_code: "",
+        type_id: "",
         ar_name: "",
         en_name: "",
         account_code: "",
@@ -144,7 +144,11 @@ __webpack_require__.r(__webpack_exports__);
       var parent = this.$store.state.accounts.find(function (elem) {
         return elem.id == _this.new_account.parent_id;
       });
-      console.log(parent.type_code);
+      console.log(parent.type_id);
+      var parent_type_code = this.$store.state.account_types.find(function (elem) {
+        return elem.id == parent.type_id;
+      }).type_code;
+      console.log(parent_type_code);
       this.new_account.level = parseInt(parent.level + 1);
       this.account_types = this.$store.state.account_types.filter(function (elem) {
         var length = 2;
@@ -154,7 +158,186 @@ __webpack_require__.r(__webpack_exports__);
         } //alert(length);
 
 
-        return elem.type_code.toString().startsWith(parent.type_code.toString()) && elem.type_code.toString().length == length;
+        return elem.type_code.toString().startsWith(parent_type_code.toString()) && elem.type_code.toString().length == length;
+      });
+    },
+    bgblue: function bgblue(item) {
+      if (Math.ceil(Math.log10(item.account_code + 1)) <= 2) {
+        $("#nib" + item.account_code).parent().addClass("first-level");
+      } else if (Math.ceil(Math.log10(item.account_code + 1)) <= 3) {
+        $("#nib" + item.account_code).parent().addClass("second-level");
+      }
+
+      if (this.account_div_update == 0) this.account_div_update += 1;
+      return "";
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/main/accounts/AddUpdateAccount.vue?vue&type=script&lang=js&":
+/*!*************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/main/accounts/AddUpdateAccount.vue?vue&type=script&lang=js& ***!
+  \*************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _apis_Account__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../apis/Account */ "./resources/js/apis/Account.js");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  props: ["dialog", "account", "account_types", "operation"],
+  data: function data() {
+    return {
+      account_div_update: 0
+    };
+  },
+  computed: {},
+  methods: {
+    closeDialog: function closeDialog() {
+      this.$parent.$data.add_update_account_dialog = false;
+    },
+    saveAccount: function saveAccount() {
+      var _this = this;
+
+      if (this.operation == "add") {
+        _apis_Account__WEBPACK_IMPORTED_MODULE_0__.default.create(this.account).then(function (response) {
+          _this.$parent.$data.add_update_account_dialog = false;
+
+          _this.$store.dispatch("load_accounts");
+        });
+        return;
+      }
+
+      if (this.operation == "update") {
+        _apis_Account__WEBPACK_IMPORTED_MODULE_0__.default.update(this.account).then(function (response) {
+          _this.$parent.$data.add_update_account_dialog = false;
+
+          _this.$store.dispatch("load_accounts");
+        });
+        return;
+      }
+    },
+    onParentChange: function onParentChange() {
+      var _this2 = this;
+
+      var parent = this.$store.state.accounts.find(function (elem) {
+        return elem.id == _this2.account.parent_id;
+      });
+      console.log(parent.type_id);
+      var parent_type_code = this.$store.state.account_types.find(function (elem) {
+        return elem.id == parent.type_id;
+      }).type_code;
+      console.log(parent_type_code);
+      this.account.level = parseInt(parent.level + 1);
+      this.account_types = this.$store.state.account_types.filter(function (elem) {
+        var length = 2;
+
+        if (parent.level >= 2) {
+          length = 4;
+        } //alert(length);
+
+
+        return elem.type_code.toString().startsWith(parent_type_code.toString()) && elem.type_code.toString().length == length;
       });
     },
     bgblue: function bgblue(item) {
@@ -443,8 +626,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _apis_Account__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../apis/Account */ "./resources/js/apis/Account.js");
 /* harmony import */ var _AddNewAccount__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./AddNewAccount */ "./resources/js/components/main/accounts/AddNewAccount.vue");
 /* harmony import */ var _UpdateAccount__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./UpdateAccount */ "./resources/js/components/main/accounts/UpdateAccount.vue");
-/* harmony import */ var _ShowAccount__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./ShowAccount */ "./resources/js/components/main/accounts/ShowAccount.vue");
-/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var _AddUpdateAccount__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./AddUpdateAccount */ "./resources/js/components/main/accounts/AddUpdateAccount.vue");
+/* harmony import */ var _ShowAccount__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./ShowAccount */ "./resources/js/components/main/accounts/ShowAccount.vue");
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
@@ -552,6 +736,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 
 
 
@@ -561,15 +757,28 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   components: {
     AddNewAccount: _AddNewAccount__WEBPACK_IMPORTED_MODULE_1__.default,
     UpdateAccount: _UpdateAccount__WEBPACK_IMPORTED_MODULE_2__.default,
-    ShowAccount: _ShowAccount__WEBPACK_IMPORTED_MODULE_3__.default
+    AddUpdateAccount: _AddUpdateAccount__WEBPACK_IMPORTED_MODULE_3__.default,
+    ShowAccount: _ShowAccount__WEBPACK_IMPORTED_MODULE_4__.default
   },
   data: function data() {
     return {
+      search: "",
       updated_account: "",
+      account_types: [],
+      operation: "add",
       progress: true,
+      add_update_account_dialog: false,
       update_account_dialog: false,
       show_account_dialog: false,
       computedk: "margin-right:20px",
+      passed_account: {
+        parent_id: "",
+        type_id: "",
+        ar_name: "",
+        en_name: "",
+        account_code: "",
+        description: ""
+      },
       accounts: [],
       accounts_header: [{
         text: " اسم الحساب ",
@@ -580,7 +789,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         text: "نوع الحساب",
         align: "right",
         sortable: false,
-        value: "type_code"
+        value: "type_id"
       }, {
         text: "الوصف",
         align: "center",
@@ -612,7 +821,41 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.load_account_types();
     }
   },
-  methods: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_4__.mapActions)(["load_accounts", "load_account_types", "delete_account", "archive_account"])), {}, {
+  methods: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_5__.mapActions)(["load_accounts", "load_account_types", "delete_account", "archive_account"])), {}, {
+    addUpdateAccount: function addUpdateAccount(item, operation) {
+      this.operation = operation;
+      this.passed_account = {
+        parent_id: "",
+        type_id: "",
+        ar_name: "",
+        en_name: "",
+        account_code: "",
+        description: ""
+      };
+
+      if (operation == "update") {
+        this.passed_account = item;
+        var parent = this.$store.state.accounts.find(function (elem) {
+          return elem.id == item.parent_id;
+        });
+        var parent_type_code = this.$store.state.account_types.find(function (elem) {
+          return elem.id == parent.type_id;
+        }).type_code;
+        console.log(parent_type_code);
+        this.account_types = this.$store.state.account_types.filter(function (elem) {
+          var length = 2;
+
+          if ((parent === null || parent === void 0 ? void 0 : parent.level) >= 2) {
+            length = 4;
+          } //alert(length);
+
+
+          return elem.type_code.toString().startsWith(parent_type_code.toString()) && elem.type_code.toString().length == length;
+        });
+      }
+
+      this.add_update_account_dialog = true;
+    },
     deleteAccount: function deleteAccount(item) {
       this.delete_account(item);
     },
@@ -620,6 +863,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.archive_account(item);
     },
     updateAccountDialog: function updateAccountDialog(item) {
+      console.log(item);
       this.update_account_dialog = true;
       this.updated_account = item;
     },
@@ -633,7 +877,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return true;
     },
     canBeModefied: function canBeModefied(item) {
-      if (Math.ceil(Math.log10(item.account_code + 1)) <= 2) return false;
+      if (item.level <= 2) return false;
       return true;
     },
     canBeDeleted: function canBeDeleted(item) {
@@ -661,6 +905,29 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /*!******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/main/accounts/AddNewAccount.vue?vue&type=style&index=0&lang=css& ***!
   \******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__);
+// Imports
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, "\n.first-level {\r\n  background: rgb(255, 222, 228);\n}\n.second-level {\r\n  background: rgb(233, 233, 233);\n}\r\n", ""]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/main/accounts/AddUpdateAccount.vue?vue&type=style&index=0&lang=css&":
+/*!*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/main/accounts/AddUpdateAccount.vue?vue&type=style&index=0&lang=css& ***!
+  \*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -752,6 +1019,35 @@ var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_0_rules_0_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_0_rules_0_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AddNewAccount_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_1__.default.locals || {});
+
+/***/ }),
+
+/***/ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/main/accounts/AddUpdateAccount.vue?vue&type=style&index=0&lang=css&":
+/*!*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/main/accounts/AddUpdateAccount.vue?vue&type=style&index=0&lang=css& ***!
+  \*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_0_rules_0_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_0_rules_0_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AddUpdateAccount_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !!../../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[1]!../../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[2]!../../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./AddUpdateAccount.vue?vue&type=style&index=0&lang=css& */ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/main/accounts/AddUpdateAccount.vue?vue&type=style&index=0&lang=css&");
+
+            
+
+var options = {};
+
+options.insert = "head";
+options.singleton = false;
+
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_0_rules_0_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_0_rules_0_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AddUpdateAccount_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_1__.default, options);
+
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_0_rules_0_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_0_rules_0_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AddUpdateAccount_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_1__.default.locals || {});
 
 /***/ }),
 
@@ -849,6 +1145,46 @@ var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__
 /* hot reload */
 if (false) { var api; }
 component.options.__file = "resources/js/components/main/accounts/AddNewAccount.vue"
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/main/accounts/AddUpdateAccount.vue":
+/*!********************************************************************!*\
+  !*** ./resources/js/components/main/accounts/AddUpdateAccount.vue ***!
+  \********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _AddUpdateAccount_vue_vue_type_template_id_10b8233e___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./AddUpdateAccount.vue?vue&type=template&id=10b8233e& */ "./resources/js/components/main/accounts/AddUpdateAccount.vue?vue&type=template&id=10b8233e&");
+/* harmony import */ var _AddUpdateAccount_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./AddUpdateAccount.vue?vue&type=script&lang=js& */ "./resources/js/components/main/accounts/AddUpdateAccount.vue?vue&type=script&lang=js&");
+/* harmony import */ var _AddUpdateAccount_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./AddUpdateAccount.vue?vue&type=style&index=0&lang=css& */ "./resources/js/components/main/accounts/AddUpdateAccount.vue?vue&type=style&index=0&lang=css&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! !../../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+;
+
+
+/* normalize component */
+
+var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__.default)(
+  _AddUpdateAccount_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__.default,
+  _AddUpdateAccount_vue_vue_type_template_id_10b8233e___WEBPACK_IMPORTED_MODULE_0__.render,
+  _AddUpdateAccount_vue_vue_type_template_id_10b8233e___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/main/accounts/AddUpdateAccount.vue"
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (component.exports);
 
 /***/ }),
@@ -986,6 +1322,21 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/components/main/accounts/AddUpdateAccount.vue?vue&type=script&lang=js&":
+/*!*********************************************************************************************!*\
+  !*** ./resources/js/components/main/accounts/AddUpdateAccount.vue?vue&type=script&lang=js& ***!
+  \*********************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_0_rules_0_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_AddUpdateAccount_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!../../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./AddUpdateAccount.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/main/accounts/AddUpdateAccount.vue?vue&type=script&lang=js&");
+ /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_babel_loader_lib_index_js_clonedRuleSet_5_0_rules_0_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_AddUpdateAccount_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__.default); 
+
+/***/ }),
+
 /***/ "./resources/js/components/main/accounts/ShowAccount.vue?vue&type=script&lang=js&":
 /*!****************************************************************************************!*\
   !*** ./resources/js/components/main/accounts/ShowAccount.vue?vue&type=script&lang=js& ***!
@@ -1043,6 +1394,18 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/components/main/accounts/AddUpdateAccount.vue?vue&type=style&index=0&lang=css&":
+/*!*****************************************************************************************************!*\
+  !*** ./resources/js/components/main/accounts/AddUpdateAccount.vue?vue&type=style&index=0&lang=css& ***!
+  \*****************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_dist_cjs_js_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_0_rules_0_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_0_rules_0_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_AddUpdateAccount_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/style-loader/dist/cjs.js!../../../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[1]!../../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[2]!../../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./AddUpdateAccount.vue?vue&type=style&index=0&lang=css& */ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/main/accounts/AddUpdateAccount.vue?vue&type=style&index=0&lang=css&");
+
+
+/***/ }),
+
 /***/ "./resources/js/components/main/accounts/UpdateAccount.vue?vue&type=style&index=0&lang=css&":
 /*!**************************************************************************************************!*\
   !*** ./resources/js/components/main/accounts/UpdateAccount.vue?vue&type=style&index=0&lang=css& ***!
@@ -1079,6 +1442,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "staticRenderFns": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_AddNewAccount_vue_vue_type_template_id_61941a00___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
 /* harmony export */ });
 /* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_AddNewAccount_vue_vue_type_template_id_61941a00___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./AddNewAccount.vue?vue&type=template&id=61941a00& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/main/accounts/AddNewAccount.vue?vue&type=template&id=61941a00&");
+
+
+/***/ }),
+
+/***/ "./resources/js/components/main/accounts/AddUpdateAccount.vue?vue&type=template&id=10b8233e&":
+/*!***************************************************************************************************!*\
+  !*** ./resources/js/components/main/accounts/AddUpdateAccount.vue?vue&type=template&id=10b8233e& ***!
+  \***************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "render": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_AddUpdateAccount_vue_vue_type_template_id_10b8233e___WEBPACK_IMPORTED_MODULE_0__.render),
+/* harmony export */   "staticRenderFns": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_AddUpdateAccount_vue_vue_type_template_id_10b8233e___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
+/* harmony export */ });
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_AddUpdateAccount_vue_vue_type_template_id_10b8233e___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./AddUpdateAccount.vue?vue&type=template&id=10b8233e& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/main/accounts/AddUpdateAccount.vue?vue&type=template&id=10b8233e&");
 
 
 /***/ }),
@@ -1275,14 +1654,14 @@ var render = function() {
                                   "item-text": function(item) {
                                     return item.type_code + " - " + item.ar_name
                                   },
-                                  "item-value": "type_code"
+                                  "item-value": "id"
                                 },
                                 model: {
-                                  value: _vm.new_account.type_code,
+                                  value: _vm.new_account.type_id,
                                   callback: function($$v) {
-                                    _vm.$set(_vm.new_account, "type_code", $$v)
+                                    _vm.$set(_vm.new_account, "type_id", $$v)
                                   },
-                                  expression: "new_account.type_code"
+                                  expression: "new_account.type_id"
                                 }
                               })
                             ],
@@ -1457,6 +1836,312 @@ var render = function() {
                       }
                     },
                     [_vm._v("\n          حفظ\n        ")]
+                  )
+                ],
+                1
+              )
+            ],
+            1
+          )
+        ],
+        1
+      )
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/main/accounts/AddUpdateAccount.vue?vue&type=template&id=10b8233e&":
+/*!******************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/main/accounts/AddUpdateAccount.vue?vue&type=template&id=10b8233e& ***!
+  \******************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "render": () => (/* binding */ render),
+/* harmony export */   "staticRenderFns": () => (/* binding */ staticRenderFns)
+/* harmony export */ });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "v-row",
+    { attrs: { justify: "center" } },
+    [
+      _c(
+        "v-dialog",
+        {
+          attrs: { "max-width": "600px", persistent: "" },
+          model: {
+            value: _vm.dialog,
+            callback: function($$v) {
+              _vm.dialog = $$v
+            },
+            expression: "dialog"
+          }
+        },
+        [
+          _c(
+            "v-card",
+            [
+              _c("v-card-title", [
+                _c("span", { staticClass: "text-h5" }, [_vm._v("User Profile")])
+              ]),
+              _vm._v(" "),
+              _c(
+                "v-card-text",
+                [
+                  _c(
+                    "v-container",
+                    [
+                      _c(
+                        "v-row",
+                        [
+                          _c(
+                            "v-col",
+                            { staticClass: "pt-0", attrs: { cols: "12" } },
+                            [
+                              _c("v-autocomplete", {
+                                attrs: {
+                                  label: "الحساب الرئيسي",
+                                  items: this.$store.state.accounts,
+                                  "item-text": function(item) {
+                                    return (
+                                      item.account_code + " " + item.ar_name
+                                    )
+                                  },
+                                  "item-value": "id"
+                                },
+                                on: { change: _vm.onParentChange },
+                                scopedSlots: _vm._u([
+                                  {
+                                    key: "item",
+                                    fn: function(data) {
+                                      return [
+                                        _c(
+                                          "div",
+                                          {
+                                            key: _vm.account_div_update,
+                                            style:
+                                              _vm.bgblue(data.item) +
+                                              "font-size:12px",
+                                            attrs: {
+                                              id: "nib" + data.item.account_code
+                                            }
+                                          },
+                                          [
+                                            _vm._v(
+                                              "\n                    " +
+                                                _vm._s(
+                                                  data.item.account_code +
+                                                    " " +
+                                                    data.item.ar_name
+                                                ) +
+                                                "\n                  "
+                                            )
+                                          ]
+                                        )
+                                      ]
+                                    }
+                                  }
+                                ]),
+                                model: {
+                                  value: _vm.account.parent_id,
+                                  callback: function($$v) {
+                                    _vm.$set(_vm.account, "parent_id", $$v)
+                                  },
+                                  expression: "account.parent_id"
+                                }
+                              })
+                            ],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "v-col",
+                            { attrs: { cols: "12" } },
+                            [
+                              _c("v-autocomplete", {
+                                attrs: {
+                                  label: "نوع الحساب ",
+                                  items: _vm.account_types,
+                                  "item-text": function(item) {
+                                    return item.type_code + " - " + item.ar_name
+                                  },
+                                  "item-value": "id"
+                                },
+                                model: {
+                                  value: _vm.account.type_id,
+                                  callback: function($$v) {
+                                    _vm.$set(_vm.account, "type_id", $$v)
+                                  },
+                                  expression: "account.type_id"
+                                }
+                              })
+                            ],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "v-row",
+                            { staticClass: "justify-space-between" },
+                            [
+                              _c(
+                                "v-col",
+                                { attrs: { cols: "12", lg: "5" } },
+                                [
+                                  _c("v-text-field", {
+                                    attrs: {
+                                      label: "اسم الحساب بالعربي*",
+                                      required: ""
+                                    },
+                                    model: {
+                                      value: _vm.account.ar_name,
+                                      callback: function($$v) {
+                                        _vm.$set(_vm.account, "ar_name", $$v)
+                                      },
+                                      expression: "account.ar_name"
+                                    }
+                                  })
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "v-col",
+                                { attrs: { cols: "12", lg: "5" } },
+                                [
+                                  _c("v-text-field", {
+                                    attrs: {
+                                      label: "اسم الحساب بالانجليزي*",
+                                      required: ""
+                                    },
+                                    model: {
+                                      value: _vm.account.en_name,
+                                      callback: function($$v) {
+                                        _vm.$set(_vm.account, "en_name", $$v)
+                                      },
+                                      expression: "account.en_name"
+                                    }
+                                  })
+                                ],
+                                1
+                              )
+                            ],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "v-col",
+                            { attrs: { cols: "12" } },
+                            [
+                              _c("v-text-field", {
+                                attrs: { label: "رقم الحساب *", required: "" },
+                                model: {
+                                  value: _vm.account.account_code,
+                                  callback: function($$v) {
+                                    _vm.$set(_vm.account, "account_code", $$v)
+                                  },
+                                  expression: "account.account_code"
+                                }
+                              })
+                            ],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "v-col",
+                            { attrs: { cols: "12" } },
+                            [
+                              _c("v-textarea", {
+                                attrs: { rows: "2", label: "الوصف" },
+                                model: {
+                                  value: _vm.account.description,
+                                  callback: function($$v) {
+                                    _vm.$set(_vm.account, "description", $$v)
+                                  },
+                                  expression: "account.description"
+                                }
+                              })
+                            ],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "v-col",
+                            {
+                              staticClass: "pa-0 ma-0",
+                              attrs: { cols: "12", lg: "6" }
+                            },
+                            [
+                              _c("v-checkbox", {
+                                staticStyle: {
+                                  "white-space": "nowrap",
+                                  "margin-left": "5px",
+                                  "margin-right": "5px"
+                                },
+                                attrs: {
+                                  color: "#e91e63",
+                                  label: "يمكن التحصيل بهذالحساب"
+                                },
+                                model: {
+                                  value: _vm.account.is_active,
+                                  callback: function($$v) {
+                                    _vm.$set(_vm.account, "is_active", $$v)
+                                  },
+                                  expression: "account.is_active"
+                                }
+                              })
+                            ],
+                            1
+                          )
+                        ],
+                        1
+                      )
+                    ],
+                    1
+                  )
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "v-card-actions",
+                [
+                  _c("v-spacer"),
+                  _vm._v(" "),
+                  _c(
+                    "v-btn",
+                    {
+                      attrs: { color: "blue darken-1", text: "" },
+                      on: {
+                        click: function($event) {
+                          return _vm.closeDialog()
+                        }
+                      }
+                    },
+                    [_vm._v("\n          إلغاء\n        ")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-btn",
+                    {
+                      attrs: { color: "blue darken-1", text: "" },
+                      on: {
+                        click: function($event) {
+                          return _vm.saveAccount()
+                        }
+                      }
+                    },
+                    [_vm._v(" حفظ ")]
                   )
                 ],
                 1
@@ -1810,7 +2495,7 @@ var render = function() {
                                           item.account_code + " " + item.ar_name
                                         )
                                       },
-                                      "item-value": "account_code"
+                                      "item-value": "id"
                                     },
                                     on: { change: _vm.changeAccountypes },
                                     scopedSlots: _vm._u([
@@ -1876,18 +2561,18 @@ var render = function() {
                                           item.type_code + " - " + item.ar_name
                                         )
                                       },
-                                      "item-value": "type_code"
+                                      "item-value": "id"
                                     },
                                     model: {
-                                      value: _vm.updated_account.type_code,
+                                      value: _vm.updated_account.type_id,
                                       callback: function($$v) {
                                         _vm.$set(
                                           _vm.updated_account,
-                                          "type_code",
+                                          "type_id",
                                           $$v
                                         )
                                       },
-                                      expression: "updated_account.type_code"
+                                      expression: "updated_account.type_id"
                                     }
                                   })
                                 ],
@@ -2097,10 +2782,12 @@ var render = function() {
   return _c(
     "div",
     [
-      _c("update-account", {
+      _c("add-update-account", {
         attrs: {
-          dialog: _vm.update_account_dialog,
-          updated_account: _vm.updated_account
+          dialog: _vm.add_update_account_dialog,
+          account: _vm.passed_account,
+          account_types: _vm.account_types,
+          operation: _vm.operation
         }
       }),
       _vm._v(" "),
@@ -2109,11 +2796,10 @@ var render = function() {
       _c("v-data-table", {
         attrs: {
           loading: this.$store.state.accountsVDTloading,
-          "disable-pagination": "",
-          "hide-default-footer": "",
           headers: _vm.accounts_header,
           items: this.$store.state.accounts,
-          "item-key": "id"
+          "item-key": "id",
+          search: _vm.search
         },
         scopedSlots: _vm._u([
           {
@@ -2129,7 +2815,36 @@ var render = function() {
                       attrs: { inset: "", vertical: "" }
                     }),
                     _vm._v(" "),
-                    _c("add-new-account"),
+                    _c("v-text-field", {
+                      staticClass: "mx-4",
+                      attrs: { label: "ادخل معلومات الحساب" },
+                      model: {
+                        value: _vm.search,
+                        callback: function($$v) {
+                          _vm.search = $$v
+                        },
+                        expression: "search"
+                      }
+                    }),
+                    _vm._v(" "),
+                    _c("v-divider", {
+                      staticClass: "mx-4",
+                      attrs: { inset: "", vertical: "" }
+                    }),
+                    _vm._v(" "),
+                    _c(
+                      "v-btn",
+                      {
+                        attrs: { color: "primary", dark: "" },
+                        on: {
+                          click: function($event) {
+                            $event.stopPropagation()
+                            return _vm.addUpdateAccount("", "add")
+                          }
+                        }
+                      },
+                      [_vm._v("\n          إضافة حساب\n        ")]
+                    ),
                     _vm._v(" "),
                     _c("v-spacer")
                   ],
@@ -2155,7 +2870,7 @@ var render = function() {
             }
           },
           {
-            key: "item.type_code",
+            key: "item.type_id",
             fn: function(ref) {
               var item = ref.item
               return [
@@ -2301,7 +3016,10 @@ var render = function() {
                                       on: {
                                         click: function($event) {
                                           $event.stopPropagation()
-                                          return _vm.updateAccountDialog(item)
+                                          return _vm.addUpdateAccount(
+                                            item,
+                                            "update"
+                                          )
                                         }
                                       }
                                     },

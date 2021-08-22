@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Modules\Admin\Products\Controllers;
 
-use App\Models\PrdctUnitsProduct;
+use App\Http\Controllers\Controller;
+use App\Models\PrdctForm;
 use Illuminate\Http\Request;
 
-class PrdctUnitsProductController extends Controller
+class PrdctFormController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -41,10 +42,10 @@ class PrdctUnitsProductController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\PrdctUnitsProduct  $prdctUnitsProduct
+     * @param  \App\Models\PrdctForm  $prdctForm
      * @return \Illuminate\Http\Response
      */
-    public function show(PrdctUnitsProduct $prdctUnitsProduct)
+    public function show(PrdctForm $prdctForm)
     {
         //
     }
@@ -52,10 +53,10 @@ class PrdctUnitsProductController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\PrdctUnitsProduct  $prdctUnitsProduct
+     * @param  \App\Models\PrdctForm  $prdctForm
      * @return \Illuminate\Http\Response
      */
-    public function edit(PrdctUnitsProduct $prdctUnitsProduct)
+    public function edit(PrdctForm $prdctForm)
     {
         //
     }
@@ -64,10 +65,10 @@ class PrdctUnitsProductController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\PrdctUnitsProduct  $prdctUnitsProduct
+     * @param  \App\Models\PrdctForm  $prdctForm
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, PrdctUnitsProduct $prdctUnitsProduct)
+    public function update(Request $request, PrdctForm $prdctForm)
     {
         //
     }
@@ -75,10 +76,10 @@ class PrdctUnitsProductController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\PrdctUnitsProduct  $prdctUnitsProduct
+     * @param  \App\Models\PrdctForm  $prdctForm
      * @return \Illuminate\Http\Response
      */
-    public function destroy(PrdctUnitsProduct $prdctUnitsProduct)
+    public function destroy(PrdctForm $prdctForm)
     {
         //
     }

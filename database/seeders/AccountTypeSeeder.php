@@ -26,6 +26,9 @@ class AccountTypeSeeder extends Seeder
             ['company_id' => '1', 'type_code' => '1106', 'ar_name' => 'المخزون', 'en_name' => 'Inventory'],
             ['company_id' => '1', 'type_code' => '12', 'ar_name' => 'الأصول غير المتداولة', 'en_name' => 'Non-current assets'],
             ['company_id' => '1', 'type_code' => '1201', 'ar_name' => 'عقارات وآلات ومعدات', 'en_name' => 'Real estate, machinery and equipment'],
+            
+            ['company_id' => '1', 'type_code' => '1202', 'ar_name' => 'الأصول غير الملموسة', 'en_name' => 'intangible assets'],
+            ['company_id' => '1', 'type_code' => '1203', 'ar_name' => 'العقارات الاستثمارية', 'en_name' => 'investment real estate'],
             ['company_id' => '1', 'type_code' => '2', 'ar_name' => 'الالتزامات', 'en_name' => 'commitments'],
             ['company_id' => '1', 'type_code' => '21', 'ar_name' => 'الالتزامات المتداولة', 'en_name' => 'current obligations'],
             ['company_id' => '1', 'type_code' => '2101', 'ar_name' => 'الدائنون', 'en_name' => 'creditors'],
@@ -50,6 +53,7 @@ class AccountTypeSeeder extends Seeder
             ['company_id' => '1', 'type_code' => '34', 'ar_name' => 'أرباح/خسائر مبقاة', 'en_name' => 'Retained profits/losses'],
             ['company_id' => '1', 'type_code' => '3401', 'ar_name' => 'الأرباح المبقاة (أو الخسائر]', 'en_name' => 'Retained profits (or losses]'],
             ['company_id' => '1', 'type_code' => '4', 'ar_name' => 'الايرادات', 'en_name' => 'Revenues'],
+            ['company_id' => '1', 'type_code' => '41', 'ar_name' => 'الايرادات التشغيلية', 'en_name' => 'operating revenue'],
             ['company_id' => '1', 'type_code' => '4101', 'ar_name' => 'المبيعات', 'en_name' => 'the sales'],
             ['company_id' => '1', 'type_code' => '42', 'ar_name' => 'الإيرادات الأخرى', 'en_name' => 'Other revenue'],
             ['company_id' => '1', 'type_code' => '4201', 'ar_name' => 'إيرادات أخرى', 'en_name' => 'Other income'],

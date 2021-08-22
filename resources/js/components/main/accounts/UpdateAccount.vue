@@ -15,7 +15,7 @@
                     v-model="updated_account.parent_id"
                     :items="this.$store.state.accounts"
                     :item-text="(item) => item.account_code + ' ' + item.ar_name"
-                    item-value="account_code"
+                    item-value="id"
                     @change="changeAccountypes"
                   >
                     <template v-slot:item="data">
@@ -32,10 +32,10 @@
                 <v-col cols="12" lg="5">
                   <v-autocomplete
                     label="نوع الحساب "
-                    v-model="updated_account.type_code"
+                    v-model="updated_account.type_id"
                     :items="account_types"
                     :item-text="(item) => item.type_code + ' - ' + item.ar_name"
-                    item-value="type_code"
+                    item-value="id"
                   ></v-autocomplete>
                 </v-col>
               </v-row>

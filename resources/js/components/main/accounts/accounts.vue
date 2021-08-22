@@ -1,23 +1,34 @@
 <template>
   <div>
-    <update-account
-      :dialog="update_account_dialog"
-      :updated_account="updated_account"
-    ></update-account>
+    <add-update-account
+      :dialog="add_update_account_dialog"
+      :account="passed_account"
+      :account_types="account_types"
+      :operation="operation"
+    ></add-update-account>
+
     <show-account :dialog="show_account_dialog"></show-account>
 
     <v-data-table
       :loading="this.$store.state.accountsVDTloading"
-      disable-pagination
-      hide-default-footer
       :headers="accounts_header"
       :items="this.$store.state.accounts"
       item-key="id"
+      :search="search"
     >
       <template v-slot:top>
         <v-toolbar flat color="white">
           <v-divider class="mx-4" inset vertical></v-divider>
-          <add-new-account></add-new-account>
+          <v-text-field
+            v-model="search"
+            label="ادخل معلومات الحساب"
+            class="mx-4"
+          ></v-text-field>
+          <v-divider class="mx-4" inset vertical></v-divider>
+          <v-btn color="primary" dark @click.stop="addUpdateAccount('', 'add')">
+            إضافة حساب
+          </v-btn>
+
           <v-spacer></v-spacer>
         </v-toolbar>
       </template>
@@ -26,7 +37,7 @@
           {{ item.account_code + "- " + item.ar_name }}
         </div>
       </template>
-      <template v-slot:item.type_code="{ item }">
+      <template v-slot:item.type_id="{ item }">
         {{ item.type && item.type.ar_name }}
       </template>
       <template v-slot:item.actions="{ item }">
@@ -55,7 +66,7 @@
           <template v-slot:activator="{ on, attrs }">
             <v-btn
               icon
-              @click.stop="updateAccountDialog(item)"
+              @click.stop="addUpdateAccount(item, 'update')"
               v-if="canBeModefied(item)"
             >
               <v-icon v-bind="attrs" v-on="on" class="outlined font-size-12"
@@ -103,21 +114,35 @@
 import Account from "../../../apis/Account";
 import AddNewAccount from "./AddNewAccount";
 import UpdateAccount from "./UpdateAccount";
+import AddUpdateAccount from "./AddUpdateAccount";
 import ShowAccount from "./ShowAccount";
 import { mapActions } from "vuex";
 export default {
   components: {
     AddNewAccount,
     UpdateAccount,
+    AddUpdateAccount,
     ShowAccount,
   },
   data() {
     return {
+      search: "",
       updated_account: "",
+      account_types: [],
+      operation: "add",
       progress: true,
+      add_update_account_dialog: false,
       update_account_dialog: false,
       show_account_dialog: false,
       computedk: "margin-right:20px",
+      passed_account: {
+        parent_id: "",
+        type_id: "",
+        ar_name: "",
+        en_name: "",
+        account_code: "",
+        description: "",
+      },
       accounts: [],
 
       accounts_header: [
@@ -132,7 +157,7 @@ export default {
           text: "نوع الحساب",
           align: "right",
           sortable: false,
-          value: "type_code",
+          value: "type_id",
         },
         {
           text: "الوصف",
@@ -179,6 +204,44 @@ export default {
       "archive_account",
     ]),
 
+    addUpdateAccount(item, operation) {
+      this.operation = operation;
+      this.passed_account = {
+        parent_id: "",
+        type_id: "",
+        ar_name: "",
+        en_name: "",
+        account_code: "",
+        description: "",
+      };
+      if (operation == "update") {
+        this.passed_account = item;
+
+        let parent = this.$store.state.accounts.find(
+          (elem) => elem.id == item.parent_id
+        );
+
+        let parent_type_code = this.$store.state.account_types.find(
+          (elem) => elem.id == parent.type_id
+        ).type_code;
+        console.log(parent_type_code);
+
+        this.account_types = this.$store.state.account_types.filter((elem) => {
+          let length = 2;
+
+          if (parent?.level >= 2) {
+            length = 4;
+          }
+          //alert(length);
+          return (
+            elem.type_code.toString().startsWith(parent_type_code.toString()) &&
+            elem.type_code.toString().length == length
+          );
+        });
+      }
+
+      this.add_update_account_dialog = true;
+    },
     deleteAccount(item) {
       this.delete_account(item);
     },
@@ -187,6 +250,7 @@ export default {
     },
 
     updateAccountDialog(item) {
+      console.log(item);
       this.update_account_dialog = true;
       this.updated_account = item;
     },
@@ -199,11 +263,11 @@ export default {
 
     canBeBranched(item) {
       if (Math.ceil(Math.log10(item.account_code + 1)) >= 6) return false;
-      
+
       return true;
     },
     canBeModefied(item) {
-      if (Math.ceil(Math.log10(item.account_code + 1)) <= 2) return false;
+      if (item.level <= 2) return false;
 
       return true;
     },

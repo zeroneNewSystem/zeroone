@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Modules\Admin\Products\Controllers;
 
-use App\Models\PrdctGroupsProduct;
+use App\Http\Controllers\Controller;
+use App\Modules\Admin\Products\Models\PrdctUnit;
 use Illuminate\Http\Request;
 
-class PrdctGroupsProductController extends Controller
+class PrdctUnitController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,7 +15,7 @@ class PrdctGroupsProductController extends Controller
      */
     public function index()
     {
-        //
+        return PrdctUnit::all();
     }
 
     /**
@@ -41,10 +42,10 @@ class PrdctGroupsProductController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\PrdctGroupsProduct  $prdctGroupsProduct
+     * @param  \App\Models\PrdctUnit  $prdctUnit
      * @return \Illuminate\Http\Response
      */
-    public function show(PrdctGroupsProduct $prdctGroupsProduct)
+    public function show(PrdctUnit $prdctUnit)
     {
         //
     }
@@ -52,10 +53,10 @@ class PrdctGroupsProductController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\PrdctGroupsProduct  $prdctGroupsProduct
+     * @param  \App\Models\PrdctUnit  $prdctUnit
      * @return \Illuminate\Http\Response
      */
-    public function edit(PrdctGroupsProduct $prdctGroupsProduct)
+    public function edit(PrdctUnit $prdctUnit)
     {
         //
     }
@@ -64,10 +65,10 @@ class PrdctGroupsProductController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\PrdctGroupsProduct  $prdctGroupsProduct
+     * @param  \App\Models\PrdctUnit  $prdctUnit
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, PrdctGroupsProduct $prdctGroupsProduct)
+    public function update(Request $request, PrdctUnit $prdctUnit)
     {
         //
     }
@@ -75,10 +76,10 @@ class PrdctGroupsProductController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\PrdctGroupsProduct  $prdctGroupsProduct
+     * @param  \App\Models\PrdctUnit  $prdctUnit
      * @return \Illuminate\Http\Response
      */
-    public function destroy(PrdctGroupsProduct $prdctGroupsProduct)
+    public function destroy(PrdctUnit $prdctUnit)
     {
         //
     }

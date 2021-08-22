@@ -29,10 +29,10 @@ class CreateAccountsTable extends Migration
             $table->boolean('payable_receivable')->default(1);//ممكن تضع فيه فلوس وتاخذ منه فلوس ويعني انه غير قابل للتفريع مثل البنك والصندوق
             
             $table->boolean('editable')->default(1);
-                
+
             
             $table->unsignedInteger('parent_id');
-            $table->string('type_code');
+            $table->unsignedInteger('type_id');
 
             $table->unsignedInteger('level',);
             

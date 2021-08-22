@@ -1,5 +1,7 @@
 <?php
+
 use Illuminate\Support\Facades\Route;
+
 /**
  * Created by PhpStorm.
  * User: Viktor
@@ -7,10 +9,19 @@ use Illuminate\Support\Facades\Route;
  * Time: 17:50
  */
 
-Route::group(["prefix" => "products"], function() {
+Route::group(["prefix" => "products"], function () {
 
-    
-    Route::get('/','ProductController@index')->name('products.index');
-    Route::get('/create','ProductController@getCreate');
-    Route::post('/create','ProductController@postCreate');
+
+    Route::get('/', 'ProductController@index')->name('products.index');
+    Route::get('/create', 'ProductController@getCreate');
+    Route::post('/create', 'ProductController@postCreate');
+});
+
+Route::group(["prefix" => "units"], function () {
+
+
+    Route::get('/', 'PrdctUnitController@index');
+    Route::post('/', 'PrdctUnitController@create');
+
+    Route::get('/create', 'PrdctUnitController@getCreate');
 });

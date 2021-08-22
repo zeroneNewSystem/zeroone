@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Modules\Admin\Products\Controllers;
 
-use App\Models\PrdctUnit;
+use App\Http\Controllers\Controller;
+use App\Models\PrdctType;
 use Illuminate\Http\Request;
 
-class PrdctUnitController extends Controller
+class PrdctTypeController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -41,10 +42,10 @@ class PrdctUnitController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\PrdctUnit  $prdctUnit
+     * @param  \App\Models\PrdctType  $prdctType
      * @return \Illuminate\Http\Response
      */
-    public function show(PrdctUnit $prdctUnit)
+    public function show(PrdctType $prdctType)
     {
         //
     }
@@ -52,10 +53,10 @@ class PrdctUnitController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\PrdctUnit  $prdctUnit
+     * @param  \App\Models\PrdctType  $prdctType
      * @return \Illuminate\Http\Response
      */
-    public function edit(PrdctUnit $prdctUnit)
+    public function edit(PrdctType $prdctType)
     {
         //
     }
@@ -64,10 +65,10 @@ class PrdctUnitController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\PrdctUnit  $prdctUnit
+     * @param  \App\Models\PrdctType  $prdctType
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, PrdctUnit $prdctUnit)
+    public function update(Request $request, PrdctType $prdctType)
     {
         //
     }
@@ -75,10 +76,10 @@ class PrdctUnitController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\PrdctUnit  $prdctUnit
+     * @param  \App\Models\PrdctType  $prdctType
      * @return \Illuminate\Http\Response
      */
-    public function destroy(PrdctUnit $prdctUnit)
+    public function destroy(PrdctType $prdctType)
     {
         //
     }

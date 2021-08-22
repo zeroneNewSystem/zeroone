@@ -128,7 +128,7 @@
                 <v-col cols="12" lg="4">
                   <v-autocomplete
                     label="نوع الصنف"
-                    v-model="product.prdct_type_code"
+                    v-model="product.prdct_type_id"
                     :items="prdct_types"
                     item-text="ar_name"
                     item-value="id"
@@ -386,7 +386,7 @@
                     <v-col cols="6" lg="2">
                       <v-autocomplete
                         label="طريقة الحساب"
-                        v-model="product.sales_discount_type_code"
+                        v-model="product.sales_discount_type_id"
                         :items="discount_types"
                         item-text="ar_name"
                         item-value="id"
@@ -444,7 +444,7 @@
                     <v-col cols="6" lg="2">
                       <v-autocomplete
                         label="طريقة الحساب"
-                        v-model="product.purchase_discount_type_code"
+                        v-model="product.purchase_discount_type_id"
                         :items="discount_types"
                         item-text="ar_name"
                         item-value="id"
@@ -781,7 +781,7 @@ export default {
 
         prdct_group_ids: [1, 2],
         prdct_form_id: 1,
-        prdct_type_code: 1,
+        prdct_type_id: 1,
         main_sales_unit_id: 1,
         main_purchase_unit_id: 1,
 
@@ -789,9 +789,9 @@ export default {
         product_sales_account_code: 1,
 
         sales_discount: 10,
-        sales_discount_type_code: 1,
+        sales_discount_type_id: 1,
         purchase_discount: 10,
-        purchase_discount_type_code: 1,
+        purchase_discount_type_id: 1,
         purchase_tax_id: 1,
         sales_tax_id: 1,
         min_alert: 1,

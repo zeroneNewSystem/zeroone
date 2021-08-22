@@ -14,8 +14,11 @@ export default {
         return Api.post("/accounts/archive/" + id);
     },
 
-    saveNewAccount(account) {
+    create(account) {
         return Api.post("/accounts/", account);
+    },
+    update(account) {
+        return Api.put("/accounts/", account);
     },
     showAccountsByType(type) {
         return Api.get("/accounts/type/" + type);

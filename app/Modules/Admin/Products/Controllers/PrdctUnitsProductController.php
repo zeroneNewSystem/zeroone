@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Modules\Admin\Products\Controllers;
 
-use App\Models\PrdctType;
+use App\Http\Controllers\Controller;
+use App\Models\PrdctUnitsProduct;
 use Illuminate\Http\Request;
 
-class PrdctTypeController extends Controller
+class PrdctUnitsProductController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -41,10 +42,10 @@ class PrdctTypeController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\PrdctType  $prdctType
+     * @param  \App\Models\PrdctUnitsProduct  $prdctUnitsProduct
      * @return \Illuminate\Http\Response
      */
-    public function show(PrdctType $prdctType)
+    public function show(PrdctUnitsProduct $prdctUnitsProduct)
     {
         //
     }
@@ -52,10 +53,10 @@ class PrdctTypeController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\PrdctType  $prdctType
+     * @param  \App\Models\PrdctUnitsProduct  $prdctUnitsProduct
      * @return \Illuminate\Http\Response
      */
-    public function edit(PrdctType $prdctType)
+    public function edit(PrdctUnitsProduct $prdctUnitsProduct)
     {
         //
     }
@@ -64,10 +65,10 @@ class PrdctTypeController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\PrdctType  $prdctType
+     * @param  \App\Models\PrdctUnitsProduct  $prdctUnitsProduct
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, PrdctType $prdctType)
+    public function update(Request $request, PrdctUnitsProduct $prdctUnitsProduct)
     {
         //
     }
@@ -75,10 +76,10 @@ class PrdctTypeController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\PrdctType  $prdctType
+     * @param  \App\Models\PrdctUnitsProduct  $prdctUnitsProduct
      * @return \Illuminate\Http\Response
      */
-    public function destroy(PrdctType $prdctType)
+    public function destroy(PrdctUnitsProduct $prdctUnitsProduct)
     {
         //
     }

@@ -799,15 +799,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         }],
         prdct_group_ids: [1, 2],
         prdct_form_id: 1,
-        prdct_type_code: 1,
+        prdct_type_id: 1,
         main_sales_unit_id: 1,
         main_purchase_unit_id: 1,
         product_cogs_account_code: 1,
         product_sales_account_code: 1,
         sales_discount: 10,
-        sales_discount_type_code: 1,
+        sales_discount_type_id: 1,
         purchase_discount: 10,
-        purchase_discount_type_code: 1,
+        purchase_discount_type_id: 1,
         purchase_tax_id: 1,
         sales_tax_id: 1,
         min_alert: 1,
@@ -1716,15 +1716,15 @@ var render = function() {
                                       rules: _vm.required
                                     },
                                     model: {
-                                      value: _vm.product.prdct_type_code,
+                                      value: _vm.product.prdct_type_id,
                                       callback: function($$v) {
                                         _vm.$set(
                                           _vm.product,
-                                          "prdct_type_code",
+                                          "prdct_type_id",
                                           $$v
                                         )
                                       },
-                                      expression: "product.prdct_type_code"
+                                      expression: "product.prdct_type_id"
                                     }
                                   })
                                 ],
@@ -2460,16 +2460,16 @@ var render = function() {
                                             model: {
                                               value:
                                                 _vm.product
-                                                  .sales_discount_type_code,
+                                                  .sales_discount_type_id,
                                               callback: function($$v) {
                                                 _vm.$set(
                                                   _vm.product,
-                                                  "sales_discount_type_code",
+                                                  "sales_discount_type_id",
                                                   $$v
                                                 )
                                               },
                                               expression:
-                                                "product.sales_discount_type_code"
+                                                "product.sales_discount_type_id"
                                             }
                                           })
                                         ],
@@ -2633,16 +2633,16 @@ var render = function() {
                                             model: {
                                               value:
                                                 _vm.product
-                                                  .purchase_discount_type_code,
+                                                  .purchase_discount_type_id,
                                               callback: function($$v) {
                                                 _vm.$set(
                                                   _vm.product,
-                                                  "purchase_discount_type_code",
+                                                  "purchase_discount_type_id",
                                                   $$v
                                                 )
                                               },
                                               expression:
-                                                "product.purchase_discount_type_code"
+                                                "product.purchase_discount_type_id"
                                             }
                                           })
                                         ],

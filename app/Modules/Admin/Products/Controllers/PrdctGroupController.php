@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Modules\Admin\Products\Controllers;
 
-use App\Models\PrdctForm;
+use App\Http\Controllers\Controller;
+use App\Models\PrdctGroup;
 use Illuminate\Http\Request;
 
-class PrdctFormController extends Controller
+class PrdctGroupController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -41,10 +42,10 @@ class PrdctFormController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\PrdctForm  $prdctForm
+     * @param  \App\Models\PrdctGroup  $prdctGroup
      * @return \Illuminate\Http\Response
      */
-    public function show(PrdctForm $prdctForm)
+    public function show(PrdctGroup $prdctGroup)
     {
         //
     }
@@ -52,10 +53,10 @@ class PrdctFormController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\PrdctForm  $prdctForm
+     * @param  \App\Models\PrdctGroup  $prdctGroup
      * @return \Illuminate\Http\Response
      */
-    public function edit(PrdctForm $prdctForm)
+    public function edit(PrdctGroup $prdctGroup)
     {
         //
     }
@@ -64,10 +65,10 @@ class PrdctFormController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\PrdctForm  $prdctForm
+     * @param  \App\Models\PrdctGroup  $prdctGroup
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, PrdctForm $prdctForm)
+    public function update(Request $request, PrdctGroup $prdctGroup)
     {
         //
     }
@@ -75,10 +76,10 @@ class PrdctFormController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\PrdctForm  $prdctForm
+     * @param  \App\Models\PrdctGroup  $prdctGroup
      * @return \Illuminate\Http\Response
      */
-    public function destroy(PrdctForm $prdctForm)
+    public function destroy(PrdctGroup $prdctGroup)
     {
         //
     }

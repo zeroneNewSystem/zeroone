@@ -16,6 +16,7 @@ Route::group(["prefix" => "accounts"], function() {
     Route::post('/archive/{id}','AccountController@archive');
     
     Route::delete('/{id}','AccountController@destroy');
+    Route::put('/','AccountController@update');
 
     Route::get('/types','AccountTypeController@index');
     Route::get('/export','AccountController@export');

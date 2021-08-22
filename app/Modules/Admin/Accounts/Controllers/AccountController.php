@@ -46,7 +46,7 @@ class AccountController extends Controller
     {
 
         //$accounts = Account::orderBy('type_code')->get();
-        $accounts = Account::with('type')->orderBy('type_code')->orderBy('id')->get();
+        $accounts = Account::with('type')->orderBy('account_code')->orderBy('id')->get();
 
         //return response()->json(['accounts' => $accounts], 200);
         return response()->json(['accounts' => AccountResource::collection($accounts)], 200);
@@ -54,10 +54,10 @@ class AccountController extends Controller
 
     }
 
-    public function export() 
+    public function export()
     {
 
-        
+
         return Excel::download(new AccountsExport, 'accounts.xlsx');
     }
 
@@ -81,7 +81,7 @@ class AccountController extends Controller
     {
         $request = $request->all();
         $request['company_id'] = 1;
-        
+
         $request['create_by_user_id'] = 1;
         Account::create($request);
     }
@@ -115,8 +115,11 @@ class AccountController extends Controller
      * @param  \App\Models\Account  $account
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Account $account)
+    public function update(Request $request)
     {
+
+        return Account::find($request->id)->update($request->all());
+         //$request;
         //
     }
 
@@ -129,10 +132,10 @@ class AccountController extends Controller
     public function destroy($id)
     {
         //
-        
 
-        $res=Account::where('id',$id)->forceDelete();
-        
+
+        $res = Account::where('id', $id)->forceDelete();
+
 
         return $res;
     }
@@ -145,9 +148,9 @@ class AccountController extends Controller
     public function archive($id)
     {
         //
-        
 
-        $res=Account::where('id',$id)->delete();
+
+        $res = Account::where('id', $id)->delete();
 
         return $res;
     }

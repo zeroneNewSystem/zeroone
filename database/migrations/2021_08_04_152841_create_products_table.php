@@ -23,7 +23,7 @@ class CreateProductsTable extends Migration
 
 
             $table->unsignedInteger ('prdct_form_id')->nullable();
-            $table->unsignedInteger ('prdct_type_code');
+            $table->unsignedInteger ('prdct_type_id');
             $table->unsignedInteger ('main_sales_unit_id');
             $table->unsignedInteger ('main_purchase_unit_id');
 
@@ -34,10 +34,10 @@ class CreateProductsTable extends Migration
 
 
             $table->double('sales_discount')->default(0.0);
-            $table->unsignedInteger ('sales_discount_type_code')->default(0)->comment('0-percent, 1-amounr');
+            $table->unsignedInteger ('sales_discount_type_id')->default(0)->comment('0-percent, 1-amounr');
 
             $table->double('purchase_discount')->default(0.0);
-            $table->unsignedInteger ('purchase_discount_type_code',)->default(0)->comment('0-percent, 1-amounr');
+            $table->unsignedInteger ('purchase_discount_type_id',)->default(0)->comment('0-percent, 1-amounr');
 
             $table->unsignedInteger ('purchase_tax_id',);
             $table->unsignedInteger ('sales_tax_id',);
