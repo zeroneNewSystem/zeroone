@@ -15,7 +15,7 @@ class PrdctUnitController extends Controller
      */
     public function index()
     {
-        return PrdctUnit::all();
+        return response()->json(['units' => PrdctUnit::all()], 200);
     }
 
     /**
@@ -79,8 +79,10 @@ class PrdctUnitController extends Controller
      * @param  \App\Models\PrdctUnit  $prdctUnit
      * @return \Illuminate\Http\Response
      */
-    public function destroy(PrdctUnit $prdctUnit)
+    public function destroy($id)
     {
-        //
+        $res = PrdctUnit::where('id', $id)->delete();
+        
+        return response()->json(['units' => PrdctUnit::all()], 200);
     }
 }

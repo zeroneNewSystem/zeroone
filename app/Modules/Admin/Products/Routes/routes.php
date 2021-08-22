@@ -22,6 +22,7 @@ Route::group(["prefix" => "units"], function () {
 
     Route::get('/', 'PrdctUnitController@index');
     Route::post('/', 'PrdctUnitController@create');
+    Route::delete('/{api}', 'PrdctUnitController@destroy');
 
     Route::get('/create', 'PrdctUnitController@getCreate');
 });

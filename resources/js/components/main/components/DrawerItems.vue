@@ -103,7 +103,7 @@ export default {
       ],
       ["customermanagement"],
       [
-        "unitmanagement",
+        "units",
         "groupmanagement",
         "formmanagement",
         "product",

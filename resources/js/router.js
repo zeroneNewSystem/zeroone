@@ -46,6 +46,17 @@ const router = new VueRouter({
                         mainView: () =>
                             import ("./components/main/accounts/accounts")
                     }
+                },
+                {
+                    path: "/units",
+                    name: "units",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import ("./components/main/products/units"),
+                        mainView: () =>
+                            import ("./components/main/products/units")
+                    }
                 }
             ]
         },
