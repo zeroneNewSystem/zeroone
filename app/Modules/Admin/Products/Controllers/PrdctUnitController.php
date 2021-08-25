@@ -36,7 +36,12 @@ class PrdctUnitController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request = $request->all();
+        $request['company_id'] = 1;
+
+
+        PrdctUnit::create($request);
+        return response()->json(['units' => PrdctUnit::all()], 200);
     }
 
     /**
@@ -58,7 +63,6 @@ class PrdctUnitController extends Controller
      */
     public function edit(PrdctUnit $prdctUnit)
     {
-        //
     }
 
     /**
@@ -68,9 +72,10 @@ class PrdctUnitController extends Controller
      * @param  \App\Models\PrdctUnit  $prdctUnit
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, PrdctUnit $prdctUnit)
+    public function update(Request $request)
     {
-        //
+        PrdctUnit::find($request->id)->update($request->all());
+        return response()->json(['units' => PrdctUnit::all()], 200);
     }
 
     /**
@@ -82,7 +87,7 @@ class PrdctUnitController extends Controller
     public function destroy($id)
     {
         $res = PrdctUnit::where('id', $id)->delete();
-        
+
         return response()->json(['units' => PrdctUnit::all()], 200);
     }
 }

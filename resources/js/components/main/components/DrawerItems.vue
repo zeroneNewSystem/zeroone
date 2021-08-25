@@ -60,11 +60,11 @@ export default {
         "إدارة العملاء"
       ],
       [
-        "الأصناف",
+        "الأصناف والخدمات",
         "mdi-source-fork",
         "الوحدات",
         "المجموعات",
-        "الشكل الدوائي",
+        "الأنواع",
         "إضافة صنف",
         "إدارة الأصناف",
       ],
@@ -104,10 +104,10 @@ export default {
       ["customermanagement"],
       [
         "units",
-        "groupmanagement",
-        "formmanagement",
+        "types",
+        "forms",
         "product",
-        "drugclassmanagement",
+        "products",
       ],
       ["companymanagement"],
       [

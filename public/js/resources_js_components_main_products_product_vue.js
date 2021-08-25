@@ -1234,6 +1234,16 @@ __webpack_require__.r(__webpack_exports__);
   },
   postCreate: function postCreate(product) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/products/create", product);
+  },
+  get: function get(params) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/products/", {
+      params: params
+    });
+  },
+  "delete": function _delete(params) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.delete("/products/", {
+      params: params
+    });
   }
 });
 

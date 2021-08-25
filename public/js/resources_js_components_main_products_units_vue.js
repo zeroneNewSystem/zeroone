@@ -12,6 +12,37 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _apis_Unit__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../apis/Unit */ "./resources/js/apis/Unit.js");
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -95,8 +126,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
+      operation: "add",
       dialog: false,
       search: "",
+      unit: "",
       units: [],
       units_header: [{
         text: " الاسم العربي ",
@@ -118,15 +151,43 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   methods: {
-    showDialog: function showDialog(item) {
-      this.dialog = true;
-    },
-    UpdateUnit: function UpdateUnit() {
+    saveUnit: function saveUnit() {
       var _this = this;
 
-      _apis_Unit__WEBPACK_IMPORTED_MODULE_0__.default.update(item.id).then(function (response) {
-        _this.units = response.data.units;
-      });
+      if (this.operation == "add") {
+        _apis_Unit__WEBPACK_IMPORTED_MODULE_0__.default.create(this.unit).then(function (response) {
+          _this.dialog = false;
+          _this.units = response.data.units;
+        });
+        return;
+      }
+
+      if (this.operation == "update") {
+        _apis_Unit__WEBPACK_IMPORTED_MODULE_0__.default.update(this.unit).then(function (response) {
+          _this.dialog = false;
+          _this.units = response.data.units;
+        });
+        return;
+      }
+    },
+    showDialog: function showDialog(item) {
+      this.dialog = true;
+
+      if (item) {
+        this.operation = "update";
+        this.unit = _objectSpread({}, item);
+      } else {
+        this.operation = "add";
+        this.unit = {
+          ar_name: "",
+          ar_unit_representation: "",
+          company_id: "",
+          created_at: "",
+          deleted_at: "",
+          en_name: "",
+          en_unit_representation: ""
+        };
+      }
     },
     canBeModefied: function canBeModefied(item) {
       return true;
@@ -168,6 +229,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   getAll: function getAll() {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/units/");
+  },
+  create: function create(unit) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/units/", unit);
   },
   "delete": function _delete(id) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.delete("/units/" + id);
@@ -302,10 +366,17 @@ var render = function() {
                             [
                               _c(
                                 "v-col",
-                                { attrs: { cols: "12", sm: "6", md: "4" } },
+                                { attrs: { cols: "12", lg: "6" } },
                                 [
                                   _c("v-text-field", {
-                                    attrs: { label: "اسم الوحدة العربي" }
+                                    attrs: { label: "اسم الوحدة العربي" },
+                                    model: {
+                                      value: _vm.unit.ar_name,
+                                      callback: function($$v) {
+                                        _vm.$set(_vm.unit, "ar_name", $$v)
+                                      },
+                                      expression: "unit.ar_name"
+                                    }
                                   })
                                 ],
                                 1
@@ -313,10 +384,61 @@ var render = function() {
                               _vm._v(" "),
                               _c(
                                 "v-col",
-                                { attrs: { cols: "12", sm: "6", md: "4" } },
+                                { attrs: { cols: "12", lg: "6" } },
                                 [
                                   _c("v-text-field", {
-                                    attrs: { label: "اسم الوحدة بالانجليزي" }
+                                    attrs: { label: "الاختصار العربي" },
+                                    model: {
+                                      value: _vm.unit.ar_unit_representation,
+                                      callback: function($$v) {
+                                        _vm.$set(
+                                          _vm.unit,
+                                          "ar_unit_representation",
+                                          $$v
+                                        )
+                                      },
+                                      expression: "unit.ar_unit_representation"
+                                    }
+                                  })
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "v-col",
+                                { attrs: { cols: "12", lg: "6" } },
+                                [
+                                  _c("v-text-field", {
+                                    attrs: { label: "اسم الوحدة بالانجليزي" },
+                                    model: {
+                                      value: _vm.unit.en_name,
+                                      callback: function($$v) {
+                                        _vm.$set(_vm.unit, "en_name", $$v)
+                                      },
+                                      expression: "unit.en_name"
+                                    }
+                                  })
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "v-col",
+                                { attrs: { cols: "12", lg: "6" } },
+                                [
+                                  _c("v-text-field", {
+                                    attrs: { label: "الاختصار  بالانجليزي" },
+                                    model: {
+                                      value: _vm.unit.en_unit_representation,
+                                      callback: function($$v) {
+                                        _vm.$set(
+                                          _vm.unit,
+                                          "en_unit_representation",
+                                          $$v
+                                        )
+                                      },
+                                      expression: "unit.en_unit_representation"
+                                    }
                                   })
                                 ],
                                 1
@@ -348,20 +470,16 @@ var render = function() {
                             }
                           }
                         },
-                        [_vm._v("\n            Close\n          ")]
+                        [_vm._v("\n            الغاء\n          ")]
                       ),
                       _vm._v(" "),
                       _c(
                         "v-btn",
                         {
                           attrs: { color: "blue darken-1", text: "" },
-                          on: {
-                            click: function($event) {
-                              _vm.dialog = false
-                            }
-                          }
+                          on: { click: _vm.saveUnit }
                         },
-                        [_vm._v("\n            Save\n          ")]
+                        [_vm._v("\n            حفظ\n          ")]
                       )
                     ],
                     1
@@ -388,6 +506,38 @@ var render = function() {
             key: "top",
             fn: function() {
               return [
+                _c(
+                  "v-toolbar",
+                  { attrs: { flat: "", color: "white" } },
+                  [
+                    _c("v-toolbar-title", [_vm._v("إدارة الوحدات")]),
+                    _vm._v(" "),
+                    _c("v-divider", {
+                      staticClass: "mx-4",
+                      attrs: { inset: "", vertical: "" }
+                    }),
+                    _vm._v(" "),
+                    _c("v-spacer"),
+                    _vm._v(" "),
+                    _c(
+                      "v-btn",
+                      {
+                        attrs: { primary: "" },
+                        on: {
+                          click: function($event) {
+                            $event.stopPropagation()
+                            return _vm.showDialog()
+                          }
+                        }
+                      },
+                      [_vm._v(" إضافة وحدة ")]
+                    ),
+                    _vm._v(" "),
+                    _c("v-spacer")
+                  ],
+                  1
+                ),
+                _vm._v(" "),
                 _c("v-text-field", {
                   staticClass: "mx-4",
                   attrs: { label: "ادخل معلومات الوحدة" },

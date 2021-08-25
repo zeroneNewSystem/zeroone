@@ -3,7 +3,7 @@
 namespace App\Modules\Admin\Products\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\PrdctForm;
+use App\Modules\Admin\Products\Models\PrdctForm;
 use Illuminate\Http\Request;
 
 class PrdctFormController extends Controller
@@ -15,7 +15,7 @@ class PrdctFormController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json(['forms' => PrdctForm::all()], 200);
     }
 
     /**
@@ -36,7 +36,12 @@ class PrdctFormController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request = $request->all();
+        $request['company_id'] = 1;
+
+
+        PrdctForm::create($request);
+        return response()->json(['forms' => PrdctForm::all()], 200);
     }
 
     /**
@@ -58,7 +63,6 @@ class PrdctFormController extends Controller
      */
     public function edit(PrdctForm $prdctForm)
     {
-        //
     }
 
     /**
@@ -68,9 +72,10 @@ class PrdctFormController extends Controller
      * @param  \App\Models\PrdctForm  $prdctForm
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, PrdctForm $prdctForm)
+    public function update(Request $request)
     {
-        //
+        PrdctForm::find($request->id)->update($request->all());
+        return response()->json(['forms' => PrdctForm::all()], 200);
     }
 
     /**
@@ -79,8 +84,10 @@ class PrdctFormController extends Controller
      * @param  \App\Models\PrdctForm  $prdctForm
      * @return \Illuminate\Http\Response
      */
-    public function destroy(PrdctForm $prdctForm)
+    public function destroy($id)
     {
-        //
+        $res = PrdctForm::where('id', $id)->delete();
+
+        return response()->json(['forms' => PrdctForm::all()], 200);
     }
 }

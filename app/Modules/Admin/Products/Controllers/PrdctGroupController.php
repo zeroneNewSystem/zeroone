@@ -3,7 +3,7 @@
 namespace App\Modules\Admin\Products\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\PrdctGroup;
+use App\Modules\Admin\Products\Models\PrdctGroup;
 use Illuminate\Http\Request;
 
 class PrdctGroupController extends Controller
@@ -15,7 +15,7 @@ class PrdctGroupController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json(['groups' => PrdctGroup::all()], 200);
     }
 
     /**
@@ -36,7 +36,12 @@ class PrdctGroupController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request = $request->all();
+        $request['company_id'] = 1;
+
+
+        PrdctGroup::create($request);
+        return response()->json(['groups' => PrdctGroup::all()], 200);
     }
 
     /**
@@ -58,7 +63,6 @@ class PrdctGroupController extends Controller
      */
     public function edit(PrdctGroup $prdctGroup)
     {
-        //
     }
 
     /**
@@ -68,9 +72,10 @@ class PrdctGroupController extends Controller
      * @param  \App\Models\PrdctGroup  $prdctGroup
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, PrdctGroup $prdctGroup)
+    public function update(Request $request)
     {
-        //
+        PrdctGroup::find($request->id)->update($request->all());
+        return response()->json(['groups' => PrdctGroup::all()], 200);
     }
 
     /**
@@ -79,8 +84,10 @@ class PrdctGroupController extends Controller
      * @param  \App\Models\PrdctGroup  $prdctGroup
      * @return \Illuminate\Http\Response
      */
-    public function destroy(PrdctGroup $prdctGroup)
+    public function destroy($id)
     {
-        //
+        $res = PrdctGroup::where('id', $id)->delete();
+
+        return response()->json(['groups' => PrdctGroup::all()], 200);
     }
 }

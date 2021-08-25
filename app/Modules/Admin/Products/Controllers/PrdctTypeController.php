@@ -3,7 +3,7 @@
 namespace App\Modules\Admin\Products\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\PrdctType;
+use App\Modules\Admin\Products\Models\PrdctType;
 use Illuminate\Http\Request;
 
 class PrdctTypeController extends Controller
@@ -15,7 +15,7 @@ class PrdctTypeController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json(['types' => PrdctType::all()], 200);
     }
 
     /**
@@ -36,7 +36,12 @@ class PrdctTypeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request = $request->all();
+        $request['company_id'] = 1;
+
+
+        PrdctType::create($request);
+        return response()->json(['types' => PrdctType::all()], 200);
     }
 
     /**
@@ -58,7 +63,6 @@ class PrdctTypeController extends Controller
      */
     public function edit(PrdctType $prdctType)
     {
-        //
     }
 
     /**
@@ -68,9 +72,10 @@ class PrdctTypeController extends Controller
      * @param  \App\Models\PrdctType  $prdctType
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, PrdctType $prdctType)
+    public function update(Request $request)
     {
-        //
+        PrdctType::find($request->id)->update($request->all());
+        return response()->json(['types' => PrdctType::all()], 200);
     }
 
     /**
@@ -79,8 +84,10 @@ class PrdctTypeController extends Controller
      * @param  \App\Models\PrdctType  $prdctType
      * @return \Illuminate\Http\Response
      */
-    public function destroy(PrdctType $prdctType)
+    public function destroy($id)
     {
-        //
+        $res = PrdctType::where('id', $id)->delete();
+
+        return response()->json(['types' => PrdctType::all()], 200);
     }
 }

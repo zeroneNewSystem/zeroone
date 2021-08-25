@@ -57,6 +57,50 @@ const router = new VueRouter({
                         mainView: () =>
                             import ("./components/main/products/units")
                     }
+                },
+                {
+                    path: "/types",
+                    name: "types",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import ("./components/main/products/types"),
+                        mainView: () =>
+                            import ("./components/main/products/types")
+                    }
+                },
+                {
+                    path: "/forms",
+                    name: "forms",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import ("./components/main/products/forms"),
+                        mainView: () =>
+                            import ("./components/main/products/forms")
+                    }
+                },
+                {
+                    path: "/groups",
+                    name: "groups",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import ("./components/main/products/groups"),
+                        mainView: () =>
+                            import ("./components/main/products/groups")
+                    }
+                },
+                {
+                    path: "/products",
+                    name: "products",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import ("./components/main/products/products"),
+                        mainView: () =>
+                            import ("./components/main/products/products")
+                    }
                 }
             ]
         },

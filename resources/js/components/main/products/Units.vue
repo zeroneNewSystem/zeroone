@@ -9,25 +9,30 @@
           <v-card-text>
             <v-container>
               <v-row>
-                <v-col cols="12" sm="6" md="4">
-                  <v-text-field label="اسم الوحدة العربي"></v-text-field>
+                <v-col cols="12" lg="6">
+                  <v-text-field
+                    v-model="unit.ar_name"
+                    label="اسم الوحدة العربي"
+                  ></v-text-field>
                 </v-col>
-                <v-col cols="12" sm="6" md="4">
-                  <v-text-field label="الاختصار العربي"></v-text-field>
+                <v-col cols="12" lg="6">
+                  <v-text-field
+                    v-model="unit.ar_unit_representation"
+                    label="الاختصار العربي"
+                  ></v-text-field>
                 </v-col>
-                <v-col cols="12" sm="6" md="4">
-                  <v-text-field label="اسم الوحدة بالانجليزي"></v-text-field>
+                <v-col cols="12" lg="6">
+                  <v-text-field
+                    v-model="unit.en_name"
+                    label="اسم الوحدة بالانجليزي"
+                  ></v-text-field>
                 </v-col>
-                <v-col cols="12" sm="6" md="4">
-                  <v-text-field label="الاختصار  بالانجليزي"></v-text-field>
+                <v-col cols="12" lg="6">
+                  <v-text-field
+                    v-model="unit.en_unit_representation"
+                    label="الاختصار  بالانجليزي"
+                  ></v-text-field>
                 </v-col>
-                <v-col cols="12" sm="6" md="4">
-                  <v-text-field label="اسم الوحدة بالانجليزي"></v-text-field>
-                </v-col>
-                <v-col cols="12" sm="6" md="4">
-                  <v-text-field label="الاختصار  بالانجليزي"></v-text-field>
-                </v-col>
-                
               </v-row>
             </v-container>
             <small>*indicates required field</small>
@@ -35,10 +40,10 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="blue darken-1" text @click="dialog = false">
-              Close
+              الغاء
             </v-btn>
-            <v-btn color="blue darken-1" text @click="dialog = false">
-              Save
+            <v-btn color="blue darken-1" text @click="saveUnit">
+              حفظ
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -52,6 +57,14 @@
       :search="search"
     >
       <template v-slot:top>
+        <v-toolbar flat color="white">
+          <v-toolbar-title>إدارة الوحدات</v-toolbar-title>
+          <v-divider class="mx-4" inset vertical></v-divider>
+          <v-spacer></v-spacer>
+
+          <v-btn primary @click.stop="showDialog()"> إضافة وحدة </v-btn>
+          <v-spacer></v-spacer>
+        </v-toolbar>
         <v-text-field
           v-model="search"
           label="ادخل معلومات الوحدة"
@@ -94,8 +107,10 @@ import Unit from "../../../apis/Unit";
 export default {
   data() {
     return {
-      dialog:false,
+      operation: "add",
+      dialog: false,
       search: "",
+      unit: "",
       units: [],
       units_header: [
         {
@@ -123,14 +138,41 @@ export default {
     };
   },
   methods: {
-    showDialog(item){
-      this.dialog = true
+    saveUnit() {
+      if (this.operation == "add") {
+        Unit.create(this.unit).then((response) => {
+          this.dialog = false;
+          this.units = response.data.units;
+        });
+        return;
+      }
+      if (this.operation == "update") {
+        Unit.update(this.unit).then((response) => {
+          this.dialog = false;
+          this.units = response.data.units;
+        });
+        return;
+      }
     },
-    UpdateUnit() {
-      Unit.update(item.id).then((response) => {
-        this.units = response.data.units;
-      });
+    showDialog(item) {
+      this.dialog = true;
+      if (item) {
+        this.operation = "update";
+        this.unit = { ...item };
+      } else {
+        this.operation = "add";
+        this.unit = {
+          ar_name: "",
+          ar_unit_representation: "",
+          company_id: "",
+          created_at: "",
+          deleted_at: "",
+          en_name: "",
+          en_unit_representation: "",
+        };
+      }
     },
+
     canBeModefied(item) {
       return true;
     },
