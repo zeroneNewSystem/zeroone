@@ -659,6 +659,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -681,6 +688,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       /*-----------------------accounts---------------------------*/
       product_sales_accounts: [],
       product_sales_return_accounts: [],
+      product_purchase_return_accounts: [],
       product_cogs_accounts: [],
 
       /*-----------------------extra units---------------------------*/
@@ -688,17 +696,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         text: " افتراضية البيع ",
         align: "center",
         sortable: false,
-        value: "main_sales_unit"
+        value: "main_sales_unit_id"
       }, {
         text: " افتراضية الشراء ",
         align: "center",
         sortable: false,
-        value: "main_purchase_unit"
+        value: "main_purchase_unit_id"
       }, {
         text: " الوحدة",
         align: "center",
         sortable: false,
-        value: "id"
+        value: "prdct_unit_id"
       }, {
         text: "تساوي",
         align: "center",
@@ -728,7 +736,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         text: "الباركود",
         align: "center",
         sortable: false,
-        value: "barcode"
+        value: "barcode",
+        width: "150"
       }, {
         text: "actions ",
         align: "center",
@@ -737,15 +746,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       /*-----------------------units---------------------------*/
       prdct_units: [{
-        main_sales_unit: "2",
-        main_purchase_unit: "2",
-        ar_name: "salam",
-        en_name: "kk",
+        prdct_unit_id: "",
         contains: 1,
-        from_unit: "salam",
         purchase_price: "20",
         sales_price: "25",
-        barcode: "129101101"
+        barcode: ""
       }],
 
       /*-----------------------groups---------------------------*/
@@ -787,12 +792,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         ar_name: "ar_name",
         en_name: "en_name",
         prdct_units: [{
-          main_sales_unit: "main_sales_unit",
-          main_purchase_unit: "main_purchase_unit",
-          id: "",
-          en_name: "",
+          prdct_unit_id: "",
           contains: 1,
-          from_unit: "",
           purchase_price: "9",
           sales_price: "8",
           barcode: ""
@@ -802,8 +803,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         prdct_type_id: 1,
         main_sales_unit_id: 1,
         main_purchase_unit_id: 1,
-        product_cogs_account_code: 1,
-        product_sales_account_code: 1,
+        product_cogs_account_id: 1,
+        product_sales_account_id: 1,
         sales_discount: 10,
         sales_discount_type_id: 1,
         purchase_discount: 10,
@@ -856,19 +857,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     };
   },
   computed: {
-    indexOfPurchaseMainUnit: function indexOfPurchaseMainUnit() {
-      return this.product.prdct_units.indexOf(this.product.prdct_units.find(function (elem) {
-        return elem.main_purchase_unit == "main_purchase_unit";
-      }));
-    },
-    indexOfsales_MainUnit: function indexOfsales_MainUnit() {
-      return this.product.prdct_units.indexOf(this.product.prdct_units.find(function (elem) {
-        return elem.main_sales_unit == "main_sales_unit";
-      }));
-    },
     fromUnit: function fromUnit() {
-      if (this.product.prdct_units[0].id == "") return "-";
-      return this.prdct_units[this.product.prdct_units[0].id - 1].ar_name;
+      this.product.minor_unit = this.product.prdct_units[0].prdct_unit_id;
+      alert(this.product.minor_unit);
+      if (this.product.prdct_units[0].prdct_unit_id == "") return "-";
+      return this.prdct_units[this.product.prdct_units[0].prdct_unit_id - 1].ar_name;
     },
     formTitle: function formTitle() {
       return this.editedIndex === -1 ? "إضافة صنف جديد" : "تعديل البيانات";
@@ -881,7 +874,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     // Account.showAccountsByType(4).then((response) => {
     //   this.accounts = response.data.accounts;
     // });
-    _apis_Product__WEBPACK_IMPORTED_MODULE_1__.default.getCreate().then(function (response) {
+    _apis_Product__WEBPACK_IMPORTED_MODULE_1__.default.create() //get method
+    .then(function (response) {
       _this.prdct_forms = response.data.prdct_forms;
       _this.prdct_groups = response.data.prdct_groups;
       _this.prdct_units = response.data.prdct_units;
@@ -897,8 +891,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       _this.errors = errors.response.data.errors;
       console.log(errors.response.data);
     })["finally"]();
+    console.log(this.$route.params["product"]);
+
+    if (this.$route.params["product"]) {
+      alert("ddd");
+      this.product = this.$route.params["product"];
+      console.log(this.product);
+    }
   },
   methods: {
+    unit_barcode: function unit_barcode(length, item) {
+      item.barcode = this.generate(length);
+    },
     pickFile: function pickFile() {
       this.$refs.imageRef.click();
     },
@@ -943,12 +947,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       if (this.product.prdct_units.length == 0) {
         this.product.prdct_units.push({
-          main_sales_unit: 1,
-          main_purchase_unit: 1,
-          id: "",
-          en_name: "",
+          prdct_unit_id: "",
           contains: 1,
-          from_unit: "",
           purchase_price: "",
           sales_price: "",
           barcode: ""
@@ -968,47 +968,25 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         this.product.main_purchase_unit_id = 1;
       }
     },
-    uncheckAnotherRadioButtons: function uncheckAnotherRadioButtons(item, type) {
-      //alert('sdsdsd')
-      if (type == "sales_") {
-        this.product.prdct_units.forEach(function (element) {
-          console.log(element);
-          element.main_sales_unit = "";
-        });
-        item.main_sales_unit = "main_sales_unit";
-      }
-
-      if (type == "purchase") {
-        this.product.prdct_units.forEach(function (element) {
-          console.log(element);
-          element.main_purchase_unit = "";
-        });
-        item.main_purchase_unit = "main_purchase_unit";
-      }
-    },
     prventTwiseUnitSelection: function prventTwiseUnitSelection(item) {
       var index = this.product.prdct_units.indexOf(item);
       var sameunits = this.product.prdct_units.filter(function (elem) {
-        return elem.id == item.id;
+        return elem.prdct_unit_id == item.prdct_unit_id;
       });
 
       if (sameunits.length > 1) {
         alert("لايمكن تكرار الوحدات!");
-        item.id = 0;
+        item.prdct_unit_id = 0;
       }
     },
     add_extra_unit: function add_extra_unit() {},
     addUnit: function addUnit() {
       this.product.prdct_units.push({
-        main_sales_unit: "2",
-        main_purchase_unit: "2",
-        id: "",
-        en_name: "",
+        prdct_unit_id: "",
         contains: 1,
-        from_unit: "salam",
         purchase_price: "12",
         sales_price: "25",
-        barcode: "129101101"
+        barcode: ""
       });
     },
     toggleMarker: function toggleMarker(length, type) {
@@ -1229,7 +1207,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Api */ "./resources/js/apis/Api.js");
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  getCreate: function getCreate() {
+  create: function create() {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/products/create");
   },
   postCreate: function postCreate(product) {
@@ -1265,7 +1243,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.theme--light.v-input--selection-controls.v-input--is-disabled:not(.v-input--indeterminate)\r\n  .v-icon {\r\n  color: rgb(111, 98, 228) !important;\n}\n.product_image {\r\n  position: relative;\r\n  top: 0;\r\n  left: 0;\r\n  max-width: 200px;\r\n  max-height: 150px;\r\n  border-radius: 10px;\r\n  border: 1px solid #eee;\r\n  cursor: pointer;\n}\r\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.theme--light.v-input--selection-controls.v-input--is-disabled:not(.v-input--indeterminate)\r\n  .v-icon {\r\n  color: rgb(111, 98, 228) !important;\n}\n.product_image {\r\n  position: relative;\r\n  top: 0;\r\n  left: 0;\r\n  max-width: 200px;\r\n  max-height: 150px;\r\n  border-radius: 10px;\r\n  border: 1px solid #eee;\r\n  cursor: pointer;\n}\n.product-unit-barcode .v-input__append-inner {\r\n  margin-top: 6px !important;\r\n  margin-left: -13px;\n}\r\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -1917,7 +1895,7 @@ var render = function() {
                                         },
                                         scopedSlots: _vm._u([
                                           {
-                                            key: "item.main_sales_unit",
+                                            key: "item.main_sales_unit_id",
                                             fn: function(ref) {
                                               var item = ref.item
                                               return [
@@ -1971,7 +1949,7 @@ var render = function() {
                                             }
                                           },
                                           {
-                                            key: "item.main_purchase_unit",
+                                            key: "item.main_purchase_unit_id",
                                             fn: function(ref) {
                                               var item = ref.item
                                               return [
@@ -2047,7 +2025,7 @@ var render = function() {
                                             }
                                           },
                                           {
-                                            key: "item.id",
+                                            key: "item.prdct_unit_id",
                                             fn: function(ref) {
                                               var item = ref.item
                                               return [
@@ -2069,11 +2047,16 @@ var render = function() {
                                                     }
                                                   },
                                                   model: {
-                                                    value: item.id,
+                                                    value: item.prdct_unit_id,
                                                     callback: function($$v) {
-                                                      _vm.$set(item, "id", $$v)
+                                                      _vm.$set(
+                                                        item,
+                                                        "prdct_unit_id",
+                                                        $$v
+                                                      )
                                                     },
-                                                    expression: "item.id"
+                                                    expression:
+                                                      "item.prdct_unit_id"
                                                   }
                                                 })
                                               ]
@@ -2191,9 +2174,23 @@ var render = function() {
                                               var item = ref.item
                                               return [
                                                 _c("v-text-field", {
+                                                  staticClass:
+                                                    "product-unit-barcode",
                                                   attrs: {
                                                     outlined: "",
+                                                    "append-icon":
+                                                      "mdi-alpha-g-circle",
                                                     rules: _vm.required
+                                                  },
+                                                  on: {
+                                                    "click:append": function(
+                                                      $event
+                                                    ) {
+                                                      return _vm.unit_barcode(
+                                                        12,
+                                                        item
+                                                      )
+                                                    }
                                                   },
                                                   model: {
                                                     value: item.barcode,
@@ -2378,16 +2375,16 @@ var render = function() {
                                                 model: {
                                                   value:
                                                     _vm.product
-                                                      .product_sales_account_code,
+                                                      .product_sales_account_id,
                                                   callback: function($$v) {
                                                     _vm.$set(
                                                       _vm.product,
-                                                      "product_sales_account_code",
+                                                      "product_sales_account_id",
                                                       $$v
                                                     )
                                                   },
                                                   expression:
-                                                    "product.product_sales_account_code"
+                                                    "product.product_sales_account_id"
                                                 }
                                               })
                                             : _vm._e()
@@ -2412,16 +2409,16 @@ var render = function() {
                                                 model: {
                                                   value:
                                                     _vm.product
-                                                      .product_sales_return_account_code,
+                                                      .product_sales_return_account_id,
                                                   callback: function($$v) {
                                                     _vm.$set(
                                                       _vm.product,
-                                                      "product_sales_return_account_code",
+                                                      "product_sales_return_account_id",
                                                       $$v
                                                     )
                                                   },
                                                   expression:
-                                                    "product.product_sales_return_account_code"
+                                                    "product.product_sales_return_account_id"
                                                 }
                                               })
                                             : _vm._e()
@@ -2549,16 +2546,16 @@ var render = function() {
                                                 model: {
                                                   value:
                                                     _vm.product
-                                                      .product_cogs_account_code,
+                                                      .product_cogs_account_id,
                                                   callback: function($$v) {
                                                     _vm.$set(
                                                       _vm.product,
-                                                      "product_cogs_account_code",
+                                                      "product_cogs_account_id",
                                                       $$v
                                                     )
                                                   },
                                                   expression:
-                                                    "product.product_cogs_account_code"
+                                                    "product.product_cogs_account_id"
                                                 }
                                               })
                                             : _vm._e()
@@ -2584,16 +2581,16 @@ var render = function() {
                                                 model: {
                                                   value:
                                                     _vm.product
-                                                      .product_purchase_return_account_code,
+                                                      .product_purchase_return_account_id,
                                                   callback: function($$v) {
                                                     _vm.$set(
                                                       _vm.product,
-                                                      "product_purchase_return_account_code",
+                                                      "product_purchase_return_account_id",
                                                       $$v
                                                     )
                                                   },
                                                   expression:
-                                                    "product.product_purchase_return_account_code"
+                                                    "product.product_purchase_return_account_id"
                                                 }
                                               })
                                             : _vm._e()

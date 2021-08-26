@@ -26,7 +26,7 @@ class ProductController extends Controller
     {
 
 
-        $products = Product::where('ar_name', 'LIKE', '%' . $request->search . '%')
+        $products = Product::where('ar_name', 'LIKE', '%' . $request->search . '%')->with('groups')
             // ->orWhere('en_name', 'LIKE', '%' . $request->search . '%')
             // ->orWhere('barcode', 'LIKE', '%' . $request->search . '%')
             ->paginate($request->itemsPerPage != -1 ? $request->itemsPerPage : '');
@@ -42,7 +42,7 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function getCreate()
+    public function create()
     {
 
 
@@ -57,7 +57,7 @@ class ProductController extends Controller
                 'inventories' => Inventory::all(),
                 'distribution_policies' => DistributionPolicy::all(),
                 'taxes' => Tax::all(),
-                'product_sales_accounts' =>  $this->showAccounts(4),
+                'product_sales_accounts' =>  $this->showAccounts(41),
                 //'product_sales_return_accounts' =>  $this->showAccounts(4),
                 'product_cogs_accounts' =>  $this->showAccounts(5),
                 //'product_purchase_return_accounts' =>  $this->showAccounts(4),

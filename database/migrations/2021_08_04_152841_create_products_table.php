@@ -24,12 +24,15 @@ class CreateProductsTable extends Migration
 
             $table->unsignedInteger ('prdct_form_id')->nullable();
             $table->unsignedInteger ('prdct_type_id');
+
+            $table->unsignedInteger ('minor_unit');
             $table->unsignedInteger ('main_sales_unit_id');
             $table->unsignedInteger ('main_purchase_unit_id');
 
 
-            $table->unsignedInteger ('product_cogs_account_code');
-            $table->unsignedInteger ('product_sales_account_code');
+            $table->unsignedInteger ('product_cogs_account_id');
+            $table->unsignedInteger ('product_sales_account_id');
+            
 
 
 

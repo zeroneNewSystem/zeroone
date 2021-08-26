@@ -23,12 +23,9 @@
       </template>
 
       <template v-slot:item.actions="{ item }">
-        <router-link
-          style="text-decoration: none"
-          :to="'/addupdatedrugclass/' + item.id"
+        <router-link :to="{ name: 'product', params: { product: item } }"
+          ><v-icon small>mdi-pencil</v-icon></router-link
         >
-          <v-icon small @click="$emit('updatestatus', item)">mdi-pencil</v-icon>
-        </router-link>
 
         <router-link
           style="text-decoration: none"

@@ -2,7 +2,7 @@
 
 namespace Database\Factories\Modules\Admin\Products\Models;
 
-use App\Models\PrdctGroupsProduct;
+use App\Modules\Admin\Products\Models\PrdctGroupsProduct;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class PrdctGroupsProductFactory extends Factory
@@ -22,6 +22,9 @@ class PrdctGroupsProductFactory extends Factory
     public function definition()
     {
         return [
+            'company_id'  => 1,
+            'product_id'  => $this->faker->randomNumber(1,10),
+            'prdct_group_id'  => $this->faker->randomNumber(1,2),
             //
         ];
     }

@@ -2,7 +2,7 @@ import Api from "./Api";
 
 export default {
 
-    getCreate() {
+    create() {
         return Api.get("/products/create");
     },
     postCreate(product) {

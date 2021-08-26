@@ -45,7 +45,11 @@
       <v-form @submit.prevent ref="form">
         <v-card>
           <v-card-title>
-            <v-row class="justify-space-between" justify="center" align="center">
+            <v-row
+              class="justify-space-between"
+              justify="center"
+              align="center"
+            >
               <v-col cols="12" lg="3">
                 {{ formTitle }}
               </v-col>
@@ -203,7 +207,7 @@
                         toString(Math.floor(Math.random(1, 100) * 100))
                       "
                     >
-                      <template v-slot:item.main_sales_unit="{ item }">
+                      <template v-slot:item.main_sales_unit_id="{ item }">
                         <v-radio-group
                           class="product-radio"
                           v-model="product.main_sales_unit_id"
@@ -221,7 +225,7 @@
                           </div>
                         </v-radio-group>
                       </template>
-                      <template v-slot:item.main_purchase_unit="{ item }">
+                      <template v-slot:item.main_purchase_unit_id="{ item }">
                         <v-radio-group
                           class="product-radio"
                           v-model="product.main_purchase_unit_id"
@@ -245,11 +249,11 @@
                         </div>
                       </template>
 
-                      <template v-slot:item.id="{ item }">
+                      <template v-slot:item.prdct_unit_id="{ item }">
                         <v-autocomplete
                           placeholder="اختر وحدة"
                           outlined
-                          v-model="item.id"
+                          v-model="item.prdct_unit_id"
                           :items="prdct_units"
                           item-value="id"
                           item-text="ar_name"
@@ -290,7 +294,10 @@
                       </template>
                       <template v-slot:item.barcode="{ item }">
                         <v-text-field
+                          class="product-unit-barcode"
                           outlined
+                          append-icon="mdi-alpha-g-circle"
+                          @click:append="unit_barcode(12, item)"
                           v-model="item.barcode"
                           :rules="required"
                         ></v-text-field>
@@ -357,7 +364,7 @@
                     <v-col cols="6" lg="3"
                       ><v-autocomplete
                         label="حساب المبيعات"
-                        v-model="product.product_sales_account_code"
+                        v-model="product.product_sales_account_id"
                         :items="product_sales_accounts"
                         item-text="ar_name"
                         item-value="id"
@@ -368,7 +375,7 @@
                     <v-col cols="6" lg="3"
                       ><v-autocomplete
                         label="حساب مردود المبيعات"
-                        v-model="product.product_sales_return_account_code"
+                        v-model="product.product_sales_return_account_id"
                         :items="product_sales_return_accounts"
                         item-text="ar_name"
                         item-value="id"
@@ -415,7 +422,7 @@
                     <v-col cols="6" lg="3"
                       ><v-autocomplete
                         label="حساب تكلفة المبيعات"
-                        v-model="product.product_cogs_account_code"
+                        v-model="product.product_cogs_account_id"
                         :items="product_cogs_accounts"
                         item-text="ar_name"
                         item-value="id"
@@ -426,7 +433,7 @@
                     <v-col cols="6" lg="3"
                       ><v-autocomplete
                         label="حساب مردود المشتتريات"
-                        v-model="product.product_purchase_return_account_code"
+                        v-model="product.product_purchase_return_account_id"
                         :items="product_purchase_return_accounts"
                         item-text="ar_name"
                         item-value="id"
@@ -660,6 +667,7 @@ export default {
       /*-----------------------accounts---------------------------*/
       product_sales_accounts: [],
       product_sales_return_accounts: [],
+      product_purchase_return_accounts: [],
       product_cogs_accounts: [],
 
       /*-----------------------extra units---------------------------*/
@@ -668,19 +676,19 @@ export default {
           text: " افتراضية البيع ",
           align: "center",
           sortable: false,
-          value: "main_sales_unit",
+          value: "main_sales_unit_id",
         },
         {
           text: " افتراضية الشراء ",
           align: "center",
           sortable: false,
-          value: "main_purchase_unit",
+          value: "main_purchase_unit_id",
         },
         {
           text: " الوحدة",
           align: "center",
           sortable: false,
-          value: "id",
+          value: "prdct_unit_id",
         },
         {
           text: "تساوي",
@@ -717,6 +725,7 @@ export default {
           align: "center",
           sortable: false,
           value: "barcode",
+          width: "150"
         },
         { text: "actions ", align: "center", value: "actions" },
       ],
@@ -724,16 +733,12 @@ export default {
       /*-----------------------units---------------------------*/
       prdct_units: [
         {
-          main_sales_unit: "2",
-          main_purchase_unit: "2",
-
-          ar_name: "salam",
-          en_name: "kk",
+          prdct_unit_id: "",
           contains: 1,
-          from_unit: "salam",
+          
           purchase_price: "20",
           sales_price: "25",
-          barcode: "129101101",
+          barcode: "",
         },
       ],
 
@@ -767,12 +772,9 @@ export default {
         en_name: "en_name",
         prdct_units: [
           {
-            main_sales_unit: "main_sales_unit",
-            main_purchase_unit: "main_purchase_unit",
-            id: "",
-            en_name: "",
+            prdct_unit_id: "",
             contains: 1,
-            from_unit: "",
+            
             purchase_price: "9",
             sales_price: "8",
             barcode: "",
@@ -785,8 +787,8 @@ export default {
         main_sales_unit_id: 1,
         main_purchase_unit_id: 1,
 
-        product_cogs_account_code: 1,
-        product_sales_account_code: 1,
+        product_cogs_account_id: 1,
+        product_sales_account_id: 1,
 
         sales_discount: 10,
         sales_discount_type_id: 1,
@@ -847,24 +849,12 @@ export default {
   },
 
   computed: {
-    indexOfPurchaseMainUnit() {
-      return this.product.prdct_units.indexOf(
-        this.product.prdct_units.find((elem) => {
-          return elem.main_purchase_unit == "main_purchase_unit";
-        })
-      );
-    },
-    indexOfsales_MainUnit() {
-      return this.product.prdct_units.indexOf(
-        this.product.prdct_units.find((elem) => {
-          return elem.main_sales_unit == "main_sales_unit";
-        })
-      );
-    },
     fromUnit() {
-      if (this.product.prdct_units[0].id == "") return "-";
-
-      return this.prdct_units[this.product.prdct_units[0].id - 1].ar_name;
+      this.product.minor_unit = this.product.prdct_units[0].prdct_unit_id
+      alert(this.product.minor_unit)
+      if (this.product.prdct_units[0].prdct_unit_id == "") return "-";
+      return this.prdct_units[this.product.prdct_units[0].prdct_unit_id - 1].ar_name;
+      
     },
     formTitle() {
       return this.editedIndex === -1 ? "إضافة صنف جديد" : "تعديل البيانات";
@@ -876,7 +866,7 @@ export default {
     //   this.accounts = response.data.accounts;
 
     // });
-    Product.getCreate()
+    Product.create() //get method
       .then((response) => {
         this.prdct_forms = response.data.prdct_forms;
         this.prdct_groups = response.data.prdct_groups;
@@ -897,9 +887,18 @@ export default {
         console.log(errors.response.data);
       })
       .finally();
+    console.log(this.$route.params["product"]);
+    if (this.$route.params["product"]) {
+      alert("ddd");
+      this.product = this.$route.params["product"];
+      console.log(this.product);
+    }
   },
 
   methods: {
+    unit_barcode(length, item) {
+      item.barcode = this.generate(length);
+    },
     pickFile() {
       this.$refs.imageRef.click();
     },
@@ -939,12 +938,10 @@ export default {
 
       if (this.product.prdct_units.length == 0) {
         this.product.prdct_units.push({
-          main_sales_unit: 1,
-          main_purchase_unit: 1,
-          id: "",
-          en_name: "",
+          prdct_unit_id: "",
+
           contains: 1,
-          from_unit: "",
+          
           purchase_price: "",
           sales_price: "",
           barcode: "",
@@ -962,45 +959,26 @@ export default {
         this.product.main_purchase_unit_id = 1;
       }
     },
-    uncheckAnotherRadioButtons(item, type) {
-      //alert('sdsdsd')
-      if (type == "sales_") {
-        this.product.prdct_units.forEach((element) => {
-          console.log(element);
-          element.main_sales_unit = "";
-        });
-        item.main_sales_unit = "main_sales_unit";
-      }
-      if (type == "purchase") {
-        this.product.prdct_units.forEach((element) => {
-          console.log(element);
-          element.main_purchase_unit = "";
-        });
-        item.main_purchase_unit = "main_purchase_unit";
-      }
-    },
+
     prventTwiseUnitSelection(item) {
       let index = this.product.prdct_units.indexOf(item);
       let sameunits = this.product.prdct_units.filter(
-        (elem) => elem.id == item.id
+        (elem) => elem.prdct_unit_id == item.prdct_unit_id
       );
       if (sameunits.length > 1) {
         alert("لايمكن تكرار الوحدات!");
-        item.id = 0;
+        item.prdct_unit_id = 0;
       }
     },
     add_extra_unit() {},
     addUnit() {
       this.product.prdct_units.push({
-        main_sales_unit: "2",
-        main_purchase_unit: "2",
-        id: "",
-        en_name: "",
+        prdct_unit_id: "",
         contains: 1,
-        from_unit: "salam",
+        
         purchase_price: "12",
         sales_price: "25",
-        barcode: "129101101",
+        barcode: "",
       });
     },
 
@@ -1249,5 +1227,9 @@ export default {
   border-radius: 10px;
   border: 1px solid #eee;
   cursor: pointer;
+}
+.product-unit-barcode .v-input__append-inner {
+  margin-top: 6px !important;
+  margin-left: -13px;
 }
 </style>

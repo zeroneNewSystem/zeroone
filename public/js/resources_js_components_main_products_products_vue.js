@@ -62,9 +62,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
-//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
@@ -197,7 +194,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Api */ "./resources/js/apis/Api.js");
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  getCreate: function getCreate() {
+  create: function create() {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/products/create");
   },
   postCreate: function postCreate(product) {
@@ -362,22 +359,14 @@ var render = function() {
                 _c(
                   "router-link",
                   {
-                    staticStyle: { "text-decoration": "none" },
-                    attrs: { to: "/addupdatedrugclass/" + item.id }
+                    attrs: {
+                      to: { name: "product", params: { product: item } }
+                    }
                   },
                   [
-                    _c(
-                      "v-icon",
-                      {
-                        attrs: { small: "" },
-                        on: {
-                          click: function($event) {
-                            return _vm.$emit("updatestatus", item)
-                          }
-                        }
-                      },
-                      [_vm._v("mdi-pencil")]
-                    )
+                    _c("v-icon", { attrs: { small: "" } }, [
+                      _vm._v("mdi-pencil")
+                    ])
                   ],
                   1
                 ),

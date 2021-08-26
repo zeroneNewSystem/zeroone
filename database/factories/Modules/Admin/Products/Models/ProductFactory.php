@@ -21,7 +21,7 @@ class ProductFactory extends Factory
      * @return array
      */
     public function definition()
-    {
+    { 
         return [
             'company_id'  => 1,
             'barcode'  => $this->faker->unique()->ean13(),
@@ -30,10 +30,11 @@ class ProductFactory extends Factory
             'en_name'  => $this->faker->name(),
             'prdct_form_id'  => 1,
             'prdct_type_id'  => 1,
+            'minor_unit'  => 1,
             'main_sales_unit_id'  => 1,
             'main_purchase_unit_id'  => 1,
-            'product_cogs_account_code'  => 1,
-            'product_sales_account_code'  => 1,
+            'product_cogs_account_id'  => 1,
+            'product_sales_account_id'  => 1,
             'sales_discount'  => 5.0,
             'sales_discount_type_id'  => 1,
             'purchase_discount'  => 2.5,
@@ -50,6 +51,7 @@ class ProductFactory extends Factory
             'description'  => $this->faker->paragraph(),
             'inventory_id'  => 1,
             'image'  => $this->faker->text(),
+            //'image' => $this->faker->image('public/images',640,480, null, false), generate images
             'distribution_policy_id'  => 1,
             'is_free'  => 0,
 

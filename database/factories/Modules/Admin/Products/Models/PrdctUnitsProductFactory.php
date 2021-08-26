@@ -22,6 +22,8 @@ class PrdctUnitsProductFactory extends Factory
     public function definition()
     {
         return [
+            'product_id'  => $this->faker->randomNumber(1, 10),
+            'prdct_unit_id'  => $this->faker->randomNumber(1, 6),
             //
         ];
     }

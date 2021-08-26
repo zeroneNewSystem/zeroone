@@ -19,6 +19,10 @@ class DatabaseSeeder extends Seeder
 
 
         \App\Modules\Admin\Products\Models\Product::factory(10)->create();
+        \App\Modules\Admin\Products\Models\Product::factory(10)->create();
+        \App\Modules\Admin\Products\Models\PrdctGroupsProduct::factory(20)->create();
+        \App\Modules\Admin\Products\Models\PrdctUnitProduct::factory(20)->create();
+
         User::factory(1)->create();
 
         $this->call(

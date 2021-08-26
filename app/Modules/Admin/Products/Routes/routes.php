@@ -14,7 +14,7 @@ Route::group(["prefix" => "products"], function () {
 
     Route::delete('/', 'ProductController@destroy');
     Route::get('/', 'ProductController@index');
-    Route::get('/create', 'ProductController@getCreate');
+    Route::get('/create', 'ProductController@create');
     Route::post('/create', 'ProductController@postCreate');
 });
 
@@ -26,7 +26,7 @@ Route::group(["prefix" => "units"], function () {
     Route::put('/', 'PrdctUnitController@update');
     Route::delete('/{id}', 'PrdctUnitController@destroy');
 
-    Route::get('/create', 'PrdctUnitController@getCreate');
+    Route::get('/create', 'PrdctUnitController@create');
 });
 
 Route::group(["prefix" => "types"], function () {
@@ -37,7 +37,7 @@ Route::group(["prefix" => "types"], function () {
     Route::put('/', 'PrdctTypeController@update');
     Route::delete('/{id}', 'PrdctTypeController@destroy');
 
-    Route::get('/create', 'PrdctTypeController@getCreate');
+    Route::get('/create', 'PrdctTypeController@create');
 });
 
 Route::group(["prefix" => "forms"], function () {
@@ -48,7 +48,7 @@ Route::group(["prefix" => "forms"], function () {
     Route::put('/', 'PrdctFormController@update');
     Route::delete('/{id}', 'PrdctFormController@destroy');
 
-    Route::get('/create', 'PrdctFormController@getCreate');
+    Route::get('/create', 'PrdctFormController@create');
 });
 
 Route::group(["prefix" => "groups"], function () {
@@ -59,5 +59,5 @@ Route::group(["prefix" => "groups"], function () {
     Route::put('/', 'PrdctGroupController@update');
     Route::delete('/{id}', 'PrdctGroupController@destroy');
 
-    Route::get('/create', 'PrdctGroupController@getCreate');
+    Route::get('/create', 'PrdctGroupController@create');
 });
