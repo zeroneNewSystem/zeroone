@@ -117,7 +117,7 @@ export default {
         "addupdateoutcome",
         "addoutcomeitem",
       ],
-      ["addupdatepurchase", "purchasemanagement"],
+      ["purchase", "purchasemanagement"],
       
       [
         "accounts",

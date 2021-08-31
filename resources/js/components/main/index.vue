@@ -34,13 +34,13 @@
       </v-app-bar>
 
       <v-main>
-        <v-container fluid>
+        <div fluid style="margin: 0px; padding: 0px; width: 100%">
           <v-row align="center" justify="center">
             <v-col class="text-center">
               <router-view class="main-view" name="mainView" />
             </v-col>
           </v-row>
-        </v-container>
+        </div>
       </v-main>
       <v-footer color="pink" app>
         <span class="white--text">&copy; {{ new Date().getFullYear() }}</span>

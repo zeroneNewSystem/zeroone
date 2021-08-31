@@ -792,11 +792,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         ar_name: "ar_name",
         en_name: "en_name",
         prdct_units: [{
-          prdct_unit_id: "",
+          prdct_unit_id: 1,
           contains: 1,
           purchase_price: "9",
           sales_price: "8",
-          barcode: ""
+          barcode: "0"
         }],
         prdct_group_ids: [1, 2],
         prdct_form_id: 1,
@@ -816,7 +816,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         stagnation_period: 100,
         opening_balance_quantity: 200,
         opening_balance_cost: 150,
-        profit_ratio: "profit_ratio",
+        profit_ratio: 5.4,
         side_effect: "side_effect",
         description: "description",
         inventory_id: 1,
@@ -851,6 +851,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       dialog: false,
       printing_dialog: false,
       isUpdating: false,
+      new_product: true,
       editedIndex: -1,
       title: "إضافة صنف",
       selectedGroups: []
@@ -859,7 +860,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   computed: {
     fromUnit: function fromUnit() {
       this.product.minor_unit = this.product.prdct_units[0].prdct_unit_id;
-      alert(this.product.minor_unit);
       if (this.product.prdct_units[0].prdct_unit_id == "") return "-";
       return this.prdct_units[this.product.prdct_units[0].prdct_unit_id - 1].ar_name;
     },
@@ -894,12 +894,25 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     console.log(this.$route.params["product"]);
 
     if (this.$route.params["product"]) {
-      alert("ddd");
-      this.product = this.$route.params["product"];
-      console.log(this.product);
+      this.product = JSON.parse(JSON.stringify(this.productConverter(this.$route.params["product"])));
+      this.new_product = false;
     }
   },
   methods: {
+    productConverter: function productConverter(product) {
+      if (product.image == "" || product.image == "no-image.png") product.image = "no-image.png";else product.image = "/storage/products_images/" + product.image;
+      product.prdct_group_ids = [];
+      product.prdct_units = []; //convert groups
+
+      product.groups.forEach(function (elem) {
+        return product.prdct_group_ids.push(elem.id);
+      }); //convert units
+
+      product.units.forEach(function (elem) {
+        return product.prdct_units.push(elem.pivot);
+      });
+      return product;
+    },
     unit_barcode: function unit_barcode(length, item) {
       item.barcode = this.generate(length);
     },
@@ -981,6 +994,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     add_extra_unit: function add_extra_unit() {},
     addUnit: function addUnit() {
+      console.log(this.product.prdct_units);
       this.product.prdct_units.push({
         prdct_unit_id: "",
         contains: 1,
@@ -1141,25 +1155,25 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
     },
     submit: function submit() {
-      var _this8 = this;
-
       console.log(this.product);
-      return;
 
-      if (this.$refs.form.validate()) {
-        axios__WEBPACK_IMPORTED_MODULE_0___default().post("router.php", item).then(function (response) {
-          _this8.snackbar = true;
-          console.log(response.data);
-          _this8.loading = false;
-
-          _this8.initializeformproduct();
-
-          console.log(_this8.initializeformproduct());
-          console.log("nibtsas");
-
-          _this8.$refs.form.resetValidation();
+      if (this.new_product) {
+        _apis_Product__WEBPACK_IMPORTED_MODULE_1__.default.store(this.product).then(function (response) {
+          console.log("response.data", response.data); // this.snackbar = true;
+          // this.loading = false;
+          // this.initializeformproduct();
+          // console.log(this.initializeformproduct());
+          // console.log("nibtsas");
+          // this.$refs.form.resetValidation();
         });
+        return;
       }
+
+      _apis_Product__WEBPACK_IMPORTED_MODULE_1__.default.update(this.product).then(function (response) {
+        console.log("response.data", response.data);
+      }); //return;
+      //if (this.$refs.form.validate()) {
+      // }
     },
     update: function update(item) {
       console.log(item);
@@ -1178,11 +1192,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.dateFormatted = this.date;
     },
     isUpdating: function isUpdating(val) {
-      var _this9 = this;
+      var _this8 = this;
 
       if (val) {
         setTimeout(function () {
-          return _this9.isUpdating = false;
+          return _this8.isUpdating = false;
         }, 3000);
       }
     }
@@ -1210,11 +1224,22 @@ __webpack_require__.r(__webpack_exports__);
   create: function create() {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/products/create");
   },
+  store: function store(product) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/products/", product);
+  },
+  update: function update(product) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("/products/", product);
+  },
   postCreate: function postCreate(product) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/products/create", product);
   },
   get: function get(params) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/products/", {
+      params: params
+    });
+  },
+  search: function search(params) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/products/search", {
       params: params
     });
   },
@@ -1662,7 +1687,7 @@ var render = function() {
                                 [
                                   _c("v-autocomplete", {
                                     attrs: {
-                                      disabled: _vm.isUpdating,
+                                      disabled: !!_vm.isUpdating,
                                       items: _vm.prdct_groups,
                                       "item-text": "ar_name",
                                       "item-value": "id",
@@ -1725,7 +1750,7 @@ var render = function() {
                                 [
                                   _c("v-autocomplete", {
                                     attrs: {
-                                      disabled: _vm.isUpdating,
+                                      disabled: !!_vm.isUpdating,
                                       items: _vm.prdct_forms,
                                       "item-text": "ar_name",
                                       "item-value": "id",
@@ -2071,7 +2096,7 @@ var render = function() {
                                                   attrs: {
                                                     outlined: "",
                                                     disabled:
-                                                      _vm.product.prdct_units.indexOf(
+                                                      !!_vm.product.prdct_units.indexOf(
                                                         item
                                                       ) == 0,
                                                     rules: _vm.required
@@ -2096,7 +2121,7 @@ var render = function() {
                                                   attrs: {
                                                     outlined: "",
                                                     disabled:
-                                                      _vm.product.prdct_units.indexOf(
+                                                      !!_vm.product.prdct_units.indexOf(
                                                         item
                                                       ) == 0,
                                                     rules: _vm.required
@@ -2338,7 +2363,8 @@ var render = function() {
                                               "margin-top": "0px"
                                             },
                                             attrs: {
-                                              disabled: _vm.product.is_storable,
+                                              disabled: !!_vm.product
+                                                .is_storable,
                                               color: "#e91e63",
                                               label: "قابل للبيع"
                                             },
@@ -2508,7 +2534,8 @@ var render = function() {
                                               "margin-top": "0px"
                                             },
                                             attrs: {
-                                              disabled: _vm.product.is_storable,
+                                              disabled: !!_vm.product
+                                                .is_storable,
                                               color: "#e91e63",
                                               label: "قابل للشراء"
                                             },

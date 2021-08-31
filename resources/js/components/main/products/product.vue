@@ -118,7 +118,7 @@
                 <v-col cols="12" lg="4">
                   <v-autocomplete
                     v-model="product.prdct_group_ids"
-                    :disabled="isUpdating"
+                    :disabled="!!isUpdating"
                     :items="prdct_groups"
                     item-text="ar_name"
                     item-value="id"
@@ -142,7 +142,7 @@
                 <v-col cols="12" lg="4">
                   <v-autocomplete
                     v-model="product.prdct_form_id"
-                    :disabled="isUpdating"
+                    :disabled="!!isUpdating"
                     :items="prdct_forms"
                     item-text="ar_name"
                     item-value="id"
@@ -209,7 +209,7 @@
                     >
                       <template v-slot:item.main_sales_unit_id="{ item }">
                         <v-radio-group
-                          class="product-radio"
+                          class="product-radio" 
                           v-model="product.main_sales_unit_id"
                         >
                           <div
@@ -265,7 +265,7 @@
                       <template v-slot:item.from_unit="{ item }">
                         <v-text-field
                           outlined
-                          :disabled="product.prdct_units.indexOf(item) == 0"
+                          :disabled="!!product.prdct_units.indexOf(item) == 0"
                           v-model="fromUnit"
                           :rules="required"
                         ></v-text-field>
@@ -273,7 +273,7 @@
                       <template v-slot:item.contains="{ item }">
                         <v-text-field
                           outlined
-                          :disabled="product.prdct_units.indexOf(item) == 0"
+                          :disabled="!!product.prdct_units.indexOf(item) == 0"
                           v-model="item.contains"
                           :rules="required"
                         ></v-text-field>
@@ -348,7 +348,7 @@
                   <v-row>
                     <v-col cols="12" lg="2"
                       ><v-checkbox
-                        :disabled="product.is_storable"
+                        :disabled="!!product.is_storable"
                         v-model="product.is_sellable"
                         style="
                           white-space: nowrap;
@@ -406,7 +406,7 @@
                   <v-row>
                     <v-col cols="12" lg="2"
                       ><v-checkbox
-                        :disabled="product.is_storable"
+                        :disabled="!!product.is_storable"
                         v-model="product.is_purchasable"
                         style="
                           white-space: nowrap;
@@ -725,7 +725,7 @@ export default {
           align: "center",
           sortable: false,
           value: "barcode",
-          width: "150"
+          width: "150",
         },
         { text: "actions ", align: "center", value: "actions" },
       ],
@@ -735,7 +735,7 @@ export default {
         {
           prdct_unit_id: "",
           contains: 1,
-          
+
           purchase_price: "20",
           sales_price: "25",
           barcode: "",
@@ -772,12 +772,12 @@ export default {
         en_name: "en_name",
         prdct_units: [
           {
-            prdct_unit_id: "",
+            prdct_unit_id: 1,
             contains: 1,
-            
+
             purchase_price: "9",
             sales_price: "8",
-            barcode: "",
+            barcode: "0",
           },
         ],
 
@@ -801,7 +801,7 @@ export default {
         stagnation_period: 100,
         opening_balance_quantity: 200,
         opening_balance_cost: 150,
-        profit_ratio: "profit_ratio",
+        profit_ratio: 5.4,
         side_effect: "side_effect",
         description: "description",
         inventory_id: 1,
@@ -842,6 +842,8 @@ export default {
 
       isUpdating: false,
 
+      new_product: true,
+
       editedIndex: -1,
       title: "إضافة صنف",
       selectedGroups: [],
@@ -850,11 +852,11 @@ export default {
 
   computed: {
     fromUnit() {
-      this.product.minor_unit = this.product.prdct_units[0].prdct_unit_id
-      alert(this.product.minor_unit)
+      this.product.minor_unit = this.product.prdct_units[0].prdct_unit_id;
+
       if (this.product.prdct_units[0].prdct_unit_id == "") return "-";
-      return this.prdct_units[this.product.prdct_units[0].prdct_unit_id - 1].ar_name;
-      
+      return this.prdct_units[this.product.prdct_units[0].prdct_unit_id - 1]
+        .ar_name;
     },
     formTitle() {
       return this.editedIndex === -1 ? "إضافة صنف جديد" : "تعديل البيانات";
@@ -889,13 +891,30 @@ export default {
       .finally();
     console.log(this.$route.params["product"]);
     if (this.$route.params["product"]) {
-      alert("ddd");
-      this.product = this.$route.params["product"];
-      console.log(this.product);
+      this.product = JSON.parse(
+        JSON.stringify(this.productConverter(this.$route.params["product"]))
+      );
+
+      this.new_product = false;
     }
   },
 
   methods: {
+    productConverter(product) {
+      if (product.image == "" || product.image == "no-image.png")
+        product.image = "no-image.png";
+      else product.image = "/storage/products_images/" + product.image;
+      product.prdct_group_ids = [];
+      product.prdct_units = [];
+      //convert groups
+      product.groups.forEach((elem) => product.prdct_group_ids.push(elem.id));
+
+      //convert units
+      product.units.forEach((elem) => product.prdct_units.push(elem.pivot));
+
+      return product;
+    },
+
     unit_barcode(length, item) {
       item.barcode = this.generate(length);
     },
@@ -941,7 +960,7 @@ export default {
           prdct_unit_id: "",
 
           contains: 1,
-          
+
           purchase_price: "",
           sales_price: "",
           barcode: "",
@@ -972,10 +991,11 @@ export default {
     },
     add_extra_unit() {},
     addUnit() {
+      console.log(this.product.prdct_units);
       this.product.prdct_units.push({
         prdct_unit_id: "",
         contains: 1,
-        
+
         purchase_price: "12",
         sales_price: "25",
         barcode: "",
@@ -1170,18 +1190,25 @@ export default {
     submit() {
       console.log(this.product);
 
-      return;
-      if (this.$refs.form.validate()) {
-        axios.post("router.php", item).then((response) => {
-          this.snackbar = true;
-          console.log(response.data);
-          this.loading = false;
-          this.initializeformproduct();
-          console.log(this.initializeformproduct());
-          console.log("nibtsas");
-          this.$refs.form.resetValidation();
+      if (this.new_product) {
+        Product.store(this.product).then((response) => {
+          console.log("response.data", response.data);
+          // this.snackbar = true;
+          // this.loading = false;
+          // this.initializeformproduct();
+          // console.log(this.initializeformproduct());
+          // console.log("nibtsas");
+          // this.$refs.form.resetValidation();
         });
+        return;
       }
+      Product.update(this.product).then((response) => {
+        console.log("response.data", response.data);
+      });
+      //return;
+      //if (this.$refs.form.validate()) {
+
+      // }
     },
     update(item) {
       console.log(item);

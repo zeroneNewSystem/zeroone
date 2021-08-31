@@ -12,26 +12,72 @@ use App\Modules\Admin\Products\Models\PrdctUnit;
 use App\Modules\Admin\Products\Models\PrdctType;
 use App\Modules\Admin\Products\Models\Product;
 use App\Traits\AccountTrait;
+use App\Traits\ImageTrait;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    use AccountTrait;
+    use ImageTrait, AccountTrait;
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
+
+    public function search(Request $request)
+    {
+
+        if ($request->has('barcode'))
+
+            $products = Product::where('barcode', 'LIKE', '%' . $request->barcode . '%')
+                ->with('groups')
+                ->with('units')
+                ->orderBy('id', 'DESC')->get()
+                // ->orWhere('en_name', 'LIKE', '%' . $request->search . '%')
+                // ->orWhere('barcode', 'LIKE', '%' . $request->search . '%')
+            ;
+        
+
+        if ($request->has('name'))
+
+            $products = Product::where('ar_name', 'LIKE', '%' . $request->name . '%')
+                ->with('groups')
+                ->with('units')
+                ->orderBy('id', 'DESC')
+                // ->orWhere('en_name', 'LIKE', '%' . $request->search . '%')
+                // ->orWhere('barcode', 'LIKE', '%' . $request->search . '%')
+            ;
+
+
+        return response()->json([
+            'products' => $products, 'types' => PrdctType::all(),
+            'prdct_forms' => PrdctForm::all(),
+            'prdct_types' => PrdctType::all(),
+            'prdct_taxes' => Tax::all()
+        ]);
+
+        //
+        //return view('Products::index');
+    }
+
     public function index(Request $request)
     {
 
 
-        $products = Product::where('ar_name', 'LIKE', '%' . $request->search . '%')->with('groups')
+        $products = Product::where('ar_name', 'LIKE', '%' . $request->search . '%')
+            ->with('groups')
+            ->with('units')
+            ->orderBy('id', 'DESC')
             // ->orWhere('en_name', 'LIKE', '%' . $request->search . '%')
             // ->orWhere('barcode', 'LIKE', '%' . $request->search . '%')
             ->paginate($request->itemsPerPage != -1 ? $request->itemsPerPage : '');
 
-        return response()->json(['products' => $products]);
+        return response()->json([
+            'products' => $products, 'types' => PrdctType::all(),
+            'prdct_forms' => PrdctForm::all(),
+            'prdct_types' => PrdctType::all(),
+            'prdct_taxes' => Tax::all()
+        ]);
 
         //
         //return view('Products::index');
@@ -69,12 +115,26 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param  \Illuminate\Http\Reqponuest  $request
+     * @return \Illuminate\Http\Resse
      */
     public function store(Request $request)
     {
+
         //
+
+
+        // $usr = User::findOrFail($userId)->create($request->all());
+        // $usr->buy()->attach($request->codecs);
+
+        if ($request->image != 'no-image.png')
+            $request['image'] = $this->save_image($request);
+
+        $product = Product::create($request->all());
+        $product->units()->attach($request->prdct_units);
+        $product->groups()->attach($request->prdct_group_ids, ['company_id' => 1]);
+
+        return $product;
     }
 
     /**
@@ -106,9 +166,32 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Product $product)
+    public function update(Request $request)
     {
-        //
+
+
+
+        $product = Product::find($request->id);
+        if ($request->image == 'no-image.png')
+            if ($product->image != 'no-image.png')
+                $this->delete_image($request->image);
+        if ($request->image != 'no-image.png')
+            if ($product->image != basename($request->image)) {
+                echo $product->image . ' ' . basename($request->image);
+
+                $this->delete_image($product->image);
+                $request['image'] = $this->save_image($request);
+            } else  $request['image'] = basename($request->image);
+
+
+
+        $product->update($request->all());
+        $product->units()->detach();
+        $product->groups()->detach();
+
+        $product->units()->attach($request->prdct_units);
+        $product->groups()->attach($request->prdct_group_ids, ['company_id' => 1]);
+        return 1;
     }
 
     /**

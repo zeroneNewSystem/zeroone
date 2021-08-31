@@ -101,6 +101,17 @@ const router = new VueRouter({
                         mainView: () =>
                             import ("./components/main/products/products")
                     }
+                },
+                {
+                    path: "/purchase",
+                    name: "purchase",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import ("./components/main/purchases/purchase"),
+                        mainView: () =>
+                            import ("./components/main/purchases/purchase")
+                    }
                 }
             ]
         },

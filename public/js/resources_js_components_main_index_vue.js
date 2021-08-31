@@ -339,37 +339,36 @@ var render = function() {
             1
           ),
           _vm._v(" "),
-          _c(
-            "v-main",
-            [
-              _c(
-                "v-container",
-                { attrs: { fluid: "" } },
-                [
-                  _c(
-                    "v-row",
-                    { attrs: { align: "center", justify: "center" } },
-                    [
-                      _c(
-                        "v-col",
-                        { staticClass: "text-center" },
-                        [
-                          _c("router-view", {
-                            staticClass: "main-view",
-                            attrs: { name: "mainView" }
-                          })
-                        ],
-                        1
-                      )
-                    ],
-                    1
-                  )
-                ],
-                1
-              )
-            ],
-            1
-          ),
+          _c("v-main", [
+            _c(
+              "div",
+              {
+                staticStyle: { margin: "0px", padding: "0px", width: "100%" },
+                attrs: { fluid: "" }
+              },
+              [
+                _c(
+                  "v-row",
+                  { attrs: { align: "center", justify: "center" } },
+                  [
+                    _c(
+                      "v-col",
+                      { staticClass: "text-center" },
+                      [
+                        _c("router-view", {
+                          staticClass: "main-view",
+                          attrs: { name: "mainView" }
+                        })
+                      ],
+                      1
+                    )
+                  ],
+                  1
+                )
+              ],
+              1
+            )
+          ]),
           _vm._v(" "),
           _c("v-footer", { attrs: { color: "pink", app: "" } }, [
             _c("span", { staticClass: "white--text" }, [

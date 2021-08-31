@@ -1,5 +1,14 @@
  <template>
   <div>
+    <product-info
+      :dialog="product_info_dialog"
+      :product="product_info_product"
+      :prdct_forms="prdct_forms"
+      :prdct_taxes="prdct_taxes"
+      :prdct_types="prdct_types"
+    >
+      <span slot="title"> معلومات الصنف</span>
+    </product-info>
     <v-data-table
       :headers="headers"
       :items="products"
@@ -27,13 +36,9 @@
           ><v-icon small>mdi-pencil</v-icon></router-link
         >
 
-        <router-link
-          style="text-decoration: none"
-          :to="'/drugclass-details/' + item.id"
-          @click="$emit('update-status', status)"
-        >
-          <v-icon small>mdi-view-module</v-icon>
-        </router-link>
+        <v-btn icon @click.stop="show_product_dialog(item)">
+          <v-icon small class="outlined font-size-12">mdi-eye</v-icon>
+        </v-btn>
 
         <v-icon small @click="deleteProduct(item)">mdi-delete</v-icon>
       </template>
@@ -44,15 +49,27 @@
 
 <script>
 import Product from "../../../apis/Product";
+import ProductInfo from "./product-info.vue";
 export default {
+  components: {
+    ProductInfo,
+  },
   data() {
     return {
+      //-------etched data-----------------f
+      products: [],
+      prdct_types: [],
+      prdct_forms: [],
+      prdct_taxes: [],
+
+      //-----------------------------------//
+      product_info_product: "",
+      product_info_dialog: false,
       search: "",
       status: "salam",
       title: "إدارة الأصناف",
       //---
       products_total: 20,
-      products: [],
       loading: true,
       options: {},
       headers: [
@@ -88,8 +105,12 @@ export default {
     params: {
       handler() {
         this.getDataFromApi().then((response) => {
-          this.products = response.data;
-          this.products_total = response.total;
+          this.products = response.data.products.data;
+          this.prdct_types = response.data.prdct_types;
+          this.prdct_forms = response.data.prdct_forms;
+          this.prdct_taxes = response.data.prdct_taxes;
+          this.products_total = response.data.products.total;
+          this.product_info_product = response.data.products.data[0];
           console.log(this.products_total);
         });
       },
@@ -102,6 +123,11 @@ export default {
   //   });
   // },
   methods: {
+    show_product_dialog(item) {
+      this.product_info_dialog = true;
+      console.log(item);
+      this.product_info_product = item;
+    },
     deleteProduct(item) {
       this.loading = true;
       const { sortBy, sortDesc, page, itemsPerPage } = this.options;
@@ -121,7 +147,7 @@ export default {
 
         Product.get({ page, itemsPerPage, search }).then((response) => {
           this.loading = false;
-          resolve(response.data.products);
+          resolve(response);
         });
       });
     },

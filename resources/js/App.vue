@@ -1,22 +1,19 @@
 <template>
   <div id="app">
     <v-app>
-      <v-container>
-        
+      <div fluid>
         <router-view />
-      </v-container>
+      </div>
     </v-app>
   </div>
 </template>
 
 <script>
-
 export default {
-  
-  created(){
-    this.$vuetify.rtl = true
-  }
-}
+  created() {
+    this.$vuetify.rtl = true;
+  },
+};
 </script>
 
 

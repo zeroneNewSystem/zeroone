@@ -18,6 +18,9 @@ Route::get('/{any}', function () {
 })->where('all', '^((?!api).)*');
 
 
+
+
+
 Route::get('/', function () {
     return view('welcome');
 });

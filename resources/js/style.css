@@ -103,12 +103,18 @@ main.app-content {
 }
 
 .elevation-1 td {
-    font-size: 16px !important;
+    font-size: 0.95em !important;
     border-left: 1px solid whitesmoke;
+    font-weight: 100;
+}
+
+td .v-input {
+    font-size: 0.95em !important;
 }
 
 .elevation-1 th {
-    font-size: 14px !important;
+    font-size: 0.95em !important;
+    font-weight: 100;
 }
 
 .btn-info {

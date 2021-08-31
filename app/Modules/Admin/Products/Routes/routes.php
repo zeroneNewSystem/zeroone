@@ -14,8 +14,12 @@ Route::group(["prefix" => "products"], function () {
 
     Route::delete('/', 'ProductController@destroy');
     Route::get('/', 'ProductController@index');
+    Route::get('/search', 'ProductController@search');
+    Route::post('/', 'ProductController@store');
     Route::get('/create', 'ProductController@create');
     Route::post('/create', 'ProductController@postCreate');
+
+    Route::put('/', 'ProductController@update');
 });
 
 Route::group(["prefix" => "units"], function () {
