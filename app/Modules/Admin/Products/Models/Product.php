@@ -29,7 +29,7 @@ class Product extends Model
     public function units()
     {
         return $this->belongsToMany(PrdctUnit::class, 'prdct_units_products')
-            ->withPivot(["contains", "purchase_price", "sales_price", "barcode"]);
+            ->withPivot(["contains", "purchase_price", "sales_price", "barcode","id"]);
         //return $this->hasMany(PrdctUnitsProduct::class);
     }
 
@@ -40,7 +40,7 @@ class Product extends Model
         return $this->BelongsTo(PrdctForm::class,'prdct_form_id');
     }
     public function tax(){
-        return $this->BelongsTo(Tax::class,'sales_tax_id');
+        return $this->BelongsTo(Tax::class,'sales_tax');
     }
     public function select(){
         return PrdctForm::all();

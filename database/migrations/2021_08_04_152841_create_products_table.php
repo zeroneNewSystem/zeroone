@@ -42,8 +42,8 @@ class CreateProductsTable extends Migration
             $table->double('purchase_discount')->default(0.0);
             $table->unsignedInteger ('purchase_discount_type_id',)->default(0)->comment('0-percent, 1-amounr');
 
-            $table->unsignedInteger ('purchase_tax_id',);
-            $table->unsignedInteger ('sales_tax_id',);
+            $table->unsignedInteger ('purchase_tax',);
+            $table->unsignedInteger ('sales_tax',);
 
             $table->integer('min_alert',)->default(0);
             $table->integer('max_alert',)->default(0);

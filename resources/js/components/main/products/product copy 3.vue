@@ -151,7 +151,7 @@
                 <v-col cols="12" lg="3">
                   <v-autocomplete
                     label="الضريبة"
-                    v-model="product.sales_tax_id"
+                    v-model="product.sales_tax"
                     :items="taxes"
                     :item-text="
                       (item) => item.ar_name + ' ' + item.percentage + '%'
@@ -791,8 +791,8 @@ export default {
         sales_discount_type_id: 1,
         purchase_discount: 10,
         purchase_discount_type_id: 1,
-        purchase_tax_id: 1,
-        sales_tax_id: 1,
+        purchase_tax: 1,
+        sales_tax: 1,
         min_alert: 1,
         max_alert: 10,
         stagnation_period: 100,

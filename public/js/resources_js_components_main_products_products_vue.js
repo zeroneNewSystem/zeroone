@@ -261,15 +261,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   props: ["product", "prdct_forms", "prdct_taxes", "prdct_types", "dialog"],
   mounted: function mounted() {
@@ -370,24 +361,18 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     close: function close() {
-      var _this2 = this;
-
-      this.dialog = false;
-      this.$nextTick(function () {
-        _this2.editedItem = Object.assign({}, _this2.defaultItem);
-        _this2.editedIndex = -1;
-      });
+      this.$parent.$data.product_info_dialog = false;
     },
     emit_product: function emit_product() {},
     save: function save(item) {
-      var _this3 = this;
+      var _this2 = this;
 
       if (this.$refs.form.validate()) {
         var product = Object.assign({}, item);
         item.flag = "addproducts";
         item.filename = "products";
         axios.post("router.php", item).then(function (response) {
-          _this3.$emit("product", product);
+          _this2.$emit("product", product);
 
           console.log(response.data);
         });
@@ -396,7 +381,7 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     update: function update(item) {
-      var _this4 = this;
+      var _this3 = this;
 
       if (this.$refs.form.validate()) {
         var product = Object.assign({}, item);
@@ -404,7 +389,7 @@ __webpack_require__.r(__webpack_exports__);
         item.flag = "updateproducts";
         item.filename = "products";
         axios.post("router.php", item).then(function (response) {
-          _this4.$emit("product", product);
+          _this3.$emit("product", product);
 
           console.log(response.data);
         });
@@ -889,7 +874,7 @@ var render = function() {
   return _c(
     "v-dialog",
     {
-      attrs: { scrollable: "", "max-width": "1000px" },
+      attrs: { scrollable: "", "max-width": "1000px", persistent: "" },
       model: {
         value: _vm.dialog,
         callback: function($$v) {
@@ -1585,33 +1570,7 @@ var render = function() {
                   on: { click: _vm.close }
                 },
                 [_vm._v("الغاء")]
-              ),
-              _vm._v(" "),
-              _vm.editedIndex === -1
-                ? _c(
-                    "v-btn",
-                    {
-                      attrs: { color: "blue darken-1", text: "" },
-                      on: {
-                        click: function($event) {
-                          return _vm.save(_vm.edited_product)
-                        }
-                      }
-                    },
-                    [_vm._v("حفظ")]
-                  )
-                : _c(
-                    "v-btn",
-                    {
-                      attrs: { color: "blue darken-1", text: "" },
-                      on: {
-                        click: function($event) {
-                          return _vm.update(_vm.edited_product)
-                        }
-                      }
-                    },
-                    [_vm._v("تعديل")]
-                  )
+              )
             ],
             1
           )

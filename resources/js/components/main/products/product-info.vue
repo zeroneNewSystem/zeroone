@@ -1,5 +1,5 @@
 <template>
-  <v-dialog scrollable v-model="dialog" max-width="1000px">
+  <v-dialog scrollable v-model="dialog" max-width="1000px" persistent>
     <v-card>
       <v-card-title class="my-3 pa-0">
         <v-row style="font-size: 14px">
@@ -242,16 +242,7 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="blue darken-1" text @click="close">الغاء</v-btn>
-        <v-btn
-          v-if="editedIndex === -1"
-          color="blue darken-1"
-          text
-          @click="save(edited_product)"
-          >حفظ</v-btn
-        >
-        <v-btn v-else color="blue darken-1" text @click="update(edited_product)"
-          >تعديل</v-btn
-        >
+        
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -365,11 +356,7 @@ export default {
   }),
   methods: {
     close() {
-      this.dialog = false;
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      });
+      this.$parent.$data.product_info_dialog = false;
     },
     emit_product() {},
     save(item) {

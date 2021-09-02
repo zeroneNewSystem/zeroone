@@ -1,5 +1,14 @@
 <template>
   <div>
+    <product-info
+      :dialog="product_info_dialog"
+      :product="product_info_product"
+      :prdct_forms="prdct_forms"
+      :prdct_taxes="prdct_taxes"
+      :prdct_types="prdct_types"
+    >
+      <span slot="title"> معلومات الصنف</span>
+    </product-info>
     <v-card max-width="100%">
       <v-card-title>
         <v-row class="justify-space-between" justify="center" align="center">
@@ -147,9 +156,16 @@
                   <v-spacer></v-spacer>
                 </v-toolbar>
               </template>
+              <template v-slot:item.ar_name="{ item }">
+                <div>{{ item.ar_name }}</div>
+
+                <a @click="show_product_dialog(item)">
+                  <v-icon> mdi-information </v-icon>
+                </a>
+              </template>
               <template v-slot:item.expires_at="{ item }">
                 <v-menu
-                  :disabled="!!item.has_expiration_date"
+                  :disabled="!item.has_expiration_date"
                   ref="maturity_date"
                   v-model="item.expires_at_is_down"
                   :close-on-content-click="false"
@@ -158,6 +174,7 @@
                 >
                   <template v-slot:activator="{ on, attrs }">
                     <v-text-field
+                      :disabled="!item.has_expiration_date"
                       v-model="item.expires_at"
                       flat
                       outlined
@@ -209,11 +226,12 @@
               <template v-slot:item.purchase_tax_value="{ item }">
                 <v-text-field
                   flat
+                  disabled
                   hide-no-data
                   hide-details
                   outlined
                   autocomplete="off"
-                  v-model="item.purchase_tax_value"
+                  :value="purchase_tax_value(item).toFixed(2)"
                 ></v-text-field>
               </template>
 
@@ -242,6 +260,7 @@
                       hide-details
                       solo-inverted
                       outlined
+                      @change="llll(item)"
                     ></v-autocomplete>
                   </v-col>
                 </v-row>
@@ -264,6 +283,7 @@
                   hide-details
                   solo-inverted
                   outlined
+                  @change="product_unit_change(item)"
                 >
                 </v-autocomplete>
               </template>
@@ -292,12 +312,13 @@
               </template>
               <template v-slot:item.total_befor_tax="{ item }">
                 <v-text-field
+                  disabled
                   hide-no-data
                   hide-details
                   autocomplete="off"
                   single-line
                   outlined
-                  v-model="item.total_befor_tax"
+                  :value="total_befor_tax(item).toFixed(2)"
                 ></v-text-field>
               </template>
               <template v-slot:item.total="{ item }">
@@ -307,8 +328,201 @@
                   autocomplete="off"
                   single-line
                   outlined
-                  v-model="item.total"
+                  :value="total(item).toFixed(2)"
                 ></v-text-field>
+              </template>
+
+              <template v-slot:footer>
+                <v-divider class="mx-4" inset></v-divider>
+                <v-toolbar flat color="white">
+                  <v-toolbar-title>الإجمالي</v-toolbar-title>
+                  <v-divider class="mx-4" inset vertical></v-divider>
+                  <v-spacer></v-spacer>
+                </v-toolbar>
+                <div class="purchase-footer">
+                  <v-row>
+                    <v-col cols="12" lg="6">
+                      <v-row justify="start">
+                        <v-col
+                          cols="12"
+                          lg="5"
+                          style="
+                            text-align: end;
+                            border-bottom: 1px solid lightgray;
+                          "
+                        >
+                          الاجمالي قبل الضريبة:
+                        </v-col>
+                        <v-col
+                          cols="12"
+                          lg="5"
+                          style="
+                            text-align: start;
+                            border-bottom: 1px solid lightgray;
+                          "
+                        >
+                          <div
+                            v-html="total_without_products_vat().toFixed(2)"
+                          ></div>
+                        </v-col>
+                      </v-row>
+                      <v-row justify="start">
+                        <v-col
+                          cols="12"
+                          lg="5"
+                          style="
+                            text-align: end;
+                            border-bottom: 1px solid lightgray;
+                          "
+                        >
+                          قيمة الضريبة:
+                        </v-col>
+                        <v-col
+                          cols="12"
+                          lg="5"
+                          style="
+                            text-align: start;
+                            border-bottom: 1px solid lightgray;
+                          "
+                        >
+                          <div v-html="total_vat().toFixed(2)"></div>
+                        </v-col>
+                      </v-row>
+                      <v-row justify="start">
+                        <v-col
+                          cols="12"
+                          lg="5"
+                          style="
+                            text-align: end;
+                            border-bottom: 1px solid lightgray;
+                            color: red;
+                          "
+                        >
+                          <div style="margin-top: 10px">مصاريف إضافية:</div>
+                        </v-col>
+                        <v-col
+                          cols="12"
+                          lg="5"
+                          style="
+                            text-align: start;
+                            border-bottom: 1px solid lightgray;
+                          "
+                        >
+                          <div>
+                            <v-text-field
+                              flat
+                              outlined
+                              no-data
+                              no-data-text
+                              non-linear
+                              v-model="purchase.additional_expenses"
+                            >
+                            </v-text-field>
+                          </div>
+                        </v-col>
+                      </v-row>
+                      <v-row justify="start">
+                        <v-col
+                          cols="12"
+                          lg="5"
+                          style="text-align: end; font-size: 1.5rem"
+                        >
+                          المجموع:
+                        </v-col>
+                        <v-col
+                          cols="6"
+                          lg="2"
+                          style="text-align: start; font-size: 1.5rem"
+                        >
+                          <div v-html="total_amount().toFixed(2)"></div
+                        ></v-col>
+                      </v-row>
+                    </v-col>
+                    <v-col cols="12" lg="5">
+                      <v-row justify="start">
+                        <v-col
+                          cols="12"
+                          lg="4"
+                          style="
+                            text-align: end;
+                            border-bottom: 1px solid lightgray;
+                            color: green;
+                          "
+                        >
+                          <div style="margin-top: 10px">المدفوع:</div>
+                        </v-col>
+                        <v-col
+                          cols="12"
+                          lg="4"
+                          style="
+                            text-align: start;
+                            border-bottom: 1px solid lightgray;
+                          "
+                        >
+                          <div>
+                            <v-text-field
+                              outlined
+                              flat
+                              no-data
+                              no-data-text
+                              non-linear
+                              v-model="purchase.paid_amount"
+                            >
+                            </v-text-field>
+                          </div>
+                        </v-col>
+
+                        <v-col cols="12" lg="4">
+                          <payment-method
+                            @payment_methods="paymentMethods"
+                            :purchase_total="purchase.total_amount"
+                          ></payment-method>
+                        </v-col>
+                      </v-row>
+                      <v-row justify="start">
+                        <v-col
+                          cols="12"
+                          lg="4"
+                          style="
+                            text-align: end;
+                            border-bottom: 1px solid lightgray;
+                            color: green;
+                          "
+                        >
+                          <div style="margin-top: 10px">الباقي :</div>
+                        </v-col>
+                        <v-col
+                          cols="12"
+                          lg="4"
+                          style="
+                            text-align: start;
+                            border-bottom: 1px solid lightgray;
+                          "
+                        >
+                          <div>
+                            <v-text-field
+                              class="purchas-extra-expense text-red"
+                              flat
+                              disabled
+                              no-data
+                              no-data-text
+                              non-linear
+                              :value="remaining_amount().toFixed(2)"
+                            >
+                            </v-text-field>
+                          </div>
+                        </v-col>
+                        <v-col cols="12" lg="4">
+                          <v-btn elevation="0" dark @click=payAllCash>
+                            دفع الكل نقدا!
+                          </v-btn>
+                        </v-col>
+                      </v-row>
+                    </v-col>
+                  </v-row>
+
+                  <div style="height: 30px"></div>
+                </div>
               </template>
             </v-data-table>
           </v-row>
@@ -332,9 +546,23 @@
 
 <script>
 import Product from "../../../apis/Product";
+import ProductInfo from "../products/product-info.vue";
+import PaymentMethod from "./payment-methods";
 export default {
+  components: {
+    ProductInfo,
+    PaymentMethod,
+  },
   data() {
     return {
+      /*----------------info----------------- */
+      payment_method_dialog: false,
+      product_info_product: "",
+      product_info_dialog: false,
+      prdct_forms: [],
+      prdct_taxes: [],
+      prdct_types: [],
+
       /*-----------------------taxes---------------------------*/
       taxes: [],
       /*----------------discount_types--------------------*/
@@ -429,6 +657,15 @@ export default {
 
       payment_conditions: [],
       purchase: {
+        payment_methods: [],
+        paid_amount: 0,
+        remaining_amount: 0,
+
+        additional_expenses: 100,
+        total_without_products_vat: 0,
+        total_vat: 0,
+        total_amount: 0,
+
         patch_number: Math.random(10000, 99999),
         purchase_details: [],
         purchase_reference: "",
@@ -479,12 +716,84 @@ export default {
     },
   },
   methods: {
-    quan_in_mininmal_unit(item) {
+    remaining_amount() {
+      
+      return (this.purchase.remaining_amount =
+        this.purchase.total_amount - this.purchase.paid_amount);
+    },
+    payAllCash() {
+      this.purchase.paid_amount = this.purchase.total_amount;
+    },
+    paymentMethods(payments) {
+      this.purchase.payment_methods = payments.payment_methods;
+      this.purchase.paid_amount = payments.paid_amount;
+    },
+    show_product_dialog(item) {
+      this.product_info_dialog = true;
+      console.log(item);
+      this.product_info_product = item;
+    },
+    product_unit_change(item) {
       let purchased_unit = item.units.find(
         (elem) => elem.pivot.id == item.purchased_unit_id
       );
 
-      return item.purchased_quantity * purchased_unit.pivot.contains;
+      item.unit_price = purchased_unit.pivot.purchase_price;
+    },
+    total_vat() {
+      this.purchase.total_vat = this.purchase.purchase_details.reduce(
+        (a, b) => +a + +b.purchase_tax_value,
+        0
+      );
+      return this.purchase.total_vat;
+    },
+    total_amount() {
+      this.purchase.total_amount =
+        this.total_without_products_vat() +
+        this.total_vat() +
+        this.purchase.additional_expenses;
+      return this.purchase.total_amount;
+    },
+
+    total_without_products_vat() {
+      return this.purchase.purchase_details.reduce(
+        (a, b) => +a + +b.total_befor_tax,
+        0
+      );
+    },
+
+    total(item) {
+      item.total = this.purchase_tax_value(item) + this.total_befor_tax(item);
+      return item.total;
+    },
+
+    purchase_tax_value(item) {
+      item.purchase_tax_value =
+        (this.total_befor_tax(item) * item.purchase_tax) / 100;
+      return item.purchase_tax_value;
+    },
+    total_befor_tax(item) {
+      console.log(item.purchase_discount_type_id);
+      if (item.purchase_discount_type_id == 1) {
+        item.total_befor_tax =
+          item.purchased_quantity * item.unit_price -
+          (item.purchased_quantity * item.unit_price * item.purchase_discount) /
+            100;
+
+        return item.total_befor_tax;
+      }
+      item.total_befor_tax =
+        item.purchased_quantity * item.unit_price - item.purchase_discount;
+
+      return item.total_befor_tax;
+    },
+    quan_in_mininmal_unit(item) {
+      let purchased_unit = item.units.find(
+        (elem) => elem.pivot.id == item.purchased_unit_id
+      );
+      item.quan_in_mininmal_unit =
+        item.purchased_quantity * purchased_unit.pivot.contains;
+      return item.quan_in_mininmal_unit;
     },
     deleteItem(item) {
       this.purchase.purchase_details.splice(
@@ -521,9 +830,14 @@ export default {
           this.selected_product.main_purchase_unit_id - 1
         ].pivot.id;
 
+      this.selected_product.unit_price =
+        this.selected_product.units[
+          this.selected_product.main_purchase_unit_id - 1
+        ].pivot.purchase_price;
+
       this.selected_product.purchased_quantity = 1;
       console.log("nnj", this.selected_product.purchased_unit_id);
-      this.purchase.purchase_details.push(
+      this.purchase.purchase_details.unshift(
         JSON.parse(JSON.stringify(this.selected_product))
       );
       console.log("nib", this.purchase.purchase_details);
@@ -557,5 +871,20 @@ export default {
   > .v-input__control
   > .v-input__slot {
   padding: 0px;
+}
+.purchase-footer {
+  min-width: 0;
+  overflow: hidden;
+}
+.purchas-extra-expense :after,
+.purchas-extra-expense :before {
+  display: none;
+}
+
+.purchas-extra-expense .v-text-field__details {
+  display: none;
+}
+.text-red input {
+  color: red !important;
 }
 </style>

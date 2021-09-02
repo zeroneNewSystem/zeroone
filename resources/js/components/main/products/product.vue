@@ -153,16 +153,22 @@
                   </v-autocomplete>
                 </v-col>
                 <v-col cols="12" lg="3">
-                  <v-autocomplete
-                    label="الضريبة"
-                    v-model="product.sales_tax_id"
-                    :items="taxes"
-                    :item-text="
-                      (item) => item.ar_name + ' ' + item.percentage + '%'
-                    "
-                    item-value="id"
-                    :rules="required"
-                  ></v-autocomplete>
+                  <v-text-field
+                    autocomplete="off"
+                    v-model="product.sales_tax"
+                    label="ضريبة المبيعات%"
+                    :rules="vld_numbering"
+                    value="0"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" lg="3">
+                  <v-text-field
+                    autocomplete="off"
+                    v-model="product.purchase_tax"
+                    label="ضريبة المشتريات%"
+                    :rules="vld_numbering"
+                    value="0"
+                  ></v-text-field>
                 </v-col>
 
                 <v-col cols="12" lg="3">
@@ -209,7 +215,7 @@
                     >
                       <template v-slot:item.main_sales_unit_id="{ item }">
                         <v-radio-group
-                          class="product-radio" 
+                          class="product-radio"
                           v-model="product.main_sales_unit_id"
                         >
                           <div
@@ -733,9 +739,9 @@ export default {
       /*-----------------------units---------------------------*/
       prdct_units: [
         {
+          id: "",
           prdct_unit_id: "",
           contains: 1,
-
           purchase_price: "20",
           sales_price: "25",
           barcode: "",
@@ -772,6 +778,7 @@ export default {
         en_name: "en_name",
         prdct_units: [
           {
+            id: "",
             prdct_unit_id: 1,
             contains: 1,
 
@@ -794,8 +801,8 @@ export default {
         sales_discount_type_id: 1,
         purchase_discount: 10,
         purchase_discount_type_id: 1,
-        purchase_tax_id: 1,
-        sales_tax_id: 1,
+        purchase_tax: 1,
+        sales_tax: 1,
         min_alert: 1,
         max_alert: 10,
         stagnation_period: 100,
@@ -876,7 +883,7 @@ export default {
         this.prdct_types = response.data.prdct_types;
         this.inventories = response.data.inventories;
         this.distribution_policies = response.data.distribution_policies;
-        this.taxes = response.data.taxes;
+        //this.taxes = response.data.taxes;
         this.product_sales_accounts = response.data.product_sales_accounts;
         this.product_sales_return_accounts =
           response.data.product_sales_accounts;
@@ -958,7 +965,7 @@ export default {
       if (this.product.prdct_units.length == 0) {
         this.product.prdct_units.push({
           prdct_unit_id: "",
-
+          id: "",
           contains: 1,
 
           purchase_price: "",
@@ -995,6 +1002,7 @@ export default {
       this.product.prdct_units.push({
         prdct_unit_id: "",
         contains: 1,
+        id: "",
 
         purchase_price: "12",
         sales_price: "25",

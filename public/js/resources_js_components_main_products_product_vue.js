@@ -666,6 +666,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 
 
@@ -746,6 +752,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       /*-----------------------units---------------------------*/
       prdct_units: [{
+        id: "",
         prdct_unit_id: "",
         contains: 1,
         purchase_price: "20",
@@ -792,6 +799,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         ar_name: "ar_name",
         en_name: "en_name",
         prdct_units: [{
+          id: "",
           prdct_unit_id: 1,
           contains: 1,
           purchase_price: "9",
@@ -809,8 +817,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         sales_discount_type_id: 1,
         purchase_discount: 10,
         purchase_discount_type_id: 1,
-        purchase_tax_id: 1,
-        sales_tax_id: 1,
+        purchase_tax: 1,
+        sales_tax: 1,
         min_alert: 1,
         max_alert: 10,
         stagnation_period: 100,
@@ -881,8 +889,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       _this.prdct_units = response.data.prdct_units;
       _this.prdct_types = response.data.prdct_types;
       _this.inventories = response.data.inventories;
-      _this.distribution_policies = response.data.distribution_policies;
-      _this.taxes = response.data.taxes;
+      _this.distribution_policies = response.data.distribution_policies; //this.taxes = response.data.taxes;
+
       _this.product_sales_accounts = response.data.product_sales_accounts;
       _this.product_sales_return_accounts = response.data.product_sales_accounts;
       _this.product_purchase_return_accounts = response.data.product_cogs_accounts;
@@ -961,6 +969,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       if (this.product.prdct_units.length == 0) {
         this.product.prdct_units.push({
           prdct_unit_id: "",
+          id: "",
           contains: 1,
           purchase_price: "",
           sales_price: "",
@@ -998,6 +1007,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.product.prdct_units.push({
         prdct_unit_id: "",
         contains: 1,
+        id: "",
         purchase_price: "12",
         sales_price: "25",
         barcode: ""
@@ -1783,31 +1793,46 @@ var render = function() {
                                 "v-col",
                                 { attrs: { cols: "12", lg: "3" } },
                                 [
-                                  _c("v-autocomplete", {
+                                  _c("v-text-field", {
                                     attrs: {
-                                      label: "الضريبة",
-                                      items: _vm.taxes,
-                                      "item-text": function(item) {
-                                        return (
-                                          item.ar_name +
-                                          " " +
-                                          item.percentage +
-                                          "%"
-                                        )
-                                      },
-                                      "item-value": "id",
-                                      rules: _vm.required
+                                      autocomplete: "off",
+                                      label: "ضريبة المبيعات%",
+                                      rules: _vm.vld_numbering,
+                                      value: "0"
                                     },
                                     model: {
-                                      value: _vm.product.sales_tax_id,
+                                      value: _vm.product.sales_tax,
+                                      callback: function($$v) {
+                                        _vm.$set(_vm.product, "sales_tax", $$v)
+                                      },
+                                      expression: "product.sales_tax"
+                                    }
+                                  })
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "v-col",
+                                { attrs: { cols: "12", lg: "3" } },
+                                [
+                                  _c("v-text-field", {
+                                    attrs: {
+                                      autocomplete: "off",
+                                      label: "ضريبة المشتريات%",
+                                      rules: _vm.vld_numbering,
+                                      value: "0"
+                                    },
+                                    model: {
+                                      value: _vm.product.purchase_tax,
                                       callback: function($$v) {
                                         _vm.$set(
                                           _vm.product,
-                                          "sales_tax_id",
+                                          "purchase_tax",
                                           $$v
                                         )
                                       },
-                                      expression: "product.sales_tax_id"
+                                      expression: "product.purchase_tax"
                                     }
                                   })
                                 ],
