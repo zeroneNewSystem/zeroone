@@ -26,17 +26,17 @@ class ProductController extends Controller
 
     public function search(Request $request)
     {
-
+        return 2;
         if ($request->has('barcode'))
 
-            $products = Product::where('barcode', 'LIKE', '%' . $request->barcode . '%')
+            $products = Product::where('barcode',  $request->barcode)
                 ->with('groups')
                 ->with('units')
                 ->orderBy('id', 'DESC')->get()
                 // ->orWhere('en_name', 'LIKE', '%' . $request->search . '%')
                 // ->orWhere('barcode', 'LIKE', '%' . $request->search . '%')
             ;
-        
+
 
         if ($request->has('name'))
 

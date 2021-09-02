@@ -141,13 +141,6 @@
                     ></v-autocomplete>
                   </v-col>
                   <v-col cols="12" sm="6" md="4">
-                    <v-text-field
-                      autocomplete="off"
-                      v-model="searched_barcode"
-                      label="الباركود"
-                      @keydown.enter="searchAndAddToPurchase"
-                    ></v-text-field>
-
                     <v-autocomplete
                       v-model="selected_product"
                       :items="found_products"
@@ -562,7 +555,6 @@ export default {
   },
   data() {
     return {
-      searched_barcode:'',
       /*----------------info----------------- */
       payment_method_dialog: false,
       product_info_product: "",
@@ -585,6 +577,7 @@ export default {
       loading: false,
       barcode_search: "",
       found_products: [],
+      found_product: [],
       selected_product: [],
       purchase_header: [
         {
@@ -714,54 +707,22 @@ export default {
     name_search(val) {
       val &&
         val !== this.selected_product.ar_name &&
-        this.getProducts(val, "name");
+        this.getProductsByBarcode(val, "name");
     },
 
     barcode_search(val) {
       val &&
         val !== this.selected_product.barcode &&
-        this.getProducts(val, "barcode");
+        this.getProductsByBarcode(val, "barcode");
     },
   },
   methods: {
-    searchAndAddToPurchase() {
-      let params = { barcode: this.searched_barcode };
-
-      Product.search(params).then((response) => {
-        if (response.data.length !== 0) {
-          this.found_products = JSON.parse(
-            JSON.stringify(response.data.products)
-          );
-        }
-        let selected_product = JSON.parse(
-          JSON.stringify(this.found_products[0])
-        );
-
-        //-----add
-
-        selected_product.purchased_unit_id =
-          selected_product.units[
-            selected_product.main_purchase_unit_id - 1
-          ].pivot.id;
-
-        selected_product.unit_price =
-          selected_product.units[
-            selected_product.main_purchase_unit_id - 1
-          ].pivot.purchase_price;
-
-        selected_product.purchased_quantity = 1;
-
-        this.purchase.purchase_details.unshift(
-          JSON.parse(JSON.stringify(selected_product))
-        );
-      });
-    },
     remaining_amount() {
       return (this.purchase.remaining_amount =
         this.purchase.total_amount - this.purchase.paid_amount);
     },
     payAllCash() {
-      this.purchase.paid_amount = this.purchase.total_amount.toFixed(2);
+      this.purchase.paid_amount = this.purchase.total_amount;
     },
     paymentMethods(payments) {
       this.purchase.payment_methods = payments.payment_methods;
@@ -840,7 +801,7 @@ export default {
         1
       );
     },
-    getProducts(val, type) {
+    getProductsByBarcode(val, type) {
       if (val.length > 2) {
         this.loading = true;
         let params = "";
@@ -860,6 +821,25 @@ export default {
       }
     },
 
+    getProductsByBarcodeExact() {
+      if (val.length > 2) {
+        this.loading = true;
+        let params = "";
+        if (type == "barcode") params = { barcode: val };
+        else params = { name: val };
+
+        // Simulated ajax query ajax
+        Product.search(params).then((response) => {
+          this.loading = false;
+          console.log("hi", response.data);
+          if (response.data.length !== 0) {
+            this.found_products = JSON.parse(
+              JSON.stringify(response.data.products)
+            );
+          }
+        });
+      }
+    },
     addProductToPurchase() {
       console.log(this.purchase.purchase_details);
       console.log("seles", this.selected_product);

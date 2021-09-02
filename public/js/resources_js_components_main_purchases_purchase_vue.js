@@ -1232,6 +1232,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -1244,6 +1251,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     var _ref;
 
     return _ref = {
+      searched_barcode: '',
+
       /*----------------info----------------- */
       payment_method_dialog: false,
       product_info_product: "",
@@ -1356,18 +1365,38 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   watch: {
     name_search: function name_search(val) {
-      val && val !== this.selected_product.ar_name && this.getProductsByBarcode(val, "name");
+      val && val !== this.selected_product.ar_name && this.getProducts(val, "name");
     },
     barcode_search: function barcode_search(val) {
-      val && val !== this.selected_product.barcode && this.getProductsByBarcode(val, "barcode");
+      val && val !== this.selected_product.barcode && this.getProducts(val, "barcode");
     }
   },
   methods: {
+    searchAndAddToPurchase: function searchAndAddToPurchase() {
+      var _this = this;
+
+      var params = {
+        barcode: this.searched_barcode
+      };
+      _apis_Product__WEBPACK_IMPORTED_MODULE_0__.default.search(params).then(function (response) {
+        if (response.data.length !== 0) {
+          _this.found_products = JSON.parse(JSON.stringify(response.data.products));
+        }
+
+        var selected_product = JSON.parse(JSON.stringify(_this.found_products[0])); //-----add
+
+        selected_product.purchased_unit_id = selected_product.units[selected_product.main_purchase_unit_id - 1].pivot.id;
+        selected_product.unit_price = selected_product.units[selected_product.main_purchase_unit_id - 1].pivot.purchase_price;
+        selected_product.purchased_quantity = 1;
+
+        _this.purchase.purchase_details.unshift(JSON.parse(JSON.stringify(selected_product)));
+      });
+    },
     remaining_amount: function remaining_amount() {
       return this.purchase.remaining_amount = this.purchase.total_amount - this.purchase.paid_amount;
     },
     payAllCash: function payAllCash() {
-      this.purchase.paid_amount = this.purchase.total_amount;
+      this.purchase.paid_amount = this.purchase.total_amount.toFixed(2);
     },
     paymentMethods: function paymentMethods(payments) {
       this.purchase.payment_methods = payments.payment_methods;
@@ -1428,8 +1457,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     deleteItem: function deleteItem(item) {
       this.purchase.purchase_details.splice(this.purchase.purchase_details.indexOf(item), 1);
     },
-    getProductsByBarcode: function getProductsByBarcode(val, type) {
-      var _this = this;
+    getProducts: function getProducts(val, type) {
+      var _this2 = this;
 
       if (val.length > 2) {
         this.loading = true;
@@ -1441,11 +1470,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         }; // Simulated ajax query ajax
 
         _apis_Product__WEBPACK_IMPORTED_MODULE_0__.default.search(params).then(function (response) {
-          _this.loading = false;
+          _this2.loading = false;
           console.log("hi", response.data);
 
           if (response.data.length !== 0) {
-            _this.found_products = JSON.parse(JSON.stringify(response.data.products));
+            _this2.found_products = JSON.parse(JSON.stringify(response.data.products));
           }
         });
       }
@@ -3502,6 +3531,40 @@ var render = function() {
                                         attrs: { cols: "12", sm: "6", md: "4" }
                                       },
                                       [
+                                        _c("v-text-field", {
+                                          attrs: {
+                                            autocomplete: "off",
+                                            label: "الباركود"
+                                          },
+                                          on: {
+                                            keydown: function($event) {
+                                              if (
+                                                !$event.type.indexOf("key") &&
+                                                _vm._k(
+                                                  $event.keyCode,
+                                                  "enter",
+                                                  13,
+                                                  $event.key,
+                                                  "Enter"
+                                                )
+                                              ) {
+                                                return null
+                                              }
+                                              return _vm.searchAndAddToPurchase.apply(
+                                                null,
+                                                arguments
+                                              )
+                                            }
+                                          },
+                                          model: {
+                                            value: _vm.searched_barcode,
+                                            callback: function($$v) {
+                                              _vm.searched_barcode = $$v
+                                            },
+                                            expression: "searched_barcode"
+                                          }
+                                        }),
+                                        _vm._v(" "),
                                         _c("v-autocomplete", {
                                           attrs: {
                                             items: _vm.found_products,
