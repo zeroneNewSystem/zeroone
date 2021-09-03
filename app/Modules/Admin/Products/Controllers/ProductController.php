@@ -26,7 +26,6 @@ class ProductController extends Controller
 
     public function search(Request $request)
     {
-        return 2;
         if ($request->has('barcode'))
 
             $products = Product::where('barcode',  $request->barcode)

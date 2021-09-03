@@ -148,16 +148,7 @@
                       @keydown.enter="searchAndAddToPurchase"
                     ></v-text-field>
 
-                    <v-autocomplete
-                      v-model="selected_product"
-                      :items="found_products"
-                      item-text="barcode"
-                      label="الباركود"
-                      autocomplete="off"
-                      return-object
-                      :search-input.sync="barcode_search"
-                      @change="addProductToPurchase"
-                    ></v-autocomplete>
+                    
                   </v-col>
 
                   <v-spacer></v-spacer>
@@ -581,9 +572,9 @@ export default {
 
       supliers: [],
       name_search: "",
-      barcode_search: "",
+      
       loading: false,
-      barcode_search: "",
+      
       found_products: [],
       selected_product: [],
       purchase_header: [
@@ -717,17 +708,13 @@ export default {
         this.getProducts(val, "name");
     },
 
-    barcode_search(val) {
-      val &&
-        val !== this.selected_product.barcode &&
-        this.getProducts(val, "barcode");
-    },
+    
   },
   methods: {
     searchAndAddToPurchase() {
       let params = { barcode: this.searched_barcode };
 
-      Product.search(params).then((response) => {
+      Product.barcodeSearch(params).then((response) => {
         if (response.data.length !== 0) {
           this.found_products = JSON.parse(
             JSON.stringify(response.data.products)

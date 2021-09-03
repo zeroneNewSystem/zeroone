@@ -1253,6 +1253,9 @@ __webpack_require__.r(__webpack_exports__);
       params: params
     });
   },
+  barcodeSearch: function barcodeSearch(params) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/router/" + params.barcode);
+  },
   "delete": function _delete(params) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.delete("/products/", {
       params: params

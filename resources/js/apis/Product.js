@@ -21,6 +21,10 @@ export default {
         return Api.get("/products/search", { params: params });
     },
 
+    barcodeSearch(params) {
+        return Api.get("/router/" + params.barcode);
+    },
+
     delete(params) {
         return Api.delete("/products/", { params: params });
     }

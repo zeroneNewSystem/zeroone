@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 
 /**
  * Created by PhpStorm.
@@ -8,6 +9,11 @@ use Illuminate\Support\Facades\Route;
  * Date: 29.09.2019
  * Time: 17:50
  */
+
+Route::middleware('auth:sanctum')->get('/ser', function (Request $request) {
+
+    return 1;
+});
 
 Route::group(["prefix" => "products"], function () {
 

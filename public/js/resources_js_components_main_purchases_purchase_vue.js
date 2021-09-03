@@ -684,17 +684,6 @@ function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Sy
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-//
-//
-//
-//
-//
-//
-//
-//
-//
 //
 //
 //
@@ -1248,9 +1237,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     PaymentMethod: _payment_methods__WEBPACK_IMPORTED_MODULE_2__.default
   },
   data: function data() {
-    var _ref;
-
-    return _ref = {
+    return {
       searched_barcode: '',
 
       /*----------------info----------------- */
@@ -1276,99 +1263,112 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }],
       supliers: [],
       name_search: "",
-      barcode_search: "",
-      loading: false
-    }, _defineProperty(_ref, "barcode_search", ""), _defineProperty(_ref, "found_products", []), _defineProperty(_ref, "selected_product", []), _defineProperty(_ref, "purchase_header", [{
-      text: "اسم الصنف",
-      align: "center",
-      value: "ar_name",
-      width: 300,
-      sortable: false
-    }, {
-      text: "الصلاحية",
-      align: "center",
-      value: "expires_at",
-      sortable: false,
-      width: 100
-    }, {
-      text: "الكمية",
-      align: "center",
-      value: "purchased_quantity",
-      sortable: false
-    }, {
-      text: "الوحدة",
-      align: "center",
-      value: "product_unit_id",
-      sortable: false
-    }, {
-      text: "سعر الوحدة",
-      align: "center",
-      value: "unit_price",
-      sortable: false
-    }, {
-      text: "الكمية و.ص",
-      align: "center",
-      value: "quan_in_mininmal_unit",
-      sortable: false
-    }, {
-      text: "خصم الشراء",
-      align: "center",
-      value: "purchase_discount",
-      sortable: false,
-      width: 100
-    }, {
-      text: "الاجمالي قبل الضريبة",
-      align: "center",
-      value: "total_befor_tax",
-      sortable: false
-    }, {
-      text: "الضريبة % ",
-      align: "center",
-      value: "purchase_tax",
-      sortable: false
-    }, {
-      text: "قيمة الضريبة",
-      align: "center",
-      value: "purchase_tax_value",
-      sortable: false
-    }, {
-      text: "القيمة",
-      align: "center",
-      value: "total",
-      sortable: false
-    }, {
-      text: "تحكم ",
-      align: "center",
-      value: "action"
-    }]), _defineProperty(_ref, "payment_conditions", []), _defineProperty(_ref, "purchase", {
-      payment_methods: [],
-      paid_amount: 0,
-      remaining_amount: 0,
-      additional_expenses: 100,
-      total_without_products_vat: 0,
-      total_vat: 0,
-      total_amount: 0,
-      patch_number: Math.random(10000, 99999),
-      purchase_details: [],
-      purchase_reference: "",
-      description: "",
-      suplier_id: "",
-      issue_date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10),
-      maturity_date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10)
-    }), _defineProperty(_ref, "date", new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10)), _defineProperty(_ref, "issue_date_is_down", false), _defineProperty(_ref, "maturity_date_is_down", false), _defineProperty(_ref, "formatted_issue_date", this.formatDate(new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10))), _defineProperty(_ref, "vld_minlingth_one", [function (v) {
-      return v.length >= 1 || "أدخل قيمة";
-    }]), _defineProperty(_ref, "required", [function (value) {
-      return !!value || "الحقل مطلوب.";
-    }]), _defineProperty(_ref, "isunique", []), _defineProperty(_ref, "vld_numbering", [function (v) {
-      return /^-?\d+\.?\d*$/.test(v) || "أدخل قيمة عددية";
-    }]), _ref;
+      loading: false,
+      found_products: [],
+      selected_product: [],
+      purchase_header: [{
+        text: "اسم الصنف",
+        align: "center",
+        value: "ar_name",
+        width: 300,
+        sortable: false
+      }, {
+        text: "الصلاحية",
+        align: "center",
+        value: "expires_at",
+        sortable: false,
+        width: 100
+      }, {
+        text: "الكمية",
+        align: "center",
+        value: "purchased_quantity",
+        sortable: false
+      }, {
+        text: "الوحدة",
+        align: "center",
+        value: "product_unit_id",
+        sortable: false
+      }, {
+        text: "سعر الوحدة",
+        align: "center",
+        value: "unit_price",
+        sortable: false
+      }, {
+        text: "الكمية و.ص",
+        align: "center",
+        value: "quan_in_mininmal_unit",
+        sortable: false
+      }, {
+        text: "خصم الشراء",
+        align: "center",
+        value: "purchase_discount",
+        sortable: false,
+        width: 100
+      }, {
+        text: "الاجمالي قبل الضريبة",
+        align: "center",
+        value: "total_befor_tax",
+        sortable: false
+      }, {
+        text: "الضريبة % ",
+        align: "center",
+        value: "purchase_tax",
+        sortable: false
+      }, {
+        text: "قيمة الضريبة",
+        align: "center",
+        value: "purchase_tax_value",
+        sortable: false
+      }, {
+        text: "القيمة",
+        align: "center",
+        value: "total",
+        sortable: false
+      }, {
+        text: "تحكم ",
+        align: "center",
+        value: "action"
+      }],
+      payment_conditions: [],
+      purchase: {
+        payment_methods: [],
+        paid_amount: 0,
+        remaining_amount: 0,
+        additional_expenses: 100,
+        total_without_products_vat: 0,
+        total_vat: 0,
+        total_amount: 0,
+        patch_number: Math.random(10000, 99999),
+        purchase_details: [],
+        purchase_reference: "",
+        description: "",
+        suplier_id: "",
+        issue_date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10),
+        maturity_date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10)
+      },
+
+      /*------------------dateTime----------------------*/
+      date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10),
+      issue_date_is_down: false,
+      maturity_date_is_down: false,
+      formatted_issue_date: this.formatDate(new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10)),
+
+      /*-------------------validators---------------------------*/
+      vld_minlingth_one: [function (v) {
+        return v.length >= 1 || "أدخل قيمة";
+      }],
+      required: [function (value) {
+        return !!value || "الحقل مطلوب.";
+      }],
+      isunique: [],
+      vld_numbering: [function (v) {
+        return /^-?\d+\.?\d*$/.test(v) || "أدخل قيمة عددية";
+      }]
+    };
   },
   watch: {
     name_search: function name_search(val) {
       val && val !== this.selected_product.ar_name && this.getProducts(val, "name");
-    },
-    barcode_search: function barcode_search(val) {
-      val && val !== this.selected_product.barcode && this.getProducts(val, "barcode");
     }
   },
   methods: {
@@ -1378,7 +1378,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var params = {
         barcode: this.searched_barcode
       };
-      _apis_Product__WEBPACK_IMPORTED_MODULE_0__.default.search(params).then(function (response) {
+      _apis_Product__WEBPACK_IMPORTED_MODULE_0__.default.barcodeSearch(params).then(function (response) {
         if (response.data.length !== 0) {
           _this.found_products = JSON.parse(JSON.stringify(response.data.products));
         }
@@ -1555,6 +1555,9 @@ __webpack_require__.r(__webpack_exports__);
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/products/search", {
       params: params
     });
+  },
+  barcodeSearch: function barcodeSearch(params) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/router/" + params.barcode);
   },
   "delete": function _delete(params) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.delete("/products/", {
@@ -3562,37 +3565,6 @@ var render = function() {
                                               _vm.searched_barcode = $$v
                                             },
                                             expression: "searched_barcode"
-                                          }
-                                        }),
-                                        _vm._v(" "),
-                                        _c("v-autocomplete", {
-                                          attrs: {
-                                            items: _vm.found_products,
-                                            "item-text": "barcode",
-                                            label: "الباركود",
-                                            autocomplete: "off",
-                                            "return-object": "",
-                                            "search-input": _vm.barcode_search
-                                          },
-                                          on: {
-                                            "update:searchInput": function(
-                                              $event
-                                            ) {
-                                              _vm.barcode_search = $event
-                                            },
-                                            "update:search-input": function(
-                                              $event
-                                            ) {
-                                              _vm.barcode_search = $event
-                                            },
-                                            change: _vm.addProductToPurchase
-                                          },
-                                          model: {
-                                            value: _vm.selected_product,
-                                            callback: function($$v) {
-                                              _vm.selected_product = $$v
-                                            },
-                                            expression: "selected_product"
                                           }
                                         })
                                       ],
