@@ -22,7 +22,7 @@ class CreatePurchasesTable extends Migration
             $table->integer('currency_id')->default('1');
             $table->double('currency_rates')->default('1');
             $table->text('description')->nullable();
-            $table->integer('suplier_id',)->default('1');
+            $table->integer('supplier_id',)->default('1');
             
             $table->timestamp('issue_date')->useCurrent = true;
             $table->timestamp('maturity_date')->useCurrent = true;

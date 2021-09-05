@@ -36,8 +36,8 @@
             </v-col>
             <v-col cols="12" lg="6">
               <v-autocomplete
-                v-model="purchase.suplier_id"
-                :items="supliers"
+                v-model="purchase.supplier_id"
+                :items="suppliers"
                 item-text="ar_name"
                 item-value="id"
                 :rules="vld_minlingth_one"
@@ -571,7 +571,7 @@ export default {
         { id: 2, ar_name: "قيمة", en_name: "amount" },
       ],
 
-      supliers: [],
+      suppliers: [],
       name_search: "",
       barcode_search: "",
       loading: false,
@@ -671,7 +671,7 @@ export default {
         purchase_details: [],
         purchase_reference: "",
         description: "",
-        suplier_id: "",
+        supplier_id: "",
         issue_date: new Date(
           Date.now() - new Date().getTimezoneOffset() * 60000
         )

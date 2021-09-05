@@ -45,7 +45,7 @@
       <template v-slot:no-data>no data!</template>
     </v-data-table>
   </div>
-</template>i
+</template>
 
 <script>
 import Product from "../../../apis/Product";

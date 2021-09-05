@@ -1228,6 +1228,31 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -1238,7 +1263,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
   },
   data: function data() {
     return {
-      searched_barcode: '',
+      searched_barcode: "",
 
       /*----------------info----------------- */
       payment_method_dialog: false,
@@ -1261,7 +1286,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         ar_name: "قيمة",
         en_name: "amount"
       }],
-      supliers: [],
+      suppliers: [],
       name_search: "",
       loading: false,
       found_products: [],
@@ -1342,7 +1367,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         purchase_details: [],
         purchase_reference: "",
         description: "",
-        suplier_id: "",
+        supplier_id: "",
         issue_date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10),
         maturity_date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10)
       },
@@ -1361,6 +1386,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         return !!value || "الحقل مطلوب.";
       }],
       isunique: [],
+      is_exists: [],
       vld_numbering: [function (v) {
         return /^-?\d+\.?\d*$/.test(v) || "أدخل قيمة عددية";
       }]
@@ -1379,17 +1405,20 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         barcode: this.searched_barcode
       };
       _apis_Product__WEBPACK_IMPORTED_MODULE_0__.default.barcodeSearch(params).then(function (response) {
-        if (response.data.length !== 0) {
-          _this.found_products = JSON.parse(JSON.stringify(response.data.products));
+        if (response.data.products.length == 0) {
+          _this.is_exists = [ false || "الصنف غير موجود "];
+          return;
         }
 
-        var selected_product = JSON.parse(JSON.stringify(_this.found_products[0])); //-----add
+        _this.is_exists = [true]; //this.found_products = response.data.products;
+
+        var selected_product = response.data.products[0]; //-----add
 
         selected_product.purchased_unit_id = selected_product.units[selected_product.main_purchase_unit_id - 1].pivot.id;
         selected_product.unit_price = selected_product.units[selected_product.main_purchase_unit_id - 1].pivot.purchase_price;
         selected_product.purchased_quantity = 1;
 
-        _this.purchase.purchase_details.unshift(JSON.parse(JSON.stringify(selected_product)));
+        _this.purchase.purchase_details.unshift(selected_product);
       });
     },
     remaining_amount: function remaining_amount() {
@@ -1607,7 +1636,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.v-application--wrap > .container {\r\n  margin: 0;\n}\n.v-text-field.v-text-field--enclosed .v-text-field__details,\r\n.v-text-field.v-text-field--enclosed:not(.v-text-field--rounded)\r\n  > .v-input__control\r\n  > .v-input__slot {\r\n  padding: 0px;\n}\n.purchase-footer {\r\n  min-width: 0;\r\n  overflow: hidden;\n}\n.purchas-extra-expense :after,\r\n.purchas-extra-expense :before {\r\n  display: none;\n}\n.purchas-extra-expense .v-text-field__details {\r\n  display: none;\n}\n.text-red input {\r\n  color: red !important;\n}\r\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.v-application--wrap > .container {\r\n  margin: 0;\n}\n.v-text-field.v-text-field--enclosed .v-text-field__details,\r\n.v-text-field.v-text-field--enclosed:not(.v-text-field--rounded)\r\n  > .v-input__control\r\n  > .v-input__slot {\r\n  padding: 0px;\n}\n.purchase-footer {\r\n  min-width: 0;\r\n  overflow: hidden;\n}\n.purchas-extra-expense :after,\r\n.purchas-extra-expense :before {\r\n  display: none;\n}\n.purchas-extra-expense .v-text-field__details {\r\n  display: none;\n}\n.text-red input {\r\n  color: red !important;\n}\n.purchase-info .v-text-field__prefix {\r\n  margin-right: 10px;\n}\r\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -3137,177 +3166,358 @@ var render = function() {
                     [
                       _c(
                         "v-col",
-                        { attrs: { cols: "12", lg: "6" } },
-                        [
-                          _c("v-text-field", {
-                            attrs: {
-                              autocomplete: "off",
-                              label: "رقم المرجع",
-                              rules: _vm.required.concat(_vm.isunique)
-                            },
-                            on: {
-                              blur: function($event) {
-                                return _vm.checkExecting()
-                              }
-                            },
-                            model: {
-                              value: _vm.purchase.purchase_reference,
-                              callback: function($$v) {
-                                _vm.$set(
-                                  _vm.purchase,
-                                  "purchase_reference",
-                                  $$v
-                                )
-                              },
-                              expression: "purchase.purchase_reference"
-                            }
-                          })
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "v-col",
-                        { attrs: { cols: "12", lg: "6" } },
-                        [
-                          _c("v-text-field", {
-                            attrs: { autocomplete: "off", label: "الوصف" },
-                            model: {
-                              value: _vm.purchase.description,
-                              callback: function($$v) {
-                                _vm.$set(_vm.purchase, "description", $$v)
-                              },
-                              expression: "purchase.description"
-                            }
-                          })
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "v-col",
-                        { attrs: { cols: "12", lg: "6" } },
-                        [
-                          _c("v-autocomplete", {
-                            attrs: {
-                              items: _vm.supliers,
-                              "item-text": "ar_name",
-                              "item-value": "id",
-                              rules: _vm.vld_minlingth_one,
-                              label: "المورد",
-                              multiple: ""
-                            },
-                            model: {
-                              value: _vm.purchase.suplier_id,
-                              callback: function($$v) {
-                                _vm.$set(_vm.purchase, "suplier_id", $$v)
-                              },
-                              expression: "purchase.suplier_id"
-                            }
-                          })
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "v-col",
-                        { attrs: { cols: "12", lg: "6" } },
                         [
                           _c(
-                            "v-menu",
-                            {
-                              ref: "issue_date",
-                              attrs: {
-                                "close-on-content-click": false,
-                                transition: "scale-transition",
-                                "offset-y": "",
-                                "max-width": "290px",
-                                "min-width": "auto"
-                              },
-                              scopedSlots: _vm._u([
-                                {
-                                  key: "activator",
-                                  fn: function(ref) {
-                                    var on = ref.on
-                                    var attrs = ref.attrs
-                                    return [
-                                      _c(
-                                        "v-text-field",
-                                        _vm._g(
-                                          _vm._b(
-                                            {
-                                              attrs: {
-                                                label: "تاريخ الاصدار",
-                                                "prepend-icon": "mdi-calendar"
-                                              },
-                                              on: {
-                                                keydown: function($event) {
-                                                  if (
-                                                    !$event.type.indexOf(
-                                                      "key"
-                                                    ) &&
-                                                    _vm._k(
-                                                      $event.keyCode,
-                                                      "enter",
-                                                      13,
-                                                      $event.key,
-                                                      "Enter"
-                                                    )
-                                                  ) {
-                                                    return null
-                                                  }
-                                                  _vm.issue_date_is_down = false
-                                                }
-                                              },
-                                              model: {
-                                                value: _vm.purchase.issue_date,
-                                                callback: function($$v) {
-                                                  _vm.$set(
-                                                    _vm.purchase,
-                                                    "issue_date",
-                                                    $$v
-                                                  )
-                                                },
-                                                expression:
-                                                  "purchase.issue_date"
-                                              }
-                                            },
-                                            "v-text-field",
-                                            attrs,
-                                            false
-                                          ),
-                                          on
-                                        )
-                                      )
-                                    ]
-                                  }
-                                }
-                              ]),
-                              model: {
-                                value: _vm.issue_date_is_down,
-                                callback: function($$v) {
-                                  _vm.issue_date_is_down = $$v
-                                },
-                                expression: "issue_date_is_down"
-                              }
-                            },
+                            "v-row",
                             [
+                              _c(
+                                "v-col",
+                                { staticClass: "pa-0", attrs: { cols: "12" } },
+                                [
+                                  _c("v-text-field", {
+                                    staticClass: "purchase-info",
+                                    attrs: {
+                                      outlined: "",
+                                      autocomplete: "off",
+                                      prefix: " رقم المرجع | ",
+                                      rules: _vm.required.concat(_vm.isunique)
+                                    },
+                                    on: {
+                                      blur: function($event) {
+                                        return _vm.checkExecting()
+                                      }
+                                    },
+                                    model: {
+                                      value: _vm.purchase.purchase_reference,
+                                      callback: function($$v) {
+                                        _vm.$set(
+                                          _vm.purchase,
+                                          "purchase_reference",
+                                          $$v
+                                        )
+                                      },
+                                      expression: "purchase.purchase_reference"
+                                    }
+                                  })
+                                ],
+                                1
+                              ),
                               _vm._v(" "),
-                              _c("v-date-picker", {
-                                attrs: { "no-title": "" },
-                                on: {
-                                  input: function($event) {
-                                    _vm.issue_date_is_down = false
-                                  }
-                                },
-                                model: {
-                                  value: _vm.purchase.issue_date,
-                                  callback: function($$v) {
-                                    _vm.$set(_vm.purchase, "issue_date", $$v)
-                                  },
-                                  expression: "purchase.issue_date"
-                                }
-                              })
+                              _c(
+                                "v-col",
+                                { staticClass: "pa-0", attrs: { cols: "12" } },
+                                [
+                                  _c("v-text-field", {
+                                    attrs: {
+                                      autocomplete: "off",
+                                      label: "الوصف"
+                                    },
+                                    model: {
+                                      value: _vm.purchase.description,
+                                      callback: function($$v) {
+                                        _vm.$set(
+                                          _vm.purchase,
+                                          "description",
+                                          $$v
+                                        )
+                                      },
+                                      expression: "purchase.description"
+                                    }
+                                  })
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "v-col",
+                                { staticClass: "pa-0", attrs: { cols: "12" } },
+                                [
+                                  _c("v-autocomplete", {
+                                    attrs: {
+                                      items: _vm.suppliers,
+                                      "item-text": "ar_name",
+                                      "item-value": "id",
+                                      rules: _vm.vld_minlingth_one,
+                                      label: "المورد",
+                                      multiple: ""
+                                    },
+                                    model: {
+                                      value: _vm.purchase.supplier_id,
+                                      callback: function($$v) {
+                                        _vm.$set(
+                                          _vm.purchase,
+                                          "supplier_id",
+                                          $$v
+                                        )
+                                      },
+                                      expression: "purchase.supplier_id"
+                                    }
+                                  })
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "v-col",
+                                { staticClass: "pa-0", attrs: { cols: "12" } },
+                                [
+                                  _c(
+                                    "v-menu",
+                                    {
+                                      ref: "issue_date",
+                                      attrs: {
+                                        "close-on-content-click": false,
+                                        transition: "scale-transition",
+                                        "offset-y": "",
+                                        "max-width": "290px",
+                                        "min-width": "auto"
+                                      },
+                                      scopedSlots: _vm._u([
+                                        {
+                                          key: "activator",
+                                          fn: function(ref) {
+                                            var on = ref.on
+                                            var attrs = ref.attrs
+                                            return [
+                                              _c(
+                                                "v-text-field",
+                                                _vm._g(
+                                                  _vm._b(
+                                                    {
+                                                      attrs: {
+                                                        label: "تاريخ الاصدار",
+                                                        "prepend-icon":
+                                                          "mdi-calendar"
+                                                      },
+                                                      on: {
+                                                        keydown: function(
+                                                          $event
+                                                        ) {
+                                                          if (
+                                                            !$event.type.indexOf(
+                                                              "key"
+                                                            ) &&
+                                                            _vm._k(
+                                                              $event.keyCode,
+                                                              "enter",
+                                                              13,
+                                                              $event.key,
+                                                              "Enter"
+                                                            )
+                                                          ) {
+                                                            return null
+                                                          }
+                                                          _vm.issue_date_is_down = false
+                                                        }
+                                                      },
+                                                      model: {
+                                                        value:
+                                                          _vm.purchase
+                                                            .issue_date,
+                                                        callback: function(
+                                                          $$v
+                                                        ) {
+                                                          _vm.$set(
+                                                            _vm.purchase,
+                                                            "issue_date",
+                                                            $$v
+                                                          )
+                                                        },
+                                                        expression:
+                                                          "purchase.issue_date"
+                                                      }
+                                                    },
+                                                    "v-text-field",
+                                                    attrs,
+                                                    false
+                                                  ),
+                                                  on
+                                                )
+                                              )
+                                            ]
+                                          }
+                                        }
+                                      ]),
+                                      model: {
+                                        value: _vm.issue_date_is_down,
+                                        callback: function($$v) {
+                                          _vm.issue_date_is_down = $$v
+                                        },
+                                        expression: "issue_date_is_down"
+                                      }
+                                    },
+                                    [
+                                      _vm._v(" "),
+                                      _c("v-date-picker", {
+                                        attrs: { "no-title": "" },
+                                        on: {
+                                          input: function($event) {
+                                            _vm.issue_date_is_down = false
+                                          }
+                                        },
+                                        model: {
+                                          value: _vm.purchase.issue_date,
+                                          callback: function($$v) {
+                                            _vm.$set(
+                                              _vm.purchase,
+                                              "issue_date",
+                                              $$v
+                                            )
+                                          },
+                                          expression: "purchase.issue_date"
+                                        }
+                                      })
+                                    ],
+                                    1
+                                  )
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "v-col",
+                                { staticClass: "pa-0", attrs: { cols: "12" } },
+                                [
+                                  _c(
+                                    "v-menu",
+                                    {
+                                      ref: "maturity_date",
+                                      attrs: {
+                                        "close-on-content-click": false,
+                                        transition: "scale-transition",
+                                        "offset-y": "",
+                                        "max-width": "290px",
+                                        "min-width": "auto"
+                                      },
+                                      scopedSlots: _vm._u([
+                                        {
+                                          key: "activator",
+                                          fn: function(ref) {
+                                            var on = ref.on
+                                            var attrs = ref.attrs
+                                            return [
+                                              _c(
+                                                "v-text-field",
+                                                _vm._g(
+                                                  _vm._b(
+                                                    {
+                                                      attrs: {
+                                                        label: "تاريخ الاصدار",
+                                                        "prepend-icon":
+                                                          "mdi-calendar"
+                                                      },
+                                                      on: {
+                                                        keydown: function(
+                                                          $event
+                                                        ) {
+                                                          if (
+                                                            !$event.type.indexOf(
+                                                              "key"
+                                                            ) &&
+                                                            _vm._k(
+                                                              $event.keyCode,
+                                                              "enter",
+                                                              13,
+                                                              $event.key,
+                                                              "Enter"
+                                                            )
+                                                          ) {
+                                                            return null
+                                                          }
+                                                          _vm.maturity_date_is_down = false
+                                                        }
+                                                      },
+                                                      model: {
+                                                        value:
+                                                          _vm.purchase
+                                                            .maturity_date,
+                                                        callback: function(
+                                                          $$v
+                                                        ) {
+                                                          _vm.$set(
+                                                            _vm.purchase,
+                                                            "maturity_date",
+                                                            $$v
+                                                          )
+                                                        },
+                                                        expression:
+                                                          "purchase.maturity_date"
+                                                      }
+                                                    },
+                                                    "v-text-field",
+                                                    attrs,
+                                                    false
+                                                  ),
+                                                  on
+                                                )
+                                              )
+                                            ]
+                                          }
+                                        }
+                                      ]),
+                                      model: {
+                                        value: _vm.maturity_date_is_down,
+                                        callback: function($$v) {
+                                          _vm.maturity_date_is_down = $$v
+                                        },
+                                        expression: "maturity_date_is_down"
+                                      }
+                                    },
+                                    [
+                                      _vm._v(" "),
+                                      _c("v-date-picker", {
+                                        attrs: { "no-title": "" },
+                                        on: {
+                                          input: function($event) {
+                                            _vm.maturity_date_is_down = false
+                                          }
+                                        },
+                                        model: {
+                                          value: _vm.purchase.maturity_date,
+                                          callback: function($$v) {
+                                            _vm.$set(
+                                              _vm.purchase,
+                                              "maturity_date",
+                                              $$v
+                                            )
+                                          },
+                                          expression: "purchase.maturity_date"
+                                        }
+                                      })
+                                    ],
+                                    1
+                                  )
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "v-col",
+                                { staticClass: "pa-0", attrs: { cols: "12" } },
+                                [
+                                  _c("v-autocomplete", {
+                                    attrs: {
+                                      label: "شروط الدفع",
+                                      items: _vm.payment_conditions,
+                                      "item-text": "ar_name",
+                                      "item-value": "id"
+                                    },
+                                    model: {
+                                      value: _vm.purchase.payment_condition_id,
+                                      callback: function($$v) {
+                                        _vm.$set(
+                                          _vm.purchase,
+                                          "payment_condition_id",
+                                          $$v
+                                        )
+                                      },
+                                      expression:
+                                        "purchase.payment_condition_id"
+                                    }
+                                  })
+                                ],
+                                1
+                              )
                             ],
                             1
                           )
@@ -3317,134 +3527,80 @@ var render = function() {
                       _vm._v(" "),
                       _c(
                         "v-col",
-                        { attrs: { cols: "12", lg: "6" } },
                         [
                           _c(
-                            "v-menu",
-                            {
-                              ref: "maturity_date",
-                              attrs: {
-                                "close-on-content-click": false,
-                                transition: "scale-transition",
-                                "offset-y": "",
-                                "max-width": "290px",
-                                "min-width": "auto"
-                              },
-                              scopedSlots: _vm._u([
-                                {
-                                  key: "activator",
-                                  fn: function(ref) {
-                                    var on = ref.on
-                                    var attrs = ref.attrs
-                                    return [
-                                      _c(
-                                        "v-text-field",
-                                        _vm._g(
-                                          _vm._b(
-                                            {
-                                              attrs: {
-                                                label: "تاريخ الاصدار",
-                                                "prepend-icon": "mdi-calendar"
-                                              },
-                                              on: {
-                                                keydown: function($event) {
-                                                  if (
-                                                    !$event.type.indexOf(
-                                                      "key"
-                                                    ) &&
-                                                    _vm._k(
-                                                      $event.keyCode,
-                                                      "enter",
-                                                      13,
-                                                      $event.key,
-                                                      "Enter"
-                                                    )
-                                                  ) {
-                                                    return null
-                                                  }
-                                                  _vm.maturity_date_is_down = false
-                                                }
-                                              },
-                                              model: {
-                                                value:
-                                                  _vm.purchase.maturity_date,
-                                                callback: function($$v) {
-                                                  _vm.$set(
-                                                    _vm.purchase,
-                                                    "maturity_date",
-                                                    $$v
-                                                  )
-                                                },
-                                                expression:
-                                                  "purchase.maturity_date"
-                                              }
-                                            },
-                                            "v-text-field",
-                                            attrs,
-                                            false
-                                          ),
-                                          on
-                                        )
-                                      )
-                                    ]
-                                  }
-                                }
-                              ]),
-                              model: {
-                                value: _vm.maturity_date_is_down,
-                                callback: function($$v) {
-                                  _vm.maturity_date_is_down = $$v
-                                },
-                                expression: "maturity_date_is_down"
-                              }
-                            },
+                            "v-card",
                             [
+                              _c(
+                                "v-card-title",
+                                { staticStyle: { background: "lightgray" } },
+                                [
+                                  _vm._v(
+                                    "\n                معلومات المورد\n              "
+                                  )
+                                ]
+                              ),
                               _vm._v(" "),
-                              _c("v-date-picker", {
-                                attrs: { "no-title": "" },
-                                on: {
-                                  input: function($event) {
-                                    _vm.maturity_date_is_down = false
-                                  }
-                                },
-                                model: {
-                                  value: _vm.purchase.maturity_date,
-                                  callback: function($$v) {
-                                    _vm.$set(_vm.purchase, "maturity_date", $$v)
-                                  },
-                                  expression: "purchase.maturity_date"
-                                }
-                              })
+                              _c(
+                                "v-car-text",
+                                [
+                                  _c(
+                                    "v-row",
+                                    [
+                                      _c(
+                                        "v-col",
+                                        { attrs: { cols: "12", lg: "6" } },
+                                        [_vm._v(" الاسم ")]
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "v-col",
+                                        { attrs: { cols: "12", lg: "6" } },
+                                        [_vm._v(" محمد عبدالله ")]
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "v-col",
+                                        { attrs: { cols: "12", lg: "6" } },
+                                        [_vm._v(" الهاتف ")]
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "v-col",
+                                        { attrs: { cols: "12", lg: "6" } },
+                                        [_vm._v(" 777676677 ")]
+                                      ),
+                                      _c(
+                                        "v-col",
+                                        { attrs: { cols: "12", lg: "6" } },
+                                        [_vm._v(" البريد الالكتروني ")]
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "v-col",
+                                        { attrs: { cols: "12", lg: "6" } },
+                                        [_vm._v(" nibrascom@mail.com ")]
+                                      ),
+                                      _c(
+                                        "v-col",
+                                        { attrs: { cols: "12", lg: "6" } },
+                                        [_vm._v(" الرقم الضريبي ")]
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "v-col",
+                                        { attrs: { cols: "12", lg: "6" } },
+                                        [_vm._v(" 12122212212 ")]
+                                      )
+                                    ],
+                                    1
+                                  )
+                                ],
+                                1
+                              )
                             ],
                             1
                           )
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "v-col",
-                        { attrs: { cols: "12", lg: "6" } },
-                        [
-                          _c("v-autocomplete", {
-                            attrs: {
-                              label: "شروط الدفع",
-                              items: _vm.payment_conditions,
-                              "item-text": "ar_name",
-                              "item-value": "id"
-                            },
-                            model: {
-                              value: _vm.purchase.payment_condition_id,
-                              callback: function($$v) {
-                                _vm.$set(
-                                  _vm.purchase,
-                                  "payment_condition_id",
-                                  $$v
-                                )
-                              },
-                              expression: "purchase.payment_condition_id"
-                            }
-                          })
                         ],
                         1
                       )
@@ -3537,7 +3693,8 @@ var render = function() {
                                         _c("v-text-field", {
                                           attrs: {
                                             autocomplete: "off",
-                                            label: "الباركود"
+                                            label: "الباركود",
+                                            rules: _vm.is_exists
                                           },
                                           on: {
                                             keydown: function($event) {

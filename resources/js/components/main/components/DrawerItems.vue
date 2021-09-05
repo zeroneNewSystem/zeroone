@@ -48,17 +48,8 @@ export default {
       ["Delete", "mdi-delete"],
     ],
     sidebaritems: [
-      [
-        "البيع",
-        "mdi-border-color",
-        "إضافة فاتورة جديدة",
-        "إدارة الفواتير"
-      ],
-      [
-        "العملاء",
-        "mdi-group",
-        "إدارة العملاء"
-      ],
+      ["البيع", "mdi-border-color", "إضافة فاتورة جديدة", "إدارة الفواتير"],
+      ["العملاء", "mdi-group", "إدارة العملاء"],
       [
         "الأصناف والخدمات",
         "mdi-source-fork",
@@ -78,7 +69,14 @@ export default {
         "تسجيل مصروفات",
         " إضافة بند مصروفات",
       ],
-      ["الشراء", "mdi-shopping", "إضافة مشتريات", "إدارة فواتير الشراء"],
+      [
+        "الشراء",
+        "mdi-shopping",
+        "إضافة مشتريات",
+        "إدارة فواتير الشراء",
+        "الموردون",
+      ],
+
       [
         "الحسابات",
         "mdi-keyboard-return",
@@ -98,17 +96,9 @@ export default {
       ],
     ],
     sidebarroutes: [
-      ["addupdateinvoice",
-       "invoicemanagement"
-      ],
+      ["addupdateinvoice", "invoicemanagement"],
       ["customermanagement"],
-      [
-        "units",
-        "types",
-        "forms",
-        "product",
-        "products",
-      ],
+      ["units", "types", "forms", "product", "products"],
       ["companymanagement"],
       [
         "accountingmanagement",
@@ -117,8 +107,8 @@ export default {
         "addupdateoutcome",
         "addoutcomeitem",
       ],
-      ["purchase", "purchasemanagement"],
-      
+      ["purchase", "purchasemanagement", "suppliers"],
+
       [
         "accounts",
         "returninvoicemanagement",

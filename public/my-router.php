@@ -2,16 +2,27 @@
 
 
 
-echo explode(' ',getallheaders()['Authorization'])[1] ;
+$token =  hash('sha256', explode('|', getallheaders()['Authorization'])[1]);
 
-
-$product_id = explode('/', $_SERVER['REQUEST_URI'])[3];
+$barcode = explode('/', $_SERVER['REQUEST_URI'])[3];
 
 include_once('connection.php');
 $database = new Connection();
 $db = $database->open();
-$sth = $db->prepare("SELECT * FROM products Where barcode =" . $product_id);
-$sth->execute();
+
+//check user
+/*
+$sth = $db->prepare("SELECT 1 FROM personal_access_tokens WHERE token =:token ");
+$sth->execute(['token' => $token]);
+
+
+if ($sth->rowCount() == 0)
+    die('you have no permissions');
+
+*/
+
+$sth = $db->prepare("SELECT * FROM products Where barcode =:barcode");
+$sth->execute(['barcode'=>$barcode]);
 
 $products = $sth->fetchAll(\PDO::FETCH_ASSOC);
 
@@ -43,4 +54,4 @@ foreach ($products as &$product) {
 
 
 $database->close();
-echo json_encode(['products' => $products]);
+echo json_encode(['products' => $products],JSON_NUMERIC_CHECK );

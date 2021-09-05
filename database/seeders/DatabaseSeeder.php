@@ -27,17 +27,20 @@ class DatabaseSeeder extends Seeder
 
         $this->call(
             [
+                PersonSeeder::class,
+                SupplierSeeder::class,
                 PrdctUnitSeeder::class,
                 PrdctFormSeeder::class,
                 PrdctGroupSeeder::class,
 
-                InventorySeeder::class,
+
                 DistributionPolicySeeder::class,
                 TaxSeeder::class,
                 PrdctTypeSeeder::class,
                 AccountSeeder::class,
                 AccountTypeSeeder::class,
 
+                
             ]
         );
     }

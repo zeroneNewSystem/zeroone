@@ -18,100 +18,126 @@
       <v-card-text>
         <v-container>
           <v-row>
-            <v-col cols="12" lg="6">
-              <v-text-field
-                autocomplete="off"
-                v-model="purchase.purchase_reference"
-                label="رقم المرجع"
-                :rules="required.concat(isunique)"
-                @blur="checkExecting()"
-              ></v-text-field>
-            </v-col>
-            <v-col cols="12" lg="6">
-              <v-text-field
-                autocomplete="off"
-                v-model="purchase.description"
-                label="الوصف"
-              ></v-text-field>
-            </v-col>
-            <v-col cols="12" lg="6">
-              <v-autocomplete
-                v-model="purchase.suplier_id"
-                :items="supliers"
-                item-text="ar_name"
-                item-value="id"
-                :rules="vld_minlingth_one"
-                label="المورد"
-                multiple
-              >
-              </v-autocomplete>
-            </v-col>
-
-            <v-col cols="12" lg="6">
-              <v-menu
-                ref="issue_date"
-                v-model="issue_date_is_down"
-                :close-on-content-click="false"
-                transition="scale-transition"
-                offset-y
-                max-width="290px"
-                min-width="auto"
-              >
-                <template v-slot:activator="{ on, attrs }">
+            <v-col>
+              <v-row>
+                <v-col cols="12" class="pa-0">
                   <v-text-field
-                    v-model="purchase.issue_date"
-                    label="تاريخ الاصدار"
-                    prepend-icon="mdi-calendar"
-                    v-bind="attrs"
-                    v-on="on"
-                    @keydown.enter="issue_date_is_down = false"
+                    class="purchase-info"
+                    outlined
+                    autocomplete="off"
+                    v-model="purchase.purchase_reference"
+                    prefix=" رقم المرجع | "
+                    :rules="required.concat(isunique)"
+                    @blur="checkExecting()"
                   ></v-text-field>
-                </template>
-                <v-date-picker
-                  v-model="purchase.issue_date"
-                  no-title
-                  @input="issue_date_is_down = false"
-                ></v-date-picker>
-              </v-menu>
-            </v-col>
-            <v-col cols="12" lg="6">
-              <v-menu
-                ref="maturity_date"
-                v-model="maturity_date_is_down"
-                :close-on-content-click="false"
-                transition="scale-transition"
-                offset-y
-                max-width="290px"
-                min-width="auto"
-              >
-                <template v-slot:activator="{ on, attrs }">
+                </v-col>
+                <v-col cols="12" class="pa-0">
                   <v-text-field
-                    v-model="purchase.maturity_date"
-                    label="تاريخ الاصدار"
-                    prepend-icon="mdi-calendar"
-                    v-bind="attrs"
-                    v-on="on"
-                    @keydown.enter="maturity_date_is_down = false"
+                    autocomplete="off"
+                    v-model="purchase.description"
+                    label="الوصف"
                   ></v-text-field>
-                </template>
-                <v-date-picker
-                  v-model="purchase.maturity_date"
-                  no-title
-                  @input="maturity_date_is_down = false"
-                ></v-date-picker>
-              </v-menu>
-            </v-col>
+                </v-col>
+                <v-col cols="12" class="pa-0">
+                  <v-autocomplete
+                    v-model="purchase.supplier_id"
+                    :items="suppliers"
+                    item-text="ar_name"
+                    item-value="id"
+                    :rules="vld_minlingth_one"
+                    label="المورد"
+                    multiple
+                  >
+                  </v-autocomplete>
+                </v-col>
 
-            <v-col cols="12" lg="6">
-              <v-autocomplete
-                label="شروط الدفع"
-                v-model="purchase.payment_condition_id"
-                :items="payment_conditions"
-                item-text="ar_name"
-                item-value="id"
-              ></v-autocomplete>
+                <v-col cols="12" class="pa-0">
+                  <v-menu
+                    ref="issue_date"
+                    v-model="issue_date_is_down"
+                    :close-on-content-click="false"
+                    transition="scale-transition"
+                    offset-y
+                    max-width="290px"
+                    min-width="auto"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field
+                        v-model="purchase.issue_date"
+                        label="تاريخ الاصدار"
+                        prepend-icon="mdi-calendar"
+                        v-bind="attrs"
+                        v-on="on"
+                        @keydown.enter="issue_date_is_down = false"
+                      ></v-text-field>
+                    </template>
+                    <v-date-picker
+                      v-model="purchase.issue_date"
+                      no-title
+                      @input="issue_date_is_down = false"
+                    ></v-date-picker>
+                  </v-menu>
+                </v-col>
+                <v-col cols="12" class="pa-0">
+                  <v-menu
+                    ref="maturity_date"
+                    v-model="maturity_date_is_down"
+                    :close-on-content-click="false"
+                    transition="scale-transition"
+                    offset-y
+                    max-width="290px"
+                    min-width="auto"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-text-field
+                        v-model="purchase.maturity_date"
+                        label="تاريخ الاصدار"
+                        prepend-icon="mdi-calendar"
+                        v-bind="attrs"
+                        v-on="on"
+                        @keydown.enter="maturity_date_is_down = false"
+                      ></v-text-field>
+                    </template>
+                    <v-date-picker
+                      v-model="purchase.maturity_date"
+                      no-title
+                      @input="maturity_date_is_down = false"
+                    ></v-date-picker>
+                  </v-menu>
+                </v-col>
+
+                <v-col cols="12" class="pa-0">
+                  <v-autocomplete
+                    label="شروط الدفع"
+                    v-model="purchase.payment_condition_id"
+                    :items="payment_conditions"
+                    item-text="ar_name"
+                    item-value="id"
+                  ></v-autocomplete>
+                </v-col>
+              </v-row>
+            </v-col>
+            <v-col>
+              <v-card>
+                <v-card-title style="background: lightgray">
+                  معلومات المورد
+                </v-card-title>
+                <v-car-text>
+                  <v-row>
+                    <v-col cols="12" lg="6"> الاسم </v-col>
+                    <v-col cols="12" lg="6"> محمد عبدالله </v-col>
+                    <v-col cols="12" lg="6"> الهاتف </v-col>
+                    <v-col cols="12" lg="6"> 777676677 </v-col
+                    ><v-col cols="12" lg="6"> البريد الالكتروني </v-col>
+                    <v-col cols="12" lg="6"> nibrascom@mail.com </v-col
+                    ><v-col cols="12" lg="6"> الرقم الضريبي </v-col>
+                    <v-col cols="12" lg="6"> 12122212212 </v-col>
+                  </v-row>
+                </v-car-text>
+              </v-card>
             </v-col>
           </v-row>
+
           <v-divider inset></v-divider>
           <v-row>
             <v-data-table
@@ -146,9 +172,8 @@
                       v-model="searched_barcode"
                       label="الباركود"
                       @keydown.enter="searchAndAddToPurchase"
+                      :rules="is_exists"
                     ></v-text-field>
-
-                    
                   </v-col>
 
                   <v-spacer></v-spacer>
@@ -553,7 +578,7 @@ export default {
   },
   data() {
     return {
-      searched_barcode:'',
+      searched_barcode: "",
       /*----------------info----------------- */
       payment_method_dialog: false,
       product_info_product: "",
@@ -570,11 +595,11 @@ export default {
         { id: 2, ar_name: "قيمة", en_name: "amount" },
       ],
 
-      supliers: [],
+      suppliers: [],
       name_search: "",
-      
+
       loading: false,
-      
+
       found_products: [],
       selected_product: [],
       purchase_header: [
@@ -669,7 +694,7 @@ export default {
         purchase_details: [],
         purchase_reference: "",
         description: "",
-        suplier_id: "",
+        supplier_id: "",
         issue_date: new Date(
           Date.now() - new Date().getTimezoneOffset() * 60000
         )
@@ -698,6 +723,7 @@ export default {
       vld_minlingth_one: [(v) => v.length >= 1 || "أدخل قيمة"],
       required: [(value) => !!value || "الحقل مطلوب."],
       isunique: [],
+      is_exists: [],
       vld_numbering: [(v) => /^-?\d+\.?\d*$/.test(v) || "أدخل قيمة عددية"],
     };
   },
@@ -707,23 +733,21 @@ export default {
         val !== this.selected_product.ar_name &&
         this.getProducts(val, "name");
     },
-
-    
   },
   methods: {
     searchAndAddToPurchase() {
       let params = { barcode: this.searched_barcode };
 
       Product.barcodeSearch(params).then((response) => {
-        if (response.data.length !== 0) {
-          this.found_products = JSON.parse(
-            JSON.stringify(response.data.products)
-          );
+        if (response.data.products.length == 0) {
+          this.is_exists = [false || "الصنف غير موجود "];
+          return;
         }
-        let selected_product = JSON.parse(
-          JSON.stringify(this.found_products[0])
-        );
+        this.is_exists = [true];
 
+        //this.found_products = response.data.products;
+
+        let selected_product = response.data.products[0];
         //-----add
 
         selected_product.purchased_unit_id =
@@ -738,9 +762,7 @@ export default {
 
         selected_product.purchased_quantity = 1;
 
-        this.purchase.purchase_details.unshift(
-          JSON.parse(JSON.stringify(selected_product))
-        );
+        this.purchase.purchase_details.unshift(selected_product);
       });
     },
     remaining_amount() {
@@ -912,5 +934,8 @@ export default {
 }
 .text-red input {
   color: red !important;
+}
+.purchase-info .v-text-field__prefix {
+  margin-right: 10px;
 }
 </style>
