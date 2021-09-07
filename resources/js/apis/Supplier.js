@@ -1,9 +1,7 @@
 import Api from "./Api";
 
 export default {
-    create() {
-        return Api.get("/suppliers/create");
-    },
+
     store(supplier) {
         return Api.post("/suppliers/", supplier);
     },

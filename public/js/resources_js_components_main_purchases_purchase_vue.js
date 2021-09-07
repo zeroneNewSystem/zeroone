@@ -1286,7 +1286,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         ar_name: "قيمة",
         en_name: "amount"
       }],
-      suppliers: [],
+      supliers: [],
       name_search: "",
       loading: false,
       found_products: [],
@@ -1367,7 +1367,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         purchase_details: [],
         purchase_reference: "",
         description: "",
-        supplier_id: "",
+        suplier_id: "",
         issue_date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10),
         maturity_date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10)
       },
@@ -3234,7 +3234,7 @@ var render = function() {
                                 [
                                   _c("v-autocomplete", {
                                     attrs: {
-                                      items: _vm.suppliers,
+                                      items: _vm.supliers,
                                       "item-text": "ar_name",
                                       "item-value": "id",
                                       rules: _vm.vld_minlingth_one,
@@ -3242,15 +3242,15 @@ var render = function() {
                                       multiple: ""
                                     },
                                     model: {
-                                      value: _vm.purchase.supplier_id,
+                                      value: _vm.purchase.suplier_id,
                                       callback: function($$v) {
                                         _vm.$set(
                                           _vm.purchase,
-                                          "supplier_id",
+                                          "suplier_id",
                                           $$v
                                         )
                                       },
-                                      expression: "purchase.supplier_id"
+                                      expression: "purchase.suplier_id"
                                     }
                                   })
                                 ],

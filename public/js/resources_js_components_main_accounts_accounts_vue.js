@@ -747,7 +747,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
 
 
 
@@ -1874,236 +1873,227 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c(
-    "v-row",
-    { attrs: { justify: "center" } },
+    "v-dialog",
+    {
+      attrs: { "max-width": "600px", persistent: "" },
+      model: {
+        value: _vm.dialog,
+        callback: function($$v) {
+          _vm.dialog = $$v
+        },
+        expression: "dialog"
+      }
+    },
     [
       _c(
-        "v-dialog",
-        {
-          attrs: { "max-width": "600px", persistent: "" },
-          model: {
-            value: _vm.dialog,
-            callback: function($$v) {
-              _vm.dialog = $$v
-            },
-            expression: "dialog"
-          }
-        },
+        "v-card",
         [
+          _c("v-card-title", [
+            _c("span", { staticClass: "text-h5" }, [_vm._v("User Profile")])
+          ]),
+          _vm._v(" "),
           _c(
-            "v-card",
+            "v-card-text",
             [
-              _c("v-card-title", [
-                _c("span", { staticClass: "text-h5" }, [_vm._v("User Profile")])
-              ]),
-              _vm._v(" "),
               _c(
-                "v-card-text",
+                "v-container",
                 [
                   _c(
-                    "v-container",
+                    "v-row",
                     [
                       _c(
+                        "v-col",
+                        { staticClass: "pt-0", attrs: { cols: "12" } },
+                        [
+                          _c("v-autocomplete", {
+                            attrs: {
+                              label: "الحساب الرئيسي",
+                              items: this.$store.state.accounts,
+                              "item-text": function(item) {
+                                return item.account_code + " " + item.ar_name
+                              },
+                              "item-value": "id"
+                            },
+                            on: { change: _vm.onParentChange },
+                            scopedSlots: _vm._u([
+                              {
+                                key: "item",
+                                fn: function(data) {
+                                  return [
+                                    _c(
+                                      "div",
+                                      {
+                                        key: _vm.account_div_update,
+                                        style:
+                                          _vm.bgblue(data.item) +
+                                          "font-size:12px",
+                                        attrs: {
+                                          id: "nib" + data.item.account_code
+                                        }
+                                      },
+                                      [
+                                        _vm._v(
+                                          "\n                  " +
+                                            _vm._s(
+                                              data.item.account_code +
+                                                " " +
+                                                data.item.ar_name
+                                            ) +
+                                            "\n                "
+                                        )
+                                      ]
+                                    )
+                                  ]
+                                }
+                              }
+                            ]),
+                            model: {
+                              value: _vm.account.parent_id,
+                              callback: function($$v) {
+                                _vm.$set(_vm.account, "parent_id", $$v)
+                              },
+                              expression: "account.parent_id"
+                            }
+                          })
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-col",
+                        { attrs: { cols: "12" } },
+                        [
+                          _c("v-autocomplete", {
+                            attrs: {
+                              label: "نوع الحساب ",
+                              items: _vm.account_types,
+                              "item-text": function(item) {
+                                return item.type_code + " - " + item.ar_name
+                              },
+                              "item-value": "id"
+                            },
+                            model: {
+                              value: _vm.account.type_id,
+                              callback: function($$v) {
+                                _vm.$set(_vm.account, "type_id", $$v)
+                              },
+                              expression: "account.type_id"
+                            }
+                          })
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
                         "v-row",
+                        { staticClass: "justify-space-between" },
                         [
                           _c(
                             "v-col",
-                            { staticClass: "pt-0", attrs: { cols: "12" } },
-                            [
-                              _c("v-autocomplete", {
-                                attrs: {
-                                  label: "الحساب الرئيسي",
-                                  items: this.$store.state.accounts,
-                                  "item-text": function(item) {
-                                    return (
-                                      item.account_code + " " + item.ar_name
-                                    )
-                                  },
-                                  "item-value": "id"
-                                },
-                                on: { change: _vm.onParentChange },
-                                scopedSlots: _vm._u([
-                                  {
-                                    key: "item",
-                                    fn: function(data) {
-                                      return [
-                                        _c(
-                                          "div",
-                                          {
-                                            key: _vm.account_div_update,
-                                            style:
-                                              _vm.bgblue(data.item) +
-                                              "font-size:12px",
-                                            attrs: {
-                                              id: "nib" + data.item.account_code
-                                            }
-                                          },
-                                          [
-                                            _vm._v(
-                                              "\n                    " +
-                                                _vm._s(
-                                                  data.item.account_code +
-                                                    " " +
-                                                    data.item.ar_name
-                                                ) +
-                                                "\n                  "
-                                            )
-                                          ]
-                                        )
-                                      ]
-                                    }
-                                  }
-                                ]),
-                                model: {
-                                  value: _vm.account.parent_id,
-                                  callback: function($$v) {
-                                    _vm.$set(_vm.account, "parent_id", $$v)
-                                  },
-                                  expression: "account.parent_id"
-                                }
-                              })
-                            ],
-                            1
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "v-col",
-                            { attrs: { cols: "12" } },
-                            [
-                              _c("v-autocomplete", {
-                                attrs: {
-                                  label: "نوع الحساب ",
-                                  items: _vm.account_types,
-                                  "item-text": function(item) {
-                                    return item.type_code + " - " + item.ar_name
-                                  },
-                                  "item-value": "id"
-                                },
-                                model: {
-                                  value: _vm.account.type_id,
-                                  callback: function($$v) {
-                                    _vm.$set(_vm.account, "type_id", $$v)
-                                  },
-                                  expression: "account.type_id"
-                                }
-                              })
-                            ],
-                            1
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "v-row",
-                            { staticClass: "justify-space-between" },
-                            [
-                              _c(
-                                "v-col",
-                                { attrs: { cols: "12", lg: "5" } },
-                                [
-                                  _c("v-text-field", {
-                                    attrs: {
-                                      label: "اسم الحساب بالعربي*",
-                                      required: ""
-                                    },
-                                    model: {
-                                      value: _vm.account.ar_name,
-                                      callback: function($$v) {
-                                        _vm.$set(_vm.account, "ar_name", $$v)
-                                      },
-                                      expression: "account.ar_name"
-                                    }
-                                  })
-                                ],
-                                1
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "v-col",
-                                { attrs: { cols: "12", lg: "5" } },
-                                [
-                                  _c("v-text-field", {
-                                    attrs: {
-                                      label: "اسم الحساب بالانجليزي*",
-                                      required: ""
-                                    },
-                                    model: {
-                                      value: _vm.account.en_name,
-                                      callback: function($$v) {
-                                        _vm.$set(_vm.account, "en_name", $$v)
-                                      },
-                                      expression: "account.en_name"
-                                    }
-                                  })
-                                ],
-                                1
-                              )
-                            ],
-                            1
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "v-col",
-                            { attrs: { cols: "12" } },
+                            { attrs: { cols: "12", lg: "5" } },
                             [
                               _c("v-text-field", {
-                                attrs: { label: "رقم الحساب *", required: "" },
-                                model: {
-                                  value: _vm.account.account_code,
-                                  callback: function($$v) {
-                                    _vm.$set(_vm.account, "account_code", $$v)
-                                  },
-                                  expression: "account.account_code"
-                                }
-                              })
-                            ],
-                            1
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "v-col",
-                            { attrs: { cols: "12" } },
-                            [
-                              _c("v-textarea", {
-                                attrs: { rows: "2", label: "الوصف" },
-                                model: {
-                                  value: _vm.account.description,
-                                  callback: function($$v) {
-                                    _vm.$set(_vm.account, "description", $$v)
-                                  },
-                                  expression: "account.description"
-                                }
-                              })
-                            ],
-                            1
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "v-col",
-                            {
-                              staticClass: "pa-0 ma-0",
-                              attrs: { cols: "12", lg: "6" }
-                            },
-                            [
-                              _c("v-checkbox", {
-                                staticStyle: {
-                                  "white-space": "nowrap",
-                                  "margin-left": "5px",
-                                  "margin-right": "5px"
-                                },
                                 attrs: {
-                                  color: "#e91e63",
-                                  label: "يمكن التحصيل بهذالحساب"
+                                  label: "اسم الحساب بالعربي*",
+                                  required: ""
                                 },
                                 model: {
-                                  value: _vm.account.is_active,
+                                  value: _vm.account.ar_name,
                                   callback: function($$v) {
-                                    _vm.$set(_vm.account, "is_active", $$v)
+                                    _vm.$set(_vm.account, "ar_name", $$v)
                                   },
-                                  expression: "account.is_active"
+                                  expression: "account.ar_name"
+                                }
+                              })
+                            ],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "v-col",
+                            { attrs: { cols: "12", lg: "5" } },
+                            [
+                              _c("v-text-field", {
+                                attrs: {
+                                  label: "اسم الحساب بالانجليزي*",
+                                  required: ""
+                                },
+                                model: {
+                                  value: _vm.account.en_name,
+                                  callback: function($$v) {
+                                    _vm.$set(_vm.account, "en_name", $$v)
+                                  },
+                                  expression: "account.en_name"
                                 }
                               })
                             ],
                             1
                           )
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-col",
+                        { attrs: { cols: "12" } },
+                        [
+                          _c("v-text-field", {
+                            attrs: { label: "رقم الحساب *", required: "" },
+                            model: {
+                              value: _vm.account.account_code,
+                              callback: function($$v) {
+                                _vm.$set(_vm.account, "account_code", $$v)
+                              },
+                              expression: "account.account_code"
+                            }
+                          })
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-col",
+                        { attrs: { cols: "12" } },
+                        [
+                          _c("v-textarea", {
+                            attrs: { rows: "2", label: "الوصف" },
+                            model: {
+                              value: _vm.account.description,
+                              callback: function($$v) {
+                                _vm.$set(_vm.account, "description", $$v)
+                              },
+                              expression: "account.description"
+                            }
+                          })
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-col",
+                        {
+                          staticClass: "pa-0 ma-0",
+                          attrs: { cols: "12", lg: "6" }
+                        },
+                        [
+                          _c("v-checkbox", {
+                            staticStyle: {
+                              "white-space": "nowrap",
+                              "margin-left": "5px",
+                              "margin-right": "5px"
+                            },
+                            attrs: {
+                              color: "#e91e63",
+                              label: "يمكن التحصيل بهذالحساب"
+                            },
+                            model: {
+                              value: _vm.account.is_active,
+                              callback: function($$v) {
+                                _vm.$set(_vm.account, "is_active", $$v)
+                              },
+                              expression: "account.is_active"
+                            }
+                          })
                         ],
                         1
                       )
@@ -2112,40 +2102,40 @@ var render = function() {
                   )
                 ],
                 1
+              )
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "v-card-actions",
+            [
+              _c("v-spacer"),
+              _vm._v(" "),
+              _c(
+                "v-btn",
+                {
+                  attrs: { color: "blue darken-1", text: "" },
+                  on: {
+                    click: function($event) {
+                      return _vm.closeDialog()
+                    }
+                  }
+                },
+                [_vm._v("\n        إلغاء\n      ")]
               ),
               _vm._v(" "),
               _c(
-                "v-card-actions",
-                [
-                  _c("v-spacer"),
-                  _vm._v(" "),
-                  _c(
-                    "v-btn",
-                    {
-                      attrs: { color: "blue darken-1", text: "" },
-                      on: {
-                        click: function($event) {
-                          return _vm.closeDialog()
-                        }
-                      }
-                    },
-                    [_vm._v("\n          إلغاء\n        ")]
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "v-btn",
-                    {
-                      attrs: { color: "blue darken-1", text: "" },
-                      on: {
-                        click: function($event) {
-                          return _vm.saveAccount()
-                        }
-                      }
-                    },
-                    [_vm._v(" حفظ ")]
-                  )
-                ],
-                1
+                "v-btn",
+                {
+                  attrs: { color: "blue darken-1", text: "" },
+                  on: {
+                    click: function($event) {
+                      return _vm.saveAccount()
+                    }
+                  }
+                },
+                [_vm._v(" حفظ ")]
               )
             ],
             1
@@ -2180,66 +2170,88 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c(
-    "v-row",
-    { attrs: { justify: "center" } },
+    "v-dialog",
+    {
+      attrs: {
+        fullscreen: "",
+        "hide-overlay": "",
+        transition: "dialog-bottom-transition"
+      },
+      model: {
+        value: _vm.dialog,
+        callback: function($$v) {
+          _vm.dialog = $$v
+        },
+        expression: "dialog"
+      }
+    },
     [
       _c(
-        "v-dialog",
-        {
-          attrs: {
-            fullscreen: "",
-            "hide-overlay": "",
-            transition: "dialog-bottom-transition"
-          },
-          model: {
-            value: _vm.dialog,
-            callback: function($$v) {
-              _vm.dialog = $$v
-            },
-            expression: "dialog"
-          }
-        },
+        "v-card",
         [
           _c(
-            "v-card",
+            "v-toolbar",
+            { attrs: { dark: "", color: "primary" } },
             [
               _c(
-                "v-toolbar",
-                { attrs: { dark: "", color: "primary" } },
+                "v-btn",
+                {
+                  attrs: { icon: "", dark: "" },
+                  on: {
+                    click: function($event) {
+                      return _vm.closeShowDialog()
+                    }
+                  }
+                },
+                [_c("v-icon", [_vm._v("mdi-close")])],
+                1
+              ),
+              _vm._v(" "),
+              _c("v-toolbar-title", [_vm._v("Settings")]),
+              _vm._v(" "),
+              _c("v-spacer"),
+              _vm._v(" "),
+              _c(
+                "v-toolbar-items",
                 [
                   _c(
                     "v-btn",
                     {
-                      attrs: { icon: "", dark: "" },
+                      attrs: { dark: "", text: "" },
                       on: {
                         click: function($event) {
-                          return _vm.closeShowDialog()
+                          _vm.dialog = false
                         }
                       }
                     },
-                    [_c("v-icon", [_vm._v("mdi-close")])],
-                    1
-                  ),
-                  _vm._v(" "),
-                  _c("v-toolbar-title", [_vm._v("Settings")]),
-                  _vm._v(" "),
-                  _c("v-spacer"),
-                  _vm._v(" "),
+                    [_vm._v(" Save ")]
+                  )
+                ],
+                1
+              )
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "v-list",
+            { attrs: { "three-line": "", subheader: "" } },
+            [
+              _c("v-subheader", [_vm._v("User Controls")]),
+              _vm._v(" "),
+              _c(
+                "v-list-item",
+                [
                   _c(
-                    "v-toolbar-items",
+                    "v-list-item-content",
                     [
-                      _c(
-                        "v-btn",
-                        {
-                          attrs: { dark: "", text: "" },
-                          on: {
-                            click: function($event) {
-                              _vm.dialog = false
-                            }
-                          }
-                        },
-                        [_vm._v(" Save ")]
-                      )
+                      _c("v-list-item-title", [_vm._v("Content filtering")]),
+                      _vm._v(" "),
+                      _c("v-list-item-subtitle", [
+                        _vm._v(
+                          "Set the content filtering level to restrict apps that can be\n            downloaded"
+                        )
+                      ])
                     ],
                     1
                   )
@@ -2248,49 +2260,65 @@ var render = function() {
               ),
               _vm._v(" "),
               _c(
-                "v-list",
-                { attrs: { "three-line": "", subheader: "" } },
+                "v-list-item",
                 [
-                  _c("v-subheader", [_vm._v("User Controls")]),
-                  _vm._v(" "),
                   _c(
-                    "v-list-item",
+                    "v-list-item-content",
                     [
-                      _c(
-                        "v-list-item-content",
-                        [
-                          _c("v-list-item-title", [
-                            _vm._v("Content filtering")
-                          ]),
-                          _vm._v(" "),
-                          _c("v-list-item-subtitle", [
-                            _vm._v(
-                              "Set the content filtering level to restrict apps that can be\n              downloaded"
-                            )
-                          ])
-                        ],
-                        1
-                      )
+                      _c("v-list-item-title", [_vm._v("Password")]),
+                      _vm._v(" "),
+                      _c("v-list-item-subtitle", [
+                        _vm._v(
+                          "Require password for purchase or use password to restrict\n            purchase"
+                        )
+                      ])
+                    ],
+                    1
+                  )
+                ],
+                1
+              )
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c("v-divider"),
+          _vm._v(" "),
+          _c(
+            "v-list",
+            { attrs: { "three-line": "", subheader: "" } },
+            [
+              _c("v-subheader", [_vm._v("General")]),
+              _vm._v(" "),
+              _c(
+                "v-list-item",
+                [
+                  _c(
+                    "v-list-item-action",
+                    [
+                      _c("v-checkbox", {
+                        model: {
+                          value: _vm.notifications,
+                          callback: function($$v) {
+                            _vm.notifications = $$v
+                          },
+                          expression: "notifications"
+                        }
+                      })
                     ],
                     1
                   ),
                   _vm._v(" "),
                   _c(
-                    "v-list-item",
+                    "v-list-item-content",
                     [
-                      _c(
-                        "v-list-item-content",
-                        [
-                          _c("v-list-item-title", [_vm._v("Password")]),
-                          _vm._v(" "),
-                          _c("v-list-item-subtitle", [
-                            _vm._v(
-                              "Require password for purchase or use password to restrict\n              purchase"
-                            )
-                          ])
-                        ],
-                        1
-                      )
+                      _c("v-list-item-title", [_vm._v("Notifications")]),
+                      _vm._v(" "),
+                      _c("v-list-item-subtitle", [
+                        _vm._v(
+                          "Notify me about updates to apps or games that I\n            downloaded"
+                        )
+                      ])
                     ],
                     1
                   )
@@ -2298,116 +2326,69 @@ var render = function() {
                 1
               ),
               _vm._v(" "),
-              _c("v-divider"),
+              _c(
+                "v-list-item",
+                [
+                  _c(
+                    "v-list-item-action",
+                    [
+                      _c("v-checkbox", {
+                        model: {
+                          value: _vm.sound,
+                          callback: function($$v) {
+                            _vm.sound = $$v
+                          },
+                          expression: "sound"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-list-item-content",
+                    [
+                      _c("v-list-item-title", [_vm._v("Sound")]),
+                      _vm._v(" "),
+                      _c("v-list-item-subtitle", [
+                        _vm._v(
+                          "Auto-update apps at any time. Data charges may\n            apply"
+                        )
+                      ])
+                    ],
+                    1
+                  )
+                ],
+                1
+              ),
               _vm._v(" "),
               _c(
-                "v-list",
-                { attrs: { "three-line": "", subheader: "" } },
+                "v-list-item",
                 [
-                  _c("v-subheader", [_vm._v("General")]),
-                  _vm._v(" "),
                   _c(
-                    "v-list-item",
+                    "v-list-item-action",
                     [
-                      _c(
-                        "v-list-item-action",
-                        [
-                          _c("v-checkbox", {
-                            model: {
-                              value: _vm.notifications,
-                              callback: function($$v) {
-                                _vm.notifications = $$v
-                              },
-                              expression: "notifications"
-                            }
-                          })
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "v-list-item-content",
-                        [
-                          _c("v-list-item-title", [_vm._v("Notifications")]),
-                          _vm._v(" "),
-                          _c("v-list-item-subtitle", [
-                            _vm._v(
-                              "Notify me about updates to apps or games that I\n              downloaded"
-                            )
-                          ])
-                        ],
-                        1
-                      )
+                      _c("v-checkbox", {
+                        model: {
+                          value: _vm.widgets,
+                          callback: function($$v) {
+                            _vm.widgets = $$v
+                          },
+                          expression: "widgets"
+                        }
+                      })
                     ],
                     1
                   ),
                   _vm._v(" "),
                   _c(
-                    "v-list-item",
+                    "v-list-item-content",
                     [
-                      _c(
-                        "v-list-item-action",
-                        [
-                          _c("v-checkbox", {
-                            model: {
-                              value: _vm.sound,
-                              callback: function($$v) {
-                                _vm.sound = $$v
-                              },
-                              expression: "sound"
-                            }
-                          })
-                        ],
-                        1
-                      ),
+                      _c("v-list-item-title", [_vm._v("Auto-add widgets")]),
                       _vm._v(" "),
-                      _c(
-                        "v-list-item-content",
-                        [
-                          _c("v-list-item-title", [_vm._v("Sound")]),
-                          _vm._v(" "),
-                          _c("v-list-item-subtitle", [
-                            _vm._v(
-                              "Auto-update apps at any time. Data charges may\n              apply"
-                            )
-                          ])
-                        ],
-                        1
-                      )
-                    ],
-                    1
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "v-list-item",
-                    [
-                      _c(
-                        "v-list-item-action",
-                        [
-                          _c("v-checkbox", {
-                            model: {
-                              value: _vm.widgets,
-                              callback: function($$v) {
-                                _vm.widgets = $$v
-                              },
-                              expression: "widgets"
-                            }
-                          })
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "v-list-item-content",
-                        [
-                          _c("v-list-item-title", [_vm._v("Auto-add widgets")]),
-                          _vm._v(" "),
-                          _c("v-list-item-subtitle", [
-                            _vm._v("Automatically add home screen widgets")
-                          ])
-                        ],
-                        1
-                      )
+                      _c("v-list-item-subtitle", [
+                        _vm._v("Automatically add home screen widgets")
+                      ])
                     ],
                     1
                   )

@@ -89,7 +89,7 @@ export default {
         },
         { text: "الشركة", align: "center", value: "company" },
         { text: "الخصم", align: "center", value: "selling_discount" },
-        { text: "عمليات ", align: "center", value: "actions" },
+        { text: "التحكم ", align: "center", value: "actions" },
       ],
     };
   },

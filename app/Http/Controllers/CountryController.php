@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\City;
 use App\Models\Country;
 use Illuminate\Http\Request;
 
@@ -14,7 +15,7 @@ class CountryController extends Controller
      */
     public function index()
     {
-        //
+        return ['countries' => Country::all()];
     }
 
     /**
@@ -22,9 +23,10 @@ class CountryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function cities($country_id)
     {
-        //
+        
+        return ['cities' => City::where('country_id', $country_id)->get()];
     }
 
     /**

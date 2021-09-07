@@ -516,7 +516,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         align: "center",
         value: "selling_discount"
       }, {
-        text: "عمليات ",
+        text: "التحكم ",
         align: "center",
         value: "actions"
       }]

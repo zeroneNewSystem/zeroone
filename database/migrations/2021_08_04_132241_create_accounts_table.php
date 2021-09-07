@@ -38,6 +38,7 @@ class CreateAccountsTable extends Migration
             
             $table->unsignedInteger('currency_id')->default(1);
             $table->boolean('is_active')->default(1);
+            $table->boolean('is_visable_in_COA')->default(1);
 
             
             $table->unsignedInteger('accountable_id')->nullable();

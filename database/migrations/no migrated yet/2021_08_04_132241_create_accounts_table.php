@@ -43,12 +43,14 @@ class CreateAccountsTable extends Migration
             $table->boolean('is_gl');
             $table->boolean('is_budget');
             $table->boolean('is_depreciation');
+            
 
             $table->unsignedInteger('accountable_id')->nullable();
             $table->string('accountable_ type')->nullable();
 
 
             $table->unsignedInteger('create_by_user_id');
+
             
             $table->timestamps();
             $table->softDeletes();

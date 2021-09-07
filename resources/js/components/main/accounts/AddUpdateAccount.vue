@@ -1,5 +1,5 @@
 <template>
-  <v-row justify="center">
+  
     <v-dialog v-model="dialog" max-width="600px" persistent>
       <v-card>
         <v-card-title>
@@ -92,7 +92,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </v-row>
+  
 </template>
 <script>
 import Account from "../../../apis/Account";

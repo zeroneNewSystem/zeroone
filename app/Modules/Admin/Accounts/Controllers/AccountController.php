@@ -46,7 +46,7 @@ class AccountController extends Controller
     {
 
         //$accounts = Account::orderBy('type_code')->get();
-        $accounts = Account::with('type')->orderBy('account_code')->orderBy('id')->get();
+        $accounts = Account::with('type')->where('is_visable_in_COA',1)->orderBy('account_code')->orderBy('id')->get();
 
         //return response()->json(['accounts' => $accounts], 200);
         return response()->json(['accounts' => AccountResource::collection($accounts)], 200);

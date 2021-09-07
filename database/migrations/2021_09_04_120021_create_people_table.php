@@ -22,7 +22,7 @@ class CreatePeopleTable extends Migration
             $table->string('locale')->default('ar_SA');
             $table->string('phone01', 15)->nullable();
             $table->string('phone02', 15)->nullable();
-            $table->string('phone03', 15)->nullable();
+            
             $table->string('email')->nullable();
             $table->string('website')->nullable();
             $table->integer('country_id')->nullable();
@@ -31,7 +31,6 @@ class CreatePeopleTable extends Migration
             $table->boolean('is_active')->default('1');
             $table->text('notes')->nullable();
             
-
             $table->timestamps();
             $table->softDeletes();
 

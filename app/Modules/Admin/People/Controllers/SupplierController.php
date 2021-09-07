@@ -14,17 +14,17 @@ class SupplierController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $name = 'محمد';
+        // $name = 'محمد';
 
-        $suppliers = Supplier::with('person')->whereHas('person', function (Builder $query) use ($name) {
-            $query->where('ar_name', $name);
-        })->get();
+        // $suppliers = Supplier::with('person')->whereHas('person', function (Builder $query) use ($name) {
+        //     $query->where('ar_name', $name);
+        // })->get();
 
-        return $suppliers;
-        return response()->json(['supplier_types' => Supplier::has('person')->get()], 200);
-        return response()->json(['supplier_types' => Supplier::with('person')->get()], 200);
+        // return $suppliers;
+        
+        return response()->json(['suppliers' => Supplier::with('person')->paginate($request->itemsPerPage != -1 ? $request->itemsPerPage : '')], 200);
     }
 
     /**
@@ -45,7 +45,11 @@ class SupplierController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request['company_id'] = 1;
+        $request['person_id'] = 1;
+        
+         
+        return $supplier = Supplier::create($request->all());
     }
 
     /**
@@ -88,8 +92,14 @@ class SupplierController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
+
     {
-        //
+    
+       
+         Supplier::where('person_id',$request->person_id)->delete();
+        return response()->json(['suppliers' => Supplier::with('person')->paginate($request->itemsPerPage != -1 ? $request->itemsPerPage : '')], 200);
+
+
     }
 }

@@ -33,6 +33,8 @@ class CreateProductsTable extends Migration
             $table->unsignedInteger ('product_cogs_account_id');
             $table->unsignedInteger ('product_sales_account_id');
             
+            
+
 
 
 

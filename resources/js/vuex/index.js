@@ -9,7 +9,14 @@ export default new Vuex.Store({
     state: {
         accounts: [],
         account_types: [],
-        accountsVDTloading: true
+        accountsVDTloading: true,
+
+        /*--------------suppliers--------------------- */
+
+
+
+
+
     },
     mutations: {
         load_accounts: (state, payload) => {

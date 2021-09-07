@@ -1,6 +1,5 @@
 <template>
   <div>
-    
     <add-update-account
       :dialog="add_update_account_dialog"
       :account="passed_account"

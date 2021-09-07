@@ -10,7 +10,17 @@ use Illuminate\Support\Facades\Route;
  */
 
 Route::group(["prefix" => "suppliers"], function () {
-    Route::get('/', 'SupplierController@index');
+    Route::get('/', 'SupplierController@index'); 
+    Route::post('/', 'SupplierController@store');
+    Route::put('/', 'SupplierController@update');   
+
+    Route::delete('/', 'SupplierController@destroy');
+
+
+
+
+
+
 });
 
 Route::group(["prefix" => "people"], function () {
@@ -22,6 +32,7 @@ Route::group(["prefix" => "people"], function () {
     Route::put('/', 'PersonController@update');
 
     Route::get('/types', 'PersonTypeController@index');
+    
     Route::get('/export', 'PersonController@export');
     Route::get('/type/{type}', 'PersonController@showpeopleByType'); //people started with
     Route::post('/create', 'PersonController@postCreate');

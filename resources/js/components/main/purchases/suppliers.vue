@@ -1,13 +1,18 @@
  <template>
   <div>
+    <add-update-supplier
+      :dialog="add_update_supplier_dialog"
+      :supplier="passed_supplier"
+      :operation="operation"
+      @addUpdateSupplier="getDataFromApi()"
+      
+    ></add-update-supplier>
+
     <supplier-info
       :dialog="supplier_info_dialog"
       :supplier="supplier_info_supplier"
-      :prdct_forms="prdct_forms"
-      :prdct_taxes="prdct_taxes"
-      :prdct_types="prdct_types"
     >
-      <span slot="title"> معلومات الصنف</span>
+      <span slot="title"> معلومات المورد</span>
     </supplier-info>
     <v-data-table
       :headers="headers"
@@ -21,7 +26,12 @@
         <v-toolbar flat color="white">
           <v-toolbar-title>{{ title }}</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
-          <v-spacer></v-spacer>
+          <v-btn
+            elevation
+            color="primary"
+            @click.stop="addUpdateSupplier('', 'add')"
+            >إضافة مورد</v-btn
+          >
         </v-toolbar>
 
         <v-text-field
@@ -30,12 +40,13 @@
           class="mx-4"
         ></v-text-field>
       </template>
-
+      <template v-slot:item.ar_name="{ item }">
+        {{ item.person.ar_name }}
+      </template>
+      <template v-slot:item.status="{ item }">
+        {{ item.is_active ? "نشط" : "غير نشط" }}
+      </template>
       <template v-slot:item.actions="{ item }">
-        <router-link :to="{ name: 'supplier', params: { supplier: item } }"
-          ><v-icon small>mdi-pencil</v-icon></router-link
-        >
-
         <v-btn icon @click.stop="show_supplier_dialog(item)">
           <v-icon small class="outlined font-size-12">mdi-eye</v-icon>
         </v-btn>
@@ -50,28 +61,32 @@
 <script>
 import Supplier from "../../../apis/Supplier";
 import SupplierInfo from "./supplier-info.vue";
+import AddUpdateSupplier from "./AddUpdateSupplier.vue";
 export default {
   components: {
     SupplierInfo,
+    AddUpdateSupplier,
   },
   data() {
     return {
       //-------etched data-----------------f
+      operation:"add",
       suppliers: [],
-      prdct_types: [],
-      prdct_forms: [],
-      prdct_taxes: [],
+      add_update_supplier_dialog: false,
+      passed_supplier: "",
 
       //-----------------------------------//
       supplier_info_supplier: "",
       supplier_info_dialog: false,
       search: "",
+      options: {},
       status: "salam",
-      title: "إدارة الأصناف",
+
+      title: "إدارة الموردين",
       //---
       suppliers_total: 20,
       loading: true,
-      options: {},
+
       headers: [
         {
           text: "م",
@@ -85,11 +100,12 @@ export default {
           text: "جهة الاتصال",
           align: "center",
           sortable: false,
-          value: "contact_person",
+          value: "ar_name",
         },
-        { text: "الشركة", align: "center", value: "company" },
-        { text: "الخصم", align: "center", value: "selling_discount" },
-        { text: "عمليات ", align: "center", value: "actions" },
+        { text: "الرصيد", align: "center", value: "balance" },
+        { text: "متأخرات", align: "center", value: "arrears" },
+        { text: "الحالة ", align: "center", value: "status" },
+        { text: "لتحكم ", align: "center", value: "actions" },
       ],
     };
   },
@@ -97,7 +113,7 @@ export default {
     params(nv) {
       return {
         ...this.options,
-        query: this.search,
+        //query: this.search,
       };
     },
   },
@@ -106,10 +122,8 @@ export default {
       handler() {
         this.getDataFromApi().then((response) => {
           this.suppliers = response.data.suppliers.data;
-          this.prdct_types = response.data.prdct_types;
-          this.prdct_forms = response.data.prdct_forms;
-          this.prdct_taxes = response.data.prdct_taxes;
-          this.suppliers_total = response.data.suppliers.total;
+
+          this.suppliers_total = response.data.suppliers.data.total;
           this.supplier_info_supplier = response.data.suppliers.data[0];
           console.log(this.suppliers_total);
         });
@@ -122,7 +136,26 @@ export default {
   //     this.suppliers = data.response;
   //   });
   // },
+
   methods: {
+    addUpdateSupplier(item, operation) {
+      if (operation == "add") {
+        this.passed_supplier = {
+          parent_id: "",
+          type_id: "",
+          ar_name: "",
+          en_name: "",
+          account_code: "",
+          description: "",
+        };
+      }
+      if (operation == "update") {
+        this.passed_account = item;
+      }
+
+      this.add_update_supplier_dialog = true;
+    },
+
     show_supplier_dialog(item) {
       this.supplier_info_dialog = true;
       console.log(item);
@@ -132,12 +165,14 @@ export default {
       this.loading = true;
       const { sortBy, sortDesc, page, itemsPerPage } = this.options;
       let search = this.search.trim().toLowerCase();
-      let id = item.id;
-      Supplier.delete({ id, page, itemsPerPage, search }).then((response) => {
-        this.loading = false;
-        this.suppliers = response.data.suppliers.data;
-        this.suppliers_total = response.data.suppliers.total;
-      });
+      let person_id = item.person_id;
+      Supplier.delete({ person_id, page, itemsPerPage, search }).then(
+        (response) => {
+          this.loading = false;
+          this.suppliers = response.data.suppliers.data;
+          this.suppliers_total = response.data.suppliers.data.total;
+        }
+      );
     },
     getDataFromApi() {
       this.loading = true;

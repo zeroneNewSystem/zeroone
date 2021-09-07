@@ -16,7 +16,7 @@ class CreateSuppliersTable extends Migration
         Schema::create('suppliers', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('company_id');
-
+            
             $table->integer('person_id');
             
             $table->string('owner')->nullable();
@@ -24,7 +24,9 @@ class CreateSuppliersTable extends Migration
             $table->string('tax_number')->nullable();
             $table->boolean('is_active')->default('1');
             $table->text('notes')->nullable();
-
+            
+            $table->timestamps();
+            $table->softDeletes();
             $table->index('company_id');
         });
     }
