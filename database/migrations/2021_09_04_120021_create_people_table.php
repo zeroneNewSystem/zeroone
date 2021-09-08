@@ -16,6 +16,8 @@ class CreatePeopleTable extends Migration
         Schema::create('people', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('company_id');
+            
+            
 
             $table->string('ar_name');
             $table->string('en_name');
@@ -25,10 +27,17 @@ class CreatePeopleTable extends Migration
             
             $table->string('email')->nullable();
             $table->string('website')->nullable();
+            
+            $table->string('company_name')->nullable();
+            $table->string('tax_number')->nullable();
             $table->integer('country_id')->nullable();
             $table->integer('city_id',)->nullable();
             $table->text('address')->nullable();
-            $table->boolean('is_active')->default('1');
+            
+            $table->boolean('is_customer')->default('0');
+            $table->boolean('is_supplier')->default('1');
+            $table->boolean('is_employee')->default('0');
+            $table->boolean('is_user')->default('0');
             $table->text('notes')->nullable();
             
             $table->timestamps();

@@ -3,7 +3,7 @@
 namespace App\Modules\Admin\people\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Modules\Admin\people\Models\Supplier;
+use App\Modules\Admin\people\Models\Person;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
@@ -18,13 +18,13 @@ class SupplierController extends Controller
     {
         // $name = 'محمد';
 
-        // $suppliers = Supplier::with('person')->whereHas('person', function (Builder $query) use ($name) {
+        // $suppliers = Person::with('person')->whereHas('person', function (Builder $query) use ($name) {
         //     $query->where('ar_name', $name);
         // })->get();
 
         // return $suppliers;
         
-        return response()->json(['suppliers' => Supplier::with('person')->paginate($request->itemsPerPage != -1 ? $request->itemsPerPage : '')], 200);
+        return response()->json(['suppliers' => Person::with('person')->paginate($request->itemsPerPage != -1 ? $request->itemsPerPage : '')], 200);
     }
 
     /**
@@ -49,7 +49,7 @@ class SupplierController extends Controller
         $request['person_id'] = 1;
         
          
-        return $supplier = Supplier::create($request->all());
+        return $supplier = Person::create($request->all());
     }
 
     /**
@@ -97,8 +97,8 @@ class SupplierController extends Controller
     {
     
        
-         Supplier::where('person_id',$request->person_id)->delete();
-        return response()->json(['suppliers' => Supplier::with('person')->paginate($request->itemsPerPage != -1 ? $request->itemsPerPage : '')], 200);
+         Person::where('person_id',$request->person_id)->delete();
+        return response()->json(['suppliers' => Person::with('person')->paginate($request->itemsPerPage != -1 ? $request->itemsPerPage : '')], 200);
 
 
     }
