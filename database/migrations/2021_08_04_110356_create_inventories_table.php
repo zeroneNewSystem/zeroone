@@ -20,7 +20,7 @@ class CreateInventoriesTable extends Migration
             $table->string('ar_name');
             $table->string('en_name');
 
-            $table->unsignedInteger ('account_code');
+            $table->unsignedInteger ('account_id');
            
             $table->unsignedInteger ('country_id');
             $table->unsignedInteger ('city_id');

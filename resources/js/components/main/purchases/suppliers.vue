@@ -4,8 +4,9 @@
       :dialog="add_update_supplier_dialog"
       :supplier="passed_supplier"
       :operation="operation"
-      @addUpdateSupplier="getDataFromApi()"
-      
+      :cities="cities"
+      @addUpdateSupplier="addSupplierToList"
+      @changeCountry="loadCities"
     ></add-update-supplier>
 
     <supplier-info
@@ -40,13 +41,16 @@
           class="mx-4"
         ></v-text-field>
       </template>
-      <template v-slot:item.ar_name="{ item }">
-        {{ item.person.ar_name }}
+      <template v-slot:item.name="{ item }">
+        {{ item.name }}
       </template>
       <template v-slot:item.status="{ item }">
         {{ item.is_active ? "نشط" : "غير نشط" }}
       </template>
       <template v-slot:item.actions="{ item }">
+        <v-btn icon @click.stop="addUpdateSupplier(item, 'update')">
+          <v-icon small class="outlined font-size-12">mdi-pencil</v-icon>
+        </v-btn>
         <v-btn icon @click.stop="show_supplier_dialog(item)">
           <v-icon small class="outlined font-size-12">mdi-eye</v-icon>
         </v-btn>
@@ -60,6 +64,7 @@
 
 <script>
 import Supplier from "../../../apis/Supplier";
+import Country from "../../../apis/Country";
 import SupplierInfo from "./supplier-info.vue";
 import AddUpdateSupplier from "./AddUpdateSupplier.vue";
 export default {
@@ -69,8 +74,9 @@ export default {
   },
   data() {
     return {
+      cities: [],
       //-------etched data-----------------f
-      operation:"add",
+      operation: "add",
       suppliers: [],
       add_update_supplier_dialog: false,
       passed_supplier: "",
@@ -100,7 +106,7 @@ export default {
           text: "جهة الاتصال",
           align: "center",
           sortable: false,
-          value: "ar_name",
+          value: "name",
         },
         { text: "الرصيد", align: "center", value: "balance" },
         { text: "متأخرات", align: "center", value: "arrears" },
@@ -138,19 +144,40 @@ export default {
   // },
 
   methods: {
+    loadCities(country_id) {
+      this.cities = [];
+      Country.loadCities(country_id).then(
+        (response) => (this.cities = response.data.cities)
+      );
+    },
+
+    addSupplierToList(supplier) {
+      if (this.operation == "add") this.suppliers.push(supplier);
+      else if (this.operation == "update") {
+        this.suppliers.splice(
+          this.suppliers.indexOf((elem) => elem.id == supplier.id),
+          1,
+          supplier
+        );
+      }
+    },
     addUpdateSupplier(item, operation) {
+      this.operation = operation;
       if (operation == "add") {
         this.passed_supplier = {
           parent_id: "",
           type_id: "",
-          ar_name: "",
-          en_name: "",
+          name: "",
           account_code: "",
           description: "",
         };
       }
       if (operation == "update") {
-        this.passed_account = item;
+        this.loadCities(item.country_id);
+
+        this.passed_supplier = item;
+        console.log("item", item);
+        console.log("item", this.cities);
       }
 
       this.add_update_supplier_dialog = true;
@@ -165,7 +192,7 @@ export default {
       this.loading = true;
       const { sortBy, sortDesc, page, itemsPerPage } = this.options;
       let search = this.search.trim().toLowerCase();
-      let person_id = item.person_id;
+      let person_id = item.id;
       Supplier.delete({ person_id, page, itemsPerPage, search }).then(
         (response) => {
           this.loading = false;

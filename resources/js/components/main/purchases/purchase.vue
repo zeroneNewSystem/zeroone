@@ -1,5 +1,13 @@
 <template>
   <div>
+    <add-update-supplier
+      :dialog="add_update_supplier_dialog"
+      :supplier="passed_supplier"
+      :operation="operation"
+      :cities="cities"
+      @addUpdateSupplier="addSupplierToList"
+      @changeCountry="loadCities"
+    ></add-update-supplier>
     <product-info
       :dialog="product_info_dialog"
       :product="product_info_product"
@@ -33,22 +41,42 @@
                 </v-col>
                 <v-col cols="12" class="pa-0">
                   <v-text-field
+                    class="purchase-info"
+                    outlined
+                    placeholder="أدخل العام (رقمين) والشهر"
+                    autocomplete="off"
+                    v-model="purchase.test_date"
+                    prefix=" تاريخ اختباري | "
+                    :rules="is_valid_date"
+                    @keydown.enter="changeDateFormat()"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" class="pa-0">
+                  <v-text-field
                     autocomplete="off"
                     v-model="purchase.description"
                     label="الوصف"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" class="pa-0">
-                  <v-autocomplete
-                    v-model="purchase.suplier_id"
-                    :items="supliers"
-                    item-text="ar_name"
-                    item-value="id"
-                    :rules="vld_minlingth_one"
-                    label="المورد"
-                    multiple
-                  >
-                  </v-autocomplete>
+                  <v-row>
+                    <v-col cols="10">
+                      <v-autocomplete
+                        v-model="purchase.supplier_id"
+                        :items="suppliers"
+                        item-text="name"
+                        item-value="id"
+                        :rules="vld_minlingth_one"
+                        label="المورد"
+                      >
+                      </v-autocomplete>
+                    </v-col>
+                    <v-col cols="2">
+                      <v-btn elevation="0" dark @click="addSupplier">
+                        <v-icon> mdi-plus </v-icon>
+                      </v-btn>
+                    </v-col>
+                  </v-row>
                 </v-col>
 
                 <v-col cols="12" class="pa-0">
@@ -122,18 +150,20 @@
                 <v-card-title style="background: lightgray">
                   معلومات المورد
                 </v-card-title>
-                <v-car-text>
+                <v-card-text>
                   <v-row>
                     <v-col cols="12" lg="6"> الاسم </v-col>
-                    <v-col cols="12" lg="6"> محمد عبدالله </v-col>
+                    <v-col cols="12" lg="6">
+                      {{ supplierInfo() && supplierInfo().name }}
+                    </v-col>
                     <v-col cols="12" lg="6"> الهاتف </v-col>
-                    <v-col cols="12" lg="6"> 777676677 </v-col
+                    <v-col cols="12" lg="6"> {{ supplierInfo() && supplierInfo().phone01 }} </v-col
                     ><v-col cols="12" lg="6"> البريد الالكتروني </v-col>
-                    <v-col cols="12" lg="6"> nibrascom@mail.com </v-col
+                    <v-col cols="12" lg="6"> {{ supplierInfo() && supplierInfo().email }} </v-col
                     ><v-col cols="12" lg="6"> الرقم الضريبي </v-col>
-                    <v-col cols="12" lg="6"> 12122212212 </v-col>
+                    <v-col cols="12" lg="6"> {{ supplierInfo() && supplierInfo().tax_number }} </v-col>
                   </v-row>
-                </v-car-text>
+                </v-card-text>
               </v-card>
             </v-col>
           </v-row>
@@ -148,6 +178,9 @@
               :hide-default-footer="true"
               :item-key="toString(Math.floor(Math.random(1, 100) * 100))"
             >
+            <template slot="no-data">
+              يرجى اختيار الأصناف
+            </template>
               <template v-slot:top>
                 <v-toolbar flat color="white">
                   <v-toolbar-title>قائمة الأصناف</v-toolbar-title>
@@ -415,22 +448,11 @@
                         <v-col
                           cols="12"
                           lg="5"
-                          style="
-                            text-align: end;
-                            border-bottom: 1px solid lightgray;
-                            color: red;
-                          "
+                          style="text-align: end; color: red"
                         >
                           <div style="margin-top: 10px">مصاريف إضافية:</div>
                         </v-col>
-                        <v-col
-                          cols="12"
-                          lg="5"
-                          style="
-                            text-align: start;
-                            border-bottom: 1px solid lightgray;
-                          "
-                        >
+                        <v-col cols="12" lg="5" style="text-align: start">
                           <div>
                             <v-text-field
                               flat
@@ -448,13 +470,50 @@
                         <v-col
                           cols="12"
                           lg="5"
+                          style="
+                            text-align: end;
+                            border-bottom: 1px solid lightgray;
+                            color: red;
+                          "
+                        >
+                          <div style="margin-top: 10px">من حساب:</div>
+                        </v-col>
+                        <v-col
+                          cols="12"
+                          lg="5"
+                          style="
+                            text-align: start;
+                            border-bottom: 1px solid lightgray;
+                          "
+                        >
+                          <div>
+                            <v-autocomplete
+                              flat
+                              outlined
+                              no-data
+                              no-data-text
+                              non-linear
+                              v-model="
+                                purchase.additional_expenses_from_account_id
+                              "
+                              :items="additional_expenses_from_accounts"
+                              item-text="ar_name"
+                              item-value="id"
+                            >
+                            </v-autocomplete>
+                          </div>
+                        </v-col>
+                      </v-row>
+                      <v-row justify="start">
+                        <v-col
+                          cols="12"
+                          lg="5"
                           style="text-align: end; font-size: 1.5rem"
                         >
                           المجموع:
                         </v-col>
                         <v-col
                           cols="6"
-                          lg="2"
                           style="text-align: start; font-size: 1.5rem"
                         >
                           <div v-html="total_amount().toFixed(2)"></div
@@ -499,6 +558,7 @@
                           <payment-method
                             @payment_methods="paymentMethods"
                             :purchase_total="purchase.total_amount"
+                            :accounts="additional_expenses_from_accounts"
                           ></payment-method>
                         </v-col>
                       </v-row>
@@ -569,15 +629,23 @@
 
 <script>
 import Product from "../../../apis/Product";
+import Purchase from "../../../apis/Purchase";
 import ProductInfo from "../products/product-info.vue";
 import PaymentMethod from "./payment-methods";
+import AddUpdateSupplier from "./AddUpdateSupplier.vue";
+import Country from "../../../apis/Country";
+import Supplier from "../../../apis/Supplier";
+import Account from "../../../apis/Account";
 export default {
   components: {
     ProductInfo,
     PaymentMethod,
+    AddUpdateSupplier,
   },
   data() {
     return {
+      additional_expenses_from_accounts: [],
+      additional_expenses_from_account_id: "",
       searched_barcode: "",
       /*----------------info----------------- */
       payment_method_dialog: false,
@@ -595,7 +663,11 @@ export default {
         { id: 2, ar_name: "قيمة", en_name: "amount" },
       ],
 
-      supliers: [],
+      add_update_supplier_dialog: false,
+      passed_supplier: "",
+      operation: "add",
+      cities: [],
+      suppliers: [],
       name_search: "",
 
       loading: false,
@@ -690,11 +762,12 @@ export default {
         total_vat: 0,
         total_amount: 0,
 
-        patch_number: Math.random(10000, 99999),
+        patch_number: Math.floor(Math.random() * (99999 - 10000 + 1) + 10000),
+
         purchase_details: [],
         purchase_reference: "",
         description: "",
-        suplier_id: "",
+        supplier_id: "",
         issue_date: new Date(
           Date.now() - new Date().getTimezoneOffset() * 60000
         )
@@ -724,6 +797,7 @@ export default {
       required: [(value) => !!value || "الحقل مطلوب."],
       isunique: [],
       is_exists: [],
+      is_valid_date: [],
       vld_numbering: [(v) => /^-?\d+\.?\d*$/.test(v) || "أدخل قيمة عددية"],
     };
   },
@@ -735,6 +809,42 @@ export default {
     },
   },
   methods: {
+    supplierInfo() {
+      return this.suppliers.find(
+        (elem) => elem.id == this.purchase.supplier_id
+      );
+    },
+    changeDateFormat() {
+      let chunks = this.purchase.test_date.match(/.{1,2}/g);
+      if (chunks[1].length == 1) chunks[1] = "0" + chunks[1];
+
+      let date = "20" + chunks[0] + "-" + chunks[1] + "-01";
+
+      if (!isNaN(Date.parse(date))) {
+        console.log(Date.parse(date));
+        this.purchase.test_date = date;
+        this.is_valid_date = [];
+        return;
+      }
+
+      this.is_valid_date = ["التاريخ غير صحيح"];
+    },
+    addSupplierToList(supplier) {
+      this.suppliers.push(supplier);
+      this.purchase.supplier_id = supplier.id;
+    },
+    loadCities(country_id) {
+      this.cities = [];
+      Country.loadCities(country_id).then(
+        (response) => (this.cities = response.data.cities)
+      );
+    },
+
+    addSupplier() {
+      this.add_update_supplier_dialog = true;
+      this.operation = "add";
+      this.passed_supplier = {};
+    },
     searchAndAddToPurchase() {
       let params = { barcode: this.searched_barcode };
 
@@ -762,6 +872,10 @@ export default {
 
         selected_product.purchased_quantity = 1;
 
+        //---------
+        selected_product["document_type_id"] = 1; // purchase
+        selected_product["product_id"] = selected_product["id"]; // purchase
+
         this.purchase.purchase_details.unshift(selected_product);
       });
     },
@@ -771,6 +885,7 @@ export default {
     },
     payAllCash() {
       this.purchase.paid_amount = this.purchase.total_amount.toFixed(2);
+      this.purchase.payment_methods = "";
     },
     paymentMethods(payments) {
       this.purchase.payment_methods = payments.payment_methods;
@@ -892,6 +1007,13 @@ export default {
       this.selected_product = [];
     },
     checkExecting() {},
+    submit() {
+      Purchase.store(this.purchase).then((response) =>
+        console.log(response.data)
+      );
+
+      console.log(this.purchase);
+    },
 
     /*------------------dateTime----------------------*/
     formatDate(date) {
@@ -906,6 +1028,13 @@ export default {
       const [month, day, year] = date.split("/");
       return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
     },
+  },
+  created() {
+    Supplier.get().then((response) => (this.suppliers = response.data));
+    Account.cashAndBanks().then(
+      (response) =>
+        (this.additional_expenses_from_accounts = response.data.accounts)
+    );
   },
 };
 </script>

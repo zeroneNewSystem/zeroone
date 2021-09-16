@@ -4,8 +4,9 @@ namespace App\Modules\Admin\Products\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\DistributionPolicy;
-use App\Models\Inventory;
+
 use App\Models\Tax;
+use App\Modules\Admin\Products\Models\Inventory;
 use App\Modules\Admin\Products\Models\PrdctForm;
 use App\Modules\Admin\Products\Models\PrdctGroup;
 use App\Modules\Admin\Products\Models\PrdctUnit;
@@ -48,7 +49,7 @@ class ProductController extends Controller
                 // ->orWhere('barcode', 'LIKE', '%' . $request->search . '%')
             ;
 
-        
+
         return response()->json([
             'products' => $products, 'types' => PrdctType::all(),
             'prdct_forms' => PrdctForm::all(),

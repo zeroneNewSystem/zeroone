@@ -23,8 +23,11 @@ class SupplierController extends Controller
         // })->get();
 
         // return $suppliers;
-        
-        return response()->json(['suppliers' => Person::with('person')->paginate($request->itemsPerPage != -1 ? $request->itemsPerPage : '')], 200);
+
+        //return response()->json(['suppliers' => Person::paginate($request->itemsPerPage != -1 ? $request->itemsPerPage : '')], 200);
+
+        return Person::where('company_id','1')->where('is_supplier','1')->get();    
+
     }
 
     /**
@@ -47,9 +50,9 @@ class SupplierController extends Controller
     {
         $request['company_id'] = 1;
         $request['person_id'] = 1;
-        
-         
-        return $supplier = Person::create($request->all());
+
+
+        return Person::create($request->all())->id;
     }
 
     /**
@@ -81,8 +84,10 @@ class SupplierController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
+        Person::find($request->id)->update($request->all());
+        return response()->json(['types' => Person::all()], 200);
         //
     }
 
@@ -95,11 +100,9 @@ class SupplierController extends Controller
     public function destroy(Request $request)
 
     {
-    
-       
-         Person::where('person_id',$request->person_id)->delete();
-        return response()->json(['suppliers' => Person::with('person')->paginate($request->itemsPerPage != -1 ? $request->itemsPerPage : '')], 200);
+        
 
-
+        Person::where('id', $request->person_id)->delete();
+        return response()->json(['suppliers' => Person::paginate($request->itemsPerPage != -1 ? $request->itemsPerPage : '')], 200);
     }
 }

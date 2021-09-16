@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 class CreatePurchaseDetailsTable extends Migration
 {
+    
     /**
      * Run the migrations.
      *
@@ -17,11 +18,11 @@ class CreatePurchaseDetailsTable extends Migration
             $table->id();
             $table->unsignedInteger('company_id');
 
-            $table->integer('source_document_id',);
             $table->integer('document_id',);
+            $table->integer('document_type_id',);
             $table->integer('product_id',);
-            $table->datetime('expires_at');
-            $table->integer('product_unit_id');
+            $table->datetime('expires_at')->nullable();
+            $table->integer('purchased_unit_id');
             $table->integer('purchased_quantity',)->default(0);
             $table->double('unit_price')->default(0.0);
             $table->double('profit_ratio')->default(0.0);
@@ -32,7 +33,7 @@ class CreatePurchaseDetailsTable extends Migration
             $table->double('vat')->default(0.0);
             $table->double('purchase_discount')->default(0.0);
             $table->double('sales_discount')->default(0.0);
-            $table->integer('patch_number',);
+            
             $table->double('total')->default(0.0);
             $table->boolean('purchased_drugs_is_with_bonous')->default(0);
 

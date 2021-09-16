@@ -13,13 +13,7 @@ Route::group(["prefix" => "suppliers"], function () {
     Route::get('/', 'SupplierController@index'); 
     Route::post('/', 'SupplierController@store');
     Route::put('/', 'SupplierController@update');   
-
     Route::delete('/', 'SupplierController@destroy');
-
-
-
-
-
 
 });
 

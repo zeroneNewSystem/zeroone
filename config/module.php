@@ -17,7 +17,9 @@ return [
         "Admin" => [
             'Accounts',
             'Products',
-            'people',
+            'People',
+            'Purchases',
+            
 
         ],
         'Public' => []

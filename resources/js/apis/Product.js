@@ -5,10 +5,10 @@ export default {
         return Api.get("/products/create");
     },
     store(product) {
-        return Api.post("/products/", product);
+        return Api.post("/products", product);
     },
     update(product) {
-        return Api.put("/products/", product);
+        return Api.put("/products", product);
     },
     postCreate(product) {
         return Api.post("/products/create", product);
@@ -22,7 +22,7 @@ export default {
     },
 
     barcodeSearch(params) {
-        return Api.get("/router/" + params.barcode);
+        return Api.get("/extra/barcode/" + params.barcode);
     },
 
     delete(params) {

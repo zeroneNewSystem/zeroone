@@ -1,6 +1,6 @@
 <template>
   <v-dialog v-model="dialog" max-width="800px" persistent>
-    <v-card>
+    <v-card :loading="isloading">
       <v-card-title>
         <v-row>
           <v-col> {{ title }}</v-col>
@@ -20,7 +20,7 @@
             <v-col cols="12" lg="6">
               <v-text-field
                 label="اسم المورد *"
-                v-model="supplier.ar_name"
+                v-model="supplier.name"
                 required
               ></v-text-field>
             </v-col>
@@ -56,6 +56,7 @@
 
             <v-col cols="12">
               <v-textarea
+              rows="2"
                 v-model="supplier.address"
                 label="العنوان"
                 required
@@ -116,11 +117,11 @@
 import Supplier from "../../../apis/Supplier";
 import Country from "../../../apis/Country";
 export default {
-  props: ["dialog", "supplier", "supplier_types", "operation"],
+  props: ["dialog", "supplier", "cities", "operation"],
   data: () => ({
+    isloading: false,
     title: "إضافة مورد جديد",
     countries: [],
-    cities: [],
 
     supplier_div_update: 0,
   }),
@@ -133,26 +134,28 @@ export default {
   computed: {},
   methods: {
     loadCities() {
-      (this.cities = []),
-        Country.loadCities(this.supplier.country_id).then(
-          (response) => (this.cities = response.data.cities)
-        );
+      this.$emit("changeCountry", this.supplier.country_id);
     },
     closeDialog() {
       this.$parent.$data.add_update_supplier_dialog = false;
     },
     saveSupplier() {
+      console.log(this.operation);
+      this.isloading = "blue";
       if (this.operation == "add") {
         Supplier.store(this.supplier).then((response) => {
+          this.supplier["id"] = response.data;
           this.$parent.$data.add_update_supplier_dialog = false;
-          this.$emit('addUpdateSupplier', response.data.supplier);  
+          this.isloading = false;
+          this.$emit("addUpdateSupplier", this.supplier);
         });
         return;
       }
       if (this.operation == "update") {
         Supplier.update(this.supplier).then((response) => {
           this.$parent.$data.add_update_supplier_dialog = false;
-          this.$emit('addUpdateSupplier', response.data.supplier);  
+          this.isloading = false;
+          this.$emit("addUpdateSupplier", response.data.supplier);
         });
         return;
       }

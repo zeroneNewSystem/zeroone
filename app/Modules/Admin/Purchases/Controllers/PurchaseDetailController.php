@@ -3,8 +3,7 @@
 namespace App\Modules\Admin\Purchases\Controllers;
 
 use App\Http\Controllers\Controller;
-
-
+use App\Modules\Admin\Purchases\Models\PurchaseDetail;
 use Illuminate\Http\Request;
 
 class PurchaseDetailController extends Controller

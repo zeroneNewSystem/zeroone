@@ -1,6 +1,9 @@
 import Api from "./Api";
 
 export default {
+    cashAndBanks() {
+        return Api.get("/accounts/cashAndBanks");
+    },
     get() {
         return Api.get("/accounts/");
     },
@@ -18,8 +21,7 @@ export default {
         return Api.post("/accounts/", account);
     },
     update(account) {
-        return Api.put("/accounts/",
-            account);
+        return Api.put("/accounts/", account);
     },
     showAccountsByType(type) {
         return Api.get("/accounts/type/" + type);

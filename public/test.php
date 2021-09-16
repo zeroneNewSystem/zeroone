@@ -100,4 +100,4 @@ foreach ($products as &$product) {
 
 
 $database->close();
-echo json_encode(['products' => $products]);
+echo json_encode(['products' => $products], JSON_NUMERIC_CHECK);

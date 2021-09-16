@@ -1235,10 +1235,10 @@ __webpack_require__.r(__webpack_exports__);
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/products/create");
   },
   store: function store(product) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/products/", product);
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/products", product);
   },
   update: function update(product) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("/products/", product);
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("/products", product);
   },
   postCreate: function postCreate(product) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/products/create", product);
@@ -1254,7 +1254,7 @@ __webpack_require__.r(__webpack_exports__);
     });
   },
   barcodeSearch: function barcodeSearch(params) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/router/" + params.barcode);
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/extra/barcode/" + params.barcode);
   },
   "delete": function _delete(params) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.delete("/products/", {

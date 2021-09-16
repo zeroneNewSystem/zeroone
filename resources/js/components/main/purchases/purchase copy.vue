@@ -723,6 +723,8 @@ export default {
     },
     payAllCash() {
       this.purchase.paid_amount = this.purchase.total_amount;
+      this.purchase.payment_methods = []
+      console.log(1)
     },
     paymentMethods(payments) {
       this.purchase.payment_methods = payments.payment_methods;

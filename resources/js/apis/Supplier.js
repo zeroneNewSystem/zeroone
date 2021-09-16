@@ -3,16 +3,17 @@ import Api from "./Api";
 export default {
 
     store(supplier) {
-        return Api.post("/suppliers/", supplier);
+
+        return Api.post("/suppliers", supplier);
     },
     update(supplier) {
-        return Api.put("/suppliers/", supplier);
+        return Api.put("/suppliers", supplier);
     },
     postCreate(supplier) {
         return Api.post("/suppliers/create", supplier);
     },
     get(params) {
-        return Api.get("/suppliers/", { params: params });
+        return Api.get("/suppliers", { params: params });
     },
 
     search(params) {

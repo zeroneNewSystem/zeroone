@@ -127,15 +127,16 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  props: ["dialog", "supplier", "supplier_types", "operation"],
+  props: ["dialog", "supplier", "cities", "operation"],
   data: function data() {
     return {
+      isloading: false,
       title: "إضافة مورد جديد",
       countries: [],
-      cities: [],
       supplier_div_update: 0
     };
   },
@@ -149,41 +150,43 @@ __webpack_require__.r(__webpack_exports__);
   computed: {},
   methods: {
     loadCities: function loadCities() {
-      var _this2 = this;
-
-      this.cities = [], _apis_Country__WEBPACK_IMPORTED_MODULE_1__.default.loadCities(this.supplier.country_id).then(function (response) {
-        return _this2.cities = response.data.cities;
-      });
+      this.$emit("changeCountry", this.supplier.country_id);
     },
     closeDialog: function closeDialog() {
       this.$parent.$data.add_update_supplier_dialog = false;
     },
     saveSupplier: function saveSupplier() {
-      var _this3 = this;
+      var _this2 = this;
+
+      console.log(this.operation);
+      this.isloading = "blue";
 
       if (this.operation == "add") {
         _apis_Supplier__WEBPACK_IMPORTED_MODULE_0__.default.store(this.supplier).then(function (response) {
-          _this3.$parent.$data.add_update_supplier_dialog = false;
+          _this2.supplier["id"] = response.data;
+          _this2.$parent.$data.add_update_supplier_dialog = false;
+          _this2.isloading = false;
 
-          _this3.$emit('addUpdateSupplier', response.data.supplier);
+          _this2.$emit("addUpdateSupplier", _this2.supplier);
         });
         return;
       }
 
       if (this.operation == "update") {
         _apis_Supplier__WEBPACK_IMPORTED_MODULE_0__.default.update(this.supplier).then(function (response) {
-          _this3.$parent.$data.add_update_supplier_dialog = false;
+          _this2.$parent.$data.add_update_supplier_dialog = false;
+          _this2.isloading = false;
 
-          _this3.$emit('addUpdateSupplier', response.data.supplier);
+          _this2.$emit("addUpdateSupplier", response.data.supplier);
         });
         return;
       }
     },
     onParentChange: function onParentChange() {
-      var _this4 = this;
+      var _this3 = this;
 
       var parent = this.$store.state.suppliers.find(function (elem) {
-        return elem.id == _this4.supplier.parent_id;
+        return elem.id == _this3.supplier.parent_id;
       });
       console.log(parent.type_id);
       var parent_type_code = this.$store.state.supplier_types.find(function (elem) {
@@ -246,8 +249,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _apis_Supplier__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../apis/Supplier */ "./resources/js/apis/Supplier.js");
-/* harmony import */ var _supplier_info_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./supplier-info.vue */ "./resources/js/components/main/purchases/supplier-info.vue");
-/* harmony import */ var _AddUpdateSupplier_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./AddUpdateSupplier.vue */ "./resources/js/components/main/purchases/AddUpdateSupplier.vue");
+/* harmony import */ var _apis_Country__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../apis/Country */ "./resources/js/apis/Country.js");
+/* harmony import */ var _supplier_info_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./supplier-info.vue */ "./resources/js/components/main/purchases/supplier-info.vue");
+/* harmony import */ var _AddUpdateSupplier_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./AddUpdateSupplier.vue */ "./resources/js/components/main/purchases/AddUpdateSupplier.vue");
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
@@ -314,16 +318,22 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+
 
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   components: {
-    SupplierInfo: _supplier_info_vue__WEBPACK_IMPORTED_MODULE_1__.default,
-    AddUpdateSupplier: _AddUpdateSupplier_vue__WEBPACK_IMPORTED_MODULE_2__.default
+    SupplierInfo: _supplier_info_vue__WEBPACK_IMPORTED_MODULE_2__.default,
+    AddUpdateSupplier: _AddUpdateSupplier_vue__WEBPACK_IMPORTED_MODULE_3__.default
   },
   data: function data() {
     return {
+      cities: [],
       //-------etched data-----------------f
       operation: "add",
       suppliers: [],
@@ -353,7 +363,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         text: "جهة الاتصال",
         align: "center",
         sortable: false,
-        value: "ar_name"
+        value: "name"
       }, {
         text: "الرصيد",
         align: "center",
@@ -399,20 +409,39 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   //   });
   // },
   methods: {
+    loadCities: function loadCities(country_id) {
+      var _this2 = this;
+
+      this.cities = [];
+      _apis_Country__WEBPACK_IMPORTED_MODULE_1__.default.loadCities(country_id).then(function (response) {
+        return _this2.cities = response.data.cities;
+      });
+    },
+    addSupplierToList: function addSupplierToList(supplier) {
+      if (this.operation == "add") this.suppliers.push(supplier);else if (this.operation == "update") {
+        this.suppliers.splice(this.suppliers.indexOf(function (elem) {
+          return elem.id == supplier.id;
+        }), 1, supplier);
+      }
+    },
     addUpdateSupplier: function addUpdateSupplier(item, operation) {
+      this.operation = operation;
+
       if (operation == "add") {
         this.passed_supplier = {
           parent_id: "",
           type_id: "",
-          ar_name: "",
-          en_name: "",
+          name: "",
           account_code: "",
           description: ""
         };
       }
 
       if (operation == "update") {
-        this.passed_account = item;
+        this.loadCities(item.country_id);
+        this.passed_supplier = item;
+        console.log("item", item);
+        console.log("item", this.cities);
       }
 
       this.add_update_supplier_dialog = true;
@@ -423,7 +452,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.supplier_info_supplier = item;
     },
     deleteSupplier: function deleteSupplier(item) {
-      var _this2 = this;
+      var _this3 = this;
 
       this.loading = true;
       var _this$options = this.options,
@@ -432,37 +461,37 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           page = _this$options.page,
           itemsPerPage = _this$options.itemsPerPage;
       var search = this.search.trim().toLowerCase();
-      var person_id = item.person_id;
+      var person_id = item.id;
       _apis_Supplier__WEBPACK_IMPORTED_MODULE_0__.default.delete({
         person_id: person_id,
         page: page,
         itemsPerPage: itemsPerPage,
         search: search
       }).then(function (response) {
-        _this2.loading = false;
-        _this2.suppliers = response.data.suppliers.data;
-        _this2.suppliers_total = response.data.suppliers.data.total;
+        _this3.loading = false;
+        _this3.suppliers = response.data.suppliers.data;
+        _this3.suppliers_total = response.data.suppliers.data.total;
       });
     },
     getDataFromApi: function getDataFromApi() {
-      var _this3 = this;
+      var _this4 = this;
 
       this.loading = true;
       return new Promise(function (resolve, reject) {
-        var _this3$options = _this3.options,
-            sortBy = _this3$options.sortBy,
-            sortDesc = _this3$options.sortDesc,
-            page = _this3$options.page,
-            itemsPerPage = _this3$options.itemsPerPage;
+        var _this4$options = _this4.options,
+            sortBy = _this4$options.sortBy,
+            sortDesc = _this4$options.sortDesc,
+            page = _this4$options.page,
+            itemsPerPage = _this4$options.itemsPerPage;
 
-        var search = _this3.search.trim().toLowerCase();
+        var search = _this4.search.trim().toLowerCase();
 
         _apis_Supplier__WEBPACK_IMPORTED_MODULE_0__.default.get({
           page: page,
           itemsPerPage: itemsPerPage,
           search: search
         }).then(function (response) {
-          _this3.loading = false;
+          _this4.loading = false;
           resolve(response);
         });
       });
@@ -486,12 +515,12 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   loadCountries: function loadCountries(params) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/countries/", {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/countries", {
       params: params
     });
   },
   loadCities: function loadCities(country_id) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/countries/" + country_id);
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/extra/cities/" + country_id);
   }
 });
 
@@ -511,16 +540,16 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   store: function store(supplier) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/suppliers/", supplier);
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/suppliers", supplier);
   },
   update: function update(supplier) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("/suppliers/", supplier);
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("/suppliers", supplier);
   },
   postCreate: function postCreate(supplier) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/suppliers/create", supplier);
   },
   get: function get(params) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/suppliers/", {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/suppliers", {
       params: params
     });
   },
@@ -844,6 +873,7 @@ var render = function() {
     [
       _c(
         "v-card",
+        { attrs: { loading: _vm.isloading } },
         [
           _c(
             "v-card-title",
@@ -908,11 +938,11 @@ var render = function() {
                           _c("v-text-field", {
                             attrs: { label: "اسم المورد *", required: "" },
                             model: {
-                              value: _vm.supplier.ar_name,
+                              value: _vm.supplier.name,
                               callback: function($$v) {
-                                _vm.$set(_vm.supplier, "ar_name", $$v)
+                                _vm.$set(_vm.supplier, "name", $$v)
                               },
-                              expression: "supplier.ar_name"
+                              expression: "supplier.name"
                             }
                           })
                         ],
@@ -991,7 +1021,11 @@ var render = function() {
                         { attrs: { cols: "12" } },
                         [
                           _c("v-textarea", {
-                            attrs: { label: "العنوان", required: "" },
+                            attrs: {
+                              rows: "2",
+                              label: "العنوان",
+                              required: ""
+                            },
                             model: {
                               value: _vm.supplier.address,
                               callback: function($$v) {
@@ -1191,12 +1225,12 @@ var render = function() {
         attrs: {
           dialog: _vm.add_update_supplier_dialog,
           supplier: _vm.passed_supplier,
-          operation: _vm.operation
+          operation: _vm.operation,
+          cities: _vm.cities
         },
         on: {
-          addUpdateSupplier: function($event) {
-            return _vm.getDataFromApi()
-          }
+          addUpdateSupplier: _vm.addSupplierToList,
+          changeCountry: _vm.loadCities
         }
       }),
       _vm._v(" "),
@@ -1278,12 +1312,10 @@ var render = function() {
             proxy: true
           },
           {
-            key: "item.ar_name",
+            key: "item.name",
             fn: function(ref) {
               var item = ref.item
-              return [
-                _vm._v("\n      " + _vm._s(item.person.ar_name) + "\n    ")
-              ]
+              return [_vm._v("\n      " + _vm._s(item.name) + "\n    ")]
             }
           },
           {
@@ -1304,6 +1336,30 @@ var render = function() {
             fn: function(ref) {
               var item = ref.item
               return [
+                _c(
+                  "v-btn",
+                  {
+                    attrs: { icon: "" },
+                    on: {
+                      click: function($event) {
+                        $event.stopPropagation()
+                        return _vm.addUpdateSupplier(item, "update")
+                      }
+                    }
+                  },
+                  [
+                    _c(
+                      "v-icon",
+                      {
+                        staticClass: "outlined font-size-12",
+                        attrs: { small: "" }
+                      },
+                      [_vm._v("mdi-pencil")]
+                    )
+                  ],
+                  1
+                ),
+                _vm._v(" "),
                 _c(
                   "v-btn",
                   {

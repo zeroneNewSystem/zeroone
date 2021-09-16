@@ -18,16 +18,16 @@ class CreatePurchasesTable extends Migration
             $table->unsignedInteger ('company_id');
 
             $table->string('purchase_reference')->nullable();
-            $table->integer('purchase_type_id')->default('1');
-            $table->integer('currency_id')->default('1');
+            $table->unsignedInteger('purchase_type_id')->default('1');
+            $table->unsignedInteger('currency_id')->default('1');
             $table->double('currency_rates')->default('1');
             $table->text('description')->nullable();
-            $table->integer('supplier_id',)->default('1');
+            $table->unsignedInteger('supplier_id',)->default('1');
             
             $table->timestamp('issue_date')->useCurrent = true;
             $table->timestamp('maturity_date')->useCurrent = true;
             
-            $table->integer('payment_condition_id',)->default(1);
+            $table->unsignedInteger('payment_condition_id',)->default(1);
             $table->double('total_without_products_discounts')->default(0.0);
             $table->double('total_without_products_vat')->default(0.0);
             $table->double('total_discunt')->default(0.0);
@@ -40,7 +40,9 @@ class CreatePurchasesTable extends Migration
             $table->tinyInteger('payment_status_id',)->default(1);
             $table->tinyInteger('type_id',)->default(1);
             $table->text('notes')->nullable();
+            $table->unsignedInteger('additional_expenses_from_account_id')->nullable();
 
+            
 
             $table->timestamps();
             $table->softDeletes();

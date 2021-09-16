@@ -19,8 +19,8 @@ class CreatePeopleTable extends Migration
             
             
 
-            $table->string('ar_name');
-            $table->string('en_name');
+            $table->string('name');
+            //$table->string('en_name');
             $table->string('locale')->default('ar_SA');
             $table->string('phone01', 15)->nullable();
             $table->string('phone02', 15)->nullable();
@@ -37,6 +37,10 @@ class CreatePeopleTable extends Migration
             $table->boolean('is_customer')->default('0');
             $table->boolean('is_supplier')->default('1');
             $table->boolean('is_employee')->default('0');
+            $table->unsignedInteger('customer_account_id')->nullable();
+            $table->unsignedInteger('supplier_account_id')->nullable();
+            $table->unsignedInteger('employee_account_id')->nullable();
+
             $table->boolean('is_user')->default('0');
             $table->text('notes')->nullable();
             
