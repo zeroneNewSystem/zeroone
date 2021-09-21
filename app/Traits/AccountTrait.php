@@ -10,6 +10,20 @@ use Illuminate\Support\Facades\DB;
 
 trait AccountTrait
 {
+    public function cashAndBanks()
+    {
+        $accounts = DB::select(
+            "select ac.* from `accounts` " .
+                "as `ac` where LENGTH(account_code) > 2 and ac.account_code LIKE '1101%' " .
+                "and NOT EXISTS (SELECT 1 FROM accounts WHERE account_code LIKE CONCAT(ac.account_code,'%') AND LENGTH(account_code) > LENGTH(ac.account_code))" .
+                "or (" .
+                " ac.account_code LIKE '1102%' " .
+                "and NOT EXISTS (SELECT 1 FROM accounts WHERE account_code LIKE CONCAT(ac.account_code,'%') AND LENGTH(account_code) > LENGTH(ac.account_code)))"
+        );
+
+
+        return ['accounts' => $accounts];
+    }
 
 
     public function showAccounts($type_code)

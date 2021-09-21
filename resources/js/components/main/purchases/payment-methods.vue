@@ -135,7 +135,7 @@
 
 <script>
 export default {
-  props: ["purchase_total","accounts"],
+  props: ["purchase_total","accounts","payment_methods"],
   data() {
     return {
       /*-------------------validators---------------------------*/
@@ -147,28 +147,7 @@ export default {
       /*-------------------validators---------------------------*/
 
       
-      payment_methods: [
-        {
-          account_id: "",
-          credit: 0,
-          description: "",
-        },
-        {
-          account_id: "",
-          credit: 0,
-          description: "",
-        },
-        {
-          account_id: "",
-          credit: 0,
-          description: "",
-        },
-        {
-          account_id: "",
-          credit: 0,
-          description: "",
-        },
-      ],
+      
       payment_methods_header: [
         {
           text: "م",

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Route;
 Route::group(["prefix" => "purchases"], function () {
 
     Route::get('/', 'PurchaseController@index');
+    Route::get('/{id}', 'PurchaseController@index');
 
 
     Route::get('/create', 'PurchaseController@create');

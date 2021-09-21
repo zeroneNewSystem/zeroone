@@ -20,10 +20,13 @@
     <v-card max-width="100%">
       <v-card-title>
         <v-row class="justify-space-between" justify="center" align="center">
-          <v-col cols="12"> فاتورة شراء جديدة </v-col>
+          <v-col cols="12"> {{ title }} </v-col>
         </v-row>
       </v-card-title>
       <v-card-text>
+        <router-link class="btn btn-info m-b-5 m-r-2" to="/purchase/1">
+          <v-icon class="white--text">mdi-view-module</v-icon>إدارة الفواتير
+        </router-link>
         <v-container>
           <v-row>
             <v-col>
@@ -157,11 +160,15 @@
                       {{ supplierInfo() && supplierInfo().name }}
                     </v-col>
                     <v-col cols="12" lg="6"> الهاتف </v-col>
-                    <v-col cols="12" lg="6"> {{ supplierInfo() && supplierInfo().phone01 }} </v-col
+                    <v-col cols="12" lg="6">
+                      {{ supplierInfo() && supplierInfo().phone01 }} </v-col
                     ><v-col cols="12" lg="6"> البريد الالكتروني </v-col>
-                    <v-col cols="12" lg="6"> {{ supplierInfo() && supplierInfo().email }} </v-col
+                    <v-col cols="12" lg="6">
+                      {{ supplierInfo() && supplierInfo().email }} </v-col
                     ><v-col cols="12" lg="6"> الرقم الضريبي </v-col>
-                    <v-col cols="12" lg="6"> {{ supplierInfo() && supplierInfo().tax_number }} </v-col>
+                    <v-col cols="12" lg="6">
+                      {{ supplierInfo() && supplierInfo().tax_number }}
+                    </v-col>
                   </v-row>
                 </v-card-text>
               </v-card>
@@ -178,9 +185,7 @@
               :hide-default-footer="true"
               :item-key="toString(Math.floor(Math.random(1, 100) * 100))"
             >
-            <template slot="no-data">
-              يرجى اختيار الأصناف
-            </template>
+              <template slot="no-data"> يرجى اختيار الأصناف </template>
               <template v-slot:top>
                 <v-toolbar flat color="white">
                   <v-toolbar-title>قائمة الأصناف</v-toolbar-title>
@@ -559,6 +564,7 @@
                             @payment_methods="paymentMethods"
                             :purchase_total="purchase.total_amount"
                             :accounts="additional_expenses_from_accounts"
+                            :payment_methods="purchase.payment_methods"
                           ></payment-method>
                         </v-col>
                       </v-row>
@@ -644,6 +650,8 @@ export default {
   },
   data() {
     return {
+      title: "فاتورة شراء جديدة",
+      is_new_purchase: true,
       additional_expenses_from_accounts: [],
       additional_expenses_from_account_id: "",
       searched_barcode: "",
@@ -753,7 +761,23 @@ export default {
 
       payment_conditions: [],
       purchase: {
-        payment_methods: [],
+        payment_methods: [
+          {
+            account_id: "",
+            credit: 0,
+            description: "",
+          },
+          {
+            account_id: "",
+            credit: 0,
+            description: "",
+          },
+          {
+            account_id: "",
+            credit: 0,
+            description: "",
+          },
+        ],
         paid_amount: 0,
         remaining_amount: 0,
 
@@ -936,7 +960,6 @@ export default {
       return item.purchase_tax_value;
     },
     total_befor_tax(item) {
-      console.log(item.purchase_discount_type_id);
       if (item.purchase_discount_type_id == 1) {
         item.total_befor_tax =
           item.purchased_quantity * item.unit_price -
@@ -1008,9 +1031,14 @@ export default {
     },
     checkExecting() {},
     submit() {
-      Purchase.store(this.purchase).then((response) =>
-        console.log(response.data)
-      );
+      if (this.is_new_purchase)
+        Purchase.store(this.purchase).then((response) =>
+          console.log(response.data)
+        );
+      else
+        Purchase.update(this.purchase).then((response) =>
+          console.log(response.data)
+        );
 
       console.log(this.purchase);
     },
@@ -1030,11 +1058,48 @@ export default {
     },
   },
   created() {
-    Supplier.get().then((response) => (this.suppliers = response.data));
-    Account.cashAndBanks().then(
-      (response) =>
-        (this.additional_expenses_from_accounts = response.data.accounts)
-    );
+    if (this.$route.params.id) {
+      this.is_new_purchase = false;
+      this.title = "تعديل فاتورة رقم " + this.$route.params.id;
+      Purchase.get(this.$route.params.id).then((response) => {
+        this.purchase = response.data.purchase;
+        console.log(this.purchase);
+        this.purchase.issue_date = this.purchase.issue_date.split(" ")[0];
+        this.purchase.maturity_date = this.purchase.maturity_date.split(" ")[0];
+        this.purchase.purchase_details.forEach((elem) => {
+          if (elem.expires_at) elem.expires_at = elem.expires_at.split(" ")[0];
+        });
+
+        if (this.purchase.payment_methods.length == 0)
+          this.purchase.payment_methods = [
+            {
+              account_id: "",
+              credit: 0,
+              description: "",
+            },
+            {
+              account_id: "",
+              credit: 0,
+              description: "",
+            },
+            {
+              account_id: "",
+              credit: 0,
+              description: "",
+            },
+          ];
+        this.suppliers = response.data.suppliers;
+        this.additional_expenses_from_accounts =
+          response.data.accounts.accounts;
+        console.log(response.data.accounts.accounts);
+      });
+    } else {
+      Supplier.get().then((response) => (this.suppliers = response.data));
+      Account.cashAndBanks().then(
+        (response) =>
+          (this.additional_expenses_from_accounts = response.data.accounts)
+      );
+    }
   },
 };
 </script>

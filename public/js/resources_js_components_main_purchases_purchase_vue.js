@@ -767,7 +767,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  props: ["purchase_total", "accounts"],
+  props: ["purchase_total", "accounts", "payment_methods"],
   data: function data() {
     return {
       /*-------------------validators---------------------------*/
@@ -784,23 +784,6 @@ __webpack_require__.r(__webpack_exports__);
       dialog: false,
 
       /*-------------------validators---------------------------*/
-      payment_methods: [{
-        account_id: "",
-        credit: 0,
-        description: ""
-      }, {
-        account_id: "",
-        credit: 0,
-        description: ""
-      }, {
-        account_id: "",
-        credit: 0,
-        description: ""
-      }, {
-        account_id: "",
-        credit: 0,
-        description: ""
-      }],
       payment_methods_header: [{
         text: "م",
         align: "center",
@@ -1531,6 +1514,12 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 
 
@@ -1547,6 +1536,8 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
   },
   data: function data() {
     return {
+      title: "فاتورة شراء جديدة",
+      is_new_purchase: true,
       additional_expenses_from_accounts: [],
       additional_expenses_from_account_id: "",
       searched_barcode: "",
@@ -1646,7 +1637,19 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       }],
       payment_conditions: [],
       purchase: {
-        payment_methods: [],
+        payment_methods: [{
+          account_id: "",
+          credit: 0,
+          description: ""
+        }, {
+          account_id: "",
+          credit: 0,
+          description: ""
+        }, {
+          account_id: "",
+          credit: 0,
+          description: ""
+        }],
         paid_amount: 0,
         remaining_amount: 0,
         additional_expenses: 100,
@@ -1800,8 +1803,6 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       return item.purchase_tax_value;
     },
     total_befor_tax: function total_befor_tax(item) {
-      console.log(item.purchase_discount_type_id);
-
       if (item.purchase_discount_type_id == 1) {
         item.total_befor_tax = item.purchased_quantity * item.unit_price - item.purchased_quantity * item.unit_price * item.purchase_discount / 100;
         return item.total_befor_tax;
@@ -1856,7 +1857,9 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
     },
     checkExecting: function checkExecting() {},
     submit: function submit() {
-      _apis_Purchase__WEBPACK_IMPORTED_MODULE_1__.default.store(this.purchase).then(function (response) {
+      if (this.is_new_purchase) _apis_Purchase__WEBPACK_IMPORTED_MODULE_1__.default.store(this.purchase).then(function (response) {
+        return console.log(response.data);
+      });else _apis_Purchase__WEBPACK_IMPORTED_MODULE_1__.default.update(this.purchase).then(function (response) {
         return console.log(response.data);
       });
       console.log(this.purchase);
@@ -1889,12 +1892,44 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
   created: function created() {
     var _this5 = this;
 
-    _apis_Supplier__WEBPACK_IMPORTED_MODULE_6__.default.get().then(function (response) {
-      return _this5.suppliers = response.data;
-    });
-    _apis_Account__WEBPACK_IMPORTED_MODULE_7__.default.cashAndBanks().then(function (response) {
-      return _this5.additional_expenses_from_accounts = response.data.accounts;
-    });
+    if (this.$route.params.id) {
+      this.is_new_purchase = false;
+      this.title = "تعديل فاتورة رقم " + this.$route.params.id;
+      _apis_Purchase__WEBPACK_IMPORTED_MODULE_1__.default.get(this.$route.params.id).then(function (response) {
+        _this5.purchase = response.data.purchase;
+        console.log(_this5.purchase);
+        _this5.purchase.issue_date = _this5.purchase.issue_date.split(" ")[0];
+        _this5.purchase.maturity_date = _this5.purchase.maturity_date.split(" ")[0];
+
+        _this5.purchase.purchase_details.forEach(function (elem) {
+          if (elem.expires_at) elem.expires_at = elem.expires_at.split(" ")[0];
+        });
+
+        if (_this5.purchase.payment_methods.length == 0) _this5.purchase.payment_methods = [{
+          account_id: "",
+          credit: 0,
+          description: ""
+        }, {
+          account_id: "",
+          credit: 0,
+          description: ""
+        }, {
+          account_id: "",
+          credit: 0,
+          description: ""
+        }];
+        _this5.suppliers = response.data.suppliers;
+        _this5.additional_expenses_from_accounts = response.data.accounts.accounts;
+        console.log(response.data.accounts.accounts);
+      });
+    } else {
+      _apis_Supplier__WEBPACK_IMPORTED_MODULE_6__.default.get().then(function (response) {
+        return _this5.suppliers = response.data;
+      });
+      _apis_Account__WEBPACK_IMPORTED_MODULE_7__.default.cashAndBanks().then(function (response) {
+        return _this5.additional_expenses_from_accounts = response.data.accounts;
+      });
+    }
   }
 });
 
@@ -1988,10 +2023,8 @@ __webpack_require__.r(__webpack_exports__);
   store: function store(purchase) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/purchases", purchase);
   },
-  get: function get(params) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/purchases/", {
-      params: params
-    });
+  get: function get(id) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/purchases/" + id);
   },
   update: function update(purchase) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("/purchases", purchase);
@@ -4082,7 +4115,7 @@ var render = function() {
                 },
                 [
                   _c("v-col", { attrs: { cols: "12" } }, [
-                    _vm._v(" فاتورة شراء جديدة ")
+                    _vm._v(" " + _vm._s(_vm.title) + " ")
                   ])
                 ],
                 1
@@ -4094,6 +4127,21 @@ var render = function() {
           _c(
             "v-card-text",
             [
+              _c(
+                "router-link",
+                {
+                  staticClass: "btn btn-info m-b-5 m-r-2",
+                  attrs: { to: "/purchase/1" }
+                },
+                [
+                  _c("v-icon", { staticClass: "white--text" }, [
+                    _vm._v("mdi-view-module")
+                  ]),
+                  _vm._v("إدارة الفواتير\n      ")
+                ],
+                1
+              ),
+              _vm._v(" "),
               _c(
                 "v-container",
                 [
@@ -4593,7 +4641,7 @@ var render = function() {
                                         { attrs: { cols: "12", lg: "6" } },
                                         [
                                           _vm._v(
-                                            " " +
+                                            "\n                    " +
                                               _vm._s(
                                                 _vm.supplierInfo() &&
                                                   _vm.supplierInfo().phone01
@@ -4613,7 +4661,7 @@ var render = function() {
                                         { attrs: { cols: "12", lg: "6" } },
                                         [
                                           _vm._v(
-                                            " " +
+                                            "\n                    " +
                                               _vm._s(
                                                 _vm.supplierInfo() &&
                                                   _vm.supplierInfo().email
@@ -4633,12 +4681,12 @@ var render = function() {
                                         { attrs: { cols: "12", lg: "6" } },
                                         [
                                           _vm._v(
-                                            " " +
+                                            "\n                    " +
                                               _vm._s(
                                                 _vm.supplierInfo() &&
                                                   _vm.supplierInfo().tax_number
                                               ) +
-                                              " "
+                                              "\n                  "
                                           )
                                         ]
                                       )
@@ -5732,7 +5780,10 @@ var render = function() {
                                                             _vm.purchase
                                                               .total_amount,
                                                           accounts:
-                                                            _vm.additional_expenses_from_accounts
+                                                            _vm.additional_expenses_from_accounts,
+                                                          payment_methods:
+                                                            _vm.purchase
+                                                              .payment_methods
                                                         },
                                                         on: {
                                                           payment_methods:
@@ -5869,9 +5920,7 @@ var render = function() {
                         },
                         [
                           _c("template", { slot: "no-data" }, [
-                            _vm._v(
-                              "\n            يرجى اختيار الأصناف\n          "
-                            )
+                            _vm._v(" يرجى اختيار الأصناف ")
                           ])
                         ],
                         2

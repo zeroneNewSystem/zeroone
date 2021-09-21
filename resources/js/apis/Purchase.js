@@ -5,8 +5,8 @@ export default {
     store(purchase) {
         return Api.post("/purchases", purchase);
     },
-    get(params) {
-        return Api.get("/purchases/", { params: params });
+    get(id) {
+        return Api.get("/purchases/" + id);
     },
 
     update(purchase) {
