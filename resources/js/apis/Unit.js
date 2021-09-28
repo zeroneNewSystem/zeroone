@@ -6,13 +6,13 @@ export default {
     },
 
     create(unit) {
-        return Api.post("/units/", unit);
+        return Api.post("/units", unit);
     },
 
     delete(id) {
         return Api.delete("/units/" + id);
     },
     update(unit) {
-        return Api.put("/units/", unit);
+        return Api.put("/units", unit);
     }
 };

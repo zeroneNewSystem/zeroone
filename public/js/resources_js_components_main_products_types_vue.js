@@ -228,7 +228,7 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   getAll: function getAll() {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/types/");
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/types");
   },
   create: function create(type) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/types/", type);
@@ -237,7 +237,7 @@ __webpack_require__.r(__webpack_exports__);
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.delete("/types/" + id);
   },
   update: function update(type) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("/types/", type);
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("/types", type);
   }
 });
 

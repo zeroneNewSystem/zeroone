@@ -96,8 +96,8 @@ export default {
       ],
     ],
     sidebarroutes: [
-      ["addupdateinvoice", "invoicemanagement"],
-      ["customermanagement"],
+      ["invoice", "invoicemanagement"],
+      ["customers"],
       ["units", "types", "forms", "product", "products"],
       ["companymanagement"],
       [

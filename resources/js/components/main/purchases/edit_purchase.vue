@@ -850,7 +850,7 @@ export default {
     searchAndAddToPurchase() {
       let params = { barcode: this.searched_barcode };
 
-      Product.barcodeSearch(params).then((response) => {
+      Product.purchaseBarcodeSearch(params).then((response) => {
         if (response.data.products.length == 0) {
           this.is_exists = [false || "الصنف غير موجود "];
           return;

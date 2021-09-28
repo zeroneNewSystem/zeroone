@@ -2,7 +2,7 @@
   <div>
     <v-dialog v-model="dialog" scrollable max-width="1000px">
       <template v-slot:activator="{ on, attrs }">
-        <v-btn elevation="0" v-bind="attrs" v-on="on" dark>
+        <v-btn elevation="0" v-bind="attrs" v-on="on" dark @click="setMethodsIfEmpty">
           طريقة الدفع!..
         </v-btn>
       </template>
@@ -184,6 +184,9 @@ export default {
     paid_amount: (v) => v.payment_methods.reduce((a, b) => +a + +b.credit, 0),
   },
   methods: {
+    setMethodsIfEmpty(){
+      
+    },
     addPaymentMethod() {
       this.payment_methods.push({
         account_id: "",
@@ -196,9 +199,7 @@ export default {
       this.payment_methods.splice(index, 1);
     },
     emitPayments() {
-      let filterd_methods = this.payment_methods.filter(
-        (elem) => elem.account_id != "" && elem.credit != 0
-      );
+      
 
       this.$emit("payment_methods", {
         payment_methods: filterd_methods,

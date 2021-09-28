@@ -29,9 +29,10 @@ class PersonSeeder extends Seeder
 
 
         $account_items = [
-            ['company_id' => '1', 'account_code' => '210100001', 'type_id' => '16', 'level' => '4', 'parent_id' => '24', 'ar_name' => '', 'en_name' => '', 'description' => 'حساب مورد', 'payable_receivable' => '1', 'editable' => '0',  'currency_id' => '1', 'is_active' => '1', 'is_visable_in_COA' => '0', 'accountable_id' => '1', 'accountable_type' => 'App\Modules\Admin\People\Models\Person', 'create_by_user_id' => '1'],
-            ['company_id' => '1', 'account_code' => '210100002', 'type_id' => '16', 'level' => '4', 'parent_id' => '24', 'ar_name' => '', 'en_name' => '', 'description' => 'حساب مورد', 'payable_receivable' => '1', 'editable' => '0',  'currency_id' => '1', 'is_active' => '1', 'is_visable_in_COA' => '0', 'accountable_id' => '2', 'accountable_type' => 'App\Modules\Admin\People\Models\Person', 'create_by_user_id' => '1'],
-            ['company_id' => '1', 'account_code' => '210100003', 'type_id' => '16', 'level' => '4', 'parent_id' => '24', 'ar_name' => '', 'en_name' => '', 'description' => 'حساب مورد', 'payable_receivable' => '1', 'editable' => '0',  'currency_id' => '1', 'is_active' => '1', 'is_visable_in_COA' => '0', 'accountable_id' => '3', 'accountable_type' => 'App\Modules\Admin\People\Models\Person', 'create_by_user_id' => '1']
+            ['company_id' => '1', 'account_code' => '210100001', 'type_id' => '16', 'level' => '4', 'parent_id' => '24', 'ar_name' => '', 'en_name' => '', 'description' => 'حساب مورد', 'payable_receivable' => '1', 'editable' => '0',  'currency_id' => '1', 'is_active' => '1', 'is_visable_in_COA' => '0', 'accountable_id' => '1', 'accountable_type' => '1', 'create_by_user_id' => '1'],
+            //accountable_type = 1-> supplier
+            ['company_id' => '1', 'account_code' => '210100002', 'type_id' => '16', 'level' => '4', 'parent_id' => '24', 'ar_name' => '', 'en_name' => '', 'description' => 'حساب مورد', 'payable_receivable' => '1', 'editable' => '0',  'currency_id' => '1', 'is_active' => '1', 'is_visable_in_COA' => '0', 'accountable_id' => '2', 'accountable_type' => '1', 'create_by_user_id' => '1'],
+            ['company_id' => '1', 'account_code' => '210100003', 'type_id' => '16', 'level' => '4', 'parent_id' => '24', 'ar_name' => '', 'en_name' => '', 'description' => 'حساب مورد', 'payable_receivable' => '1', 'editable' => '0',  'currency_id' => '1', 'is_active' => '1', 'is_visable_in_COA' => '0', 'accountable_id' => '3', 'accountable_type' => '1', 'create_by_user_id' => '1']
         ];
 
 

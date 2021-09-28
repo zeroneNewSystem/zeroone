@@ -44,16 +44,69 @@ class Route
 }
 
 // extratct router
-Route::route('/api/extra/barcode/(\d+)', function ($barcode) {
+Route::route('/api/extra/invoice/barcode/(\d+)', function ($barcode) {
     $database = new Connection();
     $db = $database->open();
-    $sth = $db->prepare("SELECT * FROM products Where barcode =:barcode");
+    $sth = $db->prepare("SELECT * FROM products WHERE barcode =:barcode");
+    $sth->execute(['barcode' => $barcode]);
+
+    $product = $sth->fetch(\PDO::FETCH_ASSOC);
+    if (!$product) {
+        echo json_encode(['product' => false]);
+        die();
+    }
+
+    /*-----------------------units-----------------------*/
+    $sth = $db->prepare("SELECT p.*, s.ar_name, s.en_name  FROM prdct_units_products p
+        JOIN prdct_units s ON (prdct_unit_id =s.id )
+        WHERE product_id =:product_id");
+    $sth->execute(['product_id' => $product['id']]);
+
+    $units = $sth->fetchAll(\PDO::FETCH_ASSOC);
+
+
+
+    
+    $product['units'] = $units;
+
+
+
+
+
+
+
+    $sth = $db->prepare("SELECT * FROM purchase_details WHERE product_id =:product_id");
+    $sth->execute(['product_id' => $product['id']]);
+
+    $purchase_details = $sth->fetchAll(\PDO::FETCH_ASSOC);
+
+
+
+
+
+    $product['purchase_details'] = $purchase_details;
+
+
+
+
+
+    echo json_encode(['product' => $product], JSON_NUMERIC_CHECK);
+
+
+
+    $database->close();
+});
+
+Route::route('/api/extra/purchase/barcode/(\d+)', function ($barcode) {
+    $database = new Connection();
+    $db = $database->open();
+    $sth = $db->prepare("SELECT * FROM products WHERE barcode =:barcode");
     $sth->execute(['barcode' => $barcode]);
 
     $products = $sth->fetchAll(\PDO::FETCH_ASSOC);
 
     foreach ($products as &$product) {
-        
+
         unset($product['created_at']);
         unset($product['deleted_at']);
         unset($product['updated_at']);
@@ -90,7 +143,7 @@ Route::route('/api/extra/barcode/(\d+)', function ($barcode) {
 Route::route('/api/extra/cities/(\d+)', function ($country_id) {
     $database = new Connection();
     $db = $database->open();
-    $sth = $db->prepare("SELECT * FROM cities Where country_id =:country_id");
+    $sth = $db->prepare("SELECT * FROM cities WHERE country_id =:country_id");
     $sth->execute(['country_id' => $country_id]);
 
     $products = $sth->fetchAll(\PDO::FETCH_ASSOC);
@@ -99,7 +152,6 @@ Route::route('/api/extra/cities/(\d+)', function ($country_id) {
 
     $database->close();
     echo json_encode(['cities' => $products], JSON_NUMERIC_CHECK);
-
 });
 
 

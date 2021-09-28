@@ -322,6 +322,50 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -333,6 +377,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   data: function data() {
     return {
+      supplier_status: [{
+        is_supplier_active: 0,
+        status: "نشط"
+      }, {
+        is_supplier_active: 1,
+        status: "غير نشط"
+      }],
       cities: [],
       //-------etched data-----------------f
       operation: "add",
@@ -342,7 +393,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       //-----------------------------------//
       supplier_info_supplier: "",
       supplier_info_dialog: false,
-      search: "",
+      search: {
+        company_name: "",
+        name: "",
+        phone: "",
+        is_supplier_active: ""
+      },
       options: {},
       status: "salam",
       title: "إدارة الموردين",
@@ -394,7 +450,21 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         var _this = this;
 
         this.getDataFromApi().then(function (response) {
-          _this.suppliers = response.data.suppliers.data;
+          var helper = [];
+
+          if (response.data.suppliers.data) {
+            response.data.suppliers.data.forEach(function (element) {
+              if (!helper[element.id]) {
+                helper[element.id] = element;
+              } else {
+                if (element.debit != -1) helper[element.id].debit += element.debit;
+                helper[element.id].credit += element.credit;
+              }
+            });
+          }
+
+          _this.suppliers = helper;
+          console.log(helper);
           _this.suppliers_total = response.data.suppliers.data.total;
           _this.supplier_info_supplier = response.data.suppliers.data[0];
           console.log(_this.suppliers_total);
@@ -409,12 +479,66 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   //   });
   // },
   methods: {
-    loadCities: function loadCities(country_id) {
+    findSuppliers: function findSuppliers() {
       var _this2 = this;
+
+      this.getDataFromApi().then(function (response) {
+        var helper = [];
+
+        if (response.data.suppliers.data) {
+          response.data.suppliers.data.forEach(function (element) {
+            if (!helper[element.id]) {
+              helper[element.id] = element;
+            } else {
+              if (element.debit != -1) helper[element.id].debit += element.debit;
+              helper[element.id].credit += element.credit;
+            }
+          });
+        }
+
+        _this2.suppliers = helper;
+        console.log(helper);
+        _this2.suppliers_total = response.data.suppliers.data.total;
+        _this2.supplier_info_supplier = response.data.suppliers.data[0];
+        console.log(_this2.suppliers_total);
+      });
+    },
+    searchReset: function searchReset() {
+      var _this3 = this;
+
+      this.search = {
+        company_name: "",
+        name: "",
+        phone: "",
+        is_supplier_active: ""
+      }, this.getDataFromApi().then(function (response) {
+        var helper = [];
+
+        if (response.data.suppliers.data) {
+          response.data.suppliers.data.forEach(function (element) {
+            if (!helper[element.id + ' ' + pur_id]) {
+              helper[element.id + ' ' + pur_id] = element;
+            } else {
+              if (element.debit != -1) helper[element.id + ' ' + pur_id].debit += element.debit;
+              helper[element.id + ' ' + pur_id].credit += element.credit;
+              helper[element.id + ' ' + pur_id].credit += element.credit;
+            }
+          });
+        }
+
+        _this3.suppliers = helper;
+        console.log(helper);
+        _this3.suppliers_total = response.data.suppliers.data.total;
+        _this3.supplier_info_supplier = response.data.suppliers.data[0];
+        console.log(_this3.suppliers_total);
+      });
+    },
+    loadCities: function loadCities(country_id) {
+      var _this4 = this;
 
       this.cities = [];
       _apis_Country__WEBPACK_IMPORTED_MODULE_1__.default.loadCities(country_id).then(function (response) {
-        return _this2.cities = response.data.cities;
+        return _this4.cities = response.data.cities;
       });
     },
     addSupplierToList: function addSupplierToList(supplier) {
@@ -452,46 +576,44 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.supplier_info_supplier = item;
     },
     deleteSupplier: function deleteSupplier(item) {
-      var _this3 = this;
+      var _this5 = this;
 
       this.loading = true;
       var _this$options = this.options,
           sortBy = _this$options.sortBy,
           sortDesc = _this$options.sortDesc,
           page = _this$options.page,
-          itemsPerPage = _this$options.itemsPerPage;
-      var search = this.search.trim().toLowerCase();
+          itemsPerPage = _this$options.itemsPerPage; //let search = this.search.trim().toLowerCase();
+
       var person_id = item.id;
       _apis_Supplier__WEBPACK_IMPORTED_MODULE_0__.default.delete({
         person_id: person_id,
         page: page,
         itemsPerPage: itemsPerPage,
-        search: search
+        search: this.search
       }).then(function (response) {
-        _this3.loading = false;
-        _this3.suppliers = response.data.suppliers.data;
-        _this3.suppliers_total = response.data.suppliers.data.total;
+        _this5.loading = false;
+        _this5.suppliers = response.data.suppliers.data;
+        _this5.suppliers_total = response.data.suppliers.data.total;
       });
     },
     getDataFromApi: function getDataFromApi() {
-      var _this4 = this;
+      var _this6 = this;
 
       this.loading = true;
       return new Promise(function (resolve, reject) {
-        var _this4$options = _this4.options,
-            sortBy = _this4$options.sortBy,
-            sortDesc = _this4$options.sortDesc,
-            page = _this4$options.page,
-            itemsPerPage = _this4$options.itemsPerPage;
-
-        var search = _this4.search.trim().toLowerCase();
+        var _this6$options = _this6.options,
+            sortBy = _this6$options.sortBy,
+            sortDesc = _this6$options.sortDesc,
+            page = _this6$options.page,
+            itemsPerPage = _this6$options.itemsPerPage; // let search = this.search.trim().toLowerCase();
 
         _apis_Supplier__WEBPACK_IMPORTED_MODULE_0__.default.get({
           page: page,
           itemsPerPage: itemsPerPage,
-          search: search
+          search: _this6.search
         }).then(function (response) {
-          _this4.loading = false;
+          _this6.loading = false;
           resolve(response);
         });
       });
@@ -1296,17 +1418,144 @@ var render = function() {
                   1
                 ),
                 _vm._v(" "),
-                _c("v-text-field", {
-                  staticClass: "mx-4",
-                  attrs: { label: "البحث بالاسم أو الباركود" },
-                  model: {
-                    value: _vm.search,
-                    callback: function($$v) {
-                      _vm.search = $$v
-                    },
-                    expression: "search"
-                  }
-                })
+                _c(
+                  "v-row",
+                  [
+                    _c(
+                      "v-col",
+                      { attrs: { cols: "12", lg: "3" } },
+                      [
+                        _c("v-text-field", {
+                          staticClass: "mx-4",
+                          attrs: { label: "اسم الشركة" },
+                          model: {
+                            value: _vm.search.company_name,
+                            callback: function($$v) {
+                              _vm.$set(_vm.search, "company_name", $$v)
+                            },
+                            expression: "search.company_name"
+                          }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "v-col",
+                      { attrs: { cols: "12", lg: "3" } },
+                      [
+                        _c("v-text-field", {
+                          staticClass: "mx-4",
+                          attrs: { label: "جهة الاتصال" },
+                          model: {
+                            value: _vm.search.name,
+                            callback: function($$v) {
+                              _vm.$set(_vm.search, "name", $$v)
+                            },
+                            expression: "search.name"
+                          }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "v-col",
+                      { attrs: { cols: "12", lg: "3" } },
+                      [
+                        _c("v-text-field", {
+                          staticClass: "mx-4",
+                          attrs: { label: "رقم الاتصال" },
+                          model: {
+                            value: _vm.search.phone,
+                            callback: function($$v) {
+                              _vm.$set(_vm.search, "phone", $$v)
+                            },
+                            expression: "search.phone"
+                          }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "v-col",
+                      { attrs: { cols: "12", lg: "3" } },
+                      [
+                        _c("v-autocomplete", {
+                          attrs: {
+                            items: _vm.supplier_status,
+                            "item-text": "status",
+                            "item-value": "is_supplier_active",
+                            label: "الحالة"
+                          },
+                          model: {
+                            value: _vm.search.is_supplier_active,
+                            callback: function($$v) {
+                              _vm.$set(_vm.search, "is_supplier_active", $$v)
+                            },
+                            expression: "search.is_supplier_active"
+                          }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "v-col",
+                      { attrs: { cols: "12", lg: "6" } },
+                      [
+                        _c(
+                          "v-row",
+                          [
+                            _c(
+                              "v-col",
+                              { attrs: { cols: "2" } },
+                              [
+                                _c(
+                                  "v-btn",
+                                  {
+                                    attrs: { elevation: "", color: "primary" },
+                                    on: { click: _vm.findSuppliers }
+                                  },
+                                  [_vm._v("البحث")]
+                                )
+                              ],
+                              1
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "v-col",
+                              { attrs: { cols: "2" } },
+                              [
+                                _c(
+                                  "v-btn",
+                                  {
+                                    attrs: { elevation: "", color: "primary" },
+                                    on: {
+                                      click: function($event) {
+                                        $event.stopPropagation()
+                                        return _vm.searchReset.apply(
+                                          null,
+                                          arguments
+                                        )
+                                      }
+                                    }
+                                  },
+                                  [_vm._v("إعادة تعيين")]
+                                )
+                              ],
+                              1
+                            )
+                          ],
+                          1
+                        )
+                      ],
+                      1
+                    )
+                  ],
+                  1
+                )
               ]
             },
             proxy: true
@@ -1316,6 +1565,19 @@ var render = function() {
             fn: function(ref) {
               var item = ref.item
               return [_vm._v("\n      " + _vm._s(item.name) + "\n    ")]
+            }
+          },
+          {
+            key: "item.balance",
+            fn: function(ref) {
+              var item = ref.item
+              return [
+                _vm._v(
+                  "\n      " +
+                    _vm._s((item.credit - item.debit).toFixed(2)) +
+                    "\n    "
+                )
+              ]
             }
           },
           {

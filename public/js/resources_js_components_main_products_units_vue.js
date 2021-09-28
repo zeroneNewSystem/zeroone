@@ -231,13 +231,13 @@ __webpack_require__.r(__webpack_exports__);
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/units/");
   },
   create: function create(unit) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/units/", unit);
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/units", unit);
   },
   "delete": function _delete(id) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.delete("/units/" + id);
   },
   update: function update(unit) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("/units/", unit);
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("/units", unit);
   }
 });
 

@@ -124,6 +124,28 @@ const router = new VueRouter({
                             import ("./components/main/purchases/purchase")
                     }
                 },
+                {
+                    path: "/invoice",
+                    name: "invoice",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import ("./components/main/invoices/invoice"),
+                        mainView: () =>
+                            import ("./components/main/invoices/invoice")
+                    }
+                },
+                {
+                    path: "/invoice/:id",
+                    name: "invoice",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import ("./components/main/invoices/invoice"),
+                        mainView: () =>
+                            import ("./components/main/invoices/invoice")
+                    }
+                },
 
                 {
                     path: "/suppliers",
@@ -134,6 +156,17 @@ const router = new VueRouter({
                             import ("./components/main/purchases/suppliers"),
                         mainView: () =>
                             import ("./components/main/purchases/suppliers")
+                    }
+                },
+                {
+                    path: "/customers",
+                    name: "customers",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import ("./components/main/invoices/customers"),
+                        mainView: () =>
+                            import ("./components/main/invoices/customers")
                     }
                 }
             ]

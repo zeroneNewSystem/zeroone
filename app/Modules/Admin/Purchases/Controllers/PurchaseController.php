@@ -171,19 +171,21 @@ class PurchaseController extends Controller
             "description" => 'حساب المورد',
         ];
         $this->addTransactionEntry($supplier_account);
+        if ($request['paid_amount'] != 0) {
+            $supplier_account = [
+                "company_id" => 1,
+                "account_id" => $supplier_account_id,
+                "debit" =>  $request['paid_amount'],
+                "credit" => 0,
+                "document_id" => $purchase->id,
+                "document_type_id" => 2,
+                "currency_code" => 1,
+                "currency_rate" => 1,
+                "description" => 'مدفوعة للمورد',
+            ];
+            $this->addTransactionEntry($supplier_account);
+        }
 
-        $supplier_account = [
-            "company_id" => 1,
-            "account_id" => $supplier_account_id,
-            "debit" =>  $request['paid_amount'],
-            "credit" => 0,
-            "document_id" => $purchase->id,
-            "document_type_id" => 2,
-            "currency_code" => 1,
-            "currency_rate" => 1,
-            "description" => 'مدفوعة للمورد',
-        ];
-        $this->addTransactionEntry($supplier_account);
 
 
 
@@ -313,7 +315,7 @@ class PurchaseController extends Controller
 
         $purchase = Purchase::find($request->id);
         $purchase->update($request->all());
-        
+
 
         //----
 

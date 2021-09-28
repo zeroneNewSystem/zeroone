@@ -231,13 +231,13 @@ __webpack_require__.r(__webpack_exports__);
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/groups/");
   },
   create: function create(group) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/groups/", group);
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/groups", group);
   },
   "delete": function _delete(id) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.delete("/groups/" + id);
   },
   update: function update(group) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("/groups/", group);
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("/groups", group);
   }
 });
 

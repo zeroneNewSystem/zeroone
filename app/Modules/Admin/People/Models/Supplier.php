@@ -19,4 +19,7 @@ class Supplier extends Model
     {
         return $this->belongsTo(Person::class);
     }
+
+    
+
 }

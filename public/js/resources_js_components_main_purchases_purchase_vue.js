@@ -829,6 +829,7 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
+    setMethodsIfEmpty: function setMethodsIfEmpty() {},
     addPaymentMethod: function addPaymentMethod() {
       this.payment_methods.push({
         account_id: "",
@@ -841,9 +842,6 @@ __webpack_require__.r(__webpack_exports__);
       this.payment_methods.splice(index, 1);
     },
     emitPayments: function emitPayments() {
-      var filterd_methods = this.payment_methods.filter(function (elem) {
-        return elem.account_id != "" && elem.credit != 0;
-      });
       this.$emit("payment_methods", {
         payment_methods: filterd_methods,
         paid_amount: this.paid_amount
@@ -885,6 +883,14 @@ function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Sy
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -1637,6 +1643,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       }],
       payment_conditions: [],
       purchase: {
+        payment_condition_id: 0,
         payment_methods: [{
           account_id: "",
           credit: 0,
@@ -1675,6 +1682,9 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       vld_minlingth_one: [function (v) {
         return v.length >= 1 || "أدخل قيمة";
       }],
+      vld_selected: [function (v) {
+        return v > 0 || "أدخل قيمة";
+      }],
       required: [function (value) {
         return !!value || "الحقل مطلوب.";
       }],
@@ -1692,6 +1702,17 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
     }
   },
   methods: {
+    addays: function addays(date, days) {
+      var result = new Date(date);
+      result.setDate(result.getDate() + +days);
+      return result;
+    },
+    getDays: function getDays() {
+      this.purchase.payment_condition_id = parseInt((new Date(this.purchase.maturity_date) - new Date(this.purchase.issue_date)) / (1000 * 60 * 60 * 24), 10);
+    },
+    getMaturityDate: function getMaturityDate() {
+      this.purchase.maturity_date = this.addays(this.purchase.issue_date, this.purchase.payment_condition_id).toISOString().substr(0, 10);
+    },
     supplierInfo: function supplierInfo() {
       var _this = this;
 
@@ -1736,7 +1757,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       var params = {
         barcode: this.searched_barcode
       };
-      _apis_Product__WEBPACK_IMPORTED_MODULE_0__.default.barcodeSearch(params).then(function (response) {
+      _apis_Product__WEBPACK_IMPORTED_MODULE_0__.default.purchaseBarcodeSearch(params).then(function (response) {
         if (response.data.products.length == 0) {
           _this3.is_exists = [ false || "الصنف غير موجود "];
           return;
@@ -1857,6 +1878,10 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
     },
     checkExecting: function checkExecting() {},
     submit: function submit() {
+      /* remove zero amount or not account methods */
+      this.purchase.payment_methods = this.purchase.payment_methods.filter(function (elem) {
+        return elem.account_id != "" && elem.credit != 0;
+      });
       if (this.is_new_purchase) _apis_Purchase__WEBPACK_IMPORTED_MODULE_1__.default.store(this.purchase).then(function (response) {
         return console.log(response.data);
       });else _apis_Purchase__WEBPACK_IMPORTED_MODULE_1__.default.update(this.purchase).then(function (response) {
@@ -1995,8 +2020,11 @@ __webpack_require__.r(__webpack_exports__);
       params: params
     });
   },
-  barcodeSearch: function barcodeSearch(params) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/extra/barcode/" + params.barcode);
+  purchaseBarcodeSearch: function purchaseBarcodeSearch(params) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/extra/purchase/barcode/" + params.barcode);
+  },
+  invoiceBarcodeSearch: function invoiceBarcodeSearch(params) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/extra/invoice/barcode/" + params.barcode);
   },
   "delete": function _delete(params) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.delete("/products/", {
@@ -2021,6 +2049,7 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   store: function store(purchase) {
+    console.log('purchase', purchase);
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/purchases", purchase);
   },
   get: function get(id) {
@@ -2144,7 +2173,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.v-application--wrap > .container {\r\n  margin: 0;\n}\n.v-text-field.v-text-field--enclosed .v-text-field__details,\r\n.v-text-field.v-text-field--enclosed:not(.v-text-field--rounded)\r\n  > .v-input__control\r\n  > .v-input__slot {\r\n  padding: 0px;\n}\n.purchase-footer {\r\n  min-width: 0;\r\n  overflow: hidden;\n}\n.purchas-extra-expense :after,\r\n.purchas-extra-expense :before {\r\n  display: none;\n}\n.purchas-extra-expense .v-text-field__details {\r\n  display: none;\n}\n.text-red input {\r\n  color: red !important;\n}\n.purchase-info .v-text-field__prefix {\r\n  margin-right: 10px;\n}\r\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.v-application--wrap > .container {\r\n  margin: 0;\n}\n.v-text-field.v-text-field--enclosed .v-text-field__details,\r\n.v-text-field.v-text-field--enclosed:not(.v-text-field--rounded)\r\n  > .v-input__control\r\n  > .v-input__slot {\r\n  padding: 0px;\n}\n.purchase-footer {\r\n  min-width: 0;\r\n  overflow: hidden;\n}\n.purchas-extra-expense :after,\r\n.purchas-extra-expense :before {\r\n  display: none;\n}\n.purchas-extra-expense .v-text-field__details {\r\n  display: none;\n}\n.text-red input {\r\n  color: red !important;\n}\n.purchase-info .v-text-field__prefix {\r\n  margin-right: 10px;\n}\r\n/* Chrome, Safari, Edge, Opera */\ninput::-webkit-outer-spin-button,\r\ninput::-webkit-inner-spin-button {\r\n  -webkit-appearance: none;\r\n  margin: 0;\n}\r\n\r\n/* Firefox */\ninput[type=\"number\"] {\r\n  -moz-appearance: textfield;\n}\r\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -3657,7 +3686,10 @@ var render = function() {
                     "v-btn",
                     _vm._g(
                       _vm._b(
-                        { attrs: { elevation: "0", dark: "" } },
+                        {
+                          attrs: { elevation: "0", dark: "" },
+                          on: { click: _vm.setMethodsIfEmpty }
+                        },
                         "v-btn",
                         attrs,
                         false
@@ -4270,7 +4302,7 @@ var render = function() {
                                               items: _vm.suppliers,
                                               "item-text": "name",
                                               "item-value": "id",
-                                              rules: _vm.vld_minlingth_one,
+                                              rules: _vm.vld_selected,
                                               label: "المورد"
                                             },
                                             model: {
@@ -4370,7 +4402,8 @@ var render = function() {
                                                             return null
                                                           }
                                                           _vm.issue_date_is_down = false
-                                                        }
+                                                        },
+                                                        change: _vm.getDays
                                                       },
                                                       model: {
                                                         value:
@@ -4415,7 +4448,8 @@ var render = function() {
                                         on: {
                                           input: function($event) {
                                             _vm.issue_date_is_down = false
-                                          }
+                                          },
+                                          change: _vm.getDays
                                         },
                                         model: {
                                           value: _vm.purchase.issue_date,
@@ -4432,6 +4466,33 @@ var render = function() {
                                     ],
                                     1
                                   )
+                                ],
+                                1
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "v-col",
+                                { staticClass: "pa-0", attrs: { cols: "12" } },
+                                [
+                                  _c("v-text-field", {
+                                    attrs: {
+                                      label: "الدفع بعد ",
+                                      suffix: "يوم"
+                                    },
+                                    on: { change: _vm.getMaturityDate },
+                                    model: {
+                                      value: _vm.purchase.payment_condition_id,
+                                      callback: function($$v) {
+                                        _vm.$set(
+                                          _vm.purchase,
+                                          "payment_condition_id",
+                                          $$v
+                                        )
+                                      },
+                                      expression:
+                                        "purchase.payment_condition_id"
+                                    }
+                                  })
                                 ],
                                 1
                               ),
@@ -4464,7 +4525,8 @@ var render = function() {
                                                   _vm._b(
                                                     {
                                                       attrs: {
-                                                        label: "تاريخ الاصدار",
+                                                        label:
+                                                          "تاريخ الاستحقاق",
                                                         "prepend-icon":
                                                           "mdi-calendar"
                                                       },
@@ -4487,7 +4549,8 @@ var render = function() {
                                                             return null
                                                           }
                                                           _vm.maturity_date_is_down = false
-                                                        }
+                                                        },
+                                                        change: _vm.getDays
                                                       },
                                                       model: {
                                                         value:
@@ -4532,7 +4595,8 @@ var render = function() {
                                         on: {
                                           input: function($event) {
                                             _vm.maturity_date_is_down = false
-                                          }
+                                          },
+                                          change: _vm.getDays
                                         },
                                         model: {
                                           value: _vm.purchase.maturity_date,
@@ -4549,34 +4613,6 @@ var render = function() {
                                     ],
                                     1
                                   )
-                                ],
-                                1
-                              ),
-                              _vm._v(" "),
-                              _c(
-                                "v-col",
-                                { staticClass: "pa-0", attrs: { cols: "12" } },
-                                [
-                                  _c("v-autocomplete", {
-                                    attrs: {
-                                      label: "شروط الدفع",
-                                      items: _vm.payment_conditions,
-                                      "item-text": "ar_name",
-                                      "item-value": "id"
-                                    },
-                                    model: {
-                                      value: _vm.purchase.payment_condition_id,
-                                      callback: function($$v) {
-                                        _vm.$set(
-                                          _vm.purchase,
-                                          "payment_condition_id",
-                                          $$v
-                                        )
-                                      },
-                                      expression:
-                                        "purchase.payment_condition_id"
-                                    }
-                                  })
                                 ],
                                 1
                               )
@@ -5000,6 +5036,7 @@ var render = function() {
                                   _c("v-text-field", {
                                     attrs: {
                                       flat: "",
+                                      type: "number",
                                       outlined: "",
                                       autocomplete: "off",
                                       "hide-no-data": "",
@@ -5024,6 +5061,7 @@ var render = function() {
                                   _c("v-text-field", {
                                     attrs: {
                                       flat: "",
+                                      type: "number",
                                       outlined: "",
                                       autocomplete: "off",
                                       "hide-no-data": "",
@@ -5047,6 +5085,7 @@ var render = function() {
                                 return [
                                   _c("v-text-field", {
                                     attrs: {
+                                      type: "number",
                                       flat: "",
                                       "hide-no-data": "",
                                       "hide-details": "",
@@ -5104,6 +5143,7 @@ var render = function() {
                                           _c("v-text-field", {
                                             attrs: {
                                               flat: "",
+                                              type: "number",
                                               "hide-no-data": "",
                                               "hide-details": "",
                                               outlined: "",
@@ -5234,6 +5274,7 @@ var render = function() {
                                 return [
                                   _c("v-text-field", {
                                     attrs: {
+                                      type: "number",
                                       "hide-no-data": "",
                                       "hide-details": "",
                                       autocomplete: "off",
@@ -5304,6 +5345,7 @@ var render = function() {
                                 return [
                                   _c("v-text-field", {
                                     attrs: {
+                                      disabled: "",
                                       "hide-no-data": "",
                                       "hide-details": "",
                                       autocomplete: "off",

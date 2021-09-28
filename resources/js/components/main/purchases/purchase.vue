@@ -69,7 +69,7 @@
                         :items="suppliers"
                         item-text="name"
                         item-value="id"
-                        :rules="vld_minlingth_one"
+                        :rules="vld_selected"
                         label="المورد"
                       >
                       </v-autocomplete>
@@ -100,14 +100,24 @@
                         v-bind="attrs"
                         v-on="on"
                         @keydown.enter="issue_date_is_down = false"
+                        @change="getDays"
                       ></v-text-field>
                     </template>
                     <v-date-picker
                       v-model="purchase.issue_date"
                       no-title
                       @input="issue_date_is_down = false"
+                      @change="getDays"
                     ></v-date-picker>
                   </v-menu>
+                </v-col>
+                <v-col cols="12" class="pa-0">
+                  <v-text-field
+                    label="الدفع بعد "
+                    v-model="purchase.payment_condition_id"
+                    suffix="يوم"
+                    @change="getMaturityDate"
+                  ></v-text-field>
                 </v-col>
                 <v-col cols="12" class="pa-0">
                   <v-menu
@@ -122,29 +132,21 @@
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field
                         v-model="purchase.maturity_date"
-                        label="تاريخ الاصدار"
+                        label="تاريخ الاستحقاق"
                         prepend-icon="mdi-calendar"
                         v-bind="attrs"
                         v-on="on"
                         @keydown.enter="maturity_date_is_down = false"
+                        @change="getDays"
                       ></v-text-field>
                     </template>
                     <v-date-picker
                       v-model="purchase.maturity_date"
                       no-title
                       @input="maturity_date_is_down = false"
+                      @change="getDays"
                     ></v-date-picker>
                   </v-menu>
-                </v-col>
-
-                <v-col cols="12" class="pa-0">
-                  <v-autocomplete
-                    label="شروط الدفع"
-                    v-model="purchase.payment_condition_id"
-                    :items="payment_conditions"
-                    item-text="ar_name"
-                    item-value="id"
-                  ></v-autocomplete>
                 </v-col>
               </v-row>
             </v-col>
@@ -258,6 +260,7 @@
                 <v-text-field
                   v-model="item.unit_price"
                   flat
+                  type="number"
                   outlined
                   autocomplete="off"
                   hide-no-data
@@ -268,6 +271,7 @@
                 <v-text-field
                   v-model="item.sales_price"
                   flat
+                  type="number"
                   outlined
                   autocomplete="off"
                   hide-no-data
@@ -276,6 +280,7 @@
               </template>
               <template v-slot:item.purchase_tax="{ item }">
                 <v-text-field
+                  type="number"
                   flat
                   hide-no-data
                   hide-details
@@ -301,6 +306,7 @@
                   <v-col cols="6" class="pl-0">
                     <v-text-field
                       flat
+                      type="number"
                       hide-no-data
                       hide-details
                       outlined
@@ -350,6 +356,7 @@
               </template>
               <template v-slot:item.purchased_quantity="{ item }">
                 <v-text-field
+                  type="number"
                   hide-no-data
                   hide-details
                   autocomplete="off"
@@ -384,6 +391,7 @@
               </template>
               <template v-slot:item.total="{ item }">
                 <v-text-field
+                  disabled
                   hide-no-data
                   hide-details
                   autocomplete="off"
@@ -761,6 +769,7 @@ export default {
 
       payment_conditions: [],
       purchase: {
+        payment_condition_id: 0,
         payment_methods: [
           {
             account_id: "",
@@ -818,6 +827,7 @@ export default {
 
       /*-------------------validators---------------------------*/
       vld_minlingth_one: [(v) => v.length >= 1 || "أدخل قيمة"],
+      vld_selected: [(v) => v > 0 || "أدخل قيمة"],
       required: [(value) => !!value || "الحقل مطلوب."],
       isunique: [],
       is_exists: [],
@@ -833,6 +843,28 @@ export default {
     },
   },
   methods: {
+    addays(date, days) {
+      var result = new Date(date);
+      result.setDate(result.getDate() + +days);
+      return result;
+    },
+    getDays() {
+      
+      this.purchase.payment_condition_id = parseInt(
+        (new Date(this.purchase.maturity_date) -
+          new Date(this.purchase.issue_date)) /
+          (1000 * 60 * 60 * 24),
+        10
+      );
+    },
+    getMaturityDate() {
+      this.purchase.maturity_date = this.addays(
+        this.purchase.issue_date,
+        this.purchase.payment_condition_id
+      )
+        .toISOString()
+        .substr(0, 10);
+    },
     supplierInfo() {
       return this.suppliers.find(
         (elem) => elem.id == this.purchase.supplier_id
@@ -872,7 +904,7 @@ export default {
     searchAndAddToPurchase() {
       let params = { barcode: this.searched_barcode };
 
-      Product.barcodeSearch(params).then((response) => {
+      Product.purchaseBarcodeSearch(params).then((response) => {
         if (response.data.products.length == 0) {
           this.is_exists = [false || "الصنف غير موجود "];
           return;
@@ -1031,6 +1063,10 @@ export default {
     },
     checkExecting() {},
     submit() {
+      /* remove zero amount or not account methods */
+      this.purchase.payment_methods = this.purchase.payment_methods.filter(
+        (elem) => elem.account_id != "" && elem.credit != 0
+      );
       if (this.is_new_purchase)
         Purchase.store(this.purchase).then((response) =>
           console.log(response.data)
@@ -1131,5 +1167,16 @@ export default {
 }
 .purchase-info .v-text-field__prefix {
   margin-right: 10px;
+}
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
 }
 </style>

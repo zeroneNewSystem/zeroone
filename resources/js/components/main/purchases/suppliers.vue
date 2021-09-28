@@ -35,14 +35,58 @@
           >
         </v-toolbar>
 
-        <v-text-field
-          v-model="search"
-          label="البحث بالاسم أو الباركود"
-          class="mx-4"
-        ></v-text-field>
+        <v-row>
+          <v-col cols="12" lg="3">
+            <v-text-field
+              v-model="search.company_name"
+              label="اسم الشركة"
+              class="mx-4"
+            ></v-text-field>
+          </v-col>
+          <v-col cols="12" lg="3">
+            <v-text-field
+              v-model="search.name"
+              label="جهة الاتصال"
+              class="mx-4"
+            ></v-text-field>
+          </v-col>
+          <v-col cols="12" lg="3">
+            <v-text-field
+              v-model="search.phone"
+              label="رقم الاتصال"
+              class="mx-4"
+            ></v-text-field>
+          </v-col>
+          <v-col cols="12" lg="3">
+            <v-autocomplete
+              v-model="search.is_supplier_active"
+              :items="supplier_status"
+              item-text="status"
+              item-value="is_supplier_active"
+              label="الحالة"
+            ></v-autocomplete>
+          </v-col>
+          <v-col cols="12" lg="6">
+            <v-row>
+              <v-col cols="2">
+                <v-btn elevation color="primary" @click="findSuppliers"
+                  >البحث</v-btn
+                >
+              </v-col>
+              <v-col cols="2">
+                <v-btn elevation color="primary" @click.stop="searchReset"
+                  >إعادة تعيين</v-btn
+                >
+              </v-col>
+            </v-row>
+          </v-col>
+        </v-row>
       </template>
       <template v-slot:item.name="{ item }">
         {{ item.name }}
+      </template>
+      <template v-slot:item.balance="{ item }">
+        {{ (item.credit - item.debit).toFixed(2) }}
       </template>
       <template v-slot:item.status="{ item }">
         {{ item.is_active ? "نشط" : "غير نشط" }}
@@ -74,6 +118,10 @@ export default {
   },
   data() {
     return {
+      supplier_status: [
+        { is_supplier_active: 0, status: "نشط" },
+        { is_supplier_active: 1, status: "غير نشط" },
+      ],
       cities: [],
       //-------etched data-----------------f
       operation: "add",
@@ -84,7 +132,13 @@ export default {
       //-----------------------------------//
       supplier_info_supplier: "",
       supplier_info_dialog: false,
-      search: "",
+
+      search: {
+        company_name: "",
+        name: "",
+        phone: "",
+        is_supplier_active: "",
+      },
       options: {},
       status: "salam",
 
@@ -127,7 +181,22 @@ export default {
     params: {
       handler() {
         this.getDataFromApi().then((response) => {
-          this.suppliers = response.data.suppliers.data;
+          let helper = [];
+
+          if (response.data.suppliers.data) {
+            response.data.suppliers.data.forEach((element) => {
+              if (!helper[element.id]) {
+                helper[element.id] = element;
+              } else {
+                if (element.debit != -1)
+                  helper[element.id].debit += element.debit;
+                helper[element.id].credit += element.credit;
+              }
+            });
+          }
+
+          this.suppliers = helper;
+          console.log(helper);
 
           this.suppliers_total = response.data.suppliers.data.total;
           this.supplier_info_supplier = response.data.suppliers.data[0];
@@ -144,6 +213,61 @@ export default {
   // },
 
   methods: {
+    findSuppliers() {
+      this.getDataFromApi().then((response) => {
+          let helper = [];
+
+          if (response.data.suppliers.data) {
+            response.data.suppliers.data.forEach((element) => {
+              if (!helper[element.id]) {
+                helper[element.id] = element;
+              } else {
+                if (element.debit != -1)
+                  helper[element.id].debit += element.debit;
+                helper[element.id].credit += element.credit;
+              }
+            });
+          }
+
+          this.suppliers = helper;
+          console.log(helper);
+
+          this.suppliers_total = response.data.suppliers.data.total;
+          this.supplier_info_supplier = response.data.suppliers.data[0];
+          console.log(this.suppliers_total);
+        });
+    },
+    searchReset() {
+      (this.search = {
+        company_name: "",
+        name: "",
+        phone: "",
+        is_supplier_active: "",
+      }),
+        this.getDataFromApi().then((response) => {
+          let helper = [];
+
+          if (response.data.suppliers.data) {
+            response.data.suppliers.data.forEach((element) => {
+              if (!helper[element.id+' '+pur_id]) {
+                helper[element.id+' '+pur_id] = element;
+              } else {
+                if (element.debit != -1)
+                  helper[element.id+' '+pur_id].debit += element.debit;
+                helper[element.id+' '+pur_id].credit += element.credit;
+                helper[element.id+' '+pur_id].credit += element.credit;
+              }
+            });
+          }
+
+          this.suppliers = helper;
+          console.log(helper);
+
+          this.suppliers_total = response.data.suppliers.data.total;
+          this.supplier_info_supplier = response.data.suppliers.data[0];
+          console.log(this.suppliers_total);
+        });
+    },
     loadCities(country_id) {
       this.cities = [];
       Country.loadCities(country_id).then(
@@ -191,26 +315,31 @@ export default {
     deleteSupplier(item) {
       this.loading = true;
       const { sortBy, sortDesc, page, itemsPerPage } = this.options;
-      let search = this.search.trim().toLowerCase();
+      //let search = this.search.trim().toLowerCase();
       let person_id = item.id;
-      Supplier.delete({ person_id, page, itemsPerPage, search }).then(
-        (response) => {
-          this.loading = false;
-          this.suppliers = response.data.suppliers.data;
-          this.suppliers_total = response.data.suppliers.data.total;
-        }
-      );
+      Supplier.delete({
+        person_id,
+        page,
+        itemsPerPage,
+        search: this.search,
+      }).then((response) => {
+        this.loading = false;
+        this.suppliers = response.data.suppliers.data;
+        this.suppliers_total = response.data.suppliers.data.total;
+      });
     },
     getDataFromApi() {
       this.loading = true;
       return new Promise((resolve, reject) => {
         const { sortBy, sortDesc, page, itemsPerPage } = this.options;
-        let search = this.search.trim().toLowerCase();
+        // let search = this.search.trim().toLowerCase();
 
-        Supplier.get({ page, itemsPerPage, search }).then((response) => {
-          this.loading = false;
-          resolve(response);
-        });
+        Supplier.get({ page, itemsPerPage, search: this.search }).then(
+          (response) => {
+            this.loading = false;
+            resolve(response);
+          }
+        );
       });
     },
   },

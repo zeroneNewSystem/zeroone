@@ -3,6 +3,7 @@ import Api from "./Api";
 export default {
 
     store(purchase) {
+        console.log('purchase', purchase)
         return Api.post("/purchases", purchase);
     },
     get(id) {

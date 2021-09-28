@@ -16,6 +16,13 @@ Route::group(["prefix" => "suppliers"], function () {
     Route::delete('/', 'SupplierController@destroy');
 
 });
+Route::group(["prefix" => "customers"], function () {
+    Route::get('/', 'CustomerController@index'); 
+    Route::post('/', 'CustomerController@store');
+    Route::put('/', 'CustomerController@update');   
+    Route::delete('/', 'CustomerController@destroy');
+
+});
 
 Route::group(["prefix" => "people"], function () {
     Route::get('/', 'PersonController@index');

@@ -21,8 +21,11 @@ export default {
         return Api.get("/products/search", { params: params });
     },
 
-    barcodeSearch(params) {
-        return Api.get("/extra/barcode/" + params.barcode);
+    purchaseBarcodeSearch(params) {
+        return Api.get("/extra/purchase/barcode/" + params.barcode);
+    },
+    invoiceBarcodeSearch(params) {
+        return Api.get("/extra/invoice/barcode/" + params.barcode);
     },
 
     delete(params) {

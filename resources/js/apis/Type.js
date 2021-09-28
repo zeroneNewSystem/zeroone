@@ -2,7 +2,7 @@ import Api from "./Api";
 
 export default {
     getAll() {
-        return Api.get("/types/");
+        return Api.get("/types");
     },
 
     create(type) {
@@ -13,6 +13,6 @@ export default {
         return Api.delete("/types/" + id);
     },
     update(type) {
-        return Api.put("/types/", type);
+        return Api.put("/types", type);
     }
 };
