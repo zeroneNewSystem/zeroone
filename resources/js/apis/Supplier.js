@@ -1,9 +1,7 @@
 import Api from "./Api";
 
 export default {
-
     store(supplier) {
-
         return Api.post("/suppliers", supplier);
     },
     update(supplier) {
@@ -11,6 +9,9 @@ export default {
     },
     postCreate(supplier) {
         return Api.post("/suppliers/create", supplier);
+    },
+    getOne(id) {
+        return Api.get("/suppliers/" + id);
     },
     get(params) {
         return Api.get("/suppliers", { params: params });

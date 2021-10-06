@@ -177,7 +177,7 @@ __webpack_require__.r(__webpack_exports__);
           _this2.$parent.$data.add_update_supplier_dialog = false;
           _this2.isloading = false;
 
-          _this2.$emit("addUpdateSupplier", response.data.supplier);
+          _this2.$emit("addUpdateSupplier", _this2.supplier);
         });
         return;
       }
@@ -230,11 +230,128 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+/* harmony import */ var _apis_Supplier__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../apis/Supplier */ "./resources/js/apis/Supplier.js");
 //
 //
 //
 //
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({});
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  data: function data() {
+    return {
+      supplier: "",
+      total_of_purchases: 0,
+      purchases: [],
+      arrears: 0
+    };
+  },
+  created: function created() {
+    var _this = this;
+
+    if (this.$route.params.id) {
+      _apis_Supplier__WEBPACK_IMPORTED_MODULE_0__.default.getOne(this.$route.params.id).then(function (response) {
+        _this.supplier = response.data.supplier[0];
+
+        _this.purchase_processing(response.data.purchases);
+      });
+    }
+  },
+  methods: {
+    purchase_processing: function purchase_processing(purchases) {
+      var elper = [];
+
+      if (purchases.length > 0) {
+        purchases.forEach(function (element) {
+          //amount null -> 0
+          if (element.amount == null) element.amount = 0;
+
+          if (element.supdoc_id) {
+            if (!elper.find(function (elem) {
+              return element.id == elem.id;
+            })) {
+              elper.push(element);
+            } else {
+              elper[elper.findIndex(function (elem) {
+                return element.id == elem.id;
+              })].amount += element.amount;
+            }
+
+            return;
+          }
+
+          elper.push(element);
+        });
+        console.log("elper", elper);
+        var x = elper.reduce(function (a, b) {
+          return a + b.total_amount;
+        }, 0);
+        var y = elper.reduce(function (a, b) {
+          return a + b.amount;
+        }, 0);
+        var z = elper.reduce(function (a, b) {
+          return a + b.paid_amount;
+        }, 0);
+        this.arrears = x - y - z;
+        this.total_of_purchases = x; //ألغاء التكرار
+
+        return x;
+      }
+
+      return 0;
+    }
+  }
+});
 
 /***/ }),
 
@@ -366,6 +483,22 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -377,6 +510,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   data: function data() {
     return {
+      dialog: false,
       supplier_status: [{
         is_supplier_active: 0,
         status: "نشط"
@@ -450,21 +584,78 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         var _this = this;
 
         this.getDataFromApi().then(function (response) {
+          var data = response.data.suppliers.data;
           var helper = [];
+          var elper = [];
+          var arrears01 = [];
+          var arrears02 = []; //let balance = [];
 
-          if (response.data.suppliers.data) {
-            response.data.suppliers.data.forEach(function (element) {
-              if (!helper[element.id]) {
-                helper[element.id] = element;
-              } else {
-                if (element.debit != -1) helper[element.id].debit += element.debit;
-                helper[element.id].credit += element.credit;
+          if (data) {
+            data.forEach(function (element) {
+              //amount null -> 0
+              if (element.amount == null) element.amount = 0; // no transactions yet!
+
+              if (!element.trans_id) {
+                element.deletable = true;
+                elper.push(element);
+                return;
+              } //الغاء التكرار
+
+
+              if (element.pur_id && element.supdoc_id) {
+                console.log("nibfir");
+
+                if (!elper.find(function (elem) {
+                  return (// element.id +
+                    //   " " +
+                    element.pur_id + " " + element.trans_id == //elem.id + " " +
+                    elem.pur_id + " " + elem.trans_id
+                  );
+                })) {
+                  console.log("nibsoc");
+                  elper.push(element);
+                } else {
+                  elper[elper.findIndex(function (elem) {
+                    return (// element.id +
+                      //   " " +
+                      element.pur_id + " " + element.trans_id == //elem.id + " " +
+                      elem.pur_id + " " + elem.trans_id
+                    );
+                  })].amount += element.amount;
+                }
+
+                return;
               }
+
+              elper.push(element);
+            });
+            console.log("elper", elper); //تجميع الفواتير
+
+            console.log("arrears01", arrears01);
+            console.log("arrears02", arrears02);
+            elper.forEach(function (element) {
+              if (!element.trans_id) {
+                helper.push(element);
+                return;
+              }
+
+              if (!helper.find(function (elem) {
+                return element.id == elem.id;
+              })) {
+                helper.push(element);
+                return;
+              }
+
+              var index = helper.findIndex(function (elem) {
+                return elem.id == element.id;
+              });
+              if (element.debit != -1) helper[index].debit += element.debit;
+              helper[index].credit += element.credit;
             });
           }
 
           _this.suppliers = helper;
-          console.log(helper);
+          console.log("helper", helper.amount);
           _this.suppliers_total = response.data.suppliers.data.total;
           _this.supplier_info_supplier = response.data.suppliers.data[0];
           console.log(_this.suppliers_total);
@@ -483,21 +674,78 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var _this2 = this;
 
       this.getDataFromApi().then(function (response) {
+        var data = response.data.suppliers.data;
         var helper = [];
+        var elper = [];
+        var arrears01 = [];
+        var arrears02 = []; //let balance = [];
 
-        if (response.data.suppliers.data) {
-          response.data.suppliers.data.forEach(function (element) {
-            if (!helper[element.id]) {
-              helper[element.id] = element;
-            } else {
-              if (element.debit != -1) helper[element.id].debit += element.debit;
-              helper[element.id].credit += element.credit;
+        if (data) {
+          data.forEach(function (element) {
+            //amount null -> 0
+            if (element.amount == null) element.amount = 0; // no transactions yet!
+
+            if (!element.trans_id) {
+              element.deletable = true;
+              elper.push(element);
+              return;
+            } //الغاء التكرار
+
+
+            if (element.pur_id && element.supdoc_id) {
+              console.log("nibfir");
+
+              if (!elper.find(function (elem) {
+                return (// element.id +
+                  //   " " +
+                  element.pur_id + " " + element.trans_id == //elem.id + " " +
+                  elem.pur_id + " " + elem.trans_id
+                );
+              })) {
+                console.log("nibsoc");
+                elper.push(element);
+              } else {
+                elper[elper.findIndex(function (elem) {
+                  return (// element.id +
+                    //   " " +
+                    element.pur_id + " " + element.trans_id == //elem.id + " " +
+                    elem.pur_id + " " + elem.trans_id
+                  );
+                })].amount += element.amount;
+              }
+
+              return;
             }
+
+            elper.push(element);
+          });
+          console.log("elper", elper); //تجميع الفواتير
+
+          console.log("arrears01", arrears01);
+          console.log("arrears02", arrears02);
+          elper.forEach(function (element) {
+            if (!element.trans_id) {
+              helper.push(element);
+              return;
+            }
+
+            if (!helper.find(function (elem) {
+              return element.id == elem.id;
+            })) {
+              helper.push(element);
+              return;
+            }
+
+            var index = helper.findIndex(function (elem) {
+              return elem.id == element.id;
+            });
+            if (element.debit != -1) helper[index].debit += element.debit;
+            helper[index].credit += element.credit;
           });
         }
 
         _this2.suppliers = helper;
-        console.log(helper);
+        console.log("helper", helper.amount);
         _this2.suppliers_total = response.data.suppliers.data.total;
         _this2.supplier_info_supplier = response.data.suppliers.data[0];
         console.log(_this2.suppliers_total);
@@ -512,22 +760,78 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         phone: "",
         is_supplier_active: ""
       }, this.getDataFromApi().then(function (response) {
+        var data = response.data.suppliers.data;
         var helper = [];
+        var elper = [];
+        var arrears01 = [];
+        var arrears02 = []; //let balance = [];
 
-        if (response.data.suppliers.data) {
-          response.data.suppliers.data.forEach(function (element) {
-            if (!helper[element.id + ' ' + pur_id]) {
-              helper[element.id + ' ' + pur_id] = element;
-            } else {
-              if (element.debit != -1) helper[element.id + ' ' + pur_id].debit += element.debit;
-              helper[element.id + ' ' + pur_id].credit += element.credit;
-              helper[element.id + ' ' + pur_id].credit += element.credit;
+        if (data) {
+          data.forEach(function (element) {
+            //amount null -> 0
+            if (element.amount == null) element.amount = 0; // no transactions yet!
+
+            if (!element.trans_id) {
+              element.deletable = true;
+              elper.push(element);
+              return;
+            } //الغاء التكرار
+
+
+            if (element.pur_id && element.supdoc_id) {
+              console.log("nibfir");
+
+              if (!elper.find(function (elem) {
+                return (// element.id +
+                  //   " " +
+                  element.pur_id + " " + element.trans_id == //elem.id + " " +
+                  elem.pur_id + " " + elem.trans_id
+                );
+              })) {
+                console.log("nibsoc");
+                elper.push(element);
+              } else {
+                elper[elper.findIndex(function (elem) {
+                  return (// element.id +
+                    //   " " +
+                    element.pur_id + " " + element.trans_id == //elem.id + " " +
+                    elem.pur_id + " " + elem.trans_id
+                  );
+                })].amount += element.amount;
+              }
+
+              return;
             }
+
+            elper.push(element);
+          });
+          console.log("elper", elper); //تجميع الفواتير
+
+          console.log("arrears01", arrears01);
+          console.log("arrears02", arrears02);
+          elper.forEach(function (element) {
+            if (!element.trans_id) {
+              helper.push(element);
+              return;
+            }
+
+            if (!helper.find(function (elem) {
+              return element.id == elem.id;
+            })) {
+              helper.push(element);
+              return;
+            }
+
+            var index = helper.findIndex(function (elem) {
+              return elem.id == element.id;
+            });
+            if (element.debit != -1) helper[index].debit += element.debit;
+            helper[index].credit += element.credit;
           });
         }
 
         _this3.suppliers = helper;
-        console.log(helper);
+        console.log("helper", helper.amount);
         _this3.suppliers_total = response.data.suppliers.data.total;
         _this3.supplier_info_supplier = response.data.suppliers.data[0];
         console.log(_this3.suppliers_total);
@@ -542,6 +846,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
     },
     addSupplierToList: function addSupplierToList(supplier) {
+      console.log('supplier');
       if (this.operation == "add") this.suppliers.push(supplier);else if (this.operation == "update") {
         this.suppliers.splice(this.suppliers.indexOf(function (elem) {
           return elem.id == supplier.id;
@@ -578,6 +883,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     deleteSupplier: function deleteSupplier(item) {
       var _this5 = this;
 
+      if (!item.deletable) {
+        this.dialog = true;
+        return;
+      }
+
       this.loading = true;
       var _this$options = this.options,
           sortBy = _this$options.sortBy,
@@ -593,8 +903,81 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         search: this.search
       }).then(function (response) {
         _this5.loading = false;
-        _this5.suppliers = response.data.suppliers.data;
+        var data = response.data.suppliers.data;
+        var helper = [];
+        var elper = [];
+        var arrears01 = [];
+        var arrears02 = []; //let balance = [];
+
+        if (data) {
+          data.forEach(function (element) {
+            //amount null -> 0
+            if (element.amount == null) element.amount = 0; // no transactions yet!
+
+            if (!element.trans_id) {
+              element.deletable = true;
+              elper.push(element);
+              return;
+            } //الغاء التكرار
+
+
+            if (element.pur_id && element.supdoc_id) {
+              console.log("nibfir");
+
+              if (!elper.find(function (elem) {
+                return (// element.id +
+                  //   " " +
+                  element.pur_id + " " + element.trans_id == //elem.id + " " +
+                  elem.pur_id + " " + elem.trans_id
+                );
+              })) {
+                console.log("nibsoc");
+                elper.push(element);
+              } else {
+                elper[elper.findIndex(function (elem) {
+                  return (// element.id +
+                    //   " " +
+                    element.pur_id + " " + element.trans_id == //elem.id + " " +
+                    elem.pur_id + " " + elem.trans_id
+                  );
+                })].amount += element.amount;
+              }
+
+              return;
+            }
+
+            elper.push(element);
+          });
+          console.log("elper", elper); //تجميع الفواتير
+
+          console.log("arrears01", arrears01);
+          console.log("arrears02", arrears02);
+          elper.forEach(function (element) {
+            if (!element.trans_id) {
+              helper.push(element);
+              return;
+            }
+
+            if (!helper.find(function (elem) {
+              return element.id == elem.id;
+            })) {
+              helper.push(element);
+              return;
+            }
+
+            var index = helper.findIndex(function (elem) {
+              return elem.id == element.id;
+            });
+            if (element.debit != -1) helper[index].debit += element.debit;
+            helper[index].credit += element.credit;
+          });
+        }
+
+        _this5.suppliers = helper;
+        console.log("helper", helper.amount);
         _this5.suppliers_total = response.data.suppliers.data.total;
+        _this5.supplier_info_supplier = response.data.suppliers.data[0];
+        console.log(_this5.suppliers_total);
       });
     },
     getDataFromApi: function getDataFromApi() {
@@ -669,6 +1052,9 @@ __webpack_require__.r(__webpack_exports__);
   },
   postCreate: function postCreate(supplier) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/suppliers/create", supplier);
+  },
+  getOne: function getOne(id) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/suppliers/" + id);
   },
   get: function get(params) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/suppliers", {
@@ -1316,7 +1702,183 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div")
+  return _c(
+    "div",
+    { staticStyle: { padding: "20px" } },
+    [
+      _c(
+        "v-row",
+        [
+          _c(
+            "v-col",
+            { attrs: { cols: "12", lg: "6" } },
+            [
+              _c(
+                "v-row",
+                {
+                  staticStyle: {
+                    "font-size": "14px",
+                    border: "1px solid #bababa",
+                    "border-radius": "5px",
+                    padding: "10px"
+                  }
+                },
+                [
+                  _c(
+                    "v-col",
+                    {
+                      staticClass: "pa-0",
+                      staticStyle: { "text-align": "start" },
+                      attrs: { cols: "3" }
+                    },
+                    [_vm._v(" الاسم ")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-col",
+                    {
+                      staticClass: "pa-0",
+                      staticStyle: { "text-align": "start" },
+                      attrs: { cols: "9" }
+                    },
+                    [
+                      _vm._v(
+                        "\n          " +
+                          _vm._s(_vm.supplier.name) +
+                          "\n        "
+                      )
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-col",
+                    {
+                      staticClass: "pa-0",
+                      staticStyle: { "text-align": "start" },
+                      attrs: { cols: "3" }
+                    },
+                    [_vm._v("\n          الشركة\n        ")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-col",
+                    {
+                      staticClass: "pa-0",
+                      staticStyle: { "text-align": "start" },
+                      attrs: { cols: "9" }
+                    },
+                    [
+                      _vm._v(
+                        "\n          " +
+                          _vm._s(_vm.supplier.compnay_name) +
+                          "\n        "
+                      )
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-col",
+                    {
+                      staticClass: "pa-0",
+                      staticStyle: { "text-align": "start" },
+                      attrs: { cols: "3" }
+                    },
+                    [_vm._v("\n          رقم الاتصال\n        ")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-col",
+                    {
+                      staticClass: "pa-0",
+                      staticStyle: { "text-align": "start" },
+                      attrs: { cols: "9" }
+                    },
+                    [
+                      _vm._v(
+                        "\n          " +
+                          _vm._s(_vm.supplier.phone) +
+                          "\n        "
+                      )
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-col",
+                    {
+                      staticClass: "pa-0",
+                      staticStyle: { "text-align": "start" },
+                      attrs: { cols: "3" }
+                    },
+                    [_vm._v("\n          البريد الالكتروني\n        ")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-col",
+                    {
+                      staticClass: "pa-0",
+                      staticStyle: { "text-align": "start" },
+                      attrs: { cols: "9" }
+                    },
+                    [
+                      _vm._v(
+                        "\n          " +
+                          _vm._s(_vm.supplier.email) +
+                          "\n        "
+                      )
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-col",
+                    {
+                      staticClass: "pa-0",
+                      staticStyle: { "text-align": "start" },
+                      attrs: { cols: "3" }
+                    },
+                    [_vm._v("\n          العنوان\n        ")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-col",
+                    {
+                      staticClass: "pa-0",
+                      staticStyle: { "text-align": "start" },
+                      attrs: { cols: "9" }
+                    },
+                    [
+                      _vm._v(
+                        "\n          " +
+                          _vm._s(_vm.supplier.address) +
+                          "\n        "
+                      )
+                    ]
+                  )
+                ],
+                1
+              )
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c("v-col", { attrs: { cols: "12", lg: "6" } })
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c(
+        "v-row",
+        [
+          _c("v-col", [
+            _vm._v("\n      " + _vm._s(_vm.total_of_purchases) + "\n    ")
+          ]),
+          _vm._v(" "),
+          _c("v-col", [_vm._v("\n      " + _vm._s(_vm.arrears) + "\n    ")])
+        ],
+        1
+      )
+    ],
+    1
+  )
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -1357,18 +1919,56 @@ var render = function() {
       }),
       _vm._v(" "),
       _c(
-        "supplier-info",
+        "v-dialog",
         {
-          attrs: {
-            dialog: _vm.supplier_info_dialog,
-            supplier: _vm.supplier_info_supplier
+          attrs: { "max-width": "600px" },
+          model: {
+            value: _vm.dialog,
+            callback: function($$v) {
+              _vm.dialog = $$v
+            },
+            expression: "dialog"
           }
         },
         [
-          _c("span", { attrs: { slot: "title" }, slot: "title" }, [
-            _vm._v(" معلومات المورد")
-          ])
-        ]
+          _c(
+            "v-card",
+            [
+              _c("v-card-title", [
+                _c("span", { staticClass: "text-h5" }, [_vm._v("تنبيه!")])
+              ]),
+              _vm._v(" "),
+              _c("v-card-text", { staticClass: "text--primary" }, [
+                _vm._v(
+                  "\n        لايمكن حذف هذا المورد لوجود تعاملات مالية معه\n      "
+                )
+              ]),
+              _vm._v(" "),
+              _c(
+                "v-card-actions",
+                [
+                  _c("v-spacer"),
+                  _vm._v(" "),
+                  _c(
+                    "v-btn",
+                    {
+                      attrs: { color: "blue darken-1", text: "" },
+                      on: {
+                        click: function($event) {
+                          _vm.dialog = false
+                        }
+                      }
+                    },
+                    [_vm._v("\n          إلغاء\n        ")]
+                  )
+                ],
+                1
+              )
+            ],
+            1
+          )
+        ],
+        1
       ),
       _vm._v(" "),
       _c("v-data-table", {
@@ -1568,6 +2168,13 @@ var render = function() {
             }
           },
           {
+            key: "item.arrears",
+            fn: function(ref) {
+              var item = ref.item
+              return [_vm._v("\n      " + _vm._s(item.amount) + "\n    ")]
+            }
+          },
+          {
             key: "item.balance",
             fn: function(ref) {
               var item = ref.item
@@ -1647,16 +2254,27 @@ var render = function() {
                 ),
                 _vm._v(" "),
                 _c(
-                  "v-icon",
+                  "v-btn",
                   {
-                    attrs: { small: "" },
+                    attrs: { icon: "" },
                     on: {
                       click: function($event) {
-                        return _vm.deleteSupplier(item)
+                        $event.stopPropagation()
+                        return _vm.deleteSupplier(item, "update")
                       }
                     }
                   },
-                  [_vm._v("mdi-delete")]
+                  [
+                    _c(
+                      "v-icon",
+                      {
+                        staticClass: "outlined font-size-12",
+                        attrs: { small: "" }
+                      },
+                      [_vm._v("mdi-delete")]
+                    )
+                  ],
+                  1
                 )
               ]
             }

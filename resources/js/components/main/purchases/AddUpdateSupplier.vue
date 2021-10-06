@@ -155,7 +155,7 @@ export default {
         Supplier.update(this.supplier).then((response) => {
           this.$parent.$data.add_update_supplier_dialog = false;
           this.isloading = false;
-          this.$emit("addUpdateSupplier", response.data.supplier);
+          this.$emit("addUpdateSupplier", this.supplier);
         });
         return;
       }

@@ -202,7 +202,7 @@ export default {
       
 
       this.$emit("payment_methods", {
-        payment_methods: filterd_methods,
+        payment_methods: this.payment_methods,
         paid_amount: this.paid_amount,
       });
 

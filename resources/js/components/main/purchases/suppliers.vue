@@ -9,12 +9,24 @@
       @changeCountry="loadCities"
     ></add-update-supplier>
 
-    <supplier-info
-      :dialog="supplier_info_dialog"
-      :supplier="supplier_info_supplier"
-    >
-      <span slot="title"> معلومات المورد</span>
-    </supplier-info>
+    <v-dialog v-model="dialog" max-width="600px">
+      <v-card>
+        <v-card-title>
+          <span class="text-h5">تنبيه!</span>
+        </v-card-title>
+        <v-card-text class="text--primary">
+          لايمكن حذف هذا المورد لوجود تعاملات مالية معه
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="dialog = false">
+            إلغاء
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    
     <v-data-table
       :headers="headers"
       :items="suppliers"
@@ -85,6 +97,9 @@
       <template v-slot:item.name="{ item }">
         {{ item.name }}
       </template>
+      <template v-slot:item.arrears="{ item }">
+        {{ item.amount }}
+      </template>
       <template v-slot:item.balance="{ item }">
         {{ (item.credit - item.debit).toFixed(2) }}
       </template>
@@ -98,8 +113,9 @@
         <v-btn icon @click.stop="show_supplier_dialog(item)">
           <v-icon small class="outlined font-size-12">mdi-eye</v-icon>
         </v-btn>
-
-        <v-icon small @click="deleteSupplier(item)">mdi-delete</v-icon>
+        <v-btn icon @click.stop="deleteSupplier(item, 'update')">
+          <v-icon small class="outlined font-size-12">mdi-delete</v-icon>
+        </v-btn>
       </template>
       <template v-slot:no-data>no data!</template>
     </v-data-table>
@@ -118,6 +134,7 @@ export default {
   },
   data() {
     return {
+      dialog: false,
       supplier_status: [
         { is_supplier_active: 0, status: "نشط" },
         { is_supplier_active: 1, status: "غير نشط" },
@@ -181,22 +198,80 @@ export default {
     params: {
       handler() {
         this.getDataFromApi().then((response) => {
+          let data = response.data.suppliers.data;
           let helper = [];
+          let elper = [];
+          let arrears01 = [];
+          let arrears02 = [];
+          //let balance = [];
 
-          if (response.data.suppliers.data) {
-            response.data.suppliers.data.forEach((element) => {
-              if (!helper[element.id]) {
-                helper[element.id] = element;
-              } else {
-                if (element.debit != -1)
-                  helper[element.id].debit += element.debit;
-                helper[element.id].credit += element.credit;
+          if (data) {
+            data.forEach((element) => {
+              //amount null -> 0
+              if (element.amount == null) element.amount = 0;
+
+              // no transactions yet!
+              if (!element.trans_id) {
+                element.deletable = true;
+                elper.push(element);
+                return;
               }
+              //الغاء التكرار
+              if (element.pur_id && element.supdoc_id) {
+                console.log("nibfir");
+                if (
+                  !elper.find(
+                    (elem) =>
+                      // element.id +
+                      //   " " +
+                      element.pur_id + " " + element.trans_id ==
+                      //elem.id + " " +
+                      elem.pur_id + " " + elem.trans_id
+                  )
+                ) {
+                  console.log("nibsoc");
+                  elper.push(element);
+                } else {
+                  elper[
+                    elper.findIndex(
+                      (elem) =>
+                        // element.id +
+                        //   " " +
+                        element.pur_id + " " + element.trans_id ==
+                        //elem.id + " " +
+                        elem.pur_id + " " + elem.trans_id
+                    )
+                  ].amount += element.amount;
+                }
+
+                return;
+              }
+              elper.push(element);
+            });
+
+            console.log("elper", elper);
+            //تجميع الفواتير
+
+            console.log("arrears01", arrears01);
+            console.log("arrears02", arrears02);
+
+            elper.forEach((element) => {
+              if (!element.trans_id) {
+                helper.push(element);
+                return;
+              }
+              if (!helper.find((elem) => element.id == elem.id)) {
+                helper.push(element);
+                return;
+              }
+              let index = helper.findIndex((elem) => elem.id == element.id);
+              if (element.debit != -1) helper[index].debit += element.debit;
+              helper[index].credit += element.credit;
             });
           }
 
           this.suppliers = helper;
-          console.log(helper);
+          console.log("helper", helper.amount);
 
           this.suppliers_total = response.data.suppliers.data.total;
           this.supplier_info_supplier = response.data.suppliers.data[0];
@@ -215,27 +290,85 @@ export default {
   methods: {
     findSuppliers() {
       this.getDataFromApi().then((response) => {
-          let helper = [];
+        let data = response.data.suppliers.data;
+        let helper = [];
+        let elper = [];
+        let arrears01 = [];
+        let arrears02 = [];
+        //let balance = [];
 
-          if (response.data.suppliers.data) {
-            response.data.suppliers.data.forEach((element) => {
-              if (!helper[element.id]) {
-                helper[element.id] = element;
+        if (data) {
+          data.forEach((element) => {
+            //amount null -> 0
+            if (element.amount == null) element.amount = 0;
+
+            // no transactions yet!
+            if (!element.trans_id) {
+              element.deletable = true;
+              elper.push(element);
+              return;
+            }
+            //الغاء التكرار
+            if (element.pur_id && element.supdoc_id) {
+              console.log("nibfir");
+              if (
+                !elper.find(
+                  (elem) =>
+                    // element.id +
+                    //   " " +
+                    element.pur_id + " " + element.trans_id ==
+                    //elem.id + " " +
+                    elem.pur_id + " " + elem.trans_id
+                )
+              ) {
+                console.log("nibsoc");
+                elper.push(element);
               } else {
-                if (element.debit != -1)
-                  helper[element.id].debit += element.debit;
-                helper[element.id].credit += element.credit;
+                elper[
+                  elper.findIndex(
+                    (elem) =>
+                      // element.id +
+                      //   " " +
+                      element.pur_id + " " + element.trans_id ==
+                      //elem.id + " " +
+                      elem.pur_id + " " + elem.trans_id
+                  )
+                ].amount += element.amount;
               }
-            });
-          }
 
-          this.suppliers = helper;
-          console.log(helper);
+              return;
+            }
+            elper.push(element);
+          });
 
-          this.suppliers_total = response.data.suppliers.data.total;
-          this.supplier_info_supplier = response.data.suppliers.data[0];
-          console.log(this.suppliers_total);
-        });
+          console.log("elper", elper);
+          //تجميع الفواتير
+
+          console.log("arrears01", arrears01);
+          console.log("arrears02", arrears02);
+
+          elper.forEach((element) => {
+            if (!element.trans_id) {
+              helper.push(element);
+              return;
+            }
+            if (!helper.find((elem) => element.id == elem.id)) {
+              helper.push(element);
+              return;
+            }
+            let index = helper.findIndex((elem) => elem.id == element.id);
+            if (element.debit != -1) helper[index].debit += element.debit;
+            helper[index].credit += element.credit;
+          });
+        }
+
+        this.suppliers = helper;
+        console.log("helper", helper.amount);
+
+        this.suppliers_total = response.data.suppliers.data.total;
+        this.supplier_info_supplier = response.data.suppliers.data[0];
+        console.log(this.suppliers_total);
+      });
     },
     searchReset() {
       (this.search = {
@@ -245,23 +378,80 @@ export default {
         is_supplier_active: "",
       }),
         this.getDataFromApi().then((response) => {
+          let data = response.data.suppliers.data;
           let helper = [];
+          let elper = [];
+          let arrears01 = [];
+          let arrears02 = [];
+          //let balance = [];
 
-          if (response.data.suppliers.data) {
-            response.data.suppliers.data.forEach((element) => {
-              if (!helper[element.id+' '+pur_id]) {
-                helper[element.id+' '+pur_id] = element;
-              } else {
-                if (element.debit != -1)
-                  helper[element.id+' '+pur_id].debit += element.debit;
-                helper[element.id+' '+pur_id].credit += element.credit;
-                helper[element.id+' '+pur_id].credit += element.credit;
+          if (data) {
+            data.forEach((element) => {
+              //amount null -> 0
+              if (element.amount == null) element.amount = 0;
+
+              // no transactions yet!
+              if (!element.trans_id) {
+                element.deletable = true;
+                elper.push(element);
+                return;
               }
+              //الغاء التكرار
+              if (element.pur_id && element.supdoc_id) {
+                console.log("nibfir");
+                if (
+                  !elper.find(
+                    (elem) =>
+                      // element.id +
+                      //   " " +
+                      element.pur_id + " " + element.trans_id ==
+                      //elem.id + " " +
+                      elem.pur_id + " " + elem.trans_id
+                  )
+                ) {
+                  console.log("nibsoc");
+                  elper.push(element);
+                } else {
+                  elper[
+                    elper.findIndex(
+                      (elem) =>
+                        // element.id +
+                        //   " " +
+                        element.pur_id + " " + element.trans_id ==
+                        //elem.id + " " +
+                        elem.pur_id + " " + elem.trans_id
+                    )
+                  ].amount += element.amount;
+                }
+
+                return;
+              }
+              elper.push(element);
+            });
+
+            console.log("elper", elper);
+            //تجميع الفواتير
+
+            console.log("arrears01", arrears01);
+            console.log("arrears02", arrears02);
+
+            elper.forEach((element) => {
+              if (!element.trans_id) {
+                helper.push(element);
+                return;
+              }
+              if (!helper.find((elem) => element.id == elem.id)) {
+                helper.push(element);
+                return;
+              }
+              let index = helper.findIndex((elem) => elem.id == element.id);
+              if (element.debit != -1) helper[index].debit += element.debit;
+              helper[index].credit += element.credit;
             });
           }
 
           this.suppliers = helper;
-          console.log(helper);
+          console.log("helper", helper.amount);
 
           this.suppliers_total = response.data.suppliers.data.total;
           this.supplier_info_supplier = response.data.suppliers.data[0];
@@ -276,6 +466,8 @@ export default {
     },
 
     addSupplierToList(supplier) {
+
+      console.log('supplier',)
       if (this.operation == "add") this.suppliers.push(supplier);
       else if (this.operation == "update") {
         this.suppliers.splice(
@@ -313,6 +505,11 @@ export default {
       this.supplier_info_supplier = item;
     },
     deleteSupplier(item) {
+      if (!item.deletable) {
+        this.dialog = true;
+        return;
+      }
+
       this.loading = true;
       const { sortBy, sortDesc, page, itemsPerPage } = this.options;
       //let search = this.search.trim().toLowerCase();
@@ -324,8 +521,84 @@ export default {
         search: this.search,
       }).then((response) => {
         this.loading = false;
-        this.suppliers = response.data.suppliers.data;
+        let data = response.data.suppliers.data;
+        let helper = [];
+        let elper = [];
+        let arrears01 = [];
+        let arrears02 = [];
+        //let balance = [];
+
+        if (data) {
+          data.forEach((element) => {
+            //amount null -> 0
+            if (element.amount == null) element.amount = 0;
+
+            // no transactions yet!
+            if (!element.trans_id) {
+              element.deletable = true;
+              elper.push(element);
+              return;
+            }
+            //الغاء التكرار
+            if (element.pur_id && element.supdoc_id) {
+              console.log("nibfir");
+              if (
+                !elper.find(
+                  (elem) =>
+                    // element.id +
+                    //   " " +
+                    element.pur_id + " " + element.trans_id ==
+                    //elem.id + " " +
+                    elem.pur_id + " " + elem.trans_id
+                )
+              ) {
+                console.log("nibsoc");
+                elper.push(element);
+              } else {
+                elper[
+                  elper.findIndex(
+                    (elem) =>
+                      // element.id +
+                      //   " " +
+                      element.pur_id + " " + element.trans_id ==
+                      //elem.id + " " +
+                      elem.pur_id + " " + elem.trans_id
+                  )
+                ].amount += element.amount;
+              }
+
+              return;
+            }
+            elper.push(element);
+          });
+
+          console.log("elper", elper);
+          //تجميع الفواتير
+
+          console.log("arrears01", arrears01);
+          console.log("arrears02", arrears02);
+
+          elper.forEach((element) => {
+            if (!element.trans_id) {
+              helper.push(element);
+              return;
+            }
+            if (!helper.find((elem) => element.id == elem.id)) {
+              helper.push(element);
+              return;
+            }
+            let index = helper.findIndex((elem) => elem.id == element.id);
+            if (element.debit != -1) helper[index].debit += element.debit;
+            helper[index].credit += element.credit;
+          });
+        }
+
+        this.suppliers = helper;
+        console.log("helper", helper.amount);
+
         this.suppliers_total = response.data.suppliers.data.total;
+        this.supplier_info_supplier = response.data.suppliers.data[0];
+        console.log(this.suppliers_total);
       });
     },
     getDataFromApi() {

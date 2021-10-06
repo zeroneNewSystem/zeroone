@@ -849,7 +849,6 @@ export default {
       return result;
     },
     getDays() {
-      
       this.purchase.payment_condition_id = parseInt(
         (new Date(this.purchase.maturity_date) -
           new Date(this.purchase.issue_date)) /
@@ -941,7 +940,23 @@ export default {
     },
     payAllCash() {
       this.purchase.paid_amount = this.purchase.total_amount.toFixed(2);
-      this.purchase.payment_methods = "";
+      this.purchase.payment_methods = [
+        {
+          account_id: "",
+          credit: 0,
+          description: "",
+        },
+        {
+          account_id: "",
+          credit: 0,
+          description: "",
+        },
+        {
+          account_id: "",
+          credit: 0,
+          description: "",
+        },
+      ];
     },
     paymentMethods(payments) {
       this.purchase.payment_methods = payments.payment_methods;
@@ -968,9 +983,8 @@ export default {
     },
     total_amount() {
       this.purchase.total_amount =
-        this.total_without_products_vat() +
-        this.total_vat() +
-        this.purchase.additional_expenses;
+        this.total_without_products_vat() + this.total_vat();
+
       return this.purchase.total_amount;
     },
 
@@ -1064,9 +1078,9 @@ export default {
     checkExecting() {},
     submit() {
       /* remove zero amount or not account methods */
-      this.purchase.payment_methods = this.purchase.payment_methods.filter(
-        (elem) => elem.account_id != "" && elem.credit != 0
-      );
+      // this.purchase.payment_methods = this.purchase.payment_methods.filter(
+      //   (elem) => elem.account_id != "" && elem.credit != 0
+      // );
       if (this.is_new_purchase)
         Purchase.store(this.purchase).then((response) =>
           console.log(response.data)

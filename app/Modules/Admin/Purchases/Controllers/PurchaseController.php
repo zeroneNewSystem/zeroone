@@ -32,7 +32,7 @@ class PurchaseController extends Controller
 
 
         $methods = Transaction::where('document_id', $id)
-            ->where('document_type_id', 2)
+            ->where('document_type_id', 1)
             ->where('debit', -1)
             ->get();
 
@@ -163,9 +163,9 @@ class PurchaseController extends Controller
             "company_id" => 1,
             "account_id" => $supplier_account_id,
             "debit" =>  0,
-            "credit" => $request['total_amount'] - $request['additional_expenses'],
+            "credit" => $request['total_amount'],
             "document_id" => $purchase->id,
-            "document_type_id" => 2,
+            "document_type_id" => 1,
             "currency_code" => 1,
             "currency_rate" => 1,
             "description" => 'حساب المورد',
@@ -178,7 +178,7 @@ class PurchaseController extends Controller
                 "debit" =>  $request['paid_amount'],
                 "credit" => 0,
                 "document_id" => $purchase->id,
-                "document_type_id" => 2,
+                "document_type_id" => 1,
                 "currency_code" => 1,
                 "currency_rate" => 1,
                 "description" => 'مدفوعة للمورد',
@@ -198,7 +198,7 @@ class PurchaseController extends Controller
             "debit" =>  0,
             "credit" => $request['additional_expenses'],
             "document_id" => $purchase->id,
-            "document_type_id" => 2,
+            "document_type_id" => 1,
             "currency_code" => 1,
             "currency_rate" => 1,
             "description" => 'مصاريف إضافية',
@@ -210,7 +210,7 @@ class PurchaseController extends Controller
             "debit" =>  $request['additional_expenses'],
             "credit" => 0,
             "document_id" => $purchase->id,
-            "document_type_id" => 2,
+            "document_type_id" => 1,
             "currency_code" => 1,
             "currency_rate" => 1,
             "description" => 'مصاريف إضافية',
@@ -224,18 +224,21 @@ class PurchaseController extends Controller
 
 
             foreach ($payment_methods as $payment_method) {
-                $supplier_account = [
-                    "company_id" => 1,
-                    "account_id" => $payment_method['account_id'],
-                    "debit" =>  -1,
-                    "credit" => $payment_method['credit'],
-                    "document_id" => $purchase->id,
-                    "document_type_id" => 2,
-                    "currency_code" => 1,
-                    "currency_rate" => 1,
-                    "description" => 'مدفوعة للمورد',
-                ];
-                $this->addTransactionEntry($supplier_account);
+                if ($payment_method['account_id'] && $payment_method['credit'] > 0) {
+
+                    $supplier_account = [
+                        "company_id" => 1,
+                        "account_id" => $payment_method['account_id'],
+                        "debit" =>  -1,
+                        "credit" => $payment_method['credit'],
+                        "document_id" => $purchase->id,
+                        "document_type_id" => 1,
+                        "currency_code" => 1,
+                        "currency_rate" => 1,
+                        "description" => 'مدفوعة للمورد',
+                    ];
+                    $this->addTransactionEntry($supplier_account);
+                }
             }
         }
 
@@ -258,7 +261,7 @@ class PurchaseController extends Controller
                 "debit" =>  $purchase_detail['total'],
                 "credit" => 0,
                 "document_id" => $purchase->id,
-                "document_type_id" => 2,
+                "document_type_id" => 1,
                 "currency_code" => 1,
                 "currency_rate" => 1,
                 "description" => 'some description',
@@ -304,7 +307,7 @@ class PurchaseController extends Controller
 
         // delete all transactions 
 
-        Transaction::where('document_type_id', 2)
+        Transaction::where('document_type_id', 1)
             ->where('document_id', $request->id)
             ->delete();
 
@@ -327,7 +330,7 @@ class PurchaseController extends Controller
             "debit" =>  0,
             "credit" => $request['total_amount'] - $request['additional_expenses'],
             "document_id" => $purchase->id,
-            "document_type_id" => 2,
+            "document_type_id" => 1,
             "currency_code" => 1,
             "currency_rate" => 1,
             "description" => 'حساب المورد',
@@ -340,7 +343,7 @@ class PurchaseController extends Controller
             "debit" =>  $request['paid_amount'],
             "credit" => 0,
             "document_id" => $purchase->id,
-            "document_type_id" => 2,
+            "document_type_id" => 1,
             "currency_code" => 1,
             "currency_rate" => 1,
             "description" => 'مدفوعة للمورد',
@@ -358,7 +361,7 @@ class PurchaseController extends Controller
             "debit" =>  0,
             "credit" => $request['additional_expenses'],
             "document_id" => $purchase->id,
-            "document_type_id" => 2,
+            "document_type_id" => 1,
             "currency_code" => 1,
             "currency_rate" => 1,
             "description" => 'مصاريف إضافية',
@@ -370,7 +373,7 @@ class PurchaseController extends Controller
             "debit" =>  $request['additional_expenses'],
             "credit" => 0,
             "document_id" => $purchase->id,
-            "document_type_id" => 2,
+            "document_type_id" => 1,
             "currency_code" => 1,
             "currency_rate" => 1,
             "description" => 'مصاريف إضافية',
@@ -390,7 +393,7 @@ class PurchaseController extends Controller
                     "debit" =>  -1,
                     "credit" => $payment_method['credit'],
                     "document_id" => $purchase->id,
-                    "document_type_id" => 2,
+                    "document_type_id" => 1,
                     "currency_code" => 1,
                     "currency_rate" => 1,
                     "description" => 'مدفوعة للمورد',
@@ -418,7 +421,7 @@ class PurchaseController extends Controller
                 "debit" =>  $purchase_detail['total'],
                 "credit" => 0,
                 "document_id" => $purchase->id,
-                "document_type_id" => 2,
+                "document_type_id" => 1,
                 "currency_code" => 1,
                 "currency_rate" => 1,
                 "description" => 'some description',

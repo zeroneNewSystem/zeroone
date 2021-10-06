@@ -159,6 +159,17 @@ const router = new VueRouter({
                     }
                 },
                 {
+                    path: "/suppliers/:id",
+                    name: "suppliers_with_id",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import ("./components/main/purchases/supplier-info"),
+                        mainView: () =>
+                            import ("./components/main/purchases/supplier-info")
+                    }
+                },
+                {
                     path: "/customers",
                     name: "customers",
                     meta: { requiresAuth: true },

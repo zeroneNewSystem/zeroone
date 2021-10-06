@@ -578,7 +578,7 @@ __webpack_require__.r(__webpack_exports__);
           _this2.$parent.$data.add_update_supplier_dialog = false;
           _this2.isloading = false;
 
-          _this2.$emit("addUpdateSupplier", response.data.supplier);
+          _this2.$emit("addUpdateSupplier", _this2.supplier);
         });
         return;
       }
@@ -843,7 +843,7 @@ __webpack_require__.r(__webpack_exports__);
     },
     emitPayments: function emitPayments() {
       this.$emit("payment_methods", {
-        payment_methods: filterd_methods,
+        payment_methods: this.payment_methods,
         paid_amount: this.paid_amount
       });
       this.dialog = false;
@@ -1783,7 +1783,19 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
     },
     payAllCash: function payAllCash() {
       this.purchase.paid_amount = this.purchase.total_amount.toFixed(2);
-      this.purchase.payment_methods = "";
+      this.purchase.payment_methods = [{
+        account_id: "",
+        credit: 0,
+        description: ""
+      }, {
+        account_id: "",
+        credit: 0,
+        description: ""
+      }, {
+        account_id: "",
+        credit: 0,
+        description: ""
+      }];
     },
     paymentMethods: function paymentMethods(payments) {
       this.purchase.payment_methods = payments.payment_methods;
@@ -1807,7 +1819,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       return this.purchase.total_vat;
     },
     total_amount: function total_amount() {
-      this.purchase.total_amount = this.total_without_products_vat() + this.total_vat() + this.purchase.additional_expenses;
+      this.purchase.total_amount = this.total_without_products_vat() + this.total_vat();
       return this.purchase.total_amount;
     },
     total_without_products_vat: function total_without_products_vat() {
@@ -1879,9 +1891,9 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
     checkExecting: function checkExecting() {},
     submit: function submit() {
       /* remove zero amount or not account methods */
-      this.purchase.payment_methods = this.purchase.payment_methods.filter(function (elem) {
-        return elem.account_id != "" && elem.credit != 0;
-      });
+      // this.purchase.payment_methods = this.purchase.payment_methods.filter(
+      //   (elem) => elem.account_id != "" && elem.credit != 0
+      // );
       if (this.is_new_purchase) _apis_Purchase__WEBPACK_IMPORTED_MODULE_1__.default.store(this.purchase).then(function (response) {
         return console.log(response.data);
       });else _apis_Purchase__WEBPACK_IMPORTED_MODULE_1__.default.update(this.purchase).then(function (response) {
@@ -2088,6 +2100,9 @@ __webpack_require__.r(__webpack_exports__);
   },
   postCreate: function postCreate(supplier) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/suppliers/create", supplier);
+  },
+  getOne: function getOne(id) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/suppliers/" + id);
   },
   get: function get(params) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/suppliers", {
