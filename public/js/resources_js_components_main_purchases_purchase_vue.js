@@ -2101,8 +2101,10 @@ __webpack_require__.r(__webpack_exports__);
   postCreate: function postCreate(supplier) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/suppliers/create", supplier);
   },
-  getOne: function getOne(id) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/suppliers/" + id);
+  getOne: function getOne(params) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/suppliers/getOne", {
+      params: params
+    });
   },
   get: function get(params) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/suppliers", {

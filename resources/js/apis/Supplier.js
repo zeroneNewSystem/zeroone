@@ -10,8 +10,8 @@ export default {
     postCreate(supplier) {
         return Api.post("/suppliers/create", supplier);
     },
-    getOne(id) {
-        return Api.get("/suppliers/" + id);
+    getOne(params) {
+        return Api.get("/suppliers/getOne", { params: params });
     },
     get(params) {
         return Api.get("/suppliers", { params: params });

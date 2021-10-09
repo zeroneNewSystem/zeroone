@@ -161,58 +161,16 @@ class SupplierController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request)
 
     {
 
-        $suppliers = DB::table('people')->where('supplier_id', $id)
+        
+        if ($request->has('pur_itemsPerPage')) {
 
-            ->select(
-                'people.*',
-                'acc.id as acc_id',
-                'trans.id as trans_id',
-                'pur.id as pur_id',
-                'supdoc.id as supdoc_id',
-
-                'trans.debit',
-                'trans.credit',
-                'pur.maturity_date',
-                'supdoc.amount',
-            );
-
-        $suppliers = $suppliers->leftJoin(
-            'accounts as acc',
-            function ($leftJoin) {
-                $leftJoin
-                    ->on('people.id', '=', 'acc.accountable_id')
-                    ->where('acc.accountable_type', 1);
-            }
-
-        );
-        $suppliers = $suppliers->leftJoin('transactions as trans', 'acc.id', '=', 'trans.account_id');
-
-        $suppliers = $suppliers->leftJoin(
-            'purchases as pur',
-            function ($leftJoin) {
-                $leftJoin
-                    ->on('trans.document_id', '=', 'pur.id')
-                    ->where('trans.document_type_id', 1);
-            }
-
-        );
-        $suppliers = $suppliers->leftJoin(
-            'supplemental_documentations as supdoc',
-            function ($leftJoin) {
-                $leftJoin
-                    ->on('supdoc.document_id', '=', 'pur.id')
-                    ->where('supdoc.document_type_id', 1);
-            }
-
-        );
-
-
-
-        return response()->json(['supplier' => $suppliers->get()], 200);
+            $purchases  =  Purchase::where('supplier_id',$request->id)->orderBy('id', 'DESC')->paginate($request->pur_itemsPerPage != -1 ? $request->pur_itemsPerPage : '');
+            return $purchases;
+        }
 
 
 
@@ -220,30 +178,31 @@ class SupplierController extends Controller
 
 
 
-
-
-        $purchases = DB::table('purchases as pur')->where('supplier_id', $id)->select(
-            'pur.*',
-            'supdoc.id as supdoc_id',
-            'supdoc.amount as supdoc_amount',
-        );
-        $purchases = $purchases->leftJoin(
-            'supplemental_documentations as supdoc',
-            function ($leftJoin) {
-                $leftJoin
-                    ->on('supdoc.document_id', '=', 'pur.id')
-                    ->where('supdoc.document_type_id', 1);
-            }
-
-        );
+        $supplier = DB::table('people')->find($id);
 
 
 
 
-        return [
-            'supplier' => Person::where('id', $id)->get()[0],
-            'purchases' => $purchases->get(),
-        ];
+
+        $account = DB::table('accounts')->where('accountable_id', $id)->where('accountable_type', 1)->get();
+        $transactions = DB::table('transactions')->where('account_id', $account[0]->id);
+
+        $supplier->transactions = $transactions->get();
+
+        $purchases = DB::table('purchases')->where('supplier_id', $id)->get();
+
+
+        foreach ($purchases as &$purchase) {
+            $supp_documents = DB::table('supplemental_documentations')->where('document_id', $purchase->id)->where('document_type_id', 1)->get();
+
+            $purchase->supp_documents = $supp_documents;
+        }
+
+
+        $supplier->purchases = $purchases;
+
+
+        return  $supplier;
     }
 
     /**

@@ -20,7 +20,7 @@ class CreateReceiptsTable extends Migration
     }
 
     /**
-     * Reverse the migrations.
+     * Reverse the migjjp;/rations.
      *
      * @return void
      */

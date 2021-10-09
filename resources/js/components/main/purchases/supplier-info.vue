@@ -49,6 +49,40 @@
       <v-col>
         {{ arrears }}
       </v-col>
+      <v-col>
+        {{ balance }}
+      </v-col>
+      <v-col>
+        {{ purchases_count }}
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-data-table
+        style="width: 100%"
+        :headers="purchase_headers"
+        :items="purchases"
+        :options.sync="pur_options"
+        :server-items-length="purchases_total"
+        :loading="pur_loading"
+        class="elevation-1"
+      >
+        <template v-slot:top> </template>
+        <template v-slot:item.payment_status_id="{ item }"> paid </template>
+      </v-data-table>
+    </v-row>
+    <v-row>
+      <v-data-table
+        style="width: 100%"
+        :headers="reciept_headers"
+        :items="reciepts"
+        :options.sync="reciept_options"
+        :server-items-length="reciept_total"
+        :loading="reciept_loading"
+        class="elevation-1"
+      >
+        <template v-slot:top> </template>
+        <template v-slot:item.payment_status_id="{ item }"> paid </template>
+      </v-data-table>
     </v-row>
   </div>
 </template>
@@ -58,52 +92,121 @@ import Supplier from "../../../apis/Supplier";
 export default {
   data() {
     return {
+      pur_loading: false,
+      reciept_loading: false,
+      purchase_headers: [
+        {
+          text: "م",
+          align: "center",
+          width: "5",
+          sortable: false,
+          value: "id",
+        },
+        { text: "رقم المرجع", align: "center", value: "purchase_reference" },
+        {
+          text: "جهة الاتصال",
+          align: "center",
+          sortable: false,
+          value: "issue_date",
+        },
+        { text: "الرصيد", align: "center", value: "total_amount" },
+        { text: "متأخرات", align: "center", value: "paid_amount" },
+        { text: "الحالة ", align: "center", value: "status" },
+        { text: "لتحكم ", align: "center", value: "actions" },
+      ],
+      reciept_headers: [
+        {
+          text: "م",
+          align: "center",
+          width: "5",
+          sortable: false,
+          value: "id",
+        },
+        { text: "رقم المرجع", align: "center", value: "purchase_reference" },
+        {
+          text: "جهة الاتصال",
+          align: "center",
+          sortable: false,
+          value: "issue_date",
+        },
+        { text: "الرصيد", align: "center", value: "total_amount" },
+        { text: "متأخرات", align: "center", value: "paid_amount" },
+        { text: "الحالة ", align: "center", value: "status" },
+        { text: "لتحكم ", align: "center", value: "actions" },
+      ],
+      pur_options: {},
+      reciept_options: {},
       supplier: "",
       total_of_purchases: 0,
       purchases: [],
+      reciepts: [],
+      purchases_total: 0,
+      reciept_total: 0,
       arrears: 0,
+      balance: 0,
+      purchases_count: 0,
     };
   },
-  created() {
-    if (this.$route.params.id) {
-      Supplier.getOne(this.$route.params.id).then((response) => {
-        this.supplier = response.data.supplier[0];
-        this.purchase_processing(response.data.purchases);
-      });
-    }
+  computed: {
+    pur_params(nv) {
+      return {
+        ...this.pur_options,
+      };
+    },
+    reciept_params(nv) {
+      return {
+        ...this.reciept_options,
+      };
+    },
   },
-  methods: {
-    purchase_processing(purchases) {
-      let elper = [];
-      if (purchases.length > 0) {
-        purchases.forEach((element) => {
-          //amount null -> 0
-          if (element.amount == null) element.amount = 0;
+  watch: {
+    pur_params: {
+      handler() {
+        let pur_page = this.pur_options.page;
+        let pur_itemsPerPage = this.pur_options.itemsPerPage;
 
-          if (element.supdoc_id) {
-            if (!elper.find((elem) => element.id == elem.id)) {
-              elper.push(element);
-            } else {
-              elper[elper.findIndex((elem) => element.id == elem.id)].amount +=
-                element.amount;
-            }
+        //console.log(this.purchase_options)
 
-            return;
-          }
-          elper.push(element);
+        console.log("itemsPerPage", pur_itemsPerPage);
+
+        Supplier.getOne({
+          id: this.$route.params.id,
+          pur_page,
+          pur_itemsPerPage,
+        }).then((response) => {
+          this.DataProcessing(response, "pur");
         });
-        console.log("elper", elper);
+      },
+      deep: true,
+    },
+    reciept_params: {
+      handler() {
+        let reciept_page = this.reciept_options.page;
+        let reciept_itemsPerPage = this.reciept_options.itemsPerPage;
 
-        let x = elper.reduce((a, b) => a + b.total_amount, 0);
-        let y = elper.reduce((a, b) => a + b.amount, 0);
-        let z = elper.reduce((a, b) => a + b.paid_amount, 0);
-        this.arrears = x - y - z;
+        //console.log(this.reciept_options)
 
-        this.total_of_purchases = x;
-        //ألغاء التكرار
+        console.log("itemsPerPage", reciept_itemsPerPage);
 
-        return x;
+        Supplier.getOne({ reciept_page, reciept_itemsPerPage }).then(
+          (response) => {
+            this.DataProcessing(response);
+          }
+        );
+      },
+      deep: true,
+    },
+  },
+  created() {},
+  methods: {
+    DataProcessing(response, type) {
+      if (type == "pur") {
+        this.purchases = response.data;
+        this.total_of_purchases = response.total;
+
       }
+
+      
       return 0;
     },
   },

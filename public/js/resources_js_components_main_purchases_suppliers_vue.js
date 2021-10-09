@@ -231,6 +231,46 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _apis_Supplier__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../apis/Supplier */ "./resources/js/apis/Supplier.js");
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -290,62 +330,136 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
+      pur_loading: false,
+      reciept_loading: false,
+      purchase_headers: [{
+        text: "م",
+        align: "center",
+        width: "5",
+        sortable: false,
+        value: "id"
+      }, {
+        text: "رقم المرجع",
+        align: "center",
+        value: "purchase_reference"
+      }, {
+        text: "جهة الاتصال",
+        align: "center",
+        sortable: false,
+        value: "issue_date"
+      }, {
+        text: "الرصيد",
+        align: "center",
+        value: "total_amount"
+      }, {
+        text: "متأخرات",
+        align: "center",
+        value: "paid_amount"
+      }, {
+        text: "الحالة ",
+        align: "center",
+        value: "status"
+      }, {
+        text: "لتحكم ",
+        align: "center",
+        value: "actions"
+      }],
+      reciept_headers: [{
+        text: "م",
+        align: "center",
+        width: "5",
+        sortable: false,
+        value: "id"
+      }, {
+        text: "رقم المرجع",
+        align: "center",
+        value: "purchase_reference"
+      }, {
+        text: "جهة الاتصال",
+        align: "center",
+        sortable: false,
+        value: "issue_date"
+      }, {
+        text: "الرصيد",
+        align: "center",
+        value: "total_amount"
+      }, {
+        text: "متأخرات",
+        align: "center",
+        value: "paid_amount"
+      }, {
+        text: "الحالة ",
+        align: "center",
+        value: "status"
+      }, {
+        text: "لتحكم ",
+        align: "center",
+        value: "actions"
+      }],
+      pur_options: {},
+      reciept_options: {},
       supplier: "",
       total_of_purchases: 0,
       purchases: [],
-      arrears: 0
+      reciepts: [],
+      purchases_total: 0,
+      reciept_total: 0,
+      arrears: 0,
+      balance: 0,
+      purchases_count: 0
     };
   },
-  created: function created() {
-    var _this = this;
-
-    if (this.$route.params.id) {
-      _apis_Supplier__WEBPACK_IMPORTED_MODULE_0__.default.getOne(this.$route.params.id).then(function (response) {
-        _this.supplier = response.data.supplier[0];
-
-        _this.purchase_processing(response.data.purchases);
-      });
+  computed: {
+    pur_params: function pur_params(nv) {
+      return _objectSpread({}, this.pur_options);
+    },
+    reciept_params: function reciept_params(nv) {
+      return _objectSpread({}, this.reciept_options);
     }
   },
-  methods: {
-    purchase_processing: function purchase_processing(purchases) {
-      var elper = [];
+  watch: {
+    pur_params: {
+      handler: function handler() {
+        var _this = this;
 
-      if (purchases.length > 0) {
-        purchases.forEach(function (element) {
-          //amount null -> 0
-          if (element.amount == null) element.amount = 0;
+        var pur_page = this.pur_options.page;
+        var pur_itemsPerPage = this.pur_options.itemsPerPage; //console.log(this.purchase_options)
 
-          if (element.supdoc_id) {
-            if (!elper.find(function (elem) {
-              return element.id == elem.id;
-            })) {
-              elper.push(element);
-            } else {
-              elper[elper.findIndex(function (elem) {
-                return element.id == elem.id;
-              })].amount += element.amount;
-            }
-
-            return;
-          }
-
-          elper.push(element);
+        console.log("itemsPerPage", pur_itemsPerPage);
+        _apis_Supplier__WEBPACK_IMPORTED_MODULE_0__.default.getOne({
+          id: this.$route.params.id,
+          pur_page: pur_page,
+          pur_itemsPerPage: pur_itemsPerPage
+        }).then(function (response) {
+          _this.DataProcessing(response, "pur");
         });
-        console.log("elper", elper);
-        var x = elper.reduce(function (a, b) {
-          return a + b.total_amount;
-        }, 0);
-        var y = elper.reduce(function (a, b) {
-          return a + b.amount;
-        }, 0);
-        var z = elper.reduce(function (a, b) {
-          return a + b.paid_amount;
-        }, 0);
-        this.arrears = x - y - z;
-        this.total_of_purchases = x; //ألغاء التكرار
+      },
+      deep: true
+    },
+    reciept_params: {
+      handler: function handler() {
+        var _this2 = this;
 
-        return x;
+        var reciept_page = this.reciept_options.page;
+        var reciept_itemsPerPage = this.reciept_options.itemsPerPage; //console.log(this.reciept_options)
+
+        console.log("itemsPerPage", reciept_itemsPerPage);
+        _apis_Supplier__WEBPACK_IMPORTED_MODULE_0__.default.getOne({
+          reciept_page: reciept_page,
+          reciept_itemsPerPage: reciept_itemsPerPage
+        }).then(function (response) {
+          _this2.DataProcessing(response);
+        });
+      },
+      deep: true
+    }
+  },
+  created: function created() {},
+  methods: {
+    DataProcessing: function DataProcessing(response, type) {
+      if (type == "pur") {
+        this.purchases = response.data;
+        this.total_of_purchases = response.total;
       }
 
       return 0;
@@ -1053,8 +1167,10 @@ __webpack_require__.r(__webpack_exports__);
   postCreate: function postCreate(supplier) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/suppliers/create", supplier);
   },
-  getOne: function getOne(id) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/suppliers/" + id);
+  getOne: function getOne(params) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/suppliers/getOne", {
+      params: params
+    });
   },
   get: function get(params) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/suppliers", {
@@ -1872,7 +1988,91 @@ var render = function() {
             _vm._v("\n      " + _vm._s(_vm.total_of_purchases) + "\n    ")
           ]),
           _vm._v(" "),
-          _c("v-col", [_vm._v("\n      " + _vm._s(_vm.arrears) + "\n    ")])
+          _c("v-col", [_vm._v("\n      " + _vm._s(_vm.arrears) + "\n    ")]),
+          _vm._v(" "),
+          _c("v-col", [_vm._v("\n      " + _vm._s(_vm.balance) + "\n    ")]),
+          _vm._v(" "),
+          _c("v-col", [
+            _vm._v("\n      " + _vm._s(_vm.purchases_count) + "\n    ")
+          ])
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c(
+        "v-row",
+        [
+          _c("v-data-table", {
+            staticClass: "elevation-1",
+            staticStyle: { width: "100%" },
+            attrs: {
+              headers: _vm.purchase_headers,
+              items: _vm.purchases,
+              options: _vm.pur_options,
+              "server-items-length": _vm.purchases_total,
+              loading: _vm.pur_loading
+            },
+            on: {
+              "update:options": function($event) {
+                _vm.pur_options = $event
+              }
+            },
+            scopedSlots: _vm._u([
+              {
+                key: "top",
+                fn: function() {
+                  return undefined
+                },
+                proxy: true
+              },
+              {
+                key: "item.payment_status_id",
+                fn: function(ref) {
+                  var item = ref.item
+                  return [_vm._v(" paid ")]
+                }
+              }
+            ])
+          })
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c(
+        "v-row",
+        [
+          _c("v-data-table", {
+            staticClass: "elevation-1",
+            staticStyle: { width: "100%" },
+            attrs: {
+              headers: _vm.reciept_headers,
+              items: _vm.reciepts,
+              options: _vm.reciept_options,
+              "server-items-length": _vm.reciept_total,
+              loading: _vm.reciept_loading
+            },
+            on: {
+              "update:options": function($event) {
+                _vm.reciept_options = $event
+              }
+            },
+            scopedSlots: _vm._u([
+              {
+                key: "top",
+                fn: function() {
+                  return undefined
+                },
+                proxy: true
+              },
+              {
+                key: "item.payment_status_id",
+                fn: function(ref) {
+                  var item = ref.item
+                  return [_vm._v(" paid ")]
+                }
+              }
+            ])
+          })
         ],
         1
       )
