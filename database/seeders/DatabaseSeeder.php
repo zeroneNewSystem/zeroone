@@ -37,11 +37,12 @@ class DatabaseSeeder extends Seeder
                 DistributionPolicySeeder::class,
                 TaxSeeder::class,
                 PrdctTypeSeeder::class,
-                
+
                 AccountTypeSeeder::class,
                 InventorySeeder::class,
                 PersonSeeder::class,
 
+                ReceiptStatusSeeder::class,
 
             ]
         );

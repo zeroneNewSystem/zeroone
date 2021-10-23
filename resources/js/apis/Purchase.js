@@ -10,6 +10,10 @@ export default {
         return Api.get("/purchases/" + id);
     },
 
+    getAll(params) {
+        return Api.get("/purchases/all", { params: params });
+    },
+
     update(purchase) {
         return Api.put("/purchases", purchase);
     },

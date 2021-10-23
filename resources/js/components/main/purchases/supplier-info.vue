@@ -1,5 +1,5 @@
 <template>
-  <div style="padding: 20px">
+  <div style="padding: 20px; font-size: 14px">
     <v-row>
       <v-col cols="12" lg="6">
         <v-row
@@ -42,58 +42,155 @@
       </v-col>
       <v-col cols="12" lg="6"> </v-col>
     </v-row>
-    <v-row>
+    <v-row class="pt-10">
       <v-col>
-        {{ total_of_purchases }}
+        <v-row>
+          <v-col cols="6" lg="12"> الرصيد </v-col>
+          <v-col cols="6" lg="12">
+            <h1>
+
+            {{ balance.toFixed(2) }}
+            </h1>
+          </v-col>
+        </v-row>
       </v-col>
       <v-col>
-        {{ arrears }}
+        <v-row>
+          <v-col cols="6" lg="12"> قيمة الفواتير </v-col>
+          <v-col cols="6" lg="12">
+            <h1>
+              
+            {{ total_amount.toFixed(2) }}
+            </h1>
+          </v-col>
+        </v-row>
       </v-col>
       <v-col>
-        {{ balance }}
+        <v-row>
+          <v-col cols="6" lg="12"> إجمالي المستحق </v-col>
+          <v-col cols="6" lg="12">
+          <h1>
+            {{ remain_amount.toFixed(2) }}
+            </h1>  
+          </v-col>
+        </v-row>
       </v-col>
       <v-col>
-        {{ purchases_count }}
+        <v-row>
+          <v-col cols="6" lg="12"> متأخرة </v-col>
+          <v-col cols="6" lg="12">
+            <h1>
+
+            {{ arrears.toFixed(2) }}
+            </h1>
+          </v-col>
+        </v-row>
+      </v-col>
+      <v-col>
+        <v-row>
+          <v-col cols="6" lg="12"> عدد الفواتير </v-col>
+          <v-col cols="6" lg="12">
+            <h1>
+
+            {{ purchases_count }}
+            </h1>
+          </v-col>
+        </v-row>
       </v-col>
     </v-row>
     <v-row>
-      <v-data-table
-        style="width: 100%"
-        :headers="purchase_headers"
-        :items="purchases"
-        :options.sync="pur_options"
-        :server-items-length="purchases_total"
-        :loading="pur_loading"
-        class="elevation-1"
-      >
-        <template v-slot:top> </template>
-        <template v-slot:item.payment_status_id="{ item }"> paid </template>
-      </v-data-table>
-    </v-row>
-    <v-row>
-      <v-data-table
-        style="width: 100%"
-        :headers="reciept_headers"
-        :items="reciepts"
-        :options.sync="reciept_options"
-        :server-items-length="reciept_total"
-        :loading="reciept_loading"
-        class="elevation-1"
-      >
-        <template v-slot:top> </template>
-        <template v-slot:item.payment_status_id="{ item }"> paid </template>
-      </v-data-table>
+      <v-card color="basil" style="width: 100%">
+        <v-card-title class="text-center justify-center py-6">
+          <p class="basil--text">التعاملات</p>
+        </v-card-title>
+
+        <v-tabs v-model="tab" background-color="transparent" color="basil">
+          <v-tab v-for="item in items" :key="item">
+            {{ item }}
+          </v-tab>
+        </v-tabs>
+
+        <v-tabs-items v-model="tab">
+          <v-tab-item>
+            <v-row>
+              <v-data-table
+                style="width: 100%"
+                :headers="purchase_headers"
+                :items="purchases"
+                :options.sync="pur_options"
+                :server-items-length="purchases_total"
+                :loading="pur_loading"
+                class="elevation-1"
+              >
+                <template v-slot:top> </template>
+                <template v-slot:item.issue_date="{ item }">
+                  {{ item.issue_date.split(" ")[0] }}
+                </template>
+                <template v-slot:item.payment_status="{ item }">
+                  paid
+                </template>
+              </v-data-table>
+            </v-row>
+          </v-tab-item>
+          <v-tab-item>
+            <v-row>
+              <v-data-table
+                style="width: 100%"
+                :headers="receipt_headers"
+                :items="receipts"
+                :options.sync="receipt_options"
+                :server-items-length="receipt_total"
+                :loading="receipt_loading"
+                class="elevation-1"
+              >
+                <template v-slot:top> </template>
+                <template v-slot:item.payment_status="{ item }">
+                  paid
+                </template>
+              </v-data-table>
+            </v-row>
+          </v-tab-item>
+          <v-tab-item>
+            <v-row>
+              <v-data-table
+                style="width: 100%"
+                :headers="receipt_headers"
+                :items="receipts"
+                :options.sync="receipt_options"
+                :server-items-length="receipt_total"
+                :loading="receipt_loading"
+                class="elevation-1"
+              >
+                <template v-slot:top> </template>
+                <template v-slot:item.payment_status="{ item }">
+                  paid
+                </template>
+              </v-data-table>
+            </v-row>
+          </v-tab-item>
+        </v-tabs-items>
+      </v-card>
     </v-row>
   </div>
 </template>
 
 <script>
 import Supplier from "../../../apis/Supplier";
+import SupplierInfoTabs from "./supplier-info-tabs.vue";
 export default {
+  components: {
+    SupplierInfoTabs,
+  },
   data() {
     return {
+      //---- tabs
+      tab: null,
+      items: ["الفواتير", "الاشعارات", "السندات"],
+
+      //----
       pur_loading: false,
-      reciept_loading: false,
+      remain_amount: 0,
+      receipt_loading: false,
       purchase_headers: [
         {
           text: "م",
@@ -111,10 +208,10 @@ export default {
         },
         { text: "الرصيد", align: "center", value: "total_amount" },
         { text: "متأخرات", align: "center", value: "paid_amount" },
-        { text: "الحالة ", align: "center", value: "status" },
+        { text: "الحالة ", align: "center", value: "payment_status" },
         { text: "لتحكم ", align: "center", value: "actions" },
       ],
-      reciept_headers: [
+      receipt_headers: [
         {
           text: "م",
           align: "center",
@@ -135,13 +232,13 @@ export default {
         { text: "لتحكم ", align: "center", value: "actions" },
       ],
       pur_options: {},
-      reciept_options: {},
+      receipt_options: {},
       supplier: "",
-      total_of_purchases: 0,
+      total_amount: 0,
       purchases: [],
-      reciepts: [],
+      receipts: [],
       purchases_total: 0,
-      reciept_total: 0,
+      receipt_total: 0,
       arrears: 0,
       balance: 0,
       purchases_count: 0,
@@ -153,9 +250,9 @@ export default {
         ...this.pur_options,
       };
     },
-    reciept_params(nv) {
+    receipt_params(nv) {
       return {
-        ...this.reciept_options,
+        ...this.receipt_options,
       };
     },
   },
@@ -179,34 +276,48 @@ export default {
       },
       deep: true,
     },
-    reciept_params: {
+    receipt_params: {
       handler() {
-        let reciept_page = this.reciept_options.page;
-        let reciept_itemsPerPage = this.reciept_options.itemsPerPage;
+        let receipt_page = this.receipt_options.page;
+        let receipt_itemsPerPage = this.receipt_options.itemsPerPage;
 
-        //console.log(this.reciept_options)
+        console.log("itemsPerPage", receipt_itemsPerPage);
 
-        console.log("itemsPerPage", reciept_itemsPerPage);
-
-        Supplier.getOne({ reciept_page, reciept_itemsPerPage }).then(
+        Supplier.getOne({ receipt_page, receipt_itemsPerPage }).then(
           (response) => {
-            this.DataProcessing(response);
+            this.DataProcessing(response, "receipt");
           }
         );
       },
       deep: true,
     },
   },
-  created() {},
+  created() {
+    Supplier.getOne({ id: this.$route.params.id }).then((response) => {
+      this.DataProcessing(response, "receipt");
+    });
+  },
   methods: {
     DataProcessing(response, type) {
-      if (type == "pur") {
-        this.purchases = response.data;
-        this.total_of_purchases = response.total;
+      console.log("response", response);
 
+      if (response.data.purchases) {
+        this.purchases = response.data.purchases.data;
+        this.purchases_total = response.data.purchases.total;
+        return;
       }
 
-      
+      if (response.data.receipts) {
+        this.receipts = response.data.receipts.data;
+        this.receipts_total = response.data.receipts.total;
+        return;
+      }
+      this.supplier = response.data.supplier;
+      this.total_amount = response.data.total_amount;
+      this.purchases_count = response.data.purchases_count;
+      this.remain_amount = response.data.remain_amount;
+      this.arrears = response.data.arrears;
+      this.balance = response.data.balance;
       return 0;
     },
   },

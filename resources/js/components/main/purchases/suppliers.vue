@@ -134,6 +134,7 @@ export default {
   },
   data() {
     return {
+      loading:false,
       dialog: false,
       supplier_status: [
         { is_supplier_active: 0, status: "نشط" },

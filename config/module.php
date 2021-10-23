@@ -19,8 +19,8 @@ return [
             'Products',
             'People',
             'Purchases',
+            'Receipts',
             
-
         ],
         'Public' => []
     ]

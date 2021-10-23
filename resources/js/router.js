@@ -103,6 +103,39 @@ const router = new VueRouter({
                     }
                 },
                 {
+                    path: "/receipt",
+                    name: "receipt",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import ("./components/main/receipts/receipt"),
+                        mainView: () =>
+                            import ("./components/main/receipts/receipt")
+                    }
+                },
+                {
+                    path: "/receipts",
+                    name: "receipts",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import ("./components/main/receipts/receipts"),
+                        mainView: () =>
+                            import ("./components/main/receipts/receipts")
+                    }
+                },
+                {
+                    path: "/receipts/:id",
+                    name: "receipts",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import ("./components/main/receipts/receipt-info"),
+                        mainView: () =>
+                            import ("./components/main/receipts/receipt-info")
+                    }
+                },
+                {
                     path: "/purchase",
                     name: "purchase",
                     meta: { requiresAuth: true },
@@ -111,6 +144,17 @@ const router = new VueRouter({
                             import ("./components/main/purchases/purchase"),
                         mainView: () =>
                             import ("./components/main/purchases/purchase")
+                    }
+                },
+                {
+                    path: "/purchases",
+                    name: "purchases",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import ("./components/main/purchases/purchases"),
+                        mainView: () =>
+                            import ("./components/main/purchases/purchases")
                     }
                 },
                 {
