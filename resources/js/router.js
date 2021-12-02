@@ -223,7 +223,18 @@ const router = new VueRouter({
                         mainView: () =>
                             import ("./components/main/invoices/customers")
                     }
-                }
+                },
+                {
+                    path: "/stock_takes",
+                    name: "stock_takes",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import ("./components/main/products/stock_takes"),
+                        mainView: () =>
+                            import ("./components/main/products/stock_takes")
+                    }
+                },
             ]
         },
 

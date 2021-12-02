@@ -21,8 +21,47 @@
         <v-toolbar flat color="white">
           <v-toolbar-title>{{ title }}</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
+
           <v-spacer></v-spacer>
         </v-toolbar>
+        <v-row justify="start">
+          <v-col style="text-align: end">
+            <v-btn
+              elevation
+              color="primary"
+              @click.stop="addUpdateSupplier('', 'add')"
+              >جرد المخزون</v-btn
+            >
+
+            <v-btn
+              elevation
+              color="primary"
+              @click.stop="addUpdateSupplier('', 'add')"
+              >نقل المخزون</v-btn
+            >
+
+            <v-btn
+              elevation
+              color="primary"
+              @click.stop="addUpdateSupplier('', 'add')"
+              >المجموعات</v-btn
+            >
+
+            <v-btn
+              elevation
+              color="primary"
+              @click.stop="addUpdateSupplier('', 'add')"
+              >الأنواع</v-btn
+            >
+
+            <v-btn
+              elevation
+              color="primary"
+              @click.stop="addUpdateSupplier('', 'add')"
+              >إضافة صنف جديد</v-btn
+            >
+          </v-col>
+        </v-row>
 
         <v-text-field
           v-model="search"
@@ -67,7 +106,7 @@ export default {
       product_info_dialog: false,
       search: "",
       status: "salam",
-      title: "إدارة الأصناف",
+      title: "الأصناف والمنتجات",
       //---
       products_total: 20,
       loading: true,

@@ -29,19 +29,54 @@ class PurchaseController extends Controller
     public function all(Request $request)
     {
 
+        $search  = json_decode($request->search, true);
 
-        $purchases = Purchase::where('company_id', 1);
-        
-        if ($request->has('status_id')) {
-            if ($request->status_id == 0)
-                $purchases = $purchases->where('status_id', 1)->orwhere('status_id', 1);
-            else
-                $purchases = $purchases->where('status_id', 1);
-        }
+
+        $purchases = Purchase::where('purchases.company_id', 1);
+        $purchases = $purchases->leftJoin('people', 'people.id', 'purchases.company_id')
+            ->select('purchases.*', 'people.company_name');
+
+
+
+        if ($search && $search['company_name']) {
+
+            $company_name = $search['company_name'];
+            $purchases = $purchases->whereHas('person', function ($q) use ($company_name) {
+                $q->where('company_name', 'like', '%' . $company_name . '%');
+            });
+        };
+
+        if ($search && $search['purchase_reference'])
+            $purchases = $purchases->where('purchase_reference', 'like', '%' . $search['purchase_reference'] . '%');
+
+
+
+        if ($search && $search['status_id'])
+            $purchases = $purchases->where('status_id', $search['status_id']);
+        if ($search && $search['minimum'])
+            $purchases = $purchases->where('total_amount', '>=', $search['minimum']);
+        if ($search && $search['maximum'])
+            $purchases = $purchases->where('total_amount', '<=', $search['maximum']);
+        if ($search && $search['date_from'])
+            $purchases = $purchases->where('issue_date', '>=', $search['date_from']);
+        if ($search && $search['date_to'])
+            $purchases = $purchases->where('issue_date', '<=', $search['date_to']);
+
+
+
 
 
         $paid_amount = 0;
-        $purchases = $purchases->get();
+
+
+        if ($request->has('itemsPerPage'))
+            $purchases = $purchases->orderBy('id', 'DESC')->paginate($request->itemsPerPage != -1 ? $request->itemsPerPage : '');
+        else
+            $purchases = $purchases->orderBy('id', 'DESC')->paginate(10);
+
+
+
+        //$purchases = $purchases->get();
 
         foreach ($purchases as &$purchase) {
 

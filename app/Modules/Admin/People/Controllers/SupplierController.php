@@ -172,6 +172,7 @@ class SupplierController extends Controller
         }
 
         if ($request->has('receipt_itemsPerPage')) {
+            
             $receipts  =  Receipt::where('person_id', $request->id)->orderBy('id', 'DESC')->paginate($request->receipt_itemsPerPage != -1 ? $request->receipt_itemsPerPage : '', ['*'], 'receipt_page');
             return ['receipts' => $receipts];
         }

@@ -26,7 +26,6 @@
       </v-card>
     </v-dialog>
 
-    
     <v-data-table
       :headers="headers"
       :items="suppliers"
@@ -110,9 +109,11 @@
         <v-btn icon @click.stop="addUpdateSupplier(item, 'update')">
           <v-icon small class="outlined font-size-12">mdi-pencil</v-icon>
         </v-btn>
-        <v-btn icon @click.stop="show_supplier_dialog(item)">
-          <v-icon small class="outlined font-size-12">mdi-eye</v-icon>
-        </v-btn>
+        <router-link :to="'suppliers/' + item.id"
+          ><v-icon small>mdi-eye</v-icon></router-link
+        >
+
+        
         <v-btn icon @click.stop="deleteSupplier(item, 'update')">
           <v-icon small class="outlined font-size-12">mdi-delete</v-icon>
         </v-btn>
@@ -134,7 +135,7 @@ export default {
   },
   data() {
     return {
-      loading:false,
+      loading: false,
       dialog: false,
       supplier_status: [
         { is_supplier_active: 0, status: "نشط" },
@@ -467,8 +468,7 @@ export default {
     },
 
     addSupplierToList(supplier) {
-
-      console.log('supplier',)
+      console.log("supplier");
       if (this.operation == "add") this.suppliers.push(supplier);
       else if (this.operation == "update") {
         this.suppliers.splice(

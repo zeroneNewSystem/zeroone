@@ -469,6 +469,45 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -487,7 +526,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       product_info_dialog: false,
       search: "",
       status: "salam",
-      title: "إدارة الأصناف",
+      title: "الأصناف والمنتجات",
       //---
       products_total: 20,
       loading: true,
@@ -648,6 +687,9 @@ __webpack_require__.r(__webpack_exports__);
   },
   invoiceBarcodeSearch: function invoiceBarcodeSearch(params) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/extra/invoice/barcode/" + params.barcode);
+  },
+  stockTakeBarcodeSearch: function stockTakeBarcodeSearch(params) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/extra/stock_take/barcode/" + params.barcode + "/inventory_id/" + params.inventory_id);
   },
   "delete": function _delete(params) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.delete("/products/", {
@@ -1661,6 +1703,90 @@ var render = function() {
                     }),
                     _vm._v(" "),
                     _c("v-spacer")
+                  ],
+                  1
+                ),
+                _vm._v(" "),
+                _c(
+                  "v-row",
+                  { attrs: { justify: "start" } },
+                  [
+                    _c(
+                      "v-col",
+                      { staticStyle: { "text-align": "end" } },
+                      [
+                        _c(
+                          "v-btn",
+                          {
+                            attrs: { elevation: "", color: "primary" },
+                            on: {
+                              click: function($event) {
+                                $event.stopPropagation()
+                                return _vm.addUpdateSupplier("", "add")
+                              }
+                            }
+                          },
+                          [_vm._v("جرد المخزون")]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "v-btn",
+                          {
+                            attrs: { elevation: "", color: "primary" },
+                            on: {
+                              click: function($event) {
+                                $event.stopPropagation()
+                                return _vm.addUpdateSupplier("", "add")
+                              }
+                            }
+                          },
+                          [_vm._v("نقل المخزون")]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "v-btn",
+                          {
+                            attrs: { elevation: "", color: "primary" },
+                            on: {
+                              click: function($event) {
+                                $event.stopPropagation()
+                                return _vm.addUpdateSupplier("", "add")
+                              }
+                            }
+                          },
+                          [_vm._v("المجموعات")]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "v-btn",
+                          {
+                            attrs: { elevation: "", color: "primary" },
+                            on: {
+                              click: function($event) {
+                                $event.stopPropagation()
+                                return _vm.addUpdateSupplier("", "add")
+                              }
+                            }
+                          },
+                          [_vm._v("الأنواع")]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "v-btn",
+                          {
+                            attrs: { elevation: "", color: "primary" },
+                            on: {
+                              click: function($event) {
+                                $event.stopPropagation()
+                                return _vm.addUpdateSupplier("", "add")
+                              }
+                            }
+                          },
+                          [_vm._v("إضافة صنف جديد")]
+                        )
+                      ],
+                      1
+                    )
                   ],
                   1
                 ),

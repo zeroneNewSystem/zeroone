@@ -31,7 +31,13 @@ trait AccountTrait
 
 
 
-        $accounts = DB::select("select ac.* from `accounts` as `ac` left join `account_types` as `at` on `at`.`id` = `ac`.`type_id` where LENGTH(account_code) > 2 and LENGTH(type_code) > 2 and at.type_code LIKE '$type_code%' and NOT EXISTS (SELECT 1 FROM accounts WHERE account_code LIKE CONCAT(ac.account_code,'%') AND LENGTH(account_code) > LENGTH(ac.account_code))");
+        $accounts = DB::select("select ac.* from 
+            `accounts` as `ac` left join `account_types` 
+            as `at` on `at`.`id` = `ac`.`type_id` 
+            where LENGTH(account_code) > 2 and LENGTH(type_code) > 2 
+            and at.type_code LIKE '$type_code%' 
+            and NOT EXISTS (SELECT 1 FROM accounts WHERE account_code LIKE CONCAT(ac.account_code,'%') 
+            AND LENGTH(account_code) > LENGTH(ac.account_code))");
 
 
 

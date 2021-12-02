@@ -2089,6 +2089,9 @@ __webpack_require__.r(__webpack_exports__);
   invoiceBarcodeSearch: function invoiceBarcodeSearch(params) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/extra/invoice/barcode/" + params.barcode);
   },
+  stockTakeBarcodeSearch: function stockTakeBarcodeSearch(params) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/extra/stock_take/barcode/" + params.barcode + "/inventory_id/" + params.inventory_id);
+  },
   "delete": function _delete(params) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.delete("/products/", {
       params: params

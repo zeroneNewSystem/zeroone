@@ -10,7 +10,7 @@
     >
       <template v-slot:top>
         <v-toolbar flat color="white">
-          <v-toolbar-title>{{ title }}</v-toolbar-title>
+          <v-toolbar-title>إدارة الموردين</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-btn
             elevation
@@ -21,7 +21,7 @@
         </v-toolbar>
 
         <v-row>
-          <v-col cols="12" lg="2">
+          <v-col cols="12" lg="3">
             <v-text-field
               v-model="search.company_name"
               label="اسم المورد"
@@ -35,19 +35,8 @@
               class="mx-4"
             ></v-text-field>
           </v-col>
-          <v-col cols="12" lg="2">
-            <v-autocomplete
-              class="purchase-info"
-              autocomplete="off"
-              v-model="search.type_id"
-              :items="types"
-              item-text="ar_name"
-              item-value="id"
-              label="النوع"
-              @blur="checkExecting()"
-            ></v-autocomplete>
-          </v-col>
-          <v-col cols="12" lg="2">
+
+          <v-col cols="12" lg="3">
             <v-autocomplete
               v-model="search.status_id"
               :items="statuses"
@@ -57,6 +46,20 @@
             ></v-autocomplete>
           </v-col>
           <v-col cols="12" lg="2">
+            <v-text-field
+              v-model="search.minimum"
+              label="القيمة الأدنى"
+              class="mx-4"
+            ></v-text-field>
+          </v-col>
+          <v-col cols="12" lg="2">
+            <v-text-field
+              v-model="search.maximum"
+              label="القيمة الأعالى"
+              class="mx-4"
+            ></v-text-field>
+          </v-col>
+          <v-col cols="12" lg="3">
             <v-menu
               v-model="menu1"
               :close-on-content-click="false"
@@ -82,7 +85,7 @@
               ></v-date-picker> </v-menu
           ></v-col>
 
-          <v-col cols="12" lg="2">
+          <v-col cols="12" lg="3">
             <v-menu
               v-model="menu2"
               :close-on-content-click="false"
@@ -109,14 +112,14 @@
             </v-menu>
           </v-col>
 
-          <v-col cols="12" lg="6">
+          <v-col cols="12" lg="3">
             <v-row>
-              <v-col cols="2">
+              <v-col>
                 <v-btn elevation color="primary" @click="getPurchases"
                   >البحث</v-btn
                 >
               </v-col>
-              <v-col cols="2">
+              <v-col>
                 <v-btn elevation color="primary" @click.stop="searchReset"
                   >إعادة تعيين</v-btn
                 >
@@ -135,13 +138,13 @@
       <template v-slot:item.account="{ item }">
         {{ item.account_code }} - {{ item.ar_name }}
       </template>
-      <template v-slot:item.date="{ item }">
+      <template v-slot:item.issue_date="{ item }">
         <div style="white-space: nowrap">
-          {{ item.date.split(" ")[0] }}
+          {{ item.issue_date.split(" ")[0] }}
         </div>
       </template>
-      <template v-slot:item.unused="{ item }">
-        {{ item.amount - item.spentAmount }}
+      <template v-slot:item.maturity_date="{ item }">
+        {{ item.maturity_date.split(" ")[0] }}
       </template>
       <template v-slot:item.actions="{ item }">
         <router-link :to="'purchases/' + item.id"
@@ -162,6 +165,7 @@ import Purchase from "../../../apis/Purchase";
 export default {
   data() {
     return {
+      loading: false,
       menu1: false,
       menu2: false,
       types: [
@@ -170,20 +174,24 @@ export default {
       ],
 
       statuses: [
-        { id: 1, ar_name: "غير مستعمل" },
-        { id: 2, ar_name: "مستعمل" },
-        { id: 3, ar_name: "مستعمل جزئيا" },
+        { id: 1, ar_name: "موافق عليه" },
+        { id: 2, ar_name: "بانتظار الموافقة" },
+        { id: 3, ar_name: "ألغيت" },
+        { id: 4, ar_name: "مسودة" },
+        { id: 5, ar_name: "دفعت" },
+        { id: 6, ar_name: "دفعت جزئيا" },
       ],
       search: {
         company_name: "",
         purchase_reference: "",
-        type_id: "",
+        minimum: "",
+        maximum: "",
         status_id: "",
         date_from: "",
         date_to: "",
       },
       purchases_total: 10,
-      options: "",
+      options: {},
       purchases: [],
       headers: [
         {
@@ -203,7 +211,7 @@ export default {
         { text: "تاريخ الإصدار", align: "center", value: "issue_date" },
         { text: "	تاريخ الاستحقاق", align: "center", value: "maturity_date" },
         { text: "قيمة الفاتورة", align: "center", value: "total_amount" },
-        { text: "الباقي", align: "center", value: "remaining_amount" },
+        { text: "الباقي", align: "center", value: "remainder" },
         { text: "الحالة ", align: "center", value: "status" },
         { text: "التحكم ", align: "center", value: "actions" },
       ],
@@ -233,7 +241,26 @@ export default {
         this.purchases_total = response.data.total;
       });
     },
-    searchReset() {},
+    searchReset() {
+      Purchase.getAll({
+        page: 1,
+        itemsPerPage: 10,
+        search: {},
+      }).then((response) => {
+        this.purchases = response.data.data;
+        this.purchases_total = response.data.total;
+
+        this.search = {
+          company_name: "",
+          purchase_reference: "",
+          minimum: "",
+          maximum: "",
+          status_id: "",
+          date_from: "",
+          date_to: "",
+        };
+      });
+    },
   },
 
   computed: {

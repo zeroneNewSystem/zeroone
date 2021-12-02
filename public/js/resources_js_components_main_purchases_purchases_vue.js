@@ -177,10 +177,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
+      loading: false,
       menu1: false,
       menu2: false,
       types: [{
@@ -192,24 +196,34 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }],
       statuses: [{
         id: 1,
-        ar_name: "غير مستعمل"
+        ar_name: "موافق عليه"
       }, {
         id: 2,
-        ar_name: "مستعمل"
+        ar_name: "بانتظار الموافقة"
       }, {
         id: 3,
-        ar_name: "مستعمل جزئيا"
+        ar_name: "ألغيت"
+      }, {
+        id: 4,
+        ar_name: "مسودة"
+      }, {
+        id: 5,
+        ar_name: "دفعت"
+      }, {
+        id: 6,
+        ar_name: "دفعت جزئيا"
       }],
       search: {
         company_name: "",
         purchase_reference: "",
-        type_id: "",
+        minimum: "",
+        maximum: "",
         status_id: "",
         date_from: "",
         date_to: ""
       },
       purchases_total: 10,
-      options: "",
+      options: {},
       purchases: [],
       headers: [{
         text: "م",
@@ -241,7 +255,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }, {
         text: "الباقي",
         align: "center",
-        value: "remaining_amount"
+        value: "remainder"
       }, {
         text: "الحالة ",
         align: "center",
@@ -289,7 +303,27 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         _this2.purchases_total = response.data.total;
       });
     },
-    searchReset: function searchReset() {}
+    searchReset: function searchReset() {
+      var _this3 = this;
+
+      _apis_Purchase__WEBPACK_IMPORTED_MODULE_0__.default.getAll({
+        page: 1,
+        itemsPerPage: 10,
+        search: {}
+      }).then(function (response) {
+        _this3.purchases = response.data.data;
+        _this3.purchases_total = response.data.total;
+        _this3.search = {
+          company_name: "",
+          purchase_reference: "",
+          minimum: "",
+          maximum: "",
+          status_id: "",
+          date_from: "",
+          date_to: ""
+        };
+      });
+    }
   },
   computed: {
     params: function params(nv) {
@@ -455,7 +489,7 @@ var render = function() {
                   "v-toolbar",
                   { attrs: { flat: "", color: "white" } },
                   [
-                    _c("v-toolbar-title", [_vm._v(_vm._s(_vm.title))]),
+                    _c("v-toolbar-title", [_vm._v("إدارة الموردين")]),
                     _vm._v(" "),
                     _c("v-divider", {
                       staticClass: "mx-4",
@@ -484,7 +518,7 @@ var render = function() {
                   [
                     _c(
                       "v-col",
-                      { attrs: { cols: "12", lg: "2" } },
+                      { attrs: { cols: "12", lg: "3" } },
                       [
                         _c("v-text-field", {
                           staticClass: "mx-4",
@@ -522,37 +556,7 @@ var render = function() {
                     _vm._v(" "),
                     _c(
                       "v-col",
-                      { attrs: { cols: "12", lg: "2" } },
-                      [
-                        _c("v-autocomplete", {
-                          staticClass: "purchase-info",
-                          attrs: {
-                            autocomplete: "off",
-                            items: _vm.types,
-                            "item-text": "ar_name",
-                            "item-value": "id",
-                            label: "النوع"
-                          },
-                          on: {
-                            blur: function($event) {
-                              return _vm.checkExecting()
-                            }
-                          },
-                          model: {
-                            value: _vm.search.type_id,
-                            callback: function($$v) {
-                              _vm.$set(_vm.search, "type_id", $$v)
-                            },
-                            expression: "search.type_id"
-                          }
-                        })
-                      ],
-                      1
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "v-col",
-                      { attrs: { cols: "12", lg: "2" } },
+                      { attrs: { cols: "12", lg: "3" } },
                       [
                         _c("v-autocomplete", {
                           attrs: {
@@ -576,6 +580,44 @@ var render = function() {
                     _c(
                       "v-col",
                       { attrs: { cols: "12", lg: "2" } },
+                      [
+                        _c("v-text-field", {
+                          staticClass: "mx-4",
+                          attrs: { label: "القيمة الأدنى" },
+                          model: {
+                            value: _vm.search.minimum,
+                            callback: function($$v) {
+                              _vm.$set(_vm.search, "minimum", $$v)
+                            },
+                            expression: "search.minimum"
+                          }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "v-col",
+                      { attrs: { cols: "12", lg: "2" } },
+                      [
+                        _c("v-text-field", {
+                          staticClass: "mx-4",
+                          attrs: { label: "القيمة الأعالى" },
+                          model: {
+                            value: _vm.search.maximum,
+                            callback: function($$v) {
+                              _vm.$set(_vm.search, "maximum", $$v)
+                            },
+                            expression: "search.maximum"
+                          }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "v-col",
+                      { attrs: { cols: "12", lg: "3" } },
                       [
                         _c(
                           "v-menu",
@@ -661,7 +703,7 @@ var render = function() {
                     _vm._v(" "),
                     _c(
                       "v-col",
-                      { attrs: { cols: "12", lg: "2" } },
+                      { attrs: { cols: "12", lg: "3" } },
                       [
                         _c(
                           "v-menu",
@@ -747,14 +789,13 @@ var render = function() {
                     _vm._v(" "),
                     _c(
                       "v-col",
-                      { attrs: { cols: "12", lg: "6" } },
+                      { attrs: { cols: "12", lg: "3" } },
                       [
                         _c(
                           "v-row",
                           [
                             _c(
                               "v-col",
-                              { attrs: { cols: "2" } },
                               [
                                 _c(
                                   "v-btn",
@@ -770,7 +811,6 @@ var render = function() {
                             _vm._v(" "),
                             _c(
                               "v-col",
-                              { attrs: { cols: "2" } },
                               [
                                 _c(
                                   "v-btn",
@@ -854,25 +894,29 @@ var render = function() {
             }
           },
           {
-            key: "item.date",
+            key: "item.issue_date",
             fn: function(ref) {
               var item = ref.item
               return [
                 _c("div", { staticStyle: { "white-space": "nowrap" } }, [
                   _vm._v(
-                    "\n        " + _vm._s(item.date.split(" ")[0]) + "\n      "
+                    "\n        " +
+                      _vm._s(item.issue_date.split(" ")[0]) +
+                      "\n      "
                   )
                 ])
               ]
             }
           },
           {
-            key: "item.unused",
+            key: "item.maturity_date",
             fn: function(ref) {
               var item = ref.item
               return [
                 _vm._v(
-                  "\n      " + _vm._s(item.amount - item.spentAmount) + "\n    "
+                  "\n      " +
+                    _vm._s(item.maturity_date.split(" ")[0]) +
+                    "\n    "
                 )
               ]
             }

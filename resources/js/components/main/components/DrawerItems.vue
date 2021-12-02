@@ -8,6 +8,34 @@
     </v-list-item>
 
     <v-list-group
+      v-for="main_item in main_menu"
+      :key="main_item"
+      :prepend-icon="main_item.icon"
+    >
+      <template v-slot:activator>
+        <v-list-item-title>{{ main_item.name }} </v-list-item-title>
+      </template>
+      <v-list-item
+        v-for="sub_item in main_item.sub_menu"
+        :to="sub_item.link"
+        :key="sub_item"
+        link
+        exact
+      >
+        <v-list-item-icon>
+          <v-icon>{{
+            sub_item.icon != "" ? sub_item.icon : "mdi-view-dashboard"
+          }}</v-icon>
+        </v-list-item-icon>
+        <v-list-item-title v-text="sub_item.name"></v-list-item-title>
+      </v-list-item>
+    </v-list-group>
+
+
+    <div>--</div>
+    <div>--</div>
+
+    <v-list-group
       v-for="j in sidebaritems.length"
       :to="'/' + sidebarroutes[j - 1][0]"
       :key="j"
@@ -37,6 +65,66 @@
 <script>
 export default {
   data: () => ({
+    main_menu: [
+      {
+        name: "المشتريات",
+        icon: "mdi-shopping",
+        sub_menu: [
+          {
+            name: "الموردون",
+            link: "suppliers",
+            icon: "",
+          },
+          {
+            name: "فواتير المشتريات",
+            link: "purchases",
+            icon: "",
+          },
+          {
+            name: "أوامر الشراء",
+            link: "purchase_orders",
+            icon: "",
+          },
+          {
+            name: "سندات الموردين",
+            link: "receipts",
+            icon: "",
+          },
+        ],
+      },
+      {
+        name: "الأصناف والخدمات",
+        icon: "mdi-source-fork",
+        sub_menu: [
+          {
+            name: "الوحدات",
+            link: "units",
+            icon: "",
+          },
+          {
+            name: "المجموعات",
+            link: "types",
+            icon: "",
+          },
+          {
+            name: "الأنواع",
+            link: "forms",
+            icon: "",
+          },
+          {
+            name: "إضافة صنف",
+            link: "product",
+            icon: "",
+          },
+          {
+            name: "إدارة الأصناف",
+            link: "products",
+            icon: "",
+          },
+        ],
+      },
+    ],
+
     admins: [
       ["Management", "mdi-border-color"],
       ["Settings", "mdi-settings"],
@@ -70,10 +158,10 @@ export default {
         " إضافة بند مصروفات",
       ],
       [
-        "الشراء",
+        "المشتريات",
         "mdi-shopping",
         "إضافة مشتريات",
-        "إدارة فواتير الشراء",
+        "فواتير المشتريات",
         "الموردون",
       ],
 
@@ -107,7 +195,7 @@ export default {
         "addupdateoutcome",
         "addoutcomeitem",
       ],
-      ["purchase", "purchasemanagement", "suppliers"],
+      ["purchase", "purchases", "suppliers"],
 
       [
         "accounts",

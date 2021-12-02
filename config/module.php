@@ -20,7 +20,7 @@ return [
             'People',
             'Purchases',
             'Receipts',
-            
+            'StockTakes',
         ],
         'Public' => []
     ]

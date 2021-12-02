@@ -1,6 +1,6 @@
 <template>
   <div style="padding: 20px; font-size: 14px">
-    <v-row>
+    <v-row style="">
       <v-col cols="12" lg="6">
         <v-row
           style="
@@ -8,91 +8,107 @@
             border: 1px solid #bababa;
             border-radius: 5px;
             padding: 10px;
+            margin-left: 10px;
+            margin-right: 10px;
           "
         >
-          <v-col cols="3" style="text-align: start" class="pa-0"> الاسم </v-col>
-          <v-col cols="9" style="text-align: start" class="pa-0">
+          <v-col cols="3" style="text-align: start" class="pa-1">الاسم</v-col>
+          <v-col cols="9" style="text-align: start" class="pa-1">
             {{ supplier.name }}
           </v-col>
-          <v-col cols="3" style="text-align: start" class="pa-0">
+          <v-col cols="3" style="text-align: start" class="pa-1">
             الشركة
           </v-col>
-          <v-col cols="9" style="text-align: start" class="pa-0">
+          <v-col cols="9" style="text-align: start" class="pa-1">
             {{ supplier.compnay_name }}
           </v-col>
-          <v-col cols="3" style="text-align: start" class="pa-0">
+          <v-col cols="3" style="text-align: start" class="pa-1">
             رقم الاتصال
           </v-col>
-          <v-col cols="9" style="text-align: start" class="pa-0">
+          <v-col cols="9" style="text-align: start" class="pa-1">
             {{ supplier.phone }}
           </v-col>
-          <v-col cols="3" style="text-align: start" class="pa-0">
+          <v-col cols="3" style="text-align: start" class="pa-1">
             البريد الالكتروني
           </v-col>
-          <v-col cols="9" style="text-align: start" class="pa-0">
+          <v-col cols="9" style="text-align: start" class="pa-1">
             {{ supplier.email }}
           </v-col>
-          <v-col cols="3" style="text-align: start" class="pa-0">
+        </v-row>
+      </v-col>
+      <v-col cols="12" lg="6">
+        <v-row
+          style="
+            font-size: 14px;
+            border: 1px solid #bababa;
+            border-radius: 5px;
+            padding: 10px;
+            margin-left: 10px;
+            margin-right: 10px;
+            min-height: 135px;
+          "
+        >
+          <v-col cols="3" style="text-align: start" class="pa-1">الحالة</v-col>
+          <v-col cols="9" style="text-align: start" class="pa-1">
+            {{ supplier.name }}
+          </v-col>
+
+          <v-col cols="3" style="text-align: start" class="pa-1">
             العنوان
           </v-col>
-          <v-col cols="9" style="text-align: start" class="pa-0">
+          <v-col cols="9" style="text-align: start" class="pa-1">
             {{ supplier.address }}
           </v-col>
         </v-row>
       </v-col>
-      <v-col cols="12" lg="6"> </v-col>
     </v-row>
-    <v-row class="pt-10">
-      <v-col>
+    <v-row class="pt-10 justify-center">
+      <v-col cols="12" lg="2">
         <v-row>
           <v-col cols="6" lg="12"> الرصيد </v-col>
           <v-col cols="6" lg="12">
             <h1>
-
-            {{ balance.toFixed(2) }}
+              {{ balance.toFixed(2) }}
             </h1>
           </v-col>
         </v-row>
       </v-col>
-      <v-col>
+      <v-col cols="12" lg="2">
         <v-row>
           <v-col cols="6" lg="12"> قيمة الفواتير </v-col>
           <v-col cols="6" lg="12">
             <h1>
-              
-            {{ total_amount.toFixed(2) }}
+              {{ total_amount.toFixed(2) }}
             </h1>
           </v-col>
         </v-row>
       </v-col>
-      <v-col>
+      <v-col cols="12" lg="2">
         <v-row>
           <v-col cols="6" lg="12"> إجمالي المستحق </v-col>
           <v-col cols="6" lg="12">
-          <h1>
-            {{ remain_amount.toFixed(2) }}
-            </h1>  
-          </v-col>
-        </v-row>
-      </v-col>
-      <v-col>
-        <v-row>
-          <v-col cols="6" lg="12"> متأخرة </v-col>
-          <v-col cols="6" lg="12">
             <h1>
-
-            {{ arrears.toFixed(2) }}
+              {{ remain_amount.toFixed(2) }}
             </h1>
           </v-col>
         </v-row>
       </v-col>
-      <v-col>
+      <v-col cols="12" lg="2">
+        <v-row>
+          <v-col cols="6" lg="12"> متأخرات </v-col>
+          <v-col cols="6" lg="12">
+            <h1>
+              {{ arrears.toFixed(2) }}
+            </h1>
+          </v-col>
+        </v-row>
+      </v-col>
+      <v-col cols="12" lg="2">
         <v-row>
           <v-col cols="6" lg="12"> عدد الفواتير </v-col>
           <v-col cols="6" lg="12">
             <h1>
-
-            {{ purchases_count }}
+              {{ purchases_count }}
             </h1>
           </v-col>
         </v-row>
@@ -126,8 +142,11 @@
                 <template v-slot:item.issue_date="{ item }">
                   {{ item.issue_date.split(" ")[0] }}
                 </template>
-                <template v-slot:item.payment_status="{ item }">
-                  paid
+                <template v-slot:item.status="{ item }">
+                  {{
+                    purchase_statuses.find((elem) => elem.id == item.status_id)
+                      .ar_name
+                  }}
                 </template>
               </v-data-table>
             </v-row>
@@ -144,8 +163,11 @@
                 class="elevation-1"
               >
                 <template v-slot:top> </template>
-                <template v-slot:item.payment_status="{ item }">
-                  paid
+                <template v-slot:item.status="{ item }">
+                  {{
+                    receipt_statuses.find((elem) => elem.id == item.status_id)
+                      .ar_name
+                  }}
                 </template>
               </v-data-table>
             </v-row>
@@ -162,8 +184,24 @@
                 class="elevation-1"
               >
                 <template v-slot:top> </template>
-                <template v-slot:item.payment_status="{ item }">
-                  paid
+                <template v-slot:item.status="{ item }">
+                  {{
+                    receipt_statuses.find((elem) => elem.id == item.status_id)
+                      .ar_name
+                  }}
+                </template>
+                <template v-slot:item.date="{ item }">
+                  {{ item.date.split(" ")[0] }}
+                </template>
+                <template v-slot:item.actions="{ item }">
+                  <router-link :to="'purchases/' + item.id"
+                    ><v-icon small>mdi-pencil</v-icon></router-link
+                  >
+                  <v-btn icon @click.stop="deletePurchase(item, 'update')">
+                    <v-icon small class="outlined font-size-12"
+                      >mdi-delete</v-icon
+                    >
+                  </v-btn>
                 </template>
               </v-data-table>
             </v-row>
@@ -208,8 +246,8 @@ export default {
         },
         { text: "الرصيد", align: "center", value: "total_amount" },
         { text: "متأخرات", align: "center", value: "paid_amount" },
-        { text: "الحالة ", align: "center", value: "payment_status" },
-        { text: "لتحكم ", align: "center", value: "actions" },
+        { text: "الحالة ", align: "center", value: "status" },
+        { text: "التحكم ", align: "center", value: "actions" },
       ],
       receipt_headers: [
         {
@@ -219,15 +257,15 @@ export default {
           sortable: false,
           value: "id",
         },
-        { text: "رقم المرجع", align: "center", value: "purchase_reference" },
+        { text: "رقم المرجع", align: "center", value: "receipt_reference" },
         {
-          text: "جهة الاتصال",
+          text: "تاريخ الاصدار",
           align: "center",
           sortable: false,
-          value: "issue_date",
+          value: "date",
         },
-        { text: "الرصيد", align: "center", value: "total_amount" },
-        { text: "متأخرات", align: "center", value: "paid_amount" },
+        { text: "القيمة", align: "center", value: "amount" },
+
         { text: "الحالة ", align: "center", value: "status" },
         { text: "لتحكم ", align: "center", value: "actions" },
       ],
@@ -237,6 +275,19 @@ export default {
       total_amount: 0,
       purchases: [],
       receipts: [],
+      purchase_statuses: [
+        { id: 1, ar_name: "موافق عليه" },
+        { id: 2, ar_name: "بانتظار الموافقة" },
+        { id: 3, ar_name: "ألغيت" },
+        { id: 4, ar_name: "مسودة" },
+        { id: 5, ar_name: "دفعت" },
+        { id: 6, ar_name: "دفعت جزئيا" },
+      ],
+      receipt_statuses: [
+        { id: 1, ar_name: "غير مستعمل" },
+        { id: 2, ar_name: "مستعمل" },
+        { id: 3, ar_name: "مستعمل جزئيا" },
+      ],
       purchases_total: 0,
       receipt_total: 0,
       arrears: 0,
@@ -283,11 +334,13 @@ export default {
 
         console.log("itemsPerPage", receipt_itemsPerPage);
 
-        Supplier.getOne({ receipt_page, receipt_itemsPerPage }).then(
-          (response) => {
-            this.DataProcessing(response, "receipt");
-          }
-        );
+        Supplier.getOne({
+          id: this.$route.params.id,
+          receipt_page,
+          receipt_itemsPerPage,
+        }).then((response) => {
+          this.DataProcessing(response, "receipt");
+        });
       },
       deep: true,
     },
@@ -309,7 +362,8 @@ export default {
 
       if (response.data.receipts) {
         this.receipts = response.data.receipts.data;
-        this.receipts_total = response.data.receipts.total;
+        console.log(this.receipts);
+        this.receipt_total = response.data.receipts.total;
         return;
       }
       this.supplier = response.data.supplier;
@@ -325,4 +379,11 @@ export default {
 </script>
 
 <style>
+.v-window__container {
+  height: 100%;
+}
+.v-tabs__content {
+  background-color: green;
+  height: 100px;
+}
 </style>
