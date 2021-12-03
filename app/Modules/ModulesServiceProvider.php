@@ -46,15 +46,21 @@ class ModulesServiceProvider extends ServiceProvider
 
                     if (file_exists($routesPath)) {
 
-                        
+
                         Route::prefix('api')
                             //->middleware('auth:sanctum')
                             ->namespace("App\\Modules\\$mod\\$sub\Controllers")
                             ->group($routesPath);
+
+                        // echo ("App\\Modules\\$mod\\$sub\Controllers");
+                        // echo '<br>';
+                        // echo ($routesPath);
+                        // echo '<br>';
                     }
                     // views
                     if (is_dir($path . $relativePath . "/Views")) {
-                        //dd($path . $relativePath . "/Views");
+                        // echo ($path . $relativePath . "/Views");
+                        // echo '<br>';
                         $this->loadViewsFrom($path . $relativePath . "/Views", $sub);
                     }
                 }

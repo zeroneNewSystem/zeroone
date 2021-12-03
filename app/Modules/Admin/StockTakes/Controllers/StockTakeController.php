@@ -14,6 +14,7 @@ use App\Traits\AccountTrait;
 use App\Traits\TranstactionTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Spatie\Valuestore\Valuestore;
 
 class StockTakeController extends Controller
 {
@@ -249,6 +250,12 @@ class StockTakeController extends Controller
 
 
         $stocktake = StockTake::create($request->all());
+
+        $stock_take_details = $request->stock_take_details;
+        $settings = Valuestore::make(storage_path('app/settings.json'));
+        // $settings = new 
+        // if ($settings->grouped)
+        return $stock_take_details;
 
         
     

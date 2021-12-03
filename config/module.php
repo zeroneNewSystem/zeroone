@@ -21,6 +21,7 @@ return [
             'Purchases',
             'Receipts',
             'StockTakes',
+            'Settings',
         ],
         'Public' => []
     ]
