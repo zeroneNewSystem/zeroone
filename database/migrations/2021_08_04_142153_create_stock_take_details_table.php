@@ -25,7 +25,7 @@ class CreateStockTakeDetailsTable extends Migration
             $table->unsignedInteger ('current_quantity');
             $table->unsignedInteger ('actual_quantity');
             $table->unsignedInteger ('product_unit_id');
-            $table->unsignedInteger ('quan_in_mininmal_unit')->nullable();
+            $table->unsignedInteger ('quantity_in_minor_unit')->nullable();
             $table->double('unit_price')->default('1');
 
             $table->text('description')->nullable();

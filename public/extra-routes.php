@@ -101,6 +101,50 @@ Route::route('/api/extra/invoice/barcode/(\d+)', function ($barcode) {
     $database->close();
 });
 
+Route::route('/api/extra/purchase/barcode/(\d+)', function ($barcode) {
+    $database = new Connection();
+    $db = $database->open();
+    $sth = $db->prepare("SELECT * FROM products WHERE barcode =:barcode");
+    $sth->execute(['barcode' => $barcode]);
+
+    $products = $sth->fetchAll(\PDO::FETCH_ASSOC);
+
+    foreach ($products as &$product) {
+
+        unset($product['created_at']);
+        unset($product['deleted_at']);
+        unset($product['updated_at']);
+
+        $sth = $db->prepare("SELECT * FROM prdct_units_products WHERE product_id = " . $product['id']);
+        $sth->execute();
+
+
+        $pivots = $sth->fetchAll(\PDO::FETCH_ASSOC);
+
+
+        $units = [];
+
+
+        foreach ($pivots as &$pivot) {
+            $sth = $db->prepare("SELECT * FROM prdct_units WHERE id = " . $pivot['prdct_unit_id']);
+            $sth->execute();
+            $unit = $sth->fetch(\PDO::FETCH_ASSOC);
+            $unit['pivot'] = $pivot;
+            $units[] = $unit;
+        }
+
+
+        $product['units'] = $units;
+    }
+
+
+
+
+    $database->close();
+    echo json_encode(['products' => $products], JSON_NUMERIC_CHECK);
+});
+
+
 Route::route('/api/extra/stock_take/barcode/(\d+)/inventory_id/(\d+)', function ($barcode, $inventory_id) {
 
     $database = new Connection();

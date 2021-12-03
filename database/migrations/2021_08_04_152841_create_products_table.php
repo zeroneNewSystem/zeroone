@@ -26,6 +26,8 @@ class CreateProductsTable extends Migration
             $table->unsignedInteger ('prdct_type_id');
 
             $table->unsignedInteger ('minor_unit');
+            $table->integer('quantity_in_minor_unit',)->default(0);
+            
             $table->unsignedInteger ('main_sales_unit_id');
             $table->unsignedInteger ('main_purchase_unit_id');
 

@@ -1610,7 +1610,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       }, {
         text: "الكمية و.ص",
         align: "center",
-        value: "quan_in_mininmal_unit",
+        value: "quantity_in_minor_unit",
         sortable: false
       }, {
         text: "خصم الشراء",
@@ -1884,12 +1884,12 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       item.total_befor_tax = item.purchased_quantity * item.unit_price - item.purchase_discount;
       return item.total_befor_tax;
     },
-    quan_in_mininmal_unit: function quan_in_mininmal_unit(item) {
+    quantity_in_minor_unit: function quantity_in_minor_unit(item) {
       var purchased_unit = item.units.find(function (elem) {
         return elem.pivot.id == item.purchased_unit_id;
       });
-      item.quan_in_mininmal_unit = item.purchased_quantity * purchased_unit.pivot.contains;
-      return item.quan_in_mininmal_unit;
+      item.quantity_in_minor_unit = item.purchased_quantity * purchased_unit.pivot.contains;
+      return item.quantity_in_minor_unit;
     },
     deleteItem: function deleteItem(item) {
       this.purchase.purchase_details.splice(this.purchase.purchase_details.indexOf(item), 1);
@@ -5411,7 +5411,7 @@ var render = function() {
                                 }
                               },
                               {
-                                key: "item.quan_in_mininmal_unit",
+                                key: "item.quantity_in_minor_unit",
                                 fn: function(ref) {
                                   var item = ref.item
                                   return [
@@ -5425,7 +5425,7 @@ var render = function() {
                                         "hide-details": "",
                                         "solo-inverted": "",
                                         outlined: "",
-                                        value: _vm.quan_in_mininmal_unit(item)
+                                        value: _vm.quantity_in_minor_unit(item)
                                       }
                                     })
                                   ]

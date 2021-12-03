@@ -340,7 +340,7 @@
                   v-model="item.sold_quantity"
                 ></v-text-field>
               </template>
-              <template v-slot:item.quan_in_mininmal_unit="{ item }">
+              <template v-slot:item.quantity_in_minor_unit="{ item }">
                 <v-text-field
                   autocomplete="off"
                   disabled
@@ -350,7 +350,7 @@
                   hide-details
                   solo-inverted
                   outlined
-                  :value="quan_in_mininmal_unit(item)"
+                  :value="quantity_in_minor_unit(item)"
                 ></v-text-field>
               </template>
               <template v-slot:item.total_befor_tax="{ item }">
@@ -703,7 +703,7 @@ export default {
         {
           text: "الكمية و.ص",
           align: "center",
-          value: "quan_in_mininmal_unit",
+          value: "quantity_in_minor_unit",
           sortable: false,
         },
         {
@@ -954,10 +954,10 @@ export default {
 
       return item.total_befor_tax;
     },
-    quan_in_mininmal_unit(item) {
+    quantity_in_minor_unit(item) {
       let sold_unit = item.units.find((elem) => elem.id == item.sold_unit_id);
-      item.quan_in_mininmal_unit = item.sold_quantity * sold_unit.contains;
-      return item.quan_in_mininmal_unit;
+      item.quantity_in_minor_unit = item.sold_quantity * sold_unit.contains;
+      return item.quantity_in_minor_unit;
     },
     deleteItem(item) {
       this.invoice.sales_details.splice(

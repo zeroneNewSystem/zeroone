@@ -417,7 +417,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         return elem.pivot.id == item.purchased_unit_id;
       });
       item.unit_price = purchased_unit.pivot.purchase_price;
-      item.current_quantity = parseInt(item.purchase_details[0].quan_in_mininmal_unit / purchased_unit.pivot.contains);
+      item.current_quantity = parseInt(item.purchase_details[0].quantity_in_minor_unit / purchased_unit.pivot.contains);
       item.actual_quantity = item.current_quantity;
     },
     getProducts: function getProducts(val, type) {
@@ -462,7 +462,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       selected_product.purchased_unit_id = selected_product.units[selected_product.main_purchase_unit_id - 1].pivot.id;
       selected_product.unit_price = selected_product.units[selected_product.main_purchase_unit_id - 1].pivot.purchase_price;
       selected_product.purchased_quantity = 1;
-      selected_product.current_quantity = selected_product.purchase_details[0].quan_in_mininmal_unit / selected_product.units[selected_product.main_purchase_unit_id - 1].pivot.contains;
+      selected_product.current_quantity = selected_product.purchase_details[0].quantity_in_minor_unit / selected_product.units[selected_product.main_purchase_unit_id - 1].pivot.contains;
       selected_product.actual_quantity = selected_product.current_quantity;
       this.stocktake.stock_take_details.unshift(selected_product);
       return;
@@ -491,8 +491,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         var products_grouped = true;
 
         if (products_grouped) {
-          _this2.selected_item.purchase_details[0].quan_in_mininmal_unit = _this2.selected_item.purchase_details.reduce(function (a, b) {
-            return +a + +b.quan_in_mininmal_unit;
+          _this2.selected_item.purchase_details[0].quantity_in_minor_unit = _this2.selected_item.purchase_details.reduce(function (a, b) {
+            return +a + +b.quantity_in_minor_unit;
           }, 0);
           console.log("this.selected_item");
           console.log(_this2.selected_item);
