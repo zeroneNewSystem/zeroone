@@ -21,7 +21,7 @@ class ProductFactory extends Factory
      * @return array
      */
     public function definition()
-    { 
+    {
         return [
             'company_id'  => 1,
             'barcode'  => $this->faker->unique()->ean13(),
@@ -35,6 +35,8 @@ class ProductFactory extends Factory
             'main_purchase_unit_id'  => 1,
             'product_cogs_account_id'  => 1,
             'product_sales_account_id'  => 1,
+            'product_sales_return_account_id' => 1,
+            'product_purchase_return_account_id' => 1,
             'sales_discount'  => 5.0,
             'sales_discount_type_id'  => 1,
             'purchase_discount'  => 2.5,

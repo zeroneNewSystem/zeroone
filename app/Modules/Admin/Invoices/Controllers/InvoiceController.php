@@ -245,14 +245,14 @@ class InvoiceController extends Controller
             //$account_id = (InvoiceDetail::where()->get())['account_id'];
 
 
-            $Inventory_account_id = Inventory::find($invoice_detail['inventory_id'])['account_id'];
+            $inventory_account_id = Inventory::find($invoice_detail['inventory_id'])['account_id'];
 
 
 
 
             $entry = [
                 "company_id" => 1,
-                "account_id" => $Inventory_account_id,
+                "account_id" => $inventory_account_id,
                 "debit" =>  $invoice_detail['total'],
                 "credit" => 0,
                 "document_id" => $invoice->id,
@@ -405,14 +405,14 @@ class InvoiceController extends Controller
             //$account_id = (InvoiceDetail::where()->get())['account_id'];
 
 
-            $Inventory_account_id = Inventory::find($invoice_detail['inventory_id'])['account_id'];
+            $inventory_account_id = Inventory::find($invoice_detail['inventory_id'])['account_id'];
 
 
 
 
             $entry = [
                 "company_id" => 1,
-                "account_id" => $Inventory_account_id,
+                "account_id" => $inventory_account_id,
                 "debit" =>  $invoice_detail['total'],
                 "credit" => 0,
                 "document_id" => $invoice->id,

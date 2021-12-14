@@ -1,6 +1,12 @@
 import Api from "./Api";
 
 export default {
+    isExist(product) {
+
+        return Api.get(
+            "/extra/product/exists/" + product.type + "/" + product.what_to_search
+        );
+    },
     create() {
         return Api.get("/products/create");
     },

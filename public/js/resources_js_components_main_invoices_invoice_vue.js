@@ -270,19 +270,8 @@
 
             function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-            function _iterableToArrayLimit(arr, i) {
-                var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
-                if (_i == null) return;
-                var _arr = [];
-                var _n = true;
-                var _d = false;
-                var _s, _e;
-                try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) {
-                    _d = true;
-                    _e = err;
-                } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } }
-                return _arr;
-            }
+            function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"]; if (_i == null) return; var _arr = []; var _n = true; var _d = false; var _s, _e; try { for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true;
+                    _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
 
             function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
@@ -1247,7 +1236,7 @@
                         console.log("nib", this.invoice.sales_details);
                         this.selected_product = [];
                     },
-                    checkExecting: function checkExecting() {},
+                    checkExicting: function checkExicting() {},
                     submit: function submit() {
                         if (this.is_new_invoice) _apis_Invoice__WEBPACK_IMPORTED_MODULE_1__.default.store(this.invoice).then(function(response) {
                             return console.log(response.data);
@@ -2123,6 +2112,9 @@
 
             /* harmony default export */
             const __WEBPACK_DEFAULT_EXPORT__ = ({
+                isExist: function isExist(product) {
+                    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/extra/product/exists/" + product.type + "/" + product.what_to_search);
+                },
                 create: function create() {
                     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/products/create");
                 },

@@ -34,7 +34,9 @@
     </v-dialog>
     <v-card>
       <v-card-title>
-        <span class="text-h5">جرد المخزون</span>
+        <span class="text-h5" :key="someVariableUnderYourControl"
+          >جرد المخزون
+        </span>
       </v-card-title>
       <v-card-text>
         <v-container>
@@ -193,6 +195,7 @@
                 item-value="pivot.id"
                 cache-items
                 flat
+                no-filter
                 hide-no-data
                 hide-details
                 solo-inverted
@@ -228,6 +231,7 @@
                 single-line
                 outlined
                 v-model="item.actual_quantity"
+                @input="actual_quantity_change(item)"
               ></v-text-field>
             </template>
             <template v-slot:item.total="{ item }">
@@ -255,6 +259,7 @@ import StockTake from "../../../apis/StockTake";
 export default {
   data() {
     return {
+      someVariableUnderYourControl: 1,
       is_new_stock: true,
       index_of_selected_product: "",
       selected_item: [],
@@ -389,7 +394,20 @@ export default {
         1
       );
     },
+    actual_quantity_change(item) {
+      let purchased_unit = item.units.find(
+        (elem) => elem.pivot.id == item.purchased_unit_id
+      );
+      console.log(purchased_unit);
+      console.log("purchased_unit");
+      item.actual_quantity_in_minor_unit = parseInt(
+        item.actual_quantity * purchased_unit.pivot.contains
+      );
+
+      console.log(item.actual_quantity_in_minor_unit);
+    },
     product_unit_change(item) {
+      //alert(1)
       let purchased_unit = item.units.find(
         (elem) => elem.pivot.id == item.purchased_unit_id
       );
@@ -400,7 +418,12 @@ export default {
         item.purchase_details[0].quantity_in_minor_unit /
           purchased_unit.pivot.contains
       );
-      item.actual_quantity = item.current_quantity
+
+      item.actual_quantity = item.current_quantity;
+      item.actual_quantity_in_minor_unit = parseInt(
+        item.actual_quantity * purchased_unit.pivot.contains
+      );
+      this.someVariableUnderYourControl++;
     },
     getProducts(val, type) {
       if (val.length > 2) {
@@ -424,9 +447,9 @@ export default {
     },
 
     submit() {
-      console.log('this.stocktake');
+      console.log("this.stocktake");
       console.log(this.stocktake);
-      console.log('this.stocktake');
+      console.log("this.stocktake");
       if (this.is_new_stock)
         StockTake.store(this.stocktake).then((response) =>
           console.log(response.data)
@@ -461,7 +484,12 @@ export default {
         selected_product.units[selected_product.main_purchase_unit_id - 1].pivot
           .contains;
 
-selected_product.actual_quantity = selected_product.current_quantity
+      selected_product.actual_quantity = selected_product.current_quantity;
+      selected_product.actual_quantity_in_minor_unit = parseInt(
+        selected_product.actual_quantity *
+          selected_product.units[selected_product.main_purchase_unit_id - 1]
+            .pivot.contains
+      );
       this.stocktake.stock_take_details.unshift(selected_product);
       return;
     },
@@ -477,7 +505,12 @@ selected_product.actual_quantity = selected_product.current_quantity
 
         this.is_exists = [true];
 
-        this.selected_item = response.data.products[0];
+        response.data.products[0].actual_quantity = 0;
+        response.data.products[0].actual_quantity_in_minor_unit = 0;
+
+        this.selected_item = JSON.parse(
+          JSON.stringify(response.data.products[0])
+        );
 
         if (this.selected_item.purchase_details.length == 0) return;
         if (this.selected_item.purchase_details.length == 1) {
@@ -486,10 +519,13 @@ selected_product.actual_quantity = selected_product.current_quantity
         let products_grouped = true;
         if (products_grouped) {
           this.selected_item.purchase_details[0].quantity_in_minor_unit =
-            this.selected_item.purchase_details.reduce(
-              (a, b) => +a + +b.quantity_in_minor_unit,
-              0
-            );
+            this.selected_item.quantity_in_minor_unit;
+
+          // this.selected_item.purchase_details[0].quantity_in_minor_unit =
+          //   this.selected_item.purchase_details.reduce(
+          //     (a, b) => +a + +b.quantity_in_minor_unit,
+          //     0
+          //   );
           console.log("this.selected_item");
           console.log(this.selected_item);
           this.showThisProduct(this.selected_item);

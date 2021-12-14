@@ -57,7 +57,7 @@
                     label="الاسم العربي"
                     :rules="vld_minlingth.concat(isunique)"
                     @blur="
-                      checkExecting({
+                      checkExicting({
                         ar_name: product.ar_name,
                         flag: 'checkproducts',
                       })
@@ -71,7 +71,7 @@
                     label="الاسم الانجليزي"
                     :rules="vld_minlingth.concat(isunique)"
                     @blur="
-                      checkExecting({
+                      checkExicting({
                         en_name: product.en_name,
                         flag: 'checkproducts',
                       })
@@ -87,7 +87,7 @@
                     label=" الرقم التسلسلي (اضغط على G لتوليد رقم عشوائي)"
                     :rules="vld_minlingth.concat(isunique)"
                     @blur="
-                      checkExecting({
+                      checkExicting({
                         barcode: product.barcode,
                         flag: 'checkproducts',
                       })
@@ -254,7 +254,7 @@
                         label="الباركود"
                         :rules="vld_minlingth.concat(isunique)"
                         @blur="
-                          checkExecting({
+                          checkExicting({
                             barcode: product.barcode,
                             flag: 'checkproducts',
                           })
@@ -936,7 +936,7 @@ export default {
           });
       }
     },
-    checkExecting(item) {
+    checkExicting(item) {
       console.log(this.product);
 
       // Find if the array contains an object by comparing the property value

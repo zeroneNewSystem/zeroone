@@ -1,8 +1,8 @@
 <template>
-  <div>
+  <div style="margin-top: 20px">
     <v-row>
       <v-dialog v-model="dialog" persistent max-width="600px">
-        <v-card>
+        <v-card :loading="isloading">
           <v-card-title>
             <span class="text-h5">User Profile</span>
           </v-card-title>
@@ -13,6 +13,7 @@
                   <v-text-field
                     v-model="unit.ar_name"
                     label="اسم الوحدة العربي"
+                    :rules="is_exists"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" lg="6">
@@ -42,9 +43,7 @@
             <v-btn color="blue darken-1" text @click="dialog = false">
               الغاء
             </v-btn>
-            <v-btn color="blue darken-1" text @click="saveUnit">
-              حفظ
-            </v-btn>
+            <v-btn color="blue darken-1" text @click="saveUnit"> حفظ </v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -55,6 +54,7 @@
       :items="units"
       item-key="id"
       :search="search"
+      :loading="table_loading"
     >
       <template v-slot:top>
         <v-toolbar flat color="white">
@@ -107,10 +107,22 @@ import Unit from "../../../apis/Unit";
 export default {
   data() {
     return {
+      /*-------------------validators---------------------------*/
+      vld_minlingth_one: [(v) => v.length >= 1 || "أدخل قيمة"],
+      vld_selected: [(v) => v > 0 || "أدخل قيمة"],
+      required: [(value) => !!value || "الحقل مطلوب."],
+      isunique: [],
+      is_exists: [],
+      is_valid_date: [],
+      vld_numbering: [(v) => /^-?\d+\.?\d*$/.test(v) || "أدخل قيمة عددية"],
+      vld_match: [true],
+
+      table_loading: false,
+      isloading: false,
       operation: "add",
       dialog: false,
       search: "",
-      unit: "",
+      unit: { ar_name: "" },
       units: [],
       units_header: [
         {
@@ -139,8 +151,23 @@ export default {
   },
   methods: {
     saveUnit() {
+      // check if its exists
+
+      if (
+        this.units.findIndex(
+          (elem) => elem.ar_name == this.unit.ar_name.trim()
+        ) >= 0
+      ) {
+        this.is_exists = ["اسم الوحدة موجود مسبقا"];
+
+        return;
+      }
+
+      this.is_exists = [];
+      this.isloading = true;
       if (this.operation == "add") {
         Unit.create(this.unit).then((response) => {
+          this.isloading = false;
           this.dialog = false;
           this.units = response.data.units;
         });
@@ -149,6 +176,8 @@ export default {
       if (this.operation == "update") {
         Unit.update(this.unit).then((response) => {
           this.dialog = false;
+          this.isloading = false;
+
           this.units = response.data.units;
         });
         return;
@@ -180,14 +209,18 @@ export default {
       return true;
     },
     deleteUnit(item) {
+      this.table_loading = true
       Unit.delete(item.id).then((response) => {
+        this.table_loading = false
         this.units = response.data.units;
       });
     },
   },
 
   created() {
+    this.table_loading = true;
     Unit.getAll().then((response) => {
+      this.table_loading = false;
       this.units = response.data.units;
     });
   },

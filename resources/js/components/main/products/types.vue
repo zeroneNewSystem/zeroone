@@ -1,8 +1,8 @@
 <template>
-  <div>
+  <div style="margin-top: 20px">
     <v-row>
       <v-dialog v-model="dialog" persistent max-width="600px">
-        <v-card>
+        <v-card :loading="isloading">
           <v-card-title>
             <span class="text-h5">User Profile</span>
           </v-card-title>
@@ -12,7 +12,8 @@
                 <v-col cols="12" lg="6">
                   <v-text-field
                     v-model="type.ar_name"
-                    label="اسم الوحدة العربي"
+                    label="اسم النوع العربي"
+                    :rules="is_exists"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" lg="6">
@@ -24,7 +25,7 @@
                 <v-col cols="12" lg="6">
                   <v-text-field
                     v-model="type.en_name"
-                    label="اسم الوحدة بالانجليزي"
+                    label="اسم النوع بالانجليزي"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" lg="6">
@@ -42,9 +43,7 @@
             <v-btn color="blue darken-1" text @click="dialog = false">
               الغاء
             </v-btn>
-            <v-btn color="blue darken-1" text @click="saveType">
-              حفظ
-            </v-btn>
+            <v-btn color="blue darken-1" text @click="saveType"> حفظ </v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -55,19 +54,20 @@
       :items="types"
       item-key="id"
       :search="search"
+      :loading="table_loading"
     >
       <template v-slot:top>
         <v-toolbar flat color="white">
-          <v-toolbar-title>إدارة الوحدات</v-toolbar-title>
+          <v-toolbar-title>إدارة الأنواع</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-spacer></v-spacer>
 
-          <v-btn primary @click.stop="showDialog()"> إضافة وحدة </v-btn>
+          <v-btn primary @click.stop="showDialog()"> إضافة نوع </v-btn>
           <v-spacer></v-spacer>
         </v-toolbar>
         <v-text-field
           v-model="search"
-          label="ادخل معلومات الوحدة"
+          label="ادخل معلومات النوع"
           class="mx-4"
         ></v-text-field>
       </template>
@@ -107,10 +107,22 @@ import Type from "../../../apis/Type";
 export default {
   data() {
     return {
+      /*-------------------validators---------------------------*/
+      vld_minlingth_one: [(v) => v.length >= 1 || "أدخل قيمة"],
+      vld_selected: [(v) => v > 0 || "أدخل قيمة"],
+      required: [(value) => !!value || "الحقل مطلوب."],
+      isunique: [],
+      is_exists: [],
+      is_valid_date: [],
+      vld_numbering: [(v) => /^-?\d+\.?\d*$/.test(v) || "أدخل قيمة عددية"],
+      vld_match: [true],
+
+      table_loading: false,
+      isloading: false,
       operation: "add",
       dialog: false,
       search: "",
-      type: "",
+      type: { ar_name: "" },
       types: [],
       types_header: [
         {
@@ -139,8 +151,23 @@ export default {
   },
   methods: {
     saveType() {
+      // check if its exists
+
+      if (
+        this.types.findIndex(
+          (elem) => elem.ar_name == this.type.ar_name.trim()
+        ) >= 0
+      ) {
+        this.is_exists = ["اسم النوع موجود مسبقا"];
+
+        return;
+      }
+
+      this.is_exists = [];
+      this.isloading = true;
       if (this.operation == "add") {
         Type.create(this.type).then((response) => {
+          this.isloading = false;
           this.dialog = false;
           this.types = response.data.types;
         });
@@ -149,6 +176,8 @@ export default {
       if (this.operation == "update") {
         Type.update(this.type).then((response) => {
           this.dialog = false;
+          this.isloading = false;
+
           this.types = response.data.types;
         });
         return;
@@ -180,14 +209,18 @@ export default {
       return true;
     },
     deleteType(item) {
+      this.table_loading = true
       Type.delete(item.id).then((response) => {
+        this.table_loading = false
         this.types = response.data.types;
       });
     },
   },
 
   created() {
+    this.table_loading = true;
     Type.getAll().then((response) => {
+      this.table_loading = false;
       this.types = response.data.types;
     });
   },

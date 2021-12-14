@@ -8,6 +8,7 @@ use App\Modules\Admin\Accounts\Models\Transaction;
 use App\Modules\Admin\people\Models\Person;
 use App\Modules\Admin\people\Models\Supplier;
 use App\Modules\Admin\Products\Models\Inventory;
+use App\Modules\Admin\Products\Models\Product;
 use App\Modules\Admin\Purchases\Models\Purchase;
 use App\Modules\Admin\Purchases\Models\PurchaseDetail;
 use App\Traits\AccountTrait;
@@ -314,19 +315,23 @@ class PurchaseController extends Controller
 
         foreach ($request->purchase_details as $purchase_detail) {
             //transaction  inventory-
-
+            Product::find($purchase_detail['id'])->increment('quantity_in_minor_unit',$purchase_detail['quantity_in_minor_unit']);
+            
+            
+             
+            
 
             //$account_id = (PurchaseDetail::where()->get())['account_id'];
 
 
-            $Inventory_account_id = Inventory::find($purchase_detail['inventory_id'])['account_id'];
+            $inventory_account_id = Inventory::find($purchase_detail['inventory_id'])['account_id'];
 
 
 
 
             $entry = [
                 "company_id" => 1,
-                "account_id" => $Inventory_account_id,
+                "account_id" => $inventory_account_id,
                 "debit" =>  $purchase_detail['total'],
                 "credit" => 0,
                 "document_id" => $purchase->id,
@@ -479,14 +484,14 @@ class PurchaseController extends Controller
             //$account_id = (PurchaseDetail::where()->get())['account_id'];
 
 
-            $Inventory_account_id = Inventory::find($purchase_detail['inventory_id'])['account_id'];
+            $inventory_account_id = Inventory::find($purchase_detail['inventory_id'])['account_id'];
 
 
 
 
             $entry = [
                 "company_id" => 1,
-                "account_id" => $Inventory_account_id,
+                "account_id" => $inventory_account_id,
                 "debit" =>  $purchase_detail['total'],
                 "credit" => 0,
                 "document_id" => $purchase->id,

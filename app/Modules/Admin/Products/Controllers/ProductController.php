@@ -119,21 +119,22 @@ class ProductController extends Controller
      * @param  \Illuminate\Http\Reqponuest  $request
      * @return \Illuminate\Http\Resse
      */
-    public function store(Request $request)
+    public function store(Request $req)
     {
 
+        //return $req;
         //
 
 
-        // $usr = User::findOrFail($userId)->create($request->all());
-        // $usr->buy()->attach($request->codecs);
+        // $usr = User::findOrFail($userId)->create($req->all());
+        // $usr->buy()->attach($req->codecs);
 
-        if ($request->image != 'no-image.png')
-            $request['image'] = $this->save_image($request);
+        if ($req->image != 'no-image.png')
+            $req['image'] = $this->save_image($req);
 
-        $product = Product::create($request->all());
-        $product->units()->attach($request->prdct_units);
-        $product->groups()->attach($request->prdct_group_ids, ['company_id' => 1]);
+        $product = Product::create($req->all());
+        $product->units()->attach($req->prdct_units);
+        $product->groups()->attach($req->prdct_group_ids, ['company_id' => 1]);
 
         return $product;
     }
@@ -207,6 +208,7 @@ class ProductController extends Controller
         $res = Product::where('id', $request->id)->delete();
 
         $products = Product::where('ar_name', 'LIKE', '%' . $request->search . '%')
+        ->orderBy('id', 'DESC')
             // ->orWhere('en_name', 'LIKE', '%' . $request->search . '%')
             // ->orWhere('barcode', 'LIKE', '%' . $request->search . '%')
             ->paginate($request->itemsPerPage != -1 ? $request->itemsPerPage : '');

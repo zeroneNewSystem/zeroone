@@ -25,7 +25,7 @@ class Route
         // функция str_replace здесь нужна, для экранирования всех прямых слешей
         // так как они используются в качестве маркеров регулярного выражения
         $pattern = '/^' . str_replace('/', '\/', $pattern) . '$/';
-
+        
         self::$routes[$pattern] = $callback;
     }
 
@@ -34,6 +34,7 @@ class Route
     // соответствие адресам, хранящимся в массиве $routes
     public static function execute($url)
     {
+        
         foreach (self::$routes as $pattern => $callback) {
             if (preg_match($pattern, $url, $params)) // сравнение идет через регулярное выражение
             {
@@ -292,6 +293,44 @@ Route::route('/api/extra/cities/(\d+)', function ($country_id) {
     echo json_encode(['cities' => $products], JSON_NUMERIC_CHECK);
 });
 
+Route::route('/api/extra/product/exists/ar_name/(.+)', function ($ar_name) {
+    
+    $database = new Connection();
+    $db = $database->open();
+    $sth = $db->prepare("SELECT * FROM products WHERE ar_name =:ar_name");
+    $sth->execute(['ar_name' => $ar_name]);
+
+    $products = $sth->fetchAll(\PDO::FETCH_ASSOC);
+
+
+    $database->close();
+    echo json_encode(['products' => $products], JSON_NUMERIC_CHECK);
+});
+Route::route('/api/extra/product/exists/en_name/(.+)', function ($en_name) {
+    
+    $database = new Connection();
+    $db = $database->open();
+    $sth = $db->prepare("SELECT * FROM products WHERE en_name =:en_name");
+    $sth->execute(['en_name' => $en_name]);
+
+    $products = $sth->fetchAll(\PDO::FETCH_ASSOC);
+
+
+    $database->close();
+    echo json_encode(['products' => $products], JSON_NUMERIC_CHECK);
+});
+Route::route('/api/extra/product/exists/barcode/(\d+)', function ($barcode) {
+    $database = new Connection();
+    $db = $database->open();
+    $sth = $db->prepare("SELECT * FROM products WHERE barcode =:barcode");
+    $sth->execute(['barcode' => $barcode]);
+
+    $products = $sth->fetchAll(\PDO::FETCH_ASSOC);
+
+
+    $database->close();
+    echo json_encode(['products' => $products], JSON_NUMERIC_CHECK);
+});
 
 // запускаем маршрутизатор, передавая ему запрошенный адрес
 Route::execute($_SERVER['REQUEST_URI']);

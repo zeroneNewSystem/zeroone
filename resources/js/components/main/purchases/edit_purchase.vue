@@ -36,7 +36,7 @@
                     v-model="purchase.purchase_reference"
                     prefix=" رقم المرجع | "
                     :rules="required.concat(isunique)"
-                    @blur="checkExecting()"
+                    @blur="checkExicting()"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" class="pa-0">
@@ -1008,7 +1008,7 @@ export default {
       console.log("nib", this.purchase.purchase_details);
       this.selected_product = [];
     },
-    checkExecting() {},
+    checkExicting() {},
     submit() {
       Purchase.store(this.purchase).then((response) =>
         console.log(response.data)

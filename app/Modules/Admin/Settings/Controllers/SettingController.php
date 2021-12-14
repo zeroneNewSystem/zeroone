@@ -46,7 +46,10 @@ class SettingController extends Controller
      */
     public function index()
     {
-        return 1;
+        app('valuestore')->put('EUR', 20);
+        app('valuestore')->put('products_grouped', true);
+
+        return app('settings')['EUR'];
     }
 
     public function export()

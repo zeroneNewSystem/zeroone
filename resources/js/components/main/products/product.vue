@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="margin-top: 20px">
     <svg
       class="printclass"
       id="barcode"
@@ -54,6 +54,17 @@
                 {{ formTitle }}
               </v-col>
               <v-col cols="12" lg="4">
+                <v-autocomplete
+                  label="نوع الصنف"
+                  v-model="product.prdct_type_id"
+                  :items="prdct_types"
+                  item-text="ar_name"
+                  item-value="id"
+                  :rules="required"
+                  @change="productType"
+                ></v-autocomplete>
+              </v-col>
+              <v-col cols="12" lg="4">
                 <v-checkbox
                   v-model="product.is_active"
                   style="
@@ -62,11 +73,12 @@
                     margin-right: 5px;
                   "
                   color="#e91e63"
-                  label="إيقاف التعامل بالمنتج"
+                  label="المنتج نشط"
                 ></v-checkbox>
               </v-col>
             </v-row>
           </v-card-title>
+          <v-divider></v-divider>
           <v-card-text>
             <v-container>
               <v-row>
@@ -75,13 +87,8 @@
                     autocomplete="off"
                     v-model="product.ar_name"
                     label="الاسم العربي"
-                    :rules="required.concat(isunique)"
-                    @blur="
-                      checkExecting({
-                        ar_name: product.ar_name,
-                        flag: 'checkproducts',
-                      })
-                    "
+                    :rules="required.concat(ar_name_unique)"
+                    @blur="checkExicting('ar_name')"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12" lg="4">
@@ -89,16 +96,11 @@
                     autocomplete="off"
                     v-model="product.en_name"
                     label="الاسم الانجليزي"
-                    :rules="required.concat(isunique)"
-                    @blur="
-                      checkExecting({
-                        en_name: product.en_name,
-                        flag: 'checkproducts',
-                      })
-                    "
+                    :rules="required.concat(en_name_unique)"
+                    @blur="checkExicting('en_name')"
                   ></v-text-field>
                 </v-col>
-                <v-col cols="12" lg="4">
+                <v-col cols="12" lg="4" v-if="false">
                   <v-text-field
                     autocomplete="off"
                     append-icon="mdi-alpha-g-circle"
@@ -106,12 +108,7 @@
                     v-model="product.serial_number"
                     label=" الرقم التسلسلي (اضغط على G لتوليد رقم عشوائي)"
                     :rules="required.concat(isunique)"
-                    @blur="
-                      checkExecting({
-                        barcode: product.barcode,
-                        flag: 'checkproducts',
-                      })
-                    "
+                    @blur="checkExicting('serial')"
                   ></v-text-field>
                 </v-col>
 
@@ -129,17 +126,8 @@
                   >
                   </v-autocomplete>
                 </v-col>
-                <v-col cols="12" lg="4">
-                  <v-autocomplete
-                    label="نوع الصنف"
-                    v-model="product.prdct_type_id"
-                    :items="prdct_types"
-                    item-text="ar_name"
-                    item-value="id"
-                    :rules="required"
-                  ></v-autocomplete>
-                </v-col>
-                <v-col cols="12" lg="4">
+
+                <v-col cols="12" lg="4" v-if="false">
                   <v-autocomplete
                     v-model="product.prdct_form_id"
                     :disabled="!!isUpdating"
@@ -152,7 +140,7 @@
                   >
                   </v-autocomplete>
                 </v-col>
-                <v-col cols="12" lg="3">
+                <v-col cols="12" lg="4" v-if="sales_tax">
                   <v-text-field
                     autocomplete="off"
                     v-model="product.sales_tax"
@@ -161,7 +149,7 @@
                     value="0"
                   ></v-text-field>
                 </v-col>
-                <v-col cols="12" lg="3">
+                <v-col cols="12" lg="4" v-if="purchase_tax">
                   <v-text-field
                     autocomplete="off"
                     v-model="product.purchase_tax"
@@ -171,7 +159,7 @@
                   ></v-text-field>
                 </v-col>
 
-                <v-col cols="12" lg="3">
+                <v-col cols="12" lg="4" v-if="min_alert">
                   <v-text-field
                     autocomplete="off"
                     v-model="product.min_alert"
@@ -180,7 +168,7 @@
                     value="0"
                   ></v-text-field>
                 </v-col>
-                <v-col cols="12" lg="3">
+                <v-col cols="12" lg="4" v-if="max_alert">
                   <v-text-field
                     autocomplete="off"
                     v-model="product.max_alert"
@@ -189,7 +177,7 @@
                     value="0"
                   ></v-text-field>
                 </v-col>
-                <v-col cols="12" lg="3">
+                <v-col cols="12" lg="4" v-if="stagnation_period">
                   <v-text-field
                     autocomplete="off"
                     v-model="product.stagnation_period"
@@ -199,10 +187,10 @@
                   ></v-text-field>
                 </v-col>
 
-                <v-col cols="12" align="right">
+                <v-col cols="12" align="right" v-if="has_units">
                   <label for=""> وحدات الصنف مرتبة من الأصغر للأعلى</label>
                 </v-col>
-                <v-col cols="12" align="right">
+                <v-col cols="12" align="right" v-if="has_units">
                   <v-row>
                     <v-data-table
                       hide-default-footer
@@ -331,7 +319,7 @@
 
                 <v-col cols="12" lg="12">
                   <v-row>
-                    <v-col cols="12" lg="2">
+                    <v-col cols="12" lg="2" v-if="is_storable">
                       <v-checkbox
                         v-model="product.is_storable"
                         class
@@ -350,7 +338,7 @@
                   </v-row>
                 </v-col>
 
-                <v-col cols="12">
+                <v-col cols="12" v-if="is_sellable">
                   <v-row>
                     <v-col cols="12" lg="2"
                       ><v-checkbox
@@ -375,7 +363,7 @@
                         item-text="ar_name"
                         item-value="id"
                         :rules="required"
-                        v-if="product.is_sellable"
+                        v-if="product.is_sellable && is_sellable"
                       ></v-autocomplete
                     ></v-col>
                     <v-col cols="6" lg="3"
@@ -410,7 +398,7 @@
                 </v-col>
                 <v-col cols="12">
                   <v-row>
-                    <v-col cols="12" lg="2"
+                    <v-col cols="12" lg="2" v-if="is_purchasable"
                       ><v-checkbox
                         :disabled="!!product.is_storable"
                         v-model="product.is_purchasable"
@@ -433,18 +421,18 @@
                         item-text="ar_name"
                         item-value="id"
                         :rules="required"
-                        v-if="product.is_purchasable"
+                        v-if="product.is_purchasable && is_purchasable"
                       ></v-autocomplete
                     ></v-col>
                     <v-col cols="6" lg="3"
                       ><v-autocomplete
-                        label="حساب مردود المشتتريات"
+                        label="حساب مردود المشتريات"
                         v-model="product.product_purchase_return_account_id"
                         :items="product_purchase_return_accounts"
                         item-text="ar_name"
                         item-value="id"
                         :rules="required"
-                        v-if="product.is_purchasable"
+                        v-if="product.is_purchasable && is_purchasable"
                       ></v-autocomplete
                     ></v-col>
                     <v-col cols="6" lg="2">
@@ -452,6 +440,7 @@
                         autocomplete="off"
                         v-model="product.purchase_discount"
                         label="خصم عند الشراء"
+                        v-if="product.is_purchasable && is_purchasable"
                       ></v-text-field>
                     </v-col>
                     <v-col cols="6" lg="2">
@@ -462,6 +451,7 @@
                         item-text="ar_name"
                         item-value="id"
                         :rules="required"
+                        v-if="product.is_purchasable && is_purchasable"
                       ></v-autocomplete>
                     </v-col>
                   </v-row>
@@ -470,14 +460,14 @@
                 <v-col cols="12" lg="12"> </v-col>
                 <v-col cols="12" lg="12"> </v-col>
 
-                <v-col cols="12" lg="3">
+                <v-col cols="12" lg="3" v-if="is_storable">
                   <v-text-field
                     autocomplete="off"
                     v-model="product.opening_balance_quantity"
                     label=" الرصيد الافتتاحي من وحدة الشراء الافتراضية"
                   ></v-text-field>
                 </v-col>
-                <v-col cols="12" lg="3">
+                <v-col cols="12" lg="3" v-if="is_storable">
                   <v-autocomplete
                     label="اسم المخزن"
                     v-model="product.inventory_id"
@@ -494,7 +484,7 @@
                     label=" متوسط تكلفة الوحدة"
                   ></v-text-field>
                 </v-col>
-                <v-col cols="12" lg="3">
+                <v-col cols="12" lg="3" v-if="false">
                   <v-autocomplete
                     label="سياسة التوزيع"
                     v-model="product.distribution_policy_id"
@@ -546,7 +536,7 @@
                     label="السماح بالبونص عند البيع"
                   ></v-checkbox>
                 </v-col>
-                <v-col cols="12" lg="3">
+                <v-col cols="12" lg="3" v-if="has_expiration_date">
                   <v-checkbox
                     v-model="product.has_expiration_date"
                     style="
@@ -766,7 +756,11 @@ export default {
       /*-------------------validators---------------------------*/
       vld_minlingth_one: [(v) => v.length >= 1 || "أدخل قيمة"],
       required: [(value) => !!value || "الحقل مطلوب."],
-      isunique: [],
+      ar_name_unique: [],
+      en_name_unique: [],
+      barcode_unique: [],
+      serial_unique: [],
+
       vld_numbering: [(v) => /^-?\d+\.?\d*$/.test(v) || "أدخل قيمة عددية"],
 
       /*-----------------------product---------------------------*/
@@ -784,7 +778,7 @@ export default {
 
             purchase_price: "9",
             sales_price: "8",
-            barcode: "0",
+            barcode: "",
           },
         ],
 
@@ -796,6 +790,8 @@ export default {
 
         product_cogs_account_id: 1,
         product_sales_account_id: 1,
+        product_purchase_return_account_id: 1,
+        product_sales_return_account_id: 1,
 
         sales_discount: 10,
         sales_discount_type_id: 1,
@@ -858,6 +854,57 @@ export default {
   },
 
   computed: {
+    purchase_tax() {
+      let true_for = [1, 3];
+      if (true_for.indexOf(this.product.prdct_type_id) > -1) return true;
+      return false;
+    },
+    sales_tax() {
+      let false_for = [5];
+      if (false_for.indexOf(this.product.prdct_type_id) > -1) return false;
+      return true;
+    },
+    min_alert() {
+      let false_for = [2];
+      if (false_for.indexOf(this.product.prdct_type_id) > -1) return false;
+      return true;
+    },
+    max_alert() {
+      let false_for = [2];
+      if (false_for.indexOf(this.product.prdct_type_id) > -1) return false;
+      return true;
+    },
+    stagnation_period() {
+      let false_for = [2];
+      if (false_for.indexOf(this.product.prdct_type_id) > -1) return false;
+      return true;
+    },
+    has_units() {
+      let false_for = [2];
+      if (false_for.indexOf(this.product.prdct_type_id) > -1) return false;
+      return true;
+    },
+    is_storable() {
+      let false_for = [2];
+      if (false_for.indexOf(this.product.prdct_type_id) > -1) return false;
+      return true;
+    },
+    is_sellable() {
+      let false_for = [5];
+      if (false_for.indexOf(this.product.prdct_type_id) > -1) return false;
+      return true;
+    },
+    is_purchasable() {
+      let false_for = [2];
+      if (false_for.indexOf(this.product.prdct_type_id) > -1) return false;
+      return true;
+    },
+    has_expiration_date() {
+      let false_for = [2];
+      if (false_for.indexOf(this.product.prdct_type_id) > -1) return false;
+      return true;
+    },
+
     fromUnit() {
       this.product.minor_unit = this.product.prdct_units[0].prdct_unit_id;
 
@@ -907,6 +954,9 @@ export default {
   },
 
   methods: {
+    productType() {
+      console.log(this.product.prdct_type_id);
+    },
     productConverter(product) {
       if (product.image == "" || product.image == "no-image.png")
         product.image = "no-image.png";
@@ -1105,29 +1155,54 @@ export default {
           .then((response) => {
             console.log(response.data);
             if (response.data.length !== 0)
-              this.isunique = [false || "الصنف موجود مسبقا"];
-            else this.isunique = [true];
+              this.ar_name_unique = [false || "الصنف موجود مسبقا"];
+            else this.ar_name_unique = [true];
             this.loading = false;
           });
       }
     },
-    checkExecting(item) {
-      console.log(this.product);
-
-      // Find if the array contains an object by comparing the property value
-      if (Object.keys(item)[0].length > 2) {
-        this.loading = true;
-        item.filename = "products";
-        // Simulated ajax query ajax
-        axios.post("router.php", item).then((response) => {
+    checkExicting(type) {
+      if (type == "ar_name") {
+        Product.isExist({
+          type: "ar_name",
+          what_to_search: this.product.ar_name,
+        }).then((response) => {
           console.log(response.data);
 
-          if (response.data !== 0)
-            this.isunique = [false || "الصنف موجود مسبقا"];
-          else this.isunique = [true];
+          if (response.data.products.length !== 0)
+            this.ar_name_unique = ["الصنف موجود مسبقا"];
+          else this.ar_name_unique = [];
           this.loading = false;
         });
+        return;
       }
+      if (type == "en_name") {
+        Product.isExist({
+          type: "en_name",
+          what_to_search: this.product.en_name,
+        }).then((response) => {
+          console.log(response.data);
+
+          if (response.data.products.length !== 0)
+            this.en_name_unique = ["الصنف موجود مسبقا"];
+          else this.en_name_unique = [];
+          this.loading = false;
+        });
+        return;
+      }
+
+      this.loading = true;
+      item.filename = "products";
+      // Simulated ajax query ajax
+      axios.post("router.php", item).then((response) => {
+        console.log(response.data);
+
+        if (response.data !== 0) this.isunique = [false || "الصنف موجود مسبقا"];
+        else this.isunique = [true];
+        this.loading = false;
+      });
+
+      // Find if the array contains an object by comparing the property value
     },
     mathopertion() {
       this.product.currentQuan = eval(this.product.currentQuan);
@@ -1136,29 +1211,61 @@ export default {
       this.selectedGroups = [];
       this.product = this.product = JSON.parse(
         JSON.stringify({
-          returnable: "1",
-          selectedForms: [],
-          selectedGroups: [],
-          selectedGroups: [],
-          name: "",
-          barcode: "",
-          brand_name: "",
-          arabic_name: "",
-          selling_discount: 0,
+          company_id: "1",
 
-          img_link: "",
-          country: "",
-          tax: "0",
-          side_effect: "",
-          description: "",
-          alert_quantity: 0,
-          selling_price: 0,
-          purchasingprice: 0,
-          store_id: "",
-          company: "",
-          alternative: "",
-          profitRatio: 0,
-          user_id: "",
+          serial_number: "serial_number",
+          ar_name: "ar_name",
+          en_name: "en_name",
+          prdct_units: [
+            {
+              id: "",
+              prdct_unit_id: 1,
+              contains: 1,
+
+              purchase_price: "9",
+              sales_price: "8",
+              barcode: "",
+            },
+          ],
+
+          prdct_group_ids: [1, 2],
+          prdct_form_id: 1,
+          prdct_type_id: 1,
+          main_sales_unit_id: 1,
+          main_purchase_unit_id: 1,
+
+          product_cogs_account_id: 1,
+          product_sales_account_id: 1,
+          product_purchase_return_account_id: 1,
+          product_sales_return_account_id: 1,
+
+          sales_discount: 10,
+          sales_discount_type_id: 1,
+          purchase_discount: 10,
+          purchase_discount_type_id: 1,
+          purchase_tax: 1,
+          sales_tax: 1,
+          min_alert: 1,
+          max_alert: 10,
+          stagnation_period: 100,
+          opening_balance_quantity: 200,
+          opening_balance_cost: 150,
+          profit_ratio: 5.4,
+          side_effect: "side_effect",
+          description: "description",
+          inventory_id: 1,
+          image: "no-image.png",
+
+          distribution_policy_id: 1,
+          is_free: true,
+          is_bonus: false,
+          is_active: true,
+          is_avilable_in_POS: true,
+          is_sellable: true,
+          is_purchasable: true,
+          is_returnable: true,
+          is_storable: true,
+          has_expiration_date: true,
         })
       );
     },
@@ -1197,22 +1304,23 @@ export default {
     },
     submit() {
       console.log(this.product);
-
-      if (this.new_product) {
-        Product.store(this.product).then((response) => {
+      if (this.$refs.form.validate()) {
+        if (this.new_product) {
+          Product.store(this.product).then((response) => {
+            console.log("response.data", response.data);
+            this.snackbar = true;
+            this.loading = false;
+            //this.initializeformproduct();
+            
+            console.log("nibtsas");
+            this.$refs.form.resetValidation();
+          });
+          return;
+        }
+        Product.update(this.product).then((response) => {
           console.log("response.data", response.data);
-          // this.snackbar = true;
-          // this.loading = false;
-          // this.initializeformproduct();
-          // console.log(this.initializeformproduct());
-          // console.log("nibtsas");
-          // this.$refs.form.resetValidation();
         });
-        return;
       }
-      Product.update(this.product).then((response) => {
-        console.log("response.data", response.data);
-      });
       //return;
       //if (this.$refs.form.validate()) {
 

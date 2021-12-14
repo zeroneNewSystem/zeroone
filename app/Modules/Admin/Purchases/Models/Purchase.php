@@ -13,7 +13,7 @@ class Purchase extends Model
     use HasFactory;
     public function purchase_details(){
         return $this->hasMany(PurchaseDetail::class,'document_id'); 
-    }
+    }   
     public function person()
     {
         return $this->belongsTo(Person::class,'supplier_id', 'id');

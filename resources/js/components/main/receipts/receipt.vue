@@ -10,7 +10,7 @@
               autocomplete="off"
               v-model="receipt.receipt_reference"
               prefix=" رقم المرجع | "
-              @blur="checkExecting()"
+              @blur="checkExicting()"
             ></v-text-field>
           </v-col>
           <v-col cols="12" lg="10" class="pt-0 pb-0">
@@ -51,7 +51,7 @@
               item-text="ar_name"
               item-value="id"
               prefix=" النوع | "
-              @blur="checkExecting()"
+              @blur="checkExicting()"
             ></v-autocomplete>
           </v-col>
           <v-col cols="12" lg="10" class="pt-0 pb-0">
@@ -61,7 +61,7 @@
               autocomplete="off"
               v-model="receipt.description"
               prefix=" الوصف | "
-              @blur="checkExecting()"
+              @blur="checkExicting()"
             ></v-text-field>
           </v-col>
           <v-col cols="12" lg="10" class="pt-0 pb-0">
@@ -98,7 +98,7 @@
               autocomplete="off"
               v-model="receipt.amount"
               prefix=" المبلغ | "
-              @blur="checkExecting()"
+              @blur="checkExicting()"
             ></v-text-field>
           </v-col>
         </v-row>
@@ -248,7 +248,7 @@ export default {
         this.suppliers.find((elem) => elem.id == this.receipt.person_id)
       );
     },
-    checkExecting() {},
+    checkExicting() {},
     submit() {
       /* remove zero amount or not account methods */
       // this.purchase.payment_methods = this.purchase.payment_methods.filter(

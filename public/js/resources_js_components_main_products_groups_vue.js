@@ -126,10 +126,31 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
+      /*-------------------validators---------------------------*/
+      vld_minlingth_one: [function (v) {
+        return v.length >= 1 || "أدخل قيمة";
+      }],
+      vld_selected: [function (v) {
+        return v > 0 || "أدخل قيمة";
+      }],
+      required: [function (value) {
+        return !!value || "الحقل مطلوب.";
+      }],
+      isunique: [],
+      is_exists: [],
+      is_valid_date: [],
+      vld_numbering: [function (v) {
+        return /^-?\d+\.?\d*$/.test(v) || "أدخل قيمة عددية";
+      }],
+      vld_match: [true],
+      table_loading: false,
+      isloading: false,
       operation: "add",
       dialog: false,
       search: "",
-      group: "",
+      group: {
+        ar_name: ""
+      },
       groups: [],
       groups_header: [{
         text: " الاسم العربي ",
@@ -154,8 +175,20 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     saveGroup: function saveGroup() {
       var _this = this;
 
+      // check if its exists
+      if (this.groups.findIndex(function (elem) {
+        return elem.ar_name == _this.group.ar_name.trim();
+      }) >= 0) {
+        this.is_exists = ["اسم المجموعة موجود مسبقا"];
+        return;
+      }
+
+      this.is_exists = [];
+      this.isloading = true;
+
       if (this.operation == "add") {
         _apis_Group__WEBPACK_IMPORTED_MODULE_0__.default.create(this.group).then(function (response) {
+          _this.isloading = false;
           _this.dialog = false;
           _this.groups = response.data.groups;
         });
@@ -165,6 +198,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       if (this.operation == "update") {
         _apis_Group__WEBPACK_IMPORTED_MODULE_0__.default.update(this.group).then(function (response) {
           _this.dialog = false;
+          _this.isloading = false;
           _this.groups = response.data.groups;
         });
         return;
@@ -198,7 +232,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     deleteGroup: function deleteGroup(item) {
       var _this2 = this;
 
+      this.table_loading = true;
       _apis_Group__WEBPACK_IMPORTED_MODULE_0__.default.delete(item.id).then(function (response) {
+        _this2.table_loading = false;
         _this2.groups = response.data.groups;
       });
     }
@@ -206,7 +242,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   created: function created() {
     var _this3 = this;
 
+    this.table_loading = true;
     _apis_Group__WEBPACK_IMPORTED_MODULE_0__.default.getAll().then(function (response) {
+      _this3.table_loading = false;
       _this3.groups = response.data.groups;
     });
   }
@@ -329,6 +367,7 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "div",
+    { staticStyle: { "margin-top": "20px" } },
     [
       _c(
         "v-row",
@@ -348,6 +387,7 @@ var render = function() {
             [
               _c(
                 "v-card",
+                { attrs: { loading: _vm.isloading } },
                 [
                   _c("v-card-title", [
                     _c("span", { staticClass: "text-h5" }, [
@@ -369,7 +409,10 @@ var render = function() {
                                 { attrs: { cols: "12", lg: "6" } },
                                 [
                                   _c("v-text-field", {
-                                    attrs: { label: "اسم الوحدة العربي" },
+                                    attrs: {
+                                      label: "اسم المجموعة العربي",
+                                      rules: _vm.is_exists
+                                    },
                                     model: {
                                       value: _vm.group.ar_name,
                                       callback: function($$v) {
@@ -410,7 +453,7 @@ var render = function() {
                                 { attrs: { cols: "12", lg: "6" } },
                                 [
                                   _c("v-text-field", {
-                                    attrs: { label: "اسم الوحدة بالانجليزي" },
+                                    attrs: { label: "اسم المجموعة بالانجليزي" },
                                     model: {
                                       value: _vm.group.en_name,
                                       callback: function($$v) {
@@ -481,7 +524,7 @@ var render = function() {
                           attrs: { color: "blue darken-1", text: "" },
                           on: { click: _vm.saveGroup }
                         },
-                        [_vm._v("\n            حفظ\n          ")]
+                        [_vm._v(" حفظ ")]
                       )
                     ],
                     1
@@ -501,7 +544,8 @@ var render = function() {
           headers: _vm.groups_header,
           items: _vm.groups,
           "item-key": "id",
-          search: _vm.search
+          search: _vm.search,
+          loading: _vm.table_loading
         },
         scopedSlots: _vm._u([
           {
@@ -512,7 +556,7 @@ var render = function() {
                   "v-toolbar",
                   { attrs: { flat: "", color: "white" } },
                   [
-                    _c("v-toolbar-title", [_vm._v("إدارة الوحدات")]),
+                    _c("v-toolbar-title", [_vm._v("إدارة المجموعات")]),
                     _vm._v(" "),
                     _c("v-divider", {
                       staticClass: "mx-4",
@@ -532,7 +576,7 @@ var render = function() {
                           }
                         }
                       },
-                      [_vm._v(" إضافة وحدة ")]
+                      [_vm._v(" إضافة مجموعة ")]
                     ),
                     _vm._v(" "),
                     _c("v-spacer")
@@ -542,7 +586,7 @@ var render = function() {
                 _vm._v(" "),
                 _c("v-text-field", {
                   staticClass: "mx-4",
-                  attrs: { label: "ادخل معلومات الوحدة" },
+                  attrs: { label: "ادخل معلومات المجموعة" },
                   model: {
                     value: _vm.search,
                     callback: function($$v) {

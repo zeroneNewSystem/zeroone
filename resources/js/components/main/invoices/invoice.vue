@@ -1007,7 +1007,7 @@ export default {
       console.log("nib", this.invoice.sales_details);
       this.selected_product = [];
     },
-    checkExecting() {},
+    checkExicting() {},
     submit() {
       if (this.is_new_invoice)
         Invoice.store(this.invoice).then((response) =>

@@ -9,7 +9,7 @@
 
     <v-list-group
       v-for="main_item in main_menu"
-      :key="main_item"
+      :key="main_item.name"
       :prepend-icon="main_item.icon"
     >
       <template v-slot:activator>
@@ -18,7 +18,7 @@
       <v-list-item
         v-for="sub_item in main_item.sub_menu"
         :to="sub_item.link"
-        :key="sub_item"
+        :key="sub_item.name"
         link
         exact
       >
@@ -30,35 +30,36 @@
         <v-list-item-title v-text="sub_item.name"></v-list-item-title>
       </v-list-item>
     </v-list-group>
-
-
-    <div>--</div>
-    <div>--</div>
-
+    <v-list-item color="black--text" to="/" class="text-right align-self-start">
+      <v-list-item-icon>
+        <v-icon>mdi-view-dashboard</v-icon>
+      </v-list-item-icon>
+      <v-list-item-title>التقارير</v-list-item-title>
+    </v-list-item>
     <v-list-group
-      v-for="j in sidebaritems.length"
-      :to="'/' + sidebarroutes[j - 1][0]"
-      :key="j"
-      :prepend-icon="sidebaritems[j - 1][1]"
+      v-for="main_item in under_menu"
+      :key="main_item.name"
+      :prepend-icon="main_item.icon"
     >
       <template v-slot:activator>
-        <v-list-item-title>{{ sidebaritems[j - 1][0] }}</v-list-item-title>
+        <v-list-item-title>{{ main_item.name }} </v-list-item-title>
       </template>
       <v-list-item
-        v-for="i in sidebaritems[j - 1].length - 2"
-        :to="'/' + sidebarroutes[j - 1][i - 1]"
-        :key="i"
+        v-for="sub_item in main_item.sub_menu"
+        :to="sub_item.link"
+        :key="sub_item.name"
         link
         exact
       >
         <v-list-item-icon>
-          <v-icon>mdi-view-dashboard</v-icon>
+          <v-icon>{{
+            sub_item.icon != "" ? sub_item.icon : "mdi-view-dashboard"
+          }}</v-icon>
         </v-list-item-icon>
-        <v-list-item-title
-          v-text="sidebaritems[j - 1][i + 1]"
-        ></v-list-item-title>
+        <v-list-item-title v-text="sub_item.name"></v-list-item-title>
       </v-list-item>
     </v-list-group>
+    
   </v-list>
 </template>
 
@@ -66,6 +67,33 @@
 export default {
   data: () => ({
     main_menu: [
+      {
+        name: "المبيعات",
+        icon: "mdi-shopping",
+        sub_menu: [
+          {
+            name: "العملاء",
+            link: "suppliers",
+            icon: "",
+          },
+          {
+            name: " عروض الأسعار",
+            link: "purchases",
+            icon: "",
+          },
+          {
+            name: "فواتير المبيعات",
+            link: "purchase_orders",
+            icon: "",
+          },
+          {
+            name: "سندات العملاء",
+            link: "receipts",
+            icon: "",
+          },
+        ],
+      },
+
       {
         name: "المشتريات",
         icon: "mdi-shopping",
@@ -123,93 +151,119 @@ export default {
           },
         ],
       },
+      {
+        name: "المحاسبة",
+        icon: "mdi-source-fork",
+        sub_menu: [
+          {
+            name: "حركة أموال",
+            link: "units",
+            icon: "",
+          },
+          {
+            name: "إضافة رأس مال",
+            link: "types",
+            icon: "",
+          },
+          {
+            name: "إهلاك أصل ثابت",
+            link: "forms",
+            icon: "",
+          },
+          {
+            name: "سحب المالك",
+            link: "product",
+            icon: "",
+          },
+          {
+            name: "توزيع أرباح",
+            link: "products",
+            icon: "",
+          },
+
+          {
+            name: "محاسبة رواتب",
+            link: "products",
+            icon: "",
+          },
+          {
+            name: "قيود يدوية",
+            link: "products",
+            icon: "",
+          },
+          {
+            name: "الدليل المحاسبي",
+            link: "accounts",
+            icon: "",
+          },
+        ],
+      },
+    ],
+    under_menu: [
+      {
+        name: "الاعدادات",
+        icon: "mdi-shopping",
+        sub_menu: [
+          {
+            name: "إعدادت عامة",
+            link: "suppliers",
+            icon: "",
+          },
+          {
+            name: " المستخدمين ",
+            link: "purchases",
+            icon: "",
+          },
+          {
+            name: "الضرائب",
+            link: "purchase_orders",
+            icon: "",
+          },
+          {
+            name: "بيانات",
+            link: "receipts",
+            icon: "",
+          },{
+            name: "بيانات الشركة",
+            link: "receipts",
+            icon: "",
+          },{
+            name: "شروط الدفع",
+            link: "receipts",
+            icon: "",
+          },{
+            name: "بيانات",
+            link: "receipts",
+            icon: "",
+          },{
+            name: "بيانات",
+            link: "receipts",
+            icon: "",
+          },
+        ],
+      },
+
+      {
+        name: "المساعدة",
+        icon: "mdi-shopping",
+        sub_menu: [
+          {
+            name: "عن النظام",
+            link: "suppliers",
+            icon: "",
+          },
+          {
+            name: "أرسل ملاحظاتك",
+            link: "purchases",
+            icon: "",
+          },
+          
+        ],
+      },
+     
     ],
 
-    admins: [
-      ["Management", "mdi-border-color"],
-      ["Settings", "mdi-settings"],
-    ],
-    cruds: [
-      ["Create", "mdi-add"],
-      ["Read", "mdi-insert"],
-      ["Update", "mdi-update"],
-      ["Delete", "mdi-delete"],
-    ],
-    sidebaritems: [
-      ["البيع", "mdi-border-color", "إضافة فاتورة جديدة", "إدارة الفواتير"],
-      ["العملاء", "mdi-group", "إدارة العملاء"],
-      [
-        "الأصناف والخدمات",
-        "mdi-source-fork",
-        "الوحدات",
-        "المجموعات",
-        "الأنواع",
-        "إضافة صنف",
-        "إدارة الأصناف",
-      ],
-      ["الموردون", " mdi-car", "إدارة الموردين"],
-      [
-        "مصروفات وايرادات",
-        " mdi-car",
-        "متابعة الدخل والخرج",
-        "تسجيل إيرادات",
-        " إضافة بند إيرادات",
-        "تسجيل مصروفات",
-        " إضافة بند مصروفات",
-      ],
-      [
-        "المشتريات",
-        "mdi-shopping",
-        "إضافة مشتريات",
-        "فواتير المشتريات",
-        "الموردون",
-      ],
-
-      [
-        "الحسابات",
-        "mdi-keyboard-return",
-        "شجرة الحسابات",
-        "إدارة مرتجع البيع",
-        "مرتجع الشراء",
-        "إدارة مرتجع الشراء",
-      ],
-
-      [
-        "الاسترجاع",
-        "mdi-keyboard-return",
-        "مرتجع البيع",
-        "إدارة مرتجع البيع",
-        "مرتجع الشراء",
-        "إدارة مرتجع الشراء",
-      ],
-    ],
-    sidebarroutes: [
-      ["invoice", "invoicemanagement"],
-      ["customers"],
-      ["units", "types", "forms", "product", "products"],
-      ["companymanagement"],
-      [
-        "accountingmanagement",
-        "addupdateincome",
-        "addupdateincomeitem",
-        "addupdateoutcome",
-        "addoutcomeitem",
-      ],
-      ["purchase", "purchases", "suppliers"],
-
-      [
-        "accounts",
-        "returninvoicemanagement",
-        "addupdatepurchasereturn",
-        "returnpurchasemanagement",
-      ],
-      [
-        "addupdateinvoicereturn",
-        "returninvoicemanagement",
-        "addupdatepurchasereturn",
-        "returnpurchasemanagement",
-      ],
-    ],
+    admins: [],
   }),
 };
 </script>

@@ -8,6 +8,7 @@ use App\Modules\Admin\Accounts\Models\Transaction;
 use App\Modules\Admin\people\Models\Person;
 use App\Modules\Admin\people\Models\Supplier;
 use App\Modules\Admin\Products\Models\Inventory;
+use App\Modules\Admin\Products\Models\Product;
 use App\Modules\Admin\StockTakes\Models\StockTake;
 use App\Modules\Admin\StockTakes\Models\StockTakeDetail;
 use App\Traits\AccountTrait;
@@ -212,18 +213,18 @@ class StockTakeController extends Controller
     {
 
         return [
-            3=> $this->showAccounts(3),
-            4=> $this->showAccounts(4),
-            5=> $this->showAccounts(5),
+            3 => $this->showAccounts(3),
+            4 => $this->showAccounts(4),
+            5 => $this->showAccounts(5),
             'inventories' => Inventory::all(),
         ];
-        
-        
-        
+
+
+
         array_merge(
-            
-            
-            
+
+
+
             [['id' => 'owners', 'type' => 3, 'ar_name' => 'حسابات حقوق الملاك']],
             [['id' => 'revenues', 'type' => 4, 'ar_name' => 'حسابات الإيرادات']],
             $this->showAccounts(3),
@@ -246,133 +247,86 @@ class StockTakeController extends Controller
     public function store(Request $request)
     {
         $request['company_id'] = 1;
-
+        //return app('settings')['EUR'];
 
 
         $stocktake = StockTake::create($request->all());
 
         $stock_take_details = $request->stock_take_details;
-        $settings = Valuestore::make(storage_path('app/settings.json'));
+        //$settings = app('settings')['EUR'];
+        //$settings = Valuestore::make(storage_path('app/settings.json'));
         // $settings = new 
         // if ($settings->grouped)
-        return $stock_take_details;
-
-        
-    
-        $supplier_account_id = Person::find($request->supplier_id)['supplier_account_id'];
-
-        $supplier_account = [
-            "company_id" => 1,
-            "account_id" => $supplier_account_id,
-            "debit" =>  0,
-            "credit" => $request['total_amount'],
-            "document_id" => $stocktake->id,
-            "document_type_id" => 1,
-            "currency_code" => 1,
-            "currency_rate" => 1,
-            "description" => 'حساب المورد',
-        ];
-        $this->addTransactionEntry($supplier_account);
-        if ($request['paid_amount'] != 0) {
-            $supplier_account = [
-                "company_id" => 1,
-                "account_id" => $supplier_account_id,
-                "debit" =>  $request['paid_amount'],
-                "credit" => 0,
-                "document_id" => $stocktake->id,
-                "document_type_id" => 1,
-                "currency_code" => 1,
-                "currency_rate" => 1,
-                "description" => 'مدفوعة للمورد',
-            ];
-            $this->addTransactionEntry($supplier_account);
-        }
+        foreach ($stock_take_details as $stock_take_detail) {
+            if (app('settings')['products_grouped']) {
+                $product = Product::find($stock_take_detail['id']);
+                $product->quantity_in_minor_unit = $stock_take_detail['actual_quantity'];
+                $product->save();
+            }
 
 
+            $difference_cost = ($stock_take_detail['actual_quantity'] - $stock_take_detail['current_quantity']) * $stock_take_detail['unit_price'];
+
+            if ($difference_cost < 0) {
+                $entry = [
+                    "company_id" => 1,
+                    "account_id" => $request->expense_account_id,
+                    "debit" =>  abs($difference_cost),
+                    "credit" => 0,
+                    "document_id" => $stocktake->id,
+                    "document_type_id" => 3,
+                    "currency_code" => 1,
+                    "currency_rate" => 1,
+                    "description" => 'حساب مصروفات الكميات الناقصة',
+                ];
+                $this->addTransactionEntry($entry);
 
 
+                $inventory_account_id = Inventory::find($stock_take_detail['inventory_id'])['account_id'];
+                $entry = [
+                    "company_id" => 1,
+                    "account_id" => $inventory_account_id,
+                    "debit" => 0,
+                    "credit" => abs($difference_cost),
+                    "document_id" => $stocktake->id,
+                    "document_type_id" => 1,
+                    "currency_code" => 1,
+                    "currency_rate" => 1,
+                    "description" => 'نقص في المخزون',
+                ];
+                $this->addTransactionEntry($entry);
+            }
+            if ($difference_cost > 0) {
+                $entry = [
+                    "company_id" => 1,
+                    "account_id" => $request->revenue_account_id,
+                    "debit" => 0,
+                    "credit" => $difference_cost ,
+                    "document_id" => $stocktake->id,
+                    "document_type_id" => 3,
+                    "currency_code" => 1,
+                    "currency_rate" => 1,
+                    "description" => 'حساب إيرادات الكميات الزائدة',
+                ];
+                $this->addTransactionEntry($entry);
 
 
-        $additional_expenses_from_account_id = $request['additional_expenses_from_account_id'];
-        $additional_expenses = [
-            "company_id" => 1,
-            "account_id" => $additional_expenses_from_account_id, //5103
-            "debit" =>  0,
-            "credit" => $request['additional_expenses'],
-            "document_id" => $stocktake->id,
-            "document_type_id" => 1,
-            "currency_code" => 1,
-            "currency_rate" => 1,
-            "description" => 'مصاريف إضافية',
-        ];
-        $this->addTransactionEntry($additional_expenses);
-        $additional_expenses = [
-            "company_id" => 1,
-            "account_id" => 63, //5103
-            "debit" =>  $request['additional_expenses'],
-            "credit" => 0,
-            "document_id" => $stocktake->id,
-            "document_type_id" => 1,
-            "currency_code" => 1,
-            "currency_rate" => 1,
-            "description" => 'مصاريف إضافية',
-        ];
-        $this->addTransactionEntry($additional_expenses);
-
-
-        $payment_methods = $request->payment_methods;
-
-        if (is_array($request['payment_methods'])) {
-
-
-            foreach ($payment_methods as $payment_method) {
-                if ($payment_method['account_id'] && $payment_method['credit'] > 0) {
-
-                    $supplier_account = [
-                        "company_id" => 1,
-                        "account_id" => $payment_method['account_id'],
-                        "debit" =>  -1,
-                        "credit" => $payment_method['credit'],
-                        "document_id" => $stocktake->id,
-                        "document_type_id" => 1,
-                        "currency_code" => 1,
-                        "currency_rate" => 1,
-                        "description" => 'مدفوعة للمورد',
-                    ];
-                    $this->addTransactionEntry($supplier_account);
-                }
+                $inventory_account_id = Inventory::find($stock_take_detail['inventory_id'])['account_id'];
+                $entry = [
+                    "company_id" => 1,
+                    "account_id" => $inventory_account_id,
+                    "debit" => $difference_cost,
+                    "credit" => 0,
+                    "document_id" => $stocktake->id,
+                    "document_type_id" => 1,
+                    "currency_code" => 1,
+                    "currency_rate" => 1,
+                    "description" => 'زيادة في المخزون',
+                ];
+                $this->addTransactionEntry($entry);
             }
         }
-
-
-        foreach ($request->stocktake_details as $stocktake_detail) {
-            //transaction  inventory-
-
-
-            //$account_id = (StockTakeDetail::where()->get())['account_id'];
-
-
-            $Inventory_account_id = Inventory::find($stocktake_detail['inventory_id'])['account_id'];
-
-
-
-
-            $entry = [
-                "company_id" => 1,
-                "account_id" => $Inventory_account_id,
-                "debit" =>  $stocktake_detail['total'],
-                "credit" => 0,
-                "document_id" => $stocktake->id,
-                "document_type_id" => 1,
-                "currency_code" => 1,
-                "currency_rate" => 1,
-                "description" => 'some description',
-            ];
-            $this->addTransactionEntry($entry);
-            $stocktake->stocktake_details()->create($stocktake_detail);
-        }
-
-        return $stocktake;
+        return $stock_take_details;
     }
 
     /**
@@ -512,14 +466,14 @@ class StockTakeController extends Controller
             //$account_id = (StockTakeDetail::where()->get())['account_id'];
 
 
-            $Inventory_account_id = Inventory::find($stocktake_detail['inventory_id'])['account_id'];
+            $inventory_account_id = Inventory::find($stocktake_detail['inventory_id'])['account_id'];
 
 
 
 
             $entry = [
                 "company_id" => 1,
-                "account_id" => $Inventory_account_id,
+                "account_id" => $inventory_account_id,
                 "debit" =>  $stocktake_detail['total'],
                 "credit" => 0,
                 "document_id" => $stocktake->id,

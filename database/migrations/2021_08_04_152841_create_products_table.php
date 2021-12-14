@@ -35,11 +35,8 @@ class CreateProductsTable extends Migration
             $table->unsignedInteger ('product_cogs_account_id');
             $table->unsignedInteger ('product_sales_account_id');
             
-            
-
-
-
-
+            $table->unsignedInteger ('product_sales_return_account_id');
+            $table->unsignedInteger ('product_purchase_return_account_id');
             $table->double('sales_discount')->default(0.0);
             $table->unsignedInteger ('sales_discount_type_id')->default(0)->comment('0-percent, 1-amounr');
 

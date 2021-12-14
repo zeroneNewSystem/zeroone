@@ -28,7 +28,7 @@
                 label=" الرقم التسلسلي (اضغط على G لتوليد رقم عشوائي)"
                 :rules="vld_minlingth.concat(isunique)"
                 @blur="
-                  checkExecting({
+                  checkExicting({
                     barcode: drugclass.barcode,
                     flag: 'checkdrugclasses',
                   })

@@ -44,7 +44,7 @@
               item-text="ar_name"
               item-value="id"
               label="النوع"
-              @blur="checkExecting()"
+              @blur="checkExicting()"
             ></v-autocomplete>
           </v-col>
           <v-col cols="12" lg="2">

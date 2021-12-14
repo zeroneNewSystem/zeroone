@@ -276,11 +276,16 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 //
 //
 //
+//
+//
+//
+//
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
+      someVariableUnderYourControl: 1,
       is_new_stock: true,
       index_of_selected_product: "",
       selected_item: [],
@@ -412,13 +417,25 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     deleteItem: function deleteItem(item) {
       this.stocktake.stock_take_details.splice(this.stocktake.stock_take_details.indexOf(item), 1);
     },
+    actual_quantity_change: function actual_quantity_change(item) {
+      var purchased_unit = item.units.find(function (elem) {
+        return elem.pivot.id == item.purchased_unit_id;
+      });
+      console.log(purchased_unit);
+      console.log("purchased_unit");
+      item.actual_quantity_in_minor_unit = parseInt(item.actual_quantity * purchased_unit.pivot.contains);
+      console.log(item.actual_quantity_in_minor_unit);
+    },
     product_unit_change: function product_unit_change(item) {
+      //alert(1)
       var purchased_unit = item.units.find(function (elem) {
         return elem.pivot.id == item.purchased_unit_id;
       });
       item.unit_price = purchased_unit.pivot.purchase_price;
       item.current_quantity = parseInt(item.purchase_details[0].quantity_in_minor_unit / purchased_unit.pivot.contains);
       item.actual_quantity = item.current_quantity;
+      item.actual_quantity_in_minor_unit = parseInt(item.actual_quantity * purchased_unit.pivot.contains);
+      this.someVariableUnderYourControl++;
     },
     getProducts: function getProducts(val, type) {
       var _this = this;
@@ -445,9 +462,9 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       }
     },
     submit: function submit() {
-      console.log('this.stocktake');
+      console.log("this.stocktake");
       console.log(this.stocktake);
-      console.log('this.stocktake');
+      console.log("this.stocktake");
       if (this.is_new_stock) _apis_StockTake__WEBPACK_IMPORTED_MODULE_1__.default.store(this.stocktake).then(function (response) {
         return console.log(response.data);
       });else _apis_StockTake__WEBPACK_IMPORTED_MODULE_1__.default.update(this.stocktake).then(function (response) {
@@ -464,6 +481,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       selected_product.purchased_quantity = 1;
       selected_product.current_quantity = selected_product.purchase_details[0].quantity_in_minor_unit / selected_product.units[selected_product.main_purchase_unit_id - 1].pivot.contains;
       selected_product.actual_quantity = selected_product.current_quantity;
+      selected_product.actual_quantity_in_minor_unit = parseInt(selected_product.actual_quantity * selected_product.units[selected_product.main_purchase_unit_id - 1].pivot.contains);
       this.stocktake.stock_take_details.unshift(selected_product);
       return;
     },
@@ -481,7 +499,9 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         }
 
         _this2.is_exists = [true];
-        _this2.selected_item = response.data.products[0];
+        response.data.products[0].actual_quantity = 0;
+        response.data.products[0].actual_quantity_in_minor_unit = 0;
+        _this2.selected_item = JSON.parse(JSON.stringify(response.data.products[0]));
         if (_this2.selected_item.purchase_details.length == 0) return;
 
         if (_this2.selected_item.purchase_details.length == 1) {
@@ -491,9 +511,12 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         var products_grouped = true;
 
         if (products_grouped) {
-          _this2.selected_item.purchase_details[0].quantity_in_minor_unit = _this2.selected_item.purchase_details.reduce(function (a, b) {
-            return +a + +b.quantity_in_minor_unit;
-          }, 0);
+          _this2.selected_item.purchase_details[0].quantity_in_minor_unit = _this2.selected_item.quantity_in_minor_unit; // this.selected_item.purchase_details[0].quantity_in_minor_unit =
+          //   this.selected_item.purchase_details.reduce(
+          //     (a, b) => +a + +b.quantity_in_minor_unit,
+          //     0
+          //   );
+
           console.log("this.selected_item");
           console.log(_this2.selected_item);
 
@@ -630,6 +653,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Api */ "./resources/js/apis/Api.js");
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  isExist: function isExist(product) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/extra/product/exists/" + product.type + "/" + product.what_to_search);
+  },
   create: function create() {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/products/create");
   },
@@ -976,7 +1002,11 @@ var render = function() {
         "v-card",
         [
           _c("v-card-title", [
-            _c("span", { staticClass: "text-h5" }, [_vm._v("جرد المخزون")])
+            _c(
+              "span",
+              { key: _vm.someVariableUnderYourControl, staticClass: "text-h5" },
+              [_vm._v("جرد المخزون\n      ")]
+            )
           ]),
           _vm._v(" "),
           _c(
@@ -1382,6 +1412,7 @@ var render = function() {
                                   "item-value": "pivot.id",
                                   "cache-items": "",
                                   flat: "",
+                                  "no-filter": "",
                                   "hide-no-data": "",
                                   "hide-details": "",
                                   "solo-inverted": "",
@@ -1470,6 +1501,11 @@ var render = function() {
                                   autocomplete: "off",
                                   "single-line": "",
                                   outlined: ""
+                                },
+                                on: {
+                                  input: function($event) {
+                                    return _vm.actual_quantity_change(item)
+                                  }
                                 },
                                 model: {
                                   value: item.actual_quantity,

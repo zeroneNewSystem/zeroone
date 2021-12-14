@@ -24,7 +24,7 @@
                 v-model="purchase.purchase_reference"
                 label="رقم المرجع"
                 :rules="required.concat(isunique)"
-                @blur="checkExecting()"
+                @blur="checkExicting()"
               ></v-text-field>
             </v-col>
             <v-col cols="12" lg="6">
@@ -864,7 +864,7 @@ export default {
       console.log("nib", this.purchase.purchase_details);
       this.selected_product = [];
     },
-    checkExecting() {},
+    checkExicting() {},
 
     /*------------------dateTime----------------------*/
     formatDate(date) {
