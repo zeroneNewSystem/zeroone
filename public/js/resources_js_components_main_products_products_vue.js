@@ -508,6 +508,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -547,9 +548,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         sortable: false,
         value: "barcode"
       }, {
-        text: "الشركة",
+        text: "الكمية المخزونة",
         align: "center",
-        value: "company"
+        value: "quantity"
       }, {
         text: "الخصم",
         align: "center",
@@ -593,9 +594,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   // },
   methods: {
     show_product_dialog: function show_product_dialog(item) {
-      this.product_info_dialog = true;
-      console.log(item);
       this.product_info_product = item;
+      this.product_info_dialog = true;
+      console.log('item');
+      console.log(item);
     },
     deleteProduct: function deleteProduct(item) {
       var _this2 = this;
@@ -1665,7 +1667,8 @@ var render = function() {
             product: _vm.product_info_product,
             prdct_forms: _vm.prdct_forms,
             prdct_taxes: _vm.prdct_taxes,
-            prdct_types: _vm.prdct_types
+            prdct_types: _vm.prdct_types,
+            suppliers: _vm.suppliers
           }
         },
         [

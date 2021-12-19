@@ -16,6 +16,9 @@ export default {
     get(params) {
         return Api.get("/suppliers", { params: params });
     },
+    getByProductID(id) {
+        return Api.get("/suppliers/product/" + id);
+    },
 
     search(params) {
         return Api.get("/suppliers/search", { params: params });

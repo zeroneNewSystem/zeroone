@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Route;
 Route::group(["prefix" => "suppliers"], function () {
     Route::get('/', 'SupplierController@index'); 
     Route::get('/getOne/', 'SupplierController@show'); 
+    Route::get('/product/{id}', 'SupplierController@getByProductID'); 
     Route::post('/', 'SupplierController@store');
     Route::put('/', 'SupplierController@update');   
     Route::delete('/', 'SupplierController@destroy');

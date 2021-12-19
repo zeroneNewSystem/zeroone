@@ -6,6 +6,7 @@
       :prdct_forms="prdct_forms"
       :prdct_taxes="prdct_taxes"
       :prdct_types="prdct_types"
+      :suppliers="suppliers"
     >
       <span slot="title"> معلومات الصنف</span>
     </product-info>
@@ -126,7 +127,7 @@ export default {
           sortable: false,
           value: "barcode",
         },
-        { text: "الشركة", align: "center", value: "company" },
+        { text: "الكمية المخزونة", align: "center", value: "quantity" },
         { text: "الخصم", align: "center", value: "selling_discount" },
         { text: "التحكم ", align: "center", value: "actions" },
       ],
@@ -163,9 +164,16 @@ export default {
   // },
   methods: {
     show_product_dialog(item) {
-      this.product_info_dialog = true;
-      console.log(item);
+      //get info
+      
+
+      //get info
+
       this.product_info_product = item;
+
+      this.product_info_dialog = true;
+      console.log("item");
+      console.log(item);
     },
     deleteProduct(item) {
       this.loading = true;

@@ -20,13 +20,13 @@
             الشركة
           </v-col>
           <v-col cols="9" style="text-align: start" class="pa-1">
-            {{ supplier.compnay_name }}
+            {{ supplier.company_name }}
           </v-col>
           <v-col cols="3" style="text-align: start" class="pa-1">
             رقم الاتصال
           </v-col>
           <v-col cols="9" style="text-align: start" class="pa-1">
-            {{ supplier.phone }}
+            {{ supplier.phone01 }}
           </v-col>
           <v-col cols="3" style="text-align: start" class="pa-1">
             البريد الالكتروني
@@ -50,7 +50,7 @@
         >
           <v-col cols="3" style="text-align: start" class="pa-1">الحالة</v-col>
           <v-col cols="9" style="text-align: start" class="pa-1">
-            {{ supplier.name }}
+            {{ supplier.is_supplier_active == 1? 'نشط':'غير نشط' }}
           </v-col>
 
           <v-col cols="3" style="text-align: start" class="pa-1">

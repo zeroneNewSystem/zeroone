@@ -660,6 +660,21 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -670,6 +685,8 @@ __webpack_require__.r(__webpack_exports__);
   components: {},
   data: function data() {
     return {
+      submit_text: "",
+
       /*-----------------------inventories-----------------------*/
       inventories: [],
 
@@ -943,8 +960,10 @@ __webpack_require__.r(__webpack_exports__);
       console.log(errors.response.data);
     })["finally"]();
     console.log(this.$route.params["product"]);
+    this.submit_text = "حفظ وإضافة صنف جديد";
 
     if (this.$route.params["product"]) {
+      this.submit_text = "حفظ وتعديل";
       this.product = JSON.parse(JSON.stringify(this.productConverter(this.$route.params["product"])));
       this.new_product = false;
     }
@@ -1281,10 +1300,11 @@ __webpack_require__.r(__webpack_exports__);
         if (this.new_product) {
           _apis_Product__WEBPACK_IMPORTED_MODULE_1__.default.store(this.product).then(function (response) {
             console.log("response.data", response.data);
+            _this8.snakebarText = "تم إضافة الصنف بنجاح";
             _this8.snackbar = true;
-            _this8.loading = false; //this.initializeformproduct();
+            _this8.loading = false;
 
-            console.log("nibtsas");
+            _this8.initializeformproduct();
 
             _this8.$refs.form.resetValidation();
           });
@@ -1293,6 +1313,8 @@ __webpack_require__.r(__webpack_exports__);
 
         _apis_Product__WEBPACK_IMPORTED_MODULE_1__.default.update(this.product).then(function (response) {
           console.log("response.data", response.data);
+          _this8.snakebarText = "تم تعديل الصنف بنجاح";
+          _this8.snackbar = true;
         });
       } //return;
       //if (this.$refs.form.validate()) {
@@ -1575,73 +1597,67 @@ var render = function() {
             [_vm._v(_vm._s(_vm.snakebarText))]
           ),
           _vm._v(" "),
-          _c("v-container", [
-            _c("div", { staticClass: "row" }, [
-              _c("div", { staticClass: "col-sm-12 fatura" }, [
-                _c(
-                  "div",
-                  { staticClass: "column" },
-                  [
-                    _c(
-                      "a",
-                      {
-                        staticClass: "btn btn-info m-b-5 m-r-2",
-                        attrs: { href: "#" }
-                      },
-                      [
-                        _c(
-                          "v-icon",
-                          {
-                            staticClass: "white--text",
-                            on: {
-                              click: function($event) {
-                                $event.preventDefault()
-                                return _vm.getid.apply(null, arguments)
-                              }
-                            }
-                          },
-                          [_vm._v("mdi-plus-box")]
-                        ),
-                        _vm._v("إدارة الأدوية\n            ")
-                      ],
-                      1
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "router-link",
-                      {
-                        staticClass: "btn btn-info m-b-5 m-r-2",
-                        attrs: { to: "/invoicemanagement" }
-                      },
-                      [
-                        _c("v-icon", { staticClass: "white--text" }, [
-                          _vm._v("mdi-view-module")
-                        ]),
-                        _vm._v("إدارة\n              المشتريات\n            ")
-                      ],
-                      1
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "a",
-                      {
-                        staticClass: "btn btn-info m-b-5 m-r-2",
-                        on: { click: function($event) {} }
-                      },
-                      [
-                        _c("v-icon", { staticClass: "white--text" }, [
-                          _vm._v("mdi-floppy")
-                        ]),
-                        _vm._v("إدارة الحسابات\n            ")
-                      ],
-                      1
-                    )
-                  ],
-                  1
-                )
-              ])
-            ])
-          ]),
+          _c(
+            "v-container",
+            [
+              _c(
+                "v-row",
+                { attrs: { justify: "start" } },
+                [
+                  _c(
+                    "v-col",
+                    { staticStyle: { "text-align": "end" } },
+                    [
+                      _c(
+                        "v-btn",
+                        {
+                          attrs: {
+                            elevation: "",
+                            color: "primary",
+                            to: "/products"
+                          }
+                        },
+                        [_vm._v("إدارة المخزون")]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-btn",
+                        {
+                          attrs: {
+                            elevation: "",
+                            color: "primary",
+                            to: "/stock_takes"
+                          }
+                        },
+                        [_vm._v("جرد المخزون")]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-btn",
+                        { attrs: { elevation: "", color: "primary", to: "" } },
+                        [_vm._v("نقل المخزون")]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-btn",
+                        { attrs: { elevation: "", color: "primary", to: "" } },
+                        [_vm._v("المجموعات")]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-btn",
+                        { attrs: { elevation: "", color: "primary", to: "" } },
+                        [_vm._v("الأنواع")]
+                      )
+                    ],
+                    1
+                  )
+                ],
+                1
+              )
+            ],
+            1
+          ),
           _vm._v(" "),
           _c(
             "v-form",
@@ -3276,9 +3292,7 @@ var render = function() {
                               _c("v-icon", { staticClass: "white--text" }, [
                                 _vm._v("mdi-plus-box")
                               ]),
-                              _vm._v(
-                                "حفظ وإضافة صنف\n            جديد\n          "
-                              )
+                              _vm._v(_vm._s(_vm.submit_text) + "\n          ")
                             ],
                             1
                           )

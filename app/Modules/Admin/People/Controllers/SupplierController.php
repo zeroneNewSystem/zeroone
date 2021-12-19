@@ -4,6 +4,7 @@ namespace App\Modules\Admin\people\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Receipt;
+use App\Modules\Admin\Accounts\Models\Account;
 use App\Modules\Admin\people\Models\Person;
 use App\Modules\Admin\people\Models\Supplier;
 use App\Modules\Admin\Purchases\Models\Purchase;
@@ -15,7 +16,7 @@ use PhpOffice\PhpSpreadsheet\Calculation\TextData\Search;
 
 class SupplierController extends Controller
 {
-    
+
 
 
     /**
@@ -66,7 +67,7 @@ class SupplierController extends Controller
         if ($search['is_supplier_active'] !== "")
             $suppliers = $suppliers->where('is_supplier_active', $search['is_supplier_active']);
 
-       
+
 
         if ($search['phone']) {
 
@@ -152,8 +153,29 @@ class SupplierController extends Controller
         $request['company_id'] = 1;
         $request['person_id'] = 1;
 
+        $supplier = Person::create($request->all());
+        $account_items =
+            [
+                'company_id' => '1',
+                'account_code' => '210100001',
+                'type_id' => '16',
+                'level' => '4', 
+                'parent_id' => '24', 
+                'ar_name' => '', 
+                'en_name' => '', 
+                'description' => 'حساب مورد', 
+                'payable_receivable' => '1', 
+                'editable' => '0',  
+                'currency_id' => '1', 
+                'is_active' => '1', 
+                'is_visable_in_COA' => '0', 
+                'accountable_id' => $supplier->id, 
+                'accountable_type' => 'supplier', 
+                'create_by_user_id' => '1'
+            ];
 
-        return Person::create($request->all())->id;
+        Account::create($account_items);
+        return 1;
     }
 
     /**
@@ -172,7 +194,7 @@ class SupplierController extends Controller
         }
 
         if ($request->has('receipt_itemsPerPage')) {
-            
+
             $receipts  =  Receipt::where('person_id', $request->id)->orderBy('id', 'DESC')->paginate($request->receipt_itemsPerPage != -1 ? $request->receipt_itemsPerPage : '', ['*'], 'receipt_page');
             return ['receipts' => $receipts];
         }
@@ -180,8 +202,11 @@ class SupplierController extends Controller
 
         $supplier = DB::table('people')->find($request->id);
 
+
+
         $balance = 0;
-        $account = DB::table('accounts')->where('accountable_id', $request->id)->where('accountable_type', 1)->get();
+        $account = DB::table('accounts')->where('accountable_id', $request->id)->where('accountable_type', 'supplier')->get();
+        
         $transactions = DB::table('transactions')->where('account_id', $account[0]->id)->get();
 
         foreach ($transactions as $transaction) {
@@ -212,7 +237,7 @@ class SupplierController extends Controller
         }
 
 
-        
+
 
         $remain_amount = $total_amount - $paid_amount;
         $arrears = $total_amount_with_maturity_date - $paid_amount_with_maturity_date;

@@ -56,7 +56,7 @@
 
             <v-col cols="12">
               <v-textarea
-              rows="2"
+                rows="2"
                 v-model="supplier.address"
                 label="العنوان"
                 required
@@ -69,13 +69,7 @@
                 required
               ></v-text-field>
             </v-col>
-            <v-col cols="12" lg="6">
-              <v-text-field
-                v-model="supplier.address"
-                label="رقم الاتصال الأساسي"
-                required
-              ></v-text-field>
-            </v-col>
+
             <v-col cols="12" lg="6">
               <v-text-field
                 v-model="supplier.phone02"
@@ -85,24 +79,37 @@
             </v-col>
             <v-col cols="12" lg="6">
               <v-text-field
-                v-model="supplier.phone02"
+                v-model="supplier.email"
                 label="البريد الالكتروني"
                 required
               ></v-text-field>
             </v-col>
             <v-col cols="12" lg="6">
               <v-text-field
-                v-model="supplier.phone02"
+                v-model="supplier.website"
                 label="الموقع الالكتروني"
                 required
               ></v-text-field>
             </v-col>
             <v-col cols="12" lg="6">
               <v-text-field
-                v-model="supplier.phone02"
+                v-model="supplier.tax_number"
                 label="الرقم الضريبي"
                 required
               ></v-text-field>
+            </v-col>
+            <v-col cols="12" lg="6">
+              <v-row>
+                
+                <v-col style="text-align: end">
+                  <v-btn color="blue darken-1" text @click="closeDialog()">
+                    إلغاء
+                  </v-btn>
+                  <v-btn color="blue darken-1" text @click="saveSupplier()">
+                    حفظ
+                  </v-btn>
+                </v-col>
+              </v-row>
             </v-col>
           </v-row>
         </v-container>

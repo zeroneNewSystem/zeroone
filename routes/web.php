@@ -29,6 +29,9 @@ Route::get('/{any}/{some}', function () {
 Route::get('/', function () {
     return view('welcome');
 });
+// Route::get('/{any}', function () {
+//     return view('products');
+// });
 
 Auth::routes();
 

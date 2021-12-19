@@ -19,27 +19,43 @@
       >
 
       <v-container>
-        <div class="row">
-          <div class="col-sm-12 fatura">
-            <div class="column">
-              <a href="#" class="btn btn-info m-b-5 m-r-2">
-                <v-icon class="white--text" @click.prevent="getid"
-                  >mdi-plus-box</v-icon
-                >إدارة الأدوية
-              </a>
-              <router-link
-                class="btn btn-info m-b-5 m-r-2"
-                to="/invoicemanagement"
-              >
-                <v-icon class="white--text">mdi-view-module</v-icon>إدارة
-                المشتريات
-              </router-link>
-              <a class="btn btn-info m-b-5 m-r-2" @click>
-                <v-icon class="white--text">mdi-floppy</v-icon>إدارة الحسابات
-              </a>
-            </div>
-          </div>
-        </div>
+        <v-row justify="start">
+          <v-col style="text-align: end">
+            <v-btn
+              elevation
+              color="primary"
+              to="/products"
+              >إدارة المخزون</v-btn
+            >
+            <v-btn
+              elevation
+              color="primary"
+              to="/stock_takes"
+              >جرد المخزون</v-btn
+            >
+
+            <v-btn
+              elevation
+              color="primary"
+              to=""
+              >نقل المخزون</v-btn
+            >
+
+            <v-btn
+              elevation
+              color="primary"
+              to=""
+              >المجموعات</v-btn
+            >
+
+            <v-btn
+              elevation
+              color="primary"
+              to=""
+              >الأنواع</v-btn
+            >
+          </v-col>
+        </v-row>
       </v-container>
 
       <v-form @submit.prevent ref="form">
@@ -623,8 +639,7 @@
               text
               @click="submit()"
             >
-              <v-icon class="white--text">mdi-plus-box</v-icon>حفظ وإضافة صنف
-              جديد
+              <v-icon class="white--text">mdi-plus-box</v-icon>{{ submit_text }}
             </v-btn>
             <v-btn
               v-else
@@ -654,6 +669,7 @@ export default {
   components: {},
   data() {
     return {
+      submit_text: "",
       /*-----------------------inventories-----------------------*/
       inventories: [],
       /*-----------------------distribution_policies-----------------------*/
@@ -944,7 +960,9 @@ export default {
       })
       .finally();
     console.log(this.$route.params["product"]);
+    this.submit_text = "حفظ وإضافة صنف جديد";
     if (this.$route.params["product"]) {
+      this.submit_text = "حفظ وتعديل";
       this.product = JSON.parse(
         JSON.stringify(this.productConverter(this.$route.params["product"]))
       );
@@ -1308,17 +1326,20 @@ export default {
         if (this.new_product) {
           Product.store(this.product).then((response) => {
             console.log("response.data", response.data);
+            this.snakebarText = "تم إضافة الصنف بنجاح";
+
             this.snackbar = true;
             this.loading = false;
-            //this.initializeformproduct();
-            
-            console.log("nibtsas");
+            this.initializeformproduct();
+
             this.$refs.form.resetValidation();
           });
           return;
         }
         Product.update(this.product).then((response) => {
           console.log("response.data", response.data);
+          this.snakebarText = "تم تعديل الصنف بنجاح";
+          this.snackbar = true;
         });
       }
       //return;

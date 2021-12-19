@@ -488,6 +488,9 @@ __webpack_require__.r(__webpack_exports__);
       params: params
     });
   },
+  getByProductID: function getByProductID(id) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/suppliers/product/" + id);
+  },
   search: function search(params) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/suppliers/search", {
       params: params
@@ -844,7 +847,7 @@ var render = function() {
                     [
                       _vm._v(
                         "\n          " +
-                          _vm._s(_vm.supplier.compnay_name) +
+                          _vm._s(_vm.supplier.company_name) +
                           "\n        "
                       )
                     ]
@@ -870,7 +873,7 @@ var render = function() {
                     [
                       _vm._v(
                         "\n          " +
-                          _vm._s(_vm.supplier.phone) +
+                          _vm._s(_vm.supplier.phone01) +
                           "\n        "
                       )
                     ]
@@ -946,7 +949,11 @@ var render = function() {
                     [
                       _vm._v(
                         "\n          " +
-                          _vm._s(_vm.supplier.name) +
+                          _vm._s(
+                            _vm.supplier.is_supplier_active == 1
+                              ? "نشط"
+                              : "غير نشط"
+                          ) +
                           "\n        "
                       )
                     ]

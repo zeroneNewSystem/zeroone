@@ -128,6 +128,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -1385,6 +1392,9 @@ __webpack_require__.r(__webpack_exports__);
       params: params
     });
   },
+  getByProductID: function getByProductID(id) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/suppliers/product/" + id);
+  },
   search: function search(params) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/suppliers/search", {
       params: params
@@ -2081,27 +2091,6 @@ var render = function() {
                         [
                           _c("v-text-field", {
                             attrs: {
-                              label: "رقم الاتصال الأساسي",
-                              required: ""
-                            },
-                            model: {
-                              value: _vm.supplier.address,
-                              callback: function($$v) {
-                                _vm.$set(_vm.supplier, "address", $$v)
-                              },
-                              expression: "supplier.address"
-                            }
-                          })
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "v-col",
-                        { attrs: { cols: "12", lg: "6" } },
-                        [
-                          _c("v-text-field", {
-                            attrs: {
                               label: "رقم الاتصال الثانوي",
                               required: ""
                             },
@@ -2124,11 +2113,11 @@ var render = function() {
                           _c("v-text-field", {
                             attrs: { label: "البريد الالكتروني", required: "" },
                             model: {
-                              value: _vm.supplier.phone02,
+                              value: _vm.supplier.email,
                               callback: function($$v) {
-                                _vm.$set(_vm.supplier, "phone02", $$v)
+                                _vm.$set(_vm.supplier, "email", $$v)
                               },
-                              expression: "supplier.phone02"
+                              expression: "supplier.email"
                             }
                           })
                         ],
@@ -2142,11 +2131,11 @@ var render = function() {
                           _c("v-text-field", {
                             attrs: { label: "الموقع الالكتروني", required: "" },
                             model: {
-                              value: _vm.supplier.phone02,
+                              value: _vm.supplier.website,
                               callback: function($$v) {
-                                _vm.$set(_vm.supplier, "phone02", $$v)
+                                _vm.$set(_vm.supplier, "website", $$v)
                               },
-                              expression: "supplier.phone02"
+                              expression: "supplier.website"
                             }
                           })
                         ],
@@ -2160,13 +2149,73 @@ var render = function() {
                           _c("v-text-field", {
                             attrs: { label: "الرقم الضريبي", required: "" },
                             model: {
-                              value: _vm.supplier.phone02,
+                              value: _vm.supplier.tax_number,
                               callback: function($$v) {
-                                _vm.$set(_vm.supplier, "phone02", $$v)
+                                _vm.$set(_vm.supplier, "tax_number", $$v)
                               },
-                              expression: "supplier.phone02"
+                              expression: "supplier.tax_number"
                             }
                           })
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-col",
+                        { attrs: { cols: "12", lg: "6" } },
+                        [
+                          _c(
+                            "v-row",
+                            [
+                              _c(
+                                "v-col",
+                                { staticStyle: { "text-align": "end" } },
+                                [
+                                  _c(
+                                    "v-btn",
+                                    {
+                                      attrs: {
+                                        color: "blue darken-1",
+                                        text: ""
+                                      },
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.closeDialog()
+                                        }
+                                      }
+                                    },
+                                    [
+                                      _vm._v(
+                                        "\n                  إلغاء\n                "
+                                      )
+                                    ]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "v-btn",
+                                    {
+                                      attrs: {
+                                        color: "blue darken-1",
+                                        text: ""
+                                      },
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.saveSupplier()
+                                        }
+                                      }
+                                    },
+                                    [
+                                      _vm._v(
+                                        "\n                  حفظ\n                "
+                                      )
+                                    ]
+                                  )
+                                ],
+                                1
+                              )
+                            ],
+                            1
+                          )
                         ],
                         1
                       )
@@ -2281,7 +2330,7 @@ var render = function() {
                     [
                       _vm._v(
                         "\n          " +
-                          _vm._s(_vm.supplier.compnay_name) +
+                          _vm._s(_vm.supplier.company_name) +
                           "\n        "
                       )
                     ]
@@ -2307,7 +2356,7 @@ var render = function() {
                     [
                       _vm._v(
                         "\n          " +
-                          _vm._s(_vm.supplier.phone) +
+                          _vm._s(_vm.supplier.phone01) +
                           "\n        "
                       )
                     ]
@@ -2383,7 +2432,11 @@ var render = function() {
                     [
                       _vm._v(
                         "\n          " +
-                          _vm._s(_vm.supplier.name) +
+                          _vm._s(
+                            _vm.supplier.is_supplier_active == 1
+                              ? "نشط"
+                              : "غير نشط"
+                          ) +
                           "\n        "
                       )
                     ]
