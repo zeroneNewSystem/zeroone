@@ -143,6 +143,9 @@
           {{ item.issue_date.split(" ")[0] }}
         </div>
       </template>
+      <template v-slot:item.remainder="{ item }">
+        {{ item.remainder.toFixed(2) }}
+      </template>
       <template v-slot:item.maturity_date="{ item }">
         {{ item.maturity_date.split(" ")[0] }}
       </template>

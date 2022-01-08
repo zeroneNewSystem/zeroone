@@ -199,12 +199,10 @@ export default {
       this.payment_methods.splice(index, 1);
     },
     emitPayments() {
-      let filterd_methods = this.payment_methods.filter(
-        (elem) => elem.account_id != "" && elem.credit != 0
-      );
+      
 
       this.$emit("payment_methods", {
-        payment_methods: filterd_methods,
+        payment_methods: this.payment_methods,
         paid_amount: this.paid_amount,
       });
 

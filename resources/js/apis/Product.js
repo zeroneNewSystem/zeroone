@@ -31,7 +31,14 @@ export default {
         return Api.get("/extra/purchase/barcode/" + params.barcode);
     },
     invoiceBarcodeSearch(params) {
-        return Api.get("/extra/invoice/barcode/" + params.barcode);
+
+        return Api.get(
+            "/extra/invoice/barcode/" +
+            params.barcode +
+            "/inventory_id/" +
+            params.inventory_id
+        );
+
     },
     stockTakeBarcodeSearch(params) {
         return Api.get(

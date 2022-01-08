@@ -128,6 +128,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -177,7 +184,7 @@ __webpack_require__.r(__webpack_exports__);
           _this2.$parent.$data.add_update_customer_dialog = false;
           _this2.isloading = false;
 
-          _this2.$emit("addUpdateCustomer", response.data.customer);
+          _this2.$emit("addUpdateCustomer", _this2.customer);
         });
         return;
       }
@@ -363,6 +370,26 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -373,7 +400,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     AddUpdateCustomer: _AddUpdateCustomer_vue__WEBPACK_IMPORTED_MODULE_3__.default
   },
   data: function data() {
-    return {
+    var _ref;
+
+    return _ref = {
+      loading: false,
+      dialog: false,
       customer_status: [{
         is_customer_active: 0,
         status: "نشط"
@@ -398,43 +429,41 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       },
       options: {},
       status: "salam",
-      title: "إدارة الموردين",
+      title: "إدارة العميلين",
       //---
-      customers_total: 20,
-      loading: true,
-      headers: [{
-        text: "م",
-        align: "center",
-        width: "5",
-        sortable: false,
-        value: "id"
-      }, {
-        text: "اسم الشركة",
-        align: "center",
-        value: "company_name"
-      }, {
-        text: "جهة الاتصال",
-        align: "center",
-        sortable: false,
-        value: "name"
-      }, {
-        text: "الرصيد",
-        align: "center",
-        value: "balance"
-      }, {
-        text: "متأخرات",
-        align: "center",
-        value: "arrears"
-      }, {
-        text: "الحالة ",
-        align: "center",
-        value: "status"
-      }, {
-        text: "لتحكم ",
-        align: "center",
-        value: "actions"
-      }]
-    };
+      customers_total: 20
+    }, _defineProperty(_ref, "loading", true), _defineProperty(_ref, "headers", [{
+      text: "م",
+      align: "center",
+      width: "5",
+      sortable: false,
+      value: "id"
+    }, {
+      text: "اسم الشركة",
+      align: "center",
+      value: "company_name"
+    }, {
+      text: "جهة الاتصال",
+      align: "center",
+      sortable: false,
+      value: "name"
+    }, {
+      text: "الرصيد",
+      align: "center",
+      value: "balance"
+    }, {
+      text: "متأخرات",
+      align: "center",
+      value: "arrears"
+    }, {
+      text: "الحالة ",
+      align: "center",
+      value: "status"
+    }, {
+      text: "لتحكم ",
+      align: "center",
+      value: "actions"
+    }]), _ref;
   },
   computed: {
     params: function params(nv) {
@@ -447,7 +476,78 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         var _this = this;
 
         this.getDataFromApi().then(function (response) {
-          _this.customers = response.data.customers.data;
+          var data = response.data.customers.data;
+          var helper = [];
+          var elper = [];
+          var arrears01 = [];
+          var arrears02 = []; //let balance = [];
+
+          if (data) {
+            data.forEach(function (element) {
+              //amount null -> 0
+              if (element.amount == null) element.amount = 0; // no transactions yet!
+
+              if (!element.trans_id) {
+                element.deletable = true;
+                elper.push(element);
+                return;
+              } //الغاء التكرار
+
+
+              if (element.pur_id && element.supdoc_id) {
+                console.log("nibfir");
+
+                if (!elper.find(function (elem) {
+                  return (// element.id +
+                    //   " " +
+                    element.pur_id + " " + element.trans_id == //elem.id + " " +
+                    elem.pur_id + " " + elem.trans_id
+                  );
+                })) {
+                  console.log("nibsoc");
+                  elper.push(element);
+                } else {
+                  elper[elper.findIndex(function (elem) {
+                    return (// element.id +
+                      //   " " +
+                      element.pur_id + " " + element.trans_id == //elem.id + " " +
+                      elem.pur_id + " " + elem.trans_id
+                    );
+                  })].amount += element.amount;
+                }
+
+                return;
+              }
+
+              elper.push(element);
+            });
+            console.log("elper", elper); //تجميع الفواتير
+
+            console.log("arrears01", arrears01);
+            console.log("arrears02", arrears02);
+            elper.forEach(function (element) {
+              if (!element.trans_id) {
+                helper.push(element);
+                return;
+              }
+
+              if (!helper.find(function (elem) {
+                return element.id == elem.id;
+              })) {
+                helper.push(element);
+                return;
+              }
+
+              var index = helper.findIndex(function (elem) {
+                return elem.id == element.id;
+              });
+              if (element.debit != -1) helper[index].debit += element.debit;
+              helper[index].credit += element.credit;
+            });
+          }
+
+          _this.customers = helper;
+          console.log("helper", helper.amount);
           _this.customers_total = response.data.customers.data.total;
           _this.customer_info_customer = response.data.customers.data[0];
           console.log(_this.customers_total);
@@ -466,7 +566,78 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var _this2 = this;
 
       this.getDataFromApi().then(function (response) {
-        _this2.customers = response.data.customers.data;
+        var data = response.data.customers.data;
+        var helper = [];
+        var elper = [];
+        var arrears01 = [];
+        var arrears02 = []; //let balance = [];
+
+        if (data) {
+          data.forEach(function (element) {
+            //amount null -> 0
+            if (element.amount == null) element.amount = 0; // no transactions yet!
+
+            if (!element.trans_id) {
+              element.deletable = true;
+              elper.push(element);
+              return;
+            } //الغاء التكرار
+
+
+            if (element.pur_id && element.supdoc_id) {
+              console.log("nibfir");
+
+              if (!elper.find(function (elem) {
+                return (// element.id +
+                  //   " " +
+                  element.pur_id + " " + element.trans_id == //elem.id + " " +
+                  elem.pur_id + " " + elem.trans_id
+                );
+              })) {
+                console.log("nibsoc");
+                elper.push(element);
+              } else {
+                elper[elper.findIndex(function (elem) {
+                  return (// element.id +
+                    //   " " +
+                    element.pur_id + " " + element.trans_id == //elem.id + " " +
+                    elem.pur_id + " " + elem.trans_id
+                  );
+                })].amount += element.amount;
+              }
+
+              return;
+            }
+
+            elper.push(element);
+          });
+          console.log("elper", elper); //تجميع الفواتير
+
+          console.log("arrears01", arrears01);
+          console.log("arrears02", arrears02);
+          elper.forEach(function (element) {
+            if (!element.trans_id) {
+              helper.push(element);
+              return;
+            }
+
+            if (!helper.find(function (elem) {
+              return element.id == elem.id;
+            })) {
+              helper.push(element);
+              return;
+            }
+
+            var index = helper.findIndex(function (elem) {
+              return elem.id == element.id;
+            });
+            if (element.debit != -1) helper[index].debit += element.debit;
+            helper[index].credit += element.credit;
+          });
+        }
+
+        _this2.customers = helper;
+        console.log("helper", helper.amount);
         _this2.customers_total = response.data.customers.data.total;
         _this2.customer_info_customer = response.data.customers.data[0];
         console.log(_this2.customers_total);
@@ -481,7 +652,78 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         phone: "",
         is_customer_active: ""
       }, this.getDataFromApi().then(function (response) {
-        _this3.customers = response.data.customers.data;
+        var data = response.data.customers.data;
+        var helper = [];
+        var elper = [];
+        var arrears01 = [];
+        var arrears02 = []; //let balance = [];
+
+        if (data) {
+          data.forEach(function (element) {
+            //amount null -> 0
+            if (element.amount == null) element.amount = 0; // no transactions yet!
+
+            if (!element.trans_id) {
+              element.deletable = true;
+              elper.push(element);
+              return;
+            } //الغاء التكرار
+
+
+            if (element.pur_id && element.supdoc_id) {
+              console.log("nibfir");
+
+              if (!elper.find(function (elem) {
+                return (// element.id +
+                  //   " " +
+                  element.pur_id + " " + element.trans_id == //elem.id + " " +
+                  elem.pur_id + " " + elem.trans_id
+                );
+              })) {
+                console.log("nibsoc");
+                elper.push(element);
+              } else {
+                elper[elper.findIndex(function (elem) {
+                  return (// element.id +
+                    //   " " +
+                    element.pur_id + " " + element.trans_id == //elem.id + " " +
+                    elem.pur_id + " " + elem.trans_id
+                  );
+                })].amount += element.amount;
+              }
+
+              return;
+            }
+
+            elper.push(element);
+          });
+          console.log("elper", elper); //تجميع الفواتير
+
+          console.log("arrears01", arrears01);
+          console.log("arrears02", arrears02);
+          elper.forEach(function (element) {
+            if (!element.trans_id) {
+              helper.push(element);
+              return;
+            }
+
+            if (!helper.find(function (elem) {
+              return element.id == elem.id;
+            })) {
+              helper.push(element);
+              return;
+            }
+
+            var index = helper.findIndex(function (elem) {
+              return elem.id == element.id;
+            });
+            if (element.debit != -1) helper[index].debit += element.debit;
+            helper[index].credit += element.credit;
+          });
+        }
+
+        _this3.customers = helper;
+        console.log("helper", helper.amount);
         _this3.customers_total = response.data.customers.data.total;
         _this3.customer_info_customer = response.data.customers.data[0];
         console.log(_this3.customers_total);
@@ -496,6 +738,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
     },
     addCustomerToList: function addCustomerToList(customer) {
+      console.log("customer");
       if (this.operation == "add") this.customers.push(customer);else if (this.operation == "update") {
         this.customers.splice(this.customers.indexOf(function (elem) {
           return elem.id == customer.id;
@@ -532,6 +775,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     deleteCustomer: function deleteCustomer(item) {
       var _this5 = this;
 
+      if (!item.deletable) {
+        this.dialog = true;
+        return;
+      }
+
       this.loading = true;
       var _this$options = this.options,
           sortBy = _this$options.sortBy,
@@ -547,8 +795,81 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         search: this.search
       }).then(function (response) {
         _this5.loading = false;
-        _this5.customers = response.data.customers.data;
+        var data = response.data.customers.data;
+        var helper = [];
+        var elper = [];
+        var arrears01 = [];
+        var arrears02 = []; //let balance = [];
+
+        if (data) {
+          data.forEach(function (element) {
+            //amount null -> 0
+            if (element.amount == null) element.amount = 0; // no transactions yet!
+
+            if (!element.trans_id) {
+              element.deletable = true;
+              elper.push(element);
+              return;
+            } //الغاء التكرار
+
+
+            if (element.pur_id && element.supdoc_id) {
+              console.log("nibfir");
+
+              if (!elper.find(function (elem) {
+                return (// element.id +
+                  //   " " +
+                  element.pur_id + " " + element.trans_id == //elem.id + " " +
+                  elem.pur_id + " " + elem.trans_id
+                );
+              })) {
+                console.log("nibsoc");
+                elper.push(element);
+              } else {
+                elper[elper.findIndex(function (elem) {
+                  return (// element.id +
+                    //   " " +
+                    element.pur_id + " " + element.trans_id == //elem.id + " " +
+                    elem.pur_id + " " + elem.trans_id
+                  );
+                })].amount += element.amount;
+              }
+
+              return;
+            }
+
+            elper.push(element);
+          });
+          console.log("elper", elper); //تجميع الفواتير
+
+          console.log("arrears01", arrears01);
+          console.log("arrears02", arrears02);
+          elper.forEach(function (element) {
+            if (!element.trans_id) {
+              helper.push(element);
+              return;
+            }
+
+            if (!helper.find(function (elem) {
+              return element.id == elem.id;
+            })) {
+              helper.push(element);
+              return;
+            }
+
+            var index = helper.findIndex(function (elem) {
+              return elem.id == element.id;
+            });
+            if (element.debit != -1) helper[index].debit += element.debit;
+            helper[index].credit += element.credit;
+          });
+        }
+
+        _this5.customers = helper;
+        console.log("helper", helper.amount);
         _this5.customers_total = response.data.customers.data.total;
+        _this5.customer_info_customer = response.data.customers.data[0];
+        console.log(_this5.customers_total);
       });
     },
     getDataFromApi: function getDataFromApi() {
@@ -1141,27 +1462,6 @@ var render = function() {
                         [
                           _c("v-text-field", {
                             attrs: {
-                              label: "رقم الاتصال الأساسي",
-                              required: ""
-                            },
-                            model: {
-                              value: _vm.customer.address,
-                              callback: function($$v) {
-                                _vm.$set(_vm.customer, "address", $$v)
-                              },
-                              expression: "customer.address"
-                            }
-                          })
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "v-col",
-                        { attrs: { cols: "12", lg: "6" } },
-                        [
-                          _c("v-text-field", {
-                            attrs: {
                               label: "رقم الاتصال الثانوي",
                               required: ""
                             },
@@ -1184,11 +1484,11 @@ var render = function() {
                           _c("v-text-field", {
                             attrs: { label: "البريد الالكتروني", required: "" },
                             model: {
-                              value: _vm.customer.phone02,
+                              value: _vm.customer.email,
                               callback: function($$v) {
-                                _vm.$set(_vm.customer, "phone02", $$v)
+                                _vm.$set(_vm.customer, "email", $$v)
                               },
-                              expression: "customer.phone02"
+                              expression: "customer.email"
                             }
                           })
                         ],
@@ -1202,11 +1502,11 @@ var render = function() {
                           _c("v-text-field", {
                             attrs: { label: "الموقع الالكتروني", required: "" },
                             model: {
-                              value: _vm.customer.phone02,
+                              value: _vm.customer.website,
                               callback: function($$v) {
-                                _vm.$set(_vm.customer, "phone02", $$v)
+                                _vm.$set(_vm.customer, "website", $$v)
                               },
-                              expression: "customer.phone02"
+                              expression: "customer.website"
                             }
                           })
                         ],
@@ -1220,13 +1520,73 @@ var render = function() {
                           _c("v-text-field", {
                             attrs: { label: "الرقم الضريبي", required: "" },
                             model: {
-                              value: _vm.customer.phone02,
+                              value: _vm.customer.tax_number,
                               callback: function($$v) {
-                                _vm.$set(_vm.customer, "phone02", $$v)
+                                _vm.$set(_vm.customer, "tax_number", $$v)
                               },
-                              expression: "customer.phone02"
+                              expression: "customer.tax_number"
                             }
                           })
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-col",
+                        { attrs: { cols: "12", lg: "6" } },
+                        [
+                          _c(
+                            "v-row",
+                            [
+                              _c(
+                                "v-col",
+                                { staticStyle: { "text-align": "end" } },
+                                [
+                                  _c(
+                                    "v-btn",
+                                    {
+                                      attrs: {
+                                        color: "blue darken-1",
+                                        text: ""
+                                      },
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.closeDialog()
+                                        }
+                                      }
+                                    },
+                                    [
+                                      _vm._v(
+                                        "\n                  إلغاء\n                "
+                                      )
+                                    ]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "v-btn",
+                                    {
+                                      attrs: {
+                                        color: "blue darken-1",
+                                        text: ""
+                                      },
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.saveCustomer()
+                                        }
+                                      }
+                                    },
+                                    [
+                                      _vm._v(
+                                        "\n                  حفظ\n                "
+                                      )
+                                    ]
+                                  )
+                                ],
+                                1
+                              )
+                            ],
+                            1
+                          )
                         ],
                         1
                       )
@@ -1311,18 +1671,56 @@ var render = function() {
       }),
       _vm._v(" "),
       _c(
-        "customer-info",
+        "v-dialog",
         {
-          attrs: {
-            dialog: _vm.customer_info_dialog,
-            customer: _vm.customer_info_customer
+          attrs: { "max-width": "600px" },
+          model: {
+            value: _vm.dialog,
+            callback: function($$v) {
+              _vm.dialog = $$v
+            },
+            expression: "dialog"
           }
         },
         [
-          _c("span", { attrs: { slot: "title" }, slot: "title" }, [
-            _vm._v(" معلومات المورد")
-          ])
-        ]
+          _c(
+            "v-card",
+            [
+              _c("v-card-title", [
+                _c("span", { staticClass: "text-h5" }, [_vm._v("تنبيه!")])
+              ]),
+              _vm._v(" "),
+              _c("v-card-text", { staticClass: "text--primary" }, [
+                _vm._v(
+                  "\n        لايمكن حذف هذا العميل لوجود تعاملات مالية معه\n      "
+                )
+              ]),
+              _vm._v(" "),
+              _c(
+                "v-card-actions",
+                [
+                  _c("v-spacer"),
+                  _vm._v(" "),
+                  _c(
+                    "v-btn",
+                    {
+                      attrs: { color: "blue darken-1", text: "" },
+                      on: {
+                        click: function($event) {
+                          _vm.dialog = false
+                        }
+                      }
+                    },
+                    [_vm._v("\n          إلغاء\n        ")]
+                  )
+                ],
+                1
+              )
+            ],
+            1
+          )
+        ],
+        1
       ),
       _vm._v(" "),
       _c("v-data-table", {
@@ -1366,7 +1764,7 @@ var render = function() {
                           }
                         }
                       },
-                      [_vm._v("إضافة مورد")]
+                      [_vm._v("إضافة عميل")]
                     )
                   ],
                   1
@@ -1522,13 +1920,33 @@ var render = function() {
             }
           },
           {
+            key: "item.arrears",
+            fn: function(ref) {
+              var item = ref.item
+              return [_vm._v("\n      " + _vm._s(item.amount) + "\n    ")]
+            }
+          },
+          {
+            key: "item.balance",
+            fn: function(ref) {
+              var item = ref.item
+              return [
+                _vm._v(
+                  "\n      " +
+                    _vm._s((item.credit - item.debit).toFixed(2)) +
+                    "\n    "
+                )
+              ]
+            }
+          },
+          {
             key: "item.status",
             fn: function(ref) {
               var item = ref.item
               return [
                 _vm._v(
                   "\n      " +
-                    _vm._s(item.is_active ? "نشط" : "غير نشط") +
+                    _vm._s(item.is_customer_active == 1 ? "نشط" : "غير نشط") +
                     "\n    "
                 )
               ]
@@ -1564,13 +1982,20 @@ var render = function() {
                 ),
                 _vm._v(" "),
                 _c(
+                  "router-link",
+                  { attrs: { to: "customers/" + item.id } },
+                  [_c("v-icon", { attrs: { small: "" } }, [_vm._v("mdi-eye")])],
+                  1
+                ),
+                _vm._v(" "),
+                _c(
                   "v-btn",
                   {
                     attrs: { icon: "" },
                     on: {
                       click: function($event) {
                         $event.stopPropagation()
-                        return _vm.show_customer_dialog(item)
+                        return _vm.deleteCustomer(item, "update")
                       }
                     }
                   },
@@ -1581,23 +2006,10 @@ var render = function() {
                         staticClass: "outlined font-size-12",
                         attrs: { small: "" }
                       },
-                      [_vm._v("mdi-eye")]
+                      [_vm._v("mdi-delete")]
                     )
                   ],
                   1
-                ),
-                _vm._v(" "),
-                _c(
-                  "v-icon",
-                  {
-                    attrs: { small: "" },
-                    on: {
-                      click: function($event) {
-                        return _vm.deleteCustomer(item)
-                      }
-                    }
-                  },
-                  [_vm._v("mdi-delete")]
                 )
               ]
             }

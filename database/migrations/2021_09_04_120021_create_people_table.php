@@ -34,9 +34,9 @@ class CreatePeopleTable extends Migration
             $table->integer('city_id',)->nullable();
             $table->text('address')->nullable();
             
-            $table->boolean('is_customer')->default('1');
-            $table->boolean('is_supplier')->default('1');
-            $table->boolean('is_employee')->default('1');
+            $table->boolean('is_customer')->default('0');
+            $table->boolean('is_supplier')->default('0');
+            $table->boolean('is_employee')->default('0');
 
             $table->boolean('is_customer_active')->default('1');
             $table->boolean('is_supplier_active')->default('1');

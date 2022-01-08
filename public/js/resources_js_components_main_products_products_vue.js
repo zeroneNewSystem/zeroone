@@ -594,9 +594,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   // },
   methods: {
     show_product_dialog: function show_product_dialog(item) {
+      //get info
+      //get info
       this.product_info_product = item;
       this.product_info_dialog = true;
-      console.log('item');
+      console.log("item");
       console.log(item);
     },
     deleteProduct: function deleteProduct(item) {
@@ -691,7 +693,7 @@ __webpack_require__.r(__webpack_exports__);
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/extra/purchase/barcode/" + params.barcode);
   },
   invoiceBarcodeSearch: function invoiceBarcodeSearch(params) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/extra/invoice/barcode/" + params.barcode);
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/extra/invoice/barcode/" + params.barcode + "/inventory_id/" + params.inventory_id);
   },
   stockTakeBarcodeSearch: function stockTakeBarcodeSearch(params) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/extra/stock_take/barcode/" + params.barcode + "/inventory_id/" + params.inventory_id);

@@ -207,7 +207,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         ar_name: "صرف"
       }, {
         id: 2,
-        ar_name: "نقد"
+        ar_name: "استلام"
       }],
 
       /*-------------------validators---------------------------*/

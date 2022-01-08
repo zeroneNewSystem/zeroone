@@ -185,7 +185,7 @@ export default {
       from_accounts: [],
       types: [
         { id: 1, ar_name: "صرف" },
-        { id: 2, ar_name: "نقد" },
+        { id: 2, ar_name: "استلام" },
       ],
       /*-------------------validators---------------------------*/
       vld_minlingth_one: [(v) => v.length >= 1 || "أدخل قيمة"],

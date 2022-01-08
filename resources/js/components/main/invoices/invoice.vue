@@ -157,7 +157,7 @@
             <v-data-table
               disable-pagination
               :headers="sales_header"
-              :items="invoice.sales_details"
+              :items="invoice.invoice_details"
               class="elevation-1"
               :hide-default-footer="true"
               :item-key="toString(Math.floor(Math.random(1, 100) * 100))"
@@ -202,34 +202,18 @@
                 </a>
               </template>
               <template v-slot:item.expires_at="{ item }">
-                <v-menu
-                  :disabled="!item.has_expiration_date"
-                  ref="maturity_date"
-                  v-model="item.expires_at_is_down"
-                  :close-on-content-click="false"
-                  transition="scale-transition"
-                  offset-y
-                >
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-text-field
-                      :disabled="!item.has_expiration_date"
-                      v-model="item.expires_at"
-                      flat
-                      outlined
-                      autocomplete="off"
-                      hide-no-data
-                      hide-details
-                      v-bind="attrs"
-                      v-on="on"
-                      @keydown.enter="item.expires_at_is_down = false"
-                    ></v-text-field>
-                  </template>
-                  <v-date-picker
-                    v-model="item.expires_at"
-                    no-title
-                    @input="item.expires_at_is_down = false"
-                  ></v-date-picker>
-                </v-menu>
+                <v-text-field
+                  disabled
+                  v-model="item.purchase_details[0].expires_at.split(' ')[0]"
+                  flat
+                  outlined
+                  autocomplete="off"
+                  hide-no-data
+                  hide-details
+                  v-bind="attrs"
+                  v-on="on"
+                  @keydown.enter="item.expires_at_is_down = false"
+                ></v-text-field>
               </template>
               <template v-slot:item.unit_price="{ item }">
                 <v-text-field
@@ -315,10 +299,10 @@
 
               <template v-slot:item.product_unit_id="{ item }">
                 <v-autocomplete
-                  v-model="item.sold_unit_id"
+                  v-model="item.sales_unit_id"
                   :items="item.units"
                   item-text="ar_name"
-                  item-value="id"
+                  item-value="pivot.id"
                   cache-items
                   flat
                   hide-no-data
@@ -329,7 +313,7 @@
                 >
                 </v-autocomplete>
               </template>
-              <template v-slot:item.sold_quantity="{ item }">
+              <template v-slot:item.sales_quantity="{ item }">
                 <v-text-field
                   type="number"
                   hide-no-data
@@ -337,7 +321,7 @@
                   autocomplete="off"
                   single-line
                   outlined
-                  v-model="item.sold_quantity"
+                  v-model="item.sales_quantity"
                 ></v-text-field>
               </template>
               <template v-slot:item.quantity_in_minor_unit="{ item }">
@@ -432,66 +416,7 @@
                           <div v-html="total_vat().toFixed(2)"></div>
                         </v-col>
                       </v-row>
-                      <v-row justify="start">
-                        <v-col
-                          cols="12"
-                          lg="5"
-                          style="text-align: end; color: red"
-                        >
-                          <div style="margin-top: 10px">مصاريف إضافية:</div>
-                        </v-col>
-                        <v-col cols="12" lg="5" style="text-align: start">
-                          <div>
-                            <v-text-field
-                              flat
-                              outlined
-                              no-data
-                              no-data-text
-                              non-linear
-                              v-model="invoice.additional_expenses"
-                            >
-                            </v-text-field>
-                          </div>
-                        </v-col>
-                      </v-row>
-                      <v-row justify="start">
-                        <v-col
-                          cols="12"
-                          lg="5"
-                          style="
-                            text-align: end;
-                            border-bottom: 1px solid lightgray;
-                            color: red;
-                          "
-                        >
-                          <div style="margin-top: 10px">من حساب:</div>
-                        </v-col>
-                        <v-col
-                          cols="12"
-                          lg="5"
-                          style="
-                            text-align: start;
-                            border-bottom: 1px solid lightgray;
-                          "
-                        >
-                          <div>
-                            <v-autocomplete
-                              flat
-                              outlined
-                              no-data
-                              no-data-text
-                              non-linear
-                              v-model="
-                                invoice.additional_expenses_from_account_id
-                              "
-                              :items="additional_expenses_from_accounts"
-                              item-text="ar_name"
-                              item-value="id"
-                            >
-                            </v-autocomplete>
-                          </div>
-                        </v-col>
-                      </v-row>
+
                       <v-row justify="start">
                         <v-col
                           cols="12"
@@ -683,7 +608,7 @@ export default {
         {
           text: "الكمية",
           align: "center",
-          value: "sold_quantity",
+          value: "sales_quantity",
           sortable: false,
         },
         {
@@ -764,14 +689,14 @@ export default {
         paid_amount: 0,
         remaining_amount: 0,
 
-        additional_expenses: 100,
+        additional_expenses: 0,
         total_without_products_vat: 0,
         total_vat: 0,
         total_amount: 0,
 
         patch_number: Math.floor(Math.random() * (99999 - 10000 + 1) + 10000),
 
-        sales_details: [],
+        invoice_details: [],
         sales_reference: "",
         description: "",
         customer_id: "",
@@ -852,37 +777,130 @@ export default {
       this.passed_customer = {};
     },
     searchAndAddToInvoice() {
-      let params = { barcode: this.searched_barcode };
+      let params = { barcode: this.searched_barcode, inventory_id: 1 };
 
       Product.invoiceBarcodeSearch(params).then((response) => {
-        if (!response.data.product) {
+        if (response.data.products.length == 0) {
           this.is_exists = [false || "الصنف غير موجود "];
           return;
         }
-        console.log(response.data.product);
 
         this.is_exists = [true];
 
-        //this.found_products = response.data.products;
+        response.data.products[0].actual_quantity = 0;
+        response.data.products[0].actual_quantity_in_minor_unit = 0;
 
-        let selected_product = response.data.product.purchase_details[0];
-        selected_product.ar_name = response.data.product.ar_name;
-        selected_product.barcode = response.data.product.barcode;
-        selected_product.units = response.data.product.units;
-        selected_product.expires_at = selected_product.expires_at.split(" ")[0];
-        selected_product.sold_quantity = 1;
-        selected_product.sold_unit_id =
-          selected_product.units[
-            response.data.product.main_sales_unit_id - 1
-          ].id;
+        this.selected_item = JSON.parse(
+          JSON.stringify(response.data.products[0])
+        );
 
-        console.log(selected_product);
+        if (this.selected_item.purchase_details.length == 0) return;
+        if (this.selected_item.purchase_details.length == 1) {
+          this.showThisProduct(this.selected_item);
+        }
+        let products_grouped = true;
+        if (products_grouped) {
+          this.selected_item.invoice_details[0].quantity_in_minor_unit =
+            this.selected_item.quantity_in_minor_unit;
+
+          // this.selected_item.invoice_details[0].quantity_in_minor_unit =
+          //   this.selected_item.invoice_details.reduce(
+          //     (a, b) => +a + +b.quantity_in_minor_unit,
+          //     0
+          //   );
+          console.log("this.selected_item");
+          console.log(this.selected_item);
+          this.showThisProduct(this.selected_item);
+          return;
+        }
+
+        this.sets = this.selected_item.invoice_details;
+
+        this.dialog = true;
+
+        this.$nextTick().then(() => {
+          var listElm = document.querySelector("ul");
+
+          // Mark first list item
+          this.$nextTick(() => {
+            listElm.firstElementChild.focus();
+            var selectedElm = document.activeElement,
+              goToStart,
+              // map actions to event's key
+              action = {
+                ArrowUp: "previous",
+                Up: "previous",
+                ArrowDown: "next",
+                Down: "next",
+              };
+
+            let f = (e) => {
+              if (e.key === "Enter") {
+                var parent = selectedElm.parentNode;
+                console.log(parent);
+                console.log(selectedElm);
+
+                this.index_of_selected_product = Array.prototype.indexOf.call(
+                  listElm.children,
+                  selectedElm
+                );
+
+                let selected_item = JSON.parse(
+                  JSON.stringify(this.selected_item)
+                );
+
+                console.log(selected_item);
+                selected_item["invoice_details"][0] =
+                  selected_item["invoice_details"][
+                    this.index_of_selected_product
+                  ];
+
+                this.showThisProduct(selected_item);
+                console.log("index");
+
+                console.log("index");
+
+                window.removeEventListener("keydown", f);
+
+                console.log("input_barcode");
+                console.log(input_barcode);
+                console.log("input_barcode");
+                let input_barcode = document.getElementById("barcode");
+                this.$nextTick(() => {
+                  input_barcode.focus();
+                });
+
+                console.log("selectedElm");
+                console.log(selectedElm);
+                console.log("selectedElm");
+                this.dialog = false;
+                return;
+              }
+              //e.preventDefault();
+
+              console.log(selectedElm);
+              selectedElm = selectedElm[action[e.key] + "ElementSibling"];
+
+              // loop if top/bottom edges reached or "home"/"end" keys clicked
+              if (!selectedElm || e.key == "Home" || e.key == "End") {
+                goToStart = action[e.key] == "next" || e.key == "Home";
+                selectedElm =
+                  listElm.children[goToStart ? 0 : listElm.children.length - 1];
+              }
+
+              selectedElm.focus();
+            };
+            window.addEventListener("keydown", f);
+          });
+
+          // Event listener
+        });
 
         //-----add
-        selected_product.sales_discount_type_id = 1;
-        selected_product.sales_tax = response.data.product.sales_tax;
 
-        this.invoice.sales_details.unshift(selected_product);
+        //---------
+        //selected_product["document_type_id"] = 1; // invoice
+        //selected_product["product_id"] = selected_product["id"]; // invoice
       });
     },
     remaining_amount() {
@@ -902,15 +920,54 @@ export default {
       console.log(item);
       this.product_info_product = item;
     },
+    showThisProduct(selected_product) {
+      if (
+        this.invoice.invoice_details.findIndex(
+          (elem) => elem.id == selected_product.id
+        ) >= 0
+      )
+        return;
+
+      selected_product.sales_unit_id =
+        selected_product.units[
+          selected_product.main_sales_unit_id - 1
+        ].pivot.id;
+
+      selected_product.unit_price =
+        selected_product.units[
+          selected_product.main_sales_unit_id - 1
+        ].pivot.purchase_price;
+
+      selected_product.sales_quantity = 1;
+      selected_product.current_quantity =
+        selected_product.purchase_details[0].quantity_in_minor_unit /
+        selected_product.units[selected_product.main_sales_unit_id - 1].pivot
+          .contains;
+
+      selected_product.actual_quantity = selected_product.current_quantity;
+      selected_product.actual_quantity_in_minor_unit = parseInt(
+        selected_product.actual_quantity *
+          selected_product.units[selected_product.main_sales_unit_id - 1].pivot
+            .contains
+      );
+      console.log("selected_product");
+      console.log(selected_product);
+      selected_product["document_type_id"] = 2; // purchase
+      selected_product["product_id"] = selected_product["id"]; // purchase
+
+      this.invoice.invoice_details.push(selected_product);
+      return;
+    },
+
     product_unit_change(item) {
-      let sold_unit = item.units.find(
-        (elem) => elem.pivot.id == item.sold_unit_id
+      let sales_unit = item.units.find(
+        (elem) => elem.pivot.id == item.sales_unit_id
       );
 
-      item.unit_price = sold_unit.pivot.sales_price;
+      item.unit_price = sales_unit.pivot.sales_price;
     },
     total_vat() {
-      this.invoice.total_vat = this.invoice.sales_details.reduce(
+      this.invoice.total_vat = this.invoice.invoice_details.reduce(
         (a, b) => +a + +b.sales_tax_value,
         0
       );
@@ -925,7 +982,7 @@ export default {
     },
 
     total_without_products_vat() {
-      return this.invoice.sales_details.reduce(
+      return this.invoice.invoice_details.reduce(
         (a, b) => +a + +b.total_befor_tax,
         0
       );
@@ -944,24 +1001,35 @@ export default {
     total_befor_tax(item) {
       if (item.sales_discount_type_id == 1) {
         item.total_befor_tax =
-          item.sold_quantity * item.unit_price -
-          (item.sold_quantity * item.unit_price * item.sales_discount) / 100;
+          item.sales_quantity * item.unit_price -
+          (item.sales_quantity * item.unit_price * item.sales_discount) / 100;
 
         return item.total_befor_tax;
       }
       item.total_befor_tax =
-        item.sold_quantity * item.unit_price - item.sales_discount;
+        item.sales_quantity * item.unit_price - item.sales_discount;
 
       return item.total_befor_tax;
     },
     quantity_in_minor_unit(item) {
-      let sold_unit = item.units.find((elem) => elem.id == item.sold_unit_id);
-      item.quantity_in_minor_unit = item.sold_quantity * sold_unit.contains;
+      console.log(item);
+
+      let sales_unit = item.units.find(
+        (elem) => elem.pivot.id == item.sales_unit_id
+      );
+
+      console.log("sales_unit");
+      console.log(sales_unit);
+      item.quantity_in_minor_unit =
+        item.sales_quantity * sales_unit.pivot.contains;
+
+      console.log(item.quantity_in_minor_unit);
+
       return item.quantity_in_minor_unit;
     },
     deleteItem(item) {
-      this.invoice.sales_details.splice(
-        this.invoice.sales_details.indexOf(item),
+      this.invoice.invoice_details.splice(
+        this.invoice.invoice_details.indexOf(item),
         1
       );
     },
@@ -986,10 +1054,10 @@ export default {
     },
 
     addProductToInvoice() {
-      console.log(this.invoice.sales_details);
+      console.log(this.invoice.invoice_details);
       console.log("seles", this.selected_product);
-      //set defaultsales_id from main soldid
-      this.selected_product.sold_unit_id =
+      //set defaultsales_id from main salesid
+      this.selected_product.sales_unit_id =
         this.selected_product.units[
           this.selected_product.main_sales_unit_id - 1
         ].pivot.id;
@@ -999,12 +1067,12 @@ export default {
           this.selected_product.main_sales_unit_id - 1
         ].pivot.sales_price;
 
-      this.selected_product.sold_quantity = 1;
-      console.log("nnj", this.selected_product.sold_unit_id);
-      this.invoice.sales_details.unshift(
+      this.selected_product.sales_quantity = 1;
+      console.log("nnj", this.selected_product.sales_unit_id);
+      this.invoice.invoice_details.unshift(
         JSON.parse(JSON.stringify(this.selected_product))
       );
-      console.log("nib", this.invoice.sales_details);
+      console.log("nib", this.invoice.invoice_details);
       this.selected_product = [];
     },
     checkExicting() {},
@@ -1044,7 +1112,7 @@ export default {
         console.log(this.invoice);
         this.invoice.issue_date = this.invoice.issue_date.split(" ")[0];
         this.invoice.maturity_date = this.invoice.maturity_date.split(" ")[0];
-        this.invoice.sales_details.forEach((elem) => {
+        this.invoice.invoice_details.forEach((elem) => {
           if (elem.expires_at) elem.expires_at = elem.expires_at.split(" ")[0];
         });
 

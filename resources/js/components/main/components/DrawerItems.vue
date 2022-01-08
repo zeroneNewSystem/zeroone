@@ -73,22 +73,22 @@ export default {
         sub_menu: [
           {
             name: "العملاء",
-            link: "suppliers",
+            link: "/customers",
             icon: "",
           },
           {
-            name: " عروض الأسعار",
-            link: "purchases",
+            name: "فاتورة مبيعات",
+            link: "/invoice",
             icon: "",
           },
           {
             name: "فواتير المبيعات",
-            link: "purchase_orders",
+            link: "/invoices",
             icon: "",
           },
           {
             name: "سندات العملاء",
-            link: "receipts",
+            link: "/payments",
             icon: "",
           },
         ],
@@ -100,22 +100,27 @@ export default {
         sub_menu: [
           {
             name: "الموردون",
-            link: "suppliers",
+            link: "/suppliers",
             icon: "",
           },
           {
             name: "فواتير المشتريات",
-            link: "purchases",
+            link: "/purchases",
+            icon: "",
+          },
+          {
+            name: "فاتورة شراء",
+            link: "/purchase",
             icon: "",
           },
           {
             name: "أوامر الشراء",
-            link: "purchase_orders",
+            link: "/purchase_orders",
             icon: "",
           },
           {
             name: "سندات الموردين",
-            link: "receipts",
+            link: "/receipts",
             icon: "",
           },
         ],
@@ -126,27 +131,27 @@ export default {
         sub_menu: [
           {
             name: "الوحدات",
-            link: "units",
+            link: "/units",
             icon: "",
           },
           {
             name: "المجموعات",
-            link: "types",
+            link: "/types",
             icon: "",
           },
           {
             name: "الأنواع",
-            link: "forms",
+            link: "/forms",
             icon: "",
           },
           {
             name: "إضافة صنف",
-            link: "product",
+            link: "/product",
             icon: "",
           },
           {
             name: "إدارة الأصناف",
-            link: "products",
+            link: "/products",
             icon: "",
           },
         ],
@@ -157,43 +162,43 @@ export default {
         sub_menu: [
           {
             name: "حركة أموال",
-            link: "units",
+            link: "/units",
             icon: "",
           },
           {
             name: "إضافة رأس مال",
-            link: "types",
+            link: "/types",
             icon: "",
           },
           {
             name: "إهلاك أصل ثابت",
-            link: "forms",
+            link: "/forms",
             icon: "",
           },
           {
             name: "سحب المالك",
-            link: "product",
+            link: "/product",
             icon: "",
           },
           {
             name: "توزيع أرباح",
-            link: "products",
+            link: "/products",
             icon: "",
           },
 
           {
             name: "محاسبة رواتب",
-            link: "products",
+            link: "/products",
             icon: "",
           },
           {
             name: "قيود يدوية",
-            link: "products",
+            link: "/products",
             icon: "",
           },
           {
             name: "الدليل المحاسبي",
-            link: "accounts",
+            link: "/accounts",
             icon: "",
           },
         ],
@@ -206,38 +211,38 @@ export default {
         sub_menu: [
           {
             name: "إعدادت عامة",
-            link: "suppliers",
+            link: "/suppliers",
             icon: "",
           },
           {
             name: " المستخدمين ",
-            link: "purchases",
+            link: "/purchases",
             icon: "",
           },
           {
             name: "الضرائب",
-            link: "purchase_orders",
+            link: "/purchase_orders",
             icon: "",
           },
           {
             name: "بيانات",
-            link: "receipts",
+            link: "/receipts",
             icon: "",
           },{
             name: "بيانات الشركة",
-            link: "receipts",
+            link: "/receipts",
             icon: "",
           },{
             name: "شروط الدفع",
-            link: "receipts",
+            link: "/receipts",
             icon: "",
           },{
             name: "بيانات",
-            link: "receipts",
+            link: "/receipts",
             icon: "",
           },{
             name: "بيانات",
-            link: "receipts",
+            link: "/receipts",
             icon: "",
           },
         ],
@@ -249,12 +254,12 @@ export default {
         sub_menu: [
           {
             name: "عن النظام",
-            link: "suppliers",
+            link: "/suppliers",
             icon: "",
           },
           {
             name: "أرسل ملاحظاتك",
-            link: "purchases",
+            link: "/purchases",
             icon: "",
           },
           

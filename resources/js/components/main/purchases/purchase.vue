@@ -235,6 +235,7 @@
                     :close-on-content-click="false"
                     transition="scale-transition"
                     offset-y
+                    @change="logo(item)"
                   >
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field
@@ -248,12 +249,14 @@
                         v-bind="attrs"
                         v-on="on"
                         @keydown.enter="item.expires_at_is_down = false"
+                        @change="logo(item)"
                       ></v-text-field>
                     </template>
                     <v-date-picker
                       v-model="item.expires_at"
                       no-title
                       @input="item.expires_at_is_down = false"
+                      @change="logo(item)"
                     ></v-date-picker>
                   </v-menu>
                 </template>
@@ -898,6 +901,32 @@ export default {
     next();
   },
   methods: {
+    logo(item) {
+      let occurrences = 0;
+      let firstIndex = -1;
+
+      for (
+        let index = 0;
+        index < this.purchase.purchase_details.length;
+        index++
+      ) {
+        if (
+          this.purchase.purchase_details[index].barcode == item.barcode &&
+          this.purchase.purchase_details[index].expires_at == item.expires_at
+        ) {
+          if (firstIndex == -1) firstIndex = index;
+          occurrences++;
+          if (occurrences == 2) {
+            this.purchase.purchase_details[firstIndex].purchased_quantity +=
+              this.purchase.purchase_details[index].purchased_quantity;
+            this.purchase.purchase_details.splice(index, 1);
+            return;
+          }
+        }
+      }
+
+      console.log(item);
+    },
     addays(date, days) {
       var result = new Date(date);
       result.setDate(result.getDate() + +days);
@@ -964,10 +993,22 @@ export default {
           return;
         }
         this.is_exists = [true];
+        let selected_product = response.data.products[0];
+
+        //CHECK IF PRODUCT HAS EXPIRATION DATE --> ADD QUANTITY
+
+        if (!selected_product.has_expiration_date) {
+          let index = this.purchase.purchase_details.findIndex(
+            (elem) => elem.barcode == selected_product.barcode
+          );
+          if (index != -1) {
+            this.purchase.purchase_details[index].purchased_quantity++;
+            return;
+          }
+        }
 
         //this.found_products = response.data.products;
 
-        let selected_product = response.data.products[0];
         //-----add
 
         selected_product.purchased_unit_id =
@@ -986,7 +1027,7 @@ export default {
         selected_product["document_type_id"] = 1; // purchase
         selected_product["product_id"] = selected_product["id"]; // purchase
 
-        this.purchase.purchase_details.unshift(selected_product);
+        this.purchase.purchase_details.push(selected_product);
       });
     },
     remaining_amount() {
@@ -1211,7 +1252,7 @@ export default {
           );
         } else {
           this.purchase = JSON.parse(JSON.stringify(this.new_purchase));
-          this.$refs.form.reset()
+          this.$refs.form.reset();
         }
       }
     },

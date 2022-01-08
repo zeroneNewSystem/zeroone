@@ -56,7 +56,7 @@
 
             <v-col cols="12">
               <v-textarea
-              rows="2"
+                rows="2"
                 v-model="customer.address"
                 label="العنوان"
                 required
@@ -69,13 +69,7 @@
                 required
               ></v-text-field>
             </v-col>
-            <v-col cols="12" lg="6">
-              <v-text-field
-                v-model="customer.address"
-                label="رقم الاتصال الأساسي"
-                required
-              ></v-text-field>
-            </v-col>
+
             <v-col cols="12" lg="6">
               <v-text-field
                 v-model="customer.phone02"
@@ -85,24 +79,37 @@
             </v-col>
             <v-col cols="12" lg="6">
               <v-text-field
-                v-model="customer.phone02"
+                v-model="customer.email"
                 label="البريد الالكتروني"
                 required
               ></v-text-field>
             </v-col>
             <v-col cols="12" lg="6">
               <v-text-field
-                v-model="customer.phone02"
+                v-model="customer.website"
                 label="الموقع الالكتروني"
                 required
               ></v-text-field>
             </v-col>
             <v-col cols="12" lg="6">
               <v-text-field
-                v-model="customer.phone02"
+                v-model="customer.tax_number"
                 label="الرقم الضريبي"
                 required
               ></v-text-field>
+            </v-col>
+            <v-col cols="12" lg="6">
+              <v-row>
+                
+                <v-col style="text-align: end">
+                  <v-btn color="blue darken-1" text @click="closeDialog()">
+                    إلغاء
+                  </v-btn>
+                  <v-btn color="blue darken-1" text @click="saveCustomer()">
+                    حفظ
+                  </v-btn>
+                </v-col>
+              </v-row>
             </v-col>
           </v-row>
         </v-container>
@@ -155,7 +162,7 @@ export default {
         Customer.update(this.customer).then((response) => {
           this.$parent.$data.add_update_customer_dialog = false;
           this.isloading = false;
-          this.$emit("addUpdateCustomer", response.data.customer);
+          this.$emit("addUpdateCustomer", this.customer);
         });
         return;
       }

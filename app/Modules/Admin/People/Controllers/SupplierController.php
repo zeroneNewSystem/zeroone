@@ -81,12 +81,14 @@ class SupplierController extends Controller
             function ($leftJoin) {
                 $leftJoin
                     ->on('people.id', '=', 'acc.accountable_id')
-                    ->where('acc.accountable_type', 1);
+                    ->where('acc.accountable_type', 'supplier');
             }
 
         );
+        // all transactions 
         $suppliers = $suppliers->leftJoin('transactions as trans', 'acc.id', '=', 'trans.account_id');
 
+        // all maturity purchase
         $suppliers = $suppliers->leftJoin(
             'purchases as pur',
             function ($leftJoin) {
@@ -153,28 +155,44 @@ class SupplierController extends Controller
         $request['company_id'] = 1;
         $request['person_id'] = 1;
 
+        $account_line = Account::where('account_code', 'like', '%2101%')->orderBy('account_code', 'DESC')->get();
+
+
+
+        //if no suppliers before
+        if ($account_line[0]['account_code'] == '2101')
+            $account_code = '210100001';
+        else
+            $account_code = $account_line[0]['account_code'] + 1;
+
+
         $supplier = Person::create($request->all());
+        
+
         $account_items =
             [
                 'company_id' => '1',
-                'account_code' => '210100001',
+                'account_code' => $account_code,
                 'type_id' => '16',
-                'level' => '4', 
-                'parent_id' => '24', 
-                'ar_name' => '', 
-                'en_name' => '', 
-                'description' => 'حساب مورد', 
-                'payable_receivable' => '1', 
-                'editable' => '0',  
-                'currency_id' => '1', 
-                'is_active' => '1', 
-                'is_visable_in_COA' => '0', 
-                'accountable_id' => $supplier->id, 
-                'accountable_type' => 'supplier', 
+                'level' => '4',
+                'parent_id' => '24',
+                'ar_name' => '',
+                'en_name' => '',
+                'description' => 'حساب مورد',
+                'payable_receivable' => '1',
+                'editable' => '0',
+                'currency_id' => '1',
+                'is_active' => '1',
+                'is_visable_in_COA' => '0',
+                'accountable_id' => $supplier->id,
+                'accountable_type' => 'supplier',
                 'create_by_user_id' => '1'
             ];
 
-        Account::create($account_items);
+        $account = Account::create($account_items);
+        $supplier = Person::find($supplier->id)->update(['supplier_account_id' => $account->id]);
+
+
         return 1;
     }
 
@@ -201,12 +219,12 @@ class SupplierController extends Controller
 
 
         $supplier = DB::table('people')->find($request->id);
-
+        //return $supplier;
 
 
         $balance = 0;
         $account = DB::table('accounts')->where('accountable_id', $request->id)->where('accountable_type', 'supplier')->get();
-        
+
         $transactions = DB::table('transactions')->where('account_id', $account[0]->id)->get();
 
         foreach ($transactions as $transaction) {

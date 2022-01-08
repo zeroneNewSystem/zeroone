@@ -6,8 +6,9 @@ namespace App\Modules\Admin\Invoices\Controllers;
 use App\Http\Controllers\Controller;
 use App\Modules\Admin\Accounts\Models\Transaction;
 use App\Modules\Admin\people\Models\Person;
-use App\Modules\Admin\people\Models\Supplier;
+use App\Modules\Admin\people\Models\Customer;
 use App\Modules\Admin\Products\Models\Inventory;
+use App\Modules\Admin\Products\Models\Product;
 use App\Modules\Admin\Invoices\Models\Invoice;
 use App\Modules\Admin\Invoices\Models\InvoiceDetail;
 use App\Traits\AccountTrait;
@@ -26,13 +27,82 @@ class InvoiceController extends Controller
      */
 
 
+    public function all(Request $request)
+    {
+
+        $search  = json_decode($request->search, true);
+
+
+        $invoices = Invoice::where('invoices.company_id', 1);
+        $invoices = $invoices->leftJoin('people', 'people.id', 'invoices.company_id')
+            ->select('invoices.*', 'people.company_name');
+
+
+
+        if ($search && $search['company_name']) {
+
+            $company_name = $search['company_name'];
+            $invoices = $invoices->whereHas('person', function ($q) use ($company_name) {
+                $q->where('company_name', 'like', '%' . $company_name . '%');
+            });
+        };
+
+        if ($search && $search['invoice_reference'])
+            $invoices = $invoices->where('invoice_reference', 'like', '%' . $search['invoice_reference'] . '%');
+
+
+
+        if ($search && $search['status_id'])
+            $invoices = $invoices->where('status_id', $search['status_id']);
+        if ($search && $search['minimum'])
+            $invoices = $invoices->where('total_amount', '>=', $search['minimum']);
+        if ($search && $search['maximum'])
+            $invoices = $invoices->where('total_amount', '<=', $search['maximum']);
+        if ($search && $search['date_from'])
+            $invoices = $invoices->where('issue_date', '>=', $search['date_from']);
+        if ($search && $search['date_to'])
+            $invoices = $invoices->where('issue_date', '<=', $search['date_to']);
+
+
+
+
+
+        $paid_amount = 0;
+
+
+        if ($request->has('itemsPerPage'))
+            $invoices = $invoices->orderBy('id', 'DESC')->paginate($request->itemsPerPage != -1 ? $request->itemsPerPage : '');
+        else
+            $invoices = $invoices->orderBy('id', 'DESC')->paginate(10);
+
+
+
+        //$invoices = $invoices->get();
+
+        foreach ($invoices as &$invoice) {
+
+            $supp_documents = DB::table('supplemental_documentations')
+                ->where('document_id', $invoice->id)
+                ->where('document_type_id', 1)
+                ->get();
+            //return $supp_documents;
+            $paid_amount += $invoice->paid_amount;
+            foreach ($supp_documents as $supp_document) {
+                $paid_amount += $supp_document->amount;
+            }
+            $invoice['remainder'] = $invoice->total_amount  - $paid_amount;
+            //---reset
+            $paid_amount = 0;
+        }
+        return $invoices;
+    }
     public function index($id)
     {
         $invoice =  DB::table('invoices')->where('id', $id)->get()[0];
 
 
         $methods = Transaction::where('document_id', $id)
-            ->where('document_type_id', 2)
+            ->where('document_type_id', 1)
             ->where('debit', -1)
             ->get();
 
@@ -73,7 +143,7 @@ class InvoiceController extends Controller
 
         return [
             'invoice' => $invoice,
-            'suppliers' => Person::where('company_id', '1')->where('is_supplier', '1')->get(),
+            'customers' => Person::where('company_id', '1')->where('is_customer', '1')->get(),
             'accounts' => $this->cashAndBanks()
 
         ];
@@ -157,63 +227,42 @@ class InvoiceController extends Controller
 
         $invoice = Invoice::create($request->all());
 
-        $supplier_account_id = Person::find($request->supplier_id)['supplier_account_id'];
+        $customer_account_id = Person::find($request->customer_id)['customer_account_id'];
 
-        $supplier_account = [
+
+        $customer_account = [
             "company_id" => 1,
-            "account_id" => $supplier_account_id,
+            "account_id" => $customer_account_id,
             "debit" =>  0,
-            "credit" => $request['total_amount'] - $request['additional_expenses'],
+            "credit" => $request['total_amount'],
             "document_id" => $invoice->id,
-            "document_type_id" => 2,
+            "document_type_id" => 1,
             "currency_code" => 1,
             "currency_rate" => 1,
-            "description" => 'حساب المورد',
+            "description" => 'حساب العميل',
         ];
-        $this->addTransactionEntry($supplier_account);
-
-        $supplier_account = [
-            "company_id" => 1,
-            "account_id" => $supplier_account_id,
-            "debit" =>  $request['paid_amount'],
-            "credit" => 0,
-            "document_id" => $invoice->id,
-            "document_type_id" => 2,
-            "currency_code" => 1,
-            "currency_rate" => 1,
-            "description" => 'مدفوعة للمورد',
-        ];
-        $this->addTransactionEntry($supplier_account);
-
-
-
+        $this->addTransactionEntry($customer_account);
+        if ($request['paid_amount'] != 0) {
+            $customer_account = [
+                "company_id" => 1,
+                "account_id" => $customer_account_id,
+                "debit" =>  $request['paid_amount'],
+                "credit" => 0,
+                "document_id" => $invoice->id,
+                "document_type_id" => 1,
+                "currency_code" => 1,
+                "currency_rate" => 1,
+                "description" => 'مدفوعة للعميل',
+            ];
+            $this->addTransactionEntry($customer_account);
+        }
 
 
-        $additional_expenses_from_account_id = $request['additional_expenses_from_account_id'];
-        $additional_expenses = [
-            "company_id" => 1,
-            "account_id" => $additional_expenses_from_account_id, //5103
-            "debit" =>  0,
-            "credit" => $request['additional_expenses'],
-            "document_id" => $invoice->id,
-            "document_type_id" => 2,
-            "currency_code" => 1,
-            "currency_rate" => 1,
-            "description" => 'مصاريف إضافية',
-        ];
-        $this->addTransactionEntry($additional_expenses);
-        $additional_expenses = [
-            "company_id" => 1,
-            "account_id" => 63, //5103
-            "debit" =>  $request['additional_expenses'],
-            "credit" => 0,
-            "document_id" => $invoice->id,
-            "document_type_id" => 2,
-            "currency_code" => 1,
-            "currency_rate" => 1,
-            "description" => 'مصاريف إضافية',
-        ];
-        $this->addTransactionEntry($additional_expenses);
+
+
+
+
+        
 
 
         $payment_methods = $request->payment_methods;
@@ -222,25 +271,32 @@ class InvoiceController extends Controller
 
 
             foreach ($payment_methods as $payment_method) {
-                $supplier_account = [
-                    "company_id" => 1,
-                    "account_id" => $payment_method['account_id'],
-                    "debit" =>  -1,
-                    "credit" => $payment_method['credit'],
-                    "document_id" => $invoice->id,
-                    "document_type_id" => 2,
-                    "currency_code" => 1,
-                    "currency_rate" => 1,
-                    "description" => 'مدفوعة للمورد',
-                ];
-                $this->addTransactionEntry($supplier_account);
+                if ($payment_method['account_id'] && $payment_method['credit'] > 0) {
+
+                    $customer_account = [
+                        "company_id" => 1,
+                        "account_id" => $payment_method['account_id'],
+                        "debit" =>  -1,
+                        "credit" => $payment_method['credit'],
+                        "document_id" => $invoice->id,
+                        "document_type_id" => 1,
+                        "currency_code" => 1,
+                        "currency_rate" => 1,
+                        "description" => 'مدفوعة للعميل',
+                    ];
+                    $this->addTransactionEntry($customer_account);
+                }
             }
         }
 
 
         foreach ($request->invoice_details as $invoice_detail) {
             //transaction  inventory-
-
+            Product::find($invoice_detail['id'])->increment('quantity_in_minor_unit',$invoice_detail['quantity_in_minor_unit']);
+            
+            
+             
+            
 
             //$account_id = (InvoiceDetail::where()->get())['account_id'];
 
@@ -256,7 +312,7 @@ class InvoiceController extends Controller
                 "debit" =>  $invoice_detail['total'],
                 "credit" => 0,
                 "document_id" => $invoice->id,
-                "document_type_id" => 2,
+                "document_type_id" => 1,
                 "currency_code" => 1,
                 "currency_rate" => 1,
                 "description" => 'some description',
@@ -302,7 +358,7 @@ class InvoiceController extends Controller
 
         // delete all transactions 
 
-        Transaction::where('document_type_id', 2)
+        Transaction::where('document_type_id', 1)
             ->where('document_id', $request->id)
             ->delete();
 
@@ -313,37 +369,37 @@ class InvoiceController extends Controller
 
         $invoice = Invoice::find($request->id);
         $invoice->update($request->all());
-        
+
 
         //----
 
-        $supplier_account_id = Person::find($request->supplier_id)['supplier_account_id'];
+        $customer_account_id = Person::find($request->customer_id)['customer_account_id'];
 
-        $supplier_account = [
+        $customer_account = [
             "company_id" => 1,
-            "account_id" => $supplier_account_id,
+            "account_id" => $customer_account_id,
             "debit" =>  0,
             "credit" => $request['total_amount'] - $request['additional_expenses'],
             "document_id" => $invoice->id,
-            "document_type_id" => 2,
+            "document_type_id" => 1,
             "currency_code" => 1,
             "currency_rate" => 1,
-            "description" => 'حساب المورد',
+            "description" => 'حساب العميل',
         ];
-        $this->addTransactionEntry($supplier_account);
+        $this->addTransactionEntry($customer_account);
 
-        $supplier_account = [
+        $customer_account = [
             "company_id" => 1,
-            "account_id" => $supplier_account_id,
+            "account_id" => $customer_account_id,
             "debit" =>  $request['paid_amount'],
             "credit" => 0,
             "document_id" => $invoice->id,
-            "document_type_id" => 2,
+            "document_type_id" => 1,
             "currency_code" => 1,
             "currency_rate" => 1,
-            "description" => 'مدفوعة للمورد',
+            "description" => 'مدفوعة للعميل',
         ];
-        $this->addTransactionEntry($supplier_account);
+        $this->addTransactionEntry($customer_account);
 
 
 
@@ -356,7 +412,7 @@ class InvoiceController extends Controller
             "debit" =>  0,
             "credit" => $request['additional_expenses'],
             "document_id" => $invoice->id,
-            "document_type_id" => 2,
+            "document_type_id" => 1,
             "currency_code" => 1,
             "currency_rate" => 1,
             "description" => 'مصاريف إضافية',
@@ -368,7 +424,7 @@ class InvoiceController extends Controller
             "debit" =>  $request['additional_expenses'],
             "credit" => 0,
             "document_id" => $invoice->id,
-            "document_type_id" => 2,
+            "document_type_id" => 1,
             "currency_code" => 1,
             "currency_rate" => 1,
             "description" => 'مصاريف إضافية',
@@ -382,18 +438,18 @@ class InvoiceController extends Controller
 
 
             foreach ($payment_methods as $payment_method) {
-                $supplier_account = [
+                $customer_account = [
                     "company_id" => 1,
                     "account_id" => $payment_method['account_id'],
                     "debit" =>  -1,
                     "credit" => $payment_method['credit'],
                     "document_id" => $invoice->id,
-                    "document_type_id" => 2,
+                    "document_type_id" => 1,
                     "currency_code" => 1,
                     "currency_rate" => 1,
-                    "description" => 'مدفوعة للمورد',
+                    "description" => 'مدفوعة للعميل',
                 ];
-                $this->addTransactionEntry($supplier_account);
+                $this->addTransactionEntry($customer_account);
             }
         }
 
@@ -416,7 +472,7 @@ class InvoiceController extends Controller
                 "debit" =>  $invoice_detail['total'],
                 "credit" => 0,
                 "document_id" => $invoice->id,
-                "document_type_id" => 2,
+                "document_type_id" => 1,
                 "currency_code" => 1,
                 "currency_rate" => 1,
                 "description" => 'some description',

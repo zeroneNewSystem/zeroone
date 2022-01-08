@@ -1535,6 +1535,9 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 //
 //
 //
+//
+//
+//
 
 
 
@@ -1749,6 +1752,25 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
     next();
   },
   methods: {
+    logo: function logo(item) {
+      var occurrences = 0;
+      var firstIndex = -1;
+
+      for (var index = 0; index < this.purchase.purchase_details.length; index++) {
+        if (this.purchase.purchase_details[index].barcode == item.barcode && this.purchase.purchase_details[index].expires_at == item.expires_at) {
+          if (firstIndex == -1) firstIndex = index;
+          occurrences++;
+
+          if (occurrences == 2) {
+            this.purchase.purchase_details[firstIndex].purchased_quantity += this.purchase.purchase_details[index].purchased_quantity;
+            this.purchase.purchase_details.splice(index, 1);
+            return;
+          }
+        }
+      }
+
+      console.log(item);
+    },
     addays: function addays(date, days) {
       var result = new Date(date);
       result.setDate(result.getDate() + +days);
@@ -1810,9 +1832,21 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
           return;
         }
 
-        _this3.is_exists = [true]; //this.found_products = response.data.products;
+        _this3.is_exists = [true];
+        var selected_product = response.data.products[0]; //CHECK IF PRODUCT HAS EXPIRATION DATE --> ADD QUANTITY
 
-        var selected_product = response.data.products[0]; //-----add
+        if (!selected_product.has_expiration_date) {
+          var index = _this3.purchase.purchase_details.findIndex(function (elem) {
+            return elem.barcode == selected_product.barcode;
+          });
+
+          if (index != -1) {
+            _this3.purchase.purchase_details[index].purchased_quantity++;
+            return;
+          }
+        } //this.found_products = response.data.products;
+        //-----add
+
 
         selected_product.purchased_unit_id = selected_product.units[selected_product.main_purchase_unit_id - 1].pivot.id;
         selected_product.unit_price = selected_product.units[selected_product.main_purchase_unit_id - 1].pivot.purchase_price;
@@ -1822,7 +1856,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
         selected_product["product_id"] = selected_product["id"]; // purchase
 
-        _this3.purchase.purchase_details.unshift(selected_product);
+        _this3.purchase.purchase_details.push(selected_product);
       });
     },
     remaining_amount: function remaining_amount() {
@@ -2097,7 +2131,7 @@ __webpack_require__.r(__webpack_exports__);
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/extra/purchase/barcode/" + params.barcode);
   },
   invoiceBarcodeSearch: function invoiceBarcodeSearch(params) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/extra/invoice/barcode/" + params.barcode);
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/extra/invoice/barcode/" + params.barcode + "/inventory_id/" + params.inventory_id);
   },
   stockTakeBarcodeSearch: function stockTakeBarcodeSearch(params) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/extra/stock_take/barcode/" + params.barcode + "/inventory_id/" + params.inventory_id);
@@ -5083,6 +5117,11 @@ var render = function() {
                                           transition: "scale-transition",
                                           "offset-y": ""
                                         },
+                                        on: {
+                                          change: function($event) {
+                                            return _vm.logo(item)
+                                          }
+                                        },
                                         scopedSlots: _vm._u(
                                           [
                                             {
@@ -5123,6 +5162,13 @@ var render = function() {
                                                                 return null
                                                               }
                                                               item.expires_at_is_down = false
+                                                            },
+                                                            change: function(
+                                                              $event
+                                                            ) {
+                                                              return _vm.logo(
+                                                                item
+                                                              )
                                                             }
                                                           },
                                                           model: {
@@ -5174,6 +5220,9 @@ var render = function() {
                                           on: {
                                             input: function($event) {
                                               item.expires_at_is_down = false
+                                            },
+                                            change: function($event) {
+                                              return _vm.logo(item)
                                             }
                                           },
                                           model: {

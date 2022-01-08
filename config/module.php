@@ -19,6 +19,7 @@ return [
             'Products',
             'People',
             'Purchases',
+            'Invoices',
             'Receipts',
             'StockTakes',
             'Settings',

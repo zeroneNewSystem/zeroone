@@ -180,6 +180,17 @@ const router = new VueRouter({
                     }
                 },
                 {
+                    path: "/invoices",
+                    name: "invoices",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import ("./components/main/invoices/invoices"),
+                        mainView: () =>
+                            import ("./components/main/invoices/invoices")
+                    }
+                },
+                {
                     path: "/invoice",
                     name: "invoice",
                     meta: { requiresAuth: true },

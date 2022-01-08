@@ -15,8 +15,9 @@
           <v-btn
             elevation
             color="primary"
-            @click.stop="addUpdateSupplier('', 'add')"
-            >إضافة مورد</v-btn
+            to="/receipt"
+            link
+            >سند جديد</v-btn
           >
         </v-toolbar>
 
@@ -166,7 +167,7 @@ export default {
       menu2: false,
       types: [
         { id: 1, ar_name: "صرف" },
-        { id: 2, ar_name: "نقد" },
+        { id: 2, ar_name: "استلام" },
       ],
 
       statuses: [
@@ -212,6 +213,9 @@ export default {
     };
   },
   methods: {
+    addUpdateReceipt(){
+
+    },
     deleteReceipt(receipt) {
       const { sortBy, sortDesc, page, itemsPerPage } = this.options;
       Receipt.delete({
