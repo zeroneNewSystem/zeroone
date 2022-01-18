@@ -278,7 +278,7 @@ __webpack_require__.r(__webpack_exports__);
         text: " افتراضية البيع ",
         align: "center",
         sortable: false,
-        value: "main_sales_unit_id"
+        value: "main_invoiced_unit_id"
       }, {
         text: " افتراضية الشراء ",
         align: "center",
@@ -1538,6 +1538,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 //
 //
 //
+//
 
 
 
@@ -1655,6 +1656,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       }],
       payment_conditions: [],
       new_purchase: {
+        only_cash: true,
         payment_condition_id: 0,
         payment_methods: [{
           account_id: "",
@@ -1684,6 +1686,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         maturity_date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10)
       },
       purchase: {
+        only_cash: true,
         payment_condition_id: 0,
         payment_methods: [{
           account_id: "",
@@ -1881,6 +1884,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
     paymentMethods: function paymentMethods(payments) {
       this.purchase.payment_methods = payments.payment_methods;
       this.purchase.paid_amount = payments.paid_amount;
+      this.purchase.only_cash = false;
     },
     show_product_dialog: function show_product_dialog(item) {
       this.product_info_dialog = true;
@@ -1971,9 +1975,11 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
     },
     checkExicting: function checkExicting() {},
     submit: function submit() {
+      //this.$router.go(0); reload page if needed
+
       /* remove zero amount or not account methods */
       // this.purchase.payment_methods = this.purchase.payment_methods.filter(
-      //   (elem) => elem.account_id != "" && elem.credit != 0
+      //     (elem) => elem.account_id != "" && elem.credit != 0
       // );
       if (this.is_new_purchase) _apis_Purchase__WEBPACK_IMPORTED_MODULE_1__.default.store(this.purchase).then(function (response) {
         return console.log(response.data);
@@ -3256,12 +3262,12 @@ var render = function() {
                         },
                         scopedSlots: _vm._u([
                           {
-                            key: "item.main_sales_unit_id",
+                            key: "item.main_invoiced_unit_id",
                             fn: function(ref) {
                               var item = ref.item
                               return [
                                 _vm.product.units.indexOf(item) + 1 ==
-                                _vm.product.main_sales_unit_id
+                                _vm.product.main_invoiced_unit_id
                                   ? _c("v-icon", { attrs: { small: "" } }, [
                                       _vm._v("mdi-check")
                                     ])
@@ -6022,6 +6028,15 @@ var render = function() {
                                                                 "no-data-text":
                                                                   "",
                                                                 "non-linear": ""
+                                                              },
+                                                              on: {
+                                                                change: function(
+                                                                  $event
+                                                                ) {
+                                                                  _vm.purchase
+                                                                    .only_cash ==
+                                                                    true
+                                                                }
                                                               },
                                                               model: {
                                                                 value:

@@ -702,7 +702,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         text: " افتراضية البيع ",
         align: "center",
         sortable: false,
-        value: "main_sales_unit_id"
+        value: "main_invoiced_unit_id"
       }, {
         text: " افتراضية الشراء ",
         align: "center",
@@ -809,7 +809,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         prdct_group_ids: [1, 2],
         prdct_form_id: 1,
         prdct_type_id: 1,
-        main_sales_unit_id: 1,
+        main_invoiced_unit_id: 1,
         main_purchase_unit_id: 1,
         product_cogs_account_id: 1,
         product_sales_account_id: 1,
@@ -982,8 +982,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         this.product.prdct_units[0].contains = 1;
       }
 
-      if (index + 1 == this.product.main_sales_unit_id) {
-        this.product.main_sales_unit_id = 1;
+      if (index + 1 == this.product.main_invoiced_unit_id) {
+        this.product.main_invoiced_unit_id = 1;
       }
 
       if (index + 1 == this.product.main_purchase_unit_id) {
@@ -1957,7 +1957,7 @@ var render = function() {
                                         },
                                         scopedSlots: _vm._u([
                                           {
-                                            key: "item.main_sales_unit_id",
+                                            key: "item.main_invoiced_unit_id",
                                             fn: function(ref) {
                                               var item = ref.item
                                               return [
@@ -1969,16 +1969,16 @@ var render = function() {
                                                     model: {
                                                       value:
                                                         _vm.product
-                                                          .main_sales_unit_id,
+                                                          .main_invoiced_unit_id,
                                                       callback: function($$v) {
                                                         _vm.$set(
                                                           _vm.product,
-                                                          "main_sales_unit_id",
+                                                          "main_invoiced_unit_id",
                                                           $$v
                                                         )
                                                       },
                                                       expression:
-                                                        "product.main_sales_unit_id"
+                                                        "product.main_invoiced_unit_id"
                                                     }
                                                   },
                                                   [

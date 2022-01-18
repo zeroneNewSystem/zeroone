@@ -61,14 +61,14 @@
                 "
               ></v-text-field>
             </template>
-            <template v-slot:item.credit="{ item }">
+            <template v-slot:item.debit="{ item }">
               <v-text-field
                 :disabled="item.account_id == 0"
                 autocomplete="off"
                 :rules="vld_numbering"
                 single-line
                 outlined
-                v-model="item.credit"
+                v-model="item.debit"
               ></v-text-field>
             </template>
 
@@ -168,7 +168,7 @@ export default {
           value: "account_code",
           sortable: false,
         },
-        { text: " القيمة", align: "center", value: "credit", sortable: false },
+        { text: " القيمة", align: "center", value: "debit", sortable: false },
         {
           text: "ملاحظات",
           align: "center",
@@ -181,7 +181,7 @@ export default {
   },
   computed: {
     remaining_amount: (v) => v.invoice_total - v.paid_amount,
-    paid_amount: (v) => v.payment_methods.reduce((a, b) => +a + +b.credit, 0),
+    paid_amount: (v) => v.payment_methods.reduce((a, b) => +a + +b.debit, 0),
   },
   methods: {
     setMethodsIfEmpty(){
@@ -190,7 +190,7 @@ export default {
     addPaymentMethod() {
       this.payment_methods.push({
         account_id: "",
-        credit: 0,
+        debit: 0,
         description: "",
       });
     },

@@ -21,6 +21,7 @@ return [
             'Purchases',
             'Invoices',
             'Receipts',
+            'Bonds',
             'StockTakes',
             'Settings',
         ],

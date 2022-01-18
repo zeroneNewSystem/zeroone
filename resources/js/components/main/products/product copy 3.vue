@@ -203,10 +203,10 @@
                         toString(Math.floor(Math.random(1, 100) * 100))
                       "
                     >
-                      <template v-slot:item.main_sales_unit_id="{ item }">
+                      <template v-slot:item.main_invoiced_unit_id="{ item }">
                         <v-radio-group
                           class="product-radio"
-                          v-model="product.main_sales_unit_id"
+                          v-model="product.main_invoiced_unit_id"
                         >
                           <div
                             style="
@@ -668,7 +668,7 @@ export default {
           text: " افتراضية البيع ",
           align: "center",
           sortable: false,
-          value: "main_sales_unit_id",
+          value: "main_invoiced_unit_id",
         },
         {
           text: " افتراضية الشراء ",
@@ -724,7 +724,7 @@ export default {
       /*-----------------------units---------------------------*/
       prdct_units: [
         {
-          main_sales_unit_id: "2",
+          main_invoiced_unit_id: "2",
           main_purchase_unit_id: "2",
 
           ar_name: "salam",
@@ -781,7 +781,7 @@ export default {
         prdct_group_ids: [1, 2],
         prdct_form_id: 1,
         prdct_type_id: 1,
-        main_sales_unit_id: 1,
+        main_invoiced_unit_id: 1,
         main_purchase_unit_id: 1,
 
         product_cogs_account_id: 1,
@@ -856,7 +856,7 @@ export default {
     indexOfsales_MainUnit() {
       return this.product.prdct_units.indexOf(
         this.product.prdct_units.find((elem) => {
-          return elem.main_sales_unit_id == "main_sales_unit_id";
+          return elem.main_invoiced_unit_id == "main_invoiced_unit_id";
         })
       );
     },
@@ -953,8 +953,8 @@ export default {
         this.product.prdct_units[0].contains = 1;
       }
 
-      if (index + 1 == this.product.main_sales_unit_id) {
-        this.product.main_sales_unit_id = 1;
+      if (index + 1 == this.product.main_invoiced_unit_id) {
+        this.product.main_invoiced_unit_id = 1;
       }
       if (index + 1 == this.product.main_purchase_unit_id) {
         this.product.main_purchase_unit_id = 1;
@@ -965,9 +965,9 @@ export default {
       if (type == "sales_") {
         this.product.prdct_units.forEach((element) => {
           console.log(element);
-          element.main_sales_unit_id = "";
+          element.main_invoiced_unit_id = "";
         });
-        item.main_sales_unit_id = "main_sales_unit_id";
+        item.main_invoiced_unit_id = "main_invoiced_unit_id";
       }
       if (type == "purchase") {
         this.product.prdct_units.forEach((element) => {

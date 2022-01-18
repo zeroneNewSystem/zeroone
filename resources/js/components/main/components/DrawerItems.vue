@@ -88,7 +88,7 @@ export default {
           },
           {
             name: "سندات العملاء",
-            link: "/payments",
+            link: "/bonds",
             icon: "",
           },
         ],

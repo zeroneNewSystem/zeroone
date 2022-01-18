@@ -204,7 +204,7 @@
               <template v-slot:item.expires_at="{ item }">
                 <v-text-field
                   disabled
-                  v-model="item.purchase_details[0].expires_at.split(' ')[0]"
+                  v-model="item.expires_at.split(' ')[0]"
                   flat
                   outlined
                   autocomplete="off"
@@ -299,7 +299,7 @@
 
               <template v-slot:item.product_unit_id="{ item }">
                 <v-autocomplete
-                  v-model="item.sales_unit_id"
+                  v-model="item.invoiced_unit_id"
                   :items="item.units"
                   item-text="ar_name"
                   item-value="pivot.id"
@@ -313,7 +313,7 @@
                 >
                 </v-autocomplete>
               </template>
-              <template v-slot:item.sales_quantity="{ item }">
+              <template v-slot:item.invoiced_quantity="{ item }">
                 <v-text-field
                   type="number"
                   hide-no-data
@@ -321,7 +321,7 @@
                   autocomplete="off"
                   single-line
                   outlined
-                  v-model="item.sales_quantity"
+                  v-model="item.invoiced_quantity"
                 ></v-text-field>
               </template>
               <template v-slot:item.quantity_in_minor_unit="{ item }">
@@ -462,6 +462,7 @@
                               no-data-text
                               non-linear
                               v-model="invoice.paid_amount"
+                              @change="invoice.only_cash == true"
                             >
                             </v-text-field>
                           </div>
@@ -608,7 +609,7 @@ export default {
         {
           text: "الكمية",
           align: "center",
-          value: "sales_quantity",
+          value: "invoiced_quantity",
           sortable: false,
         },
         {
@@ -669,20 +670,21 @@ export default {
 
       payment_conditions: [],
       invoice: {
+        only_cash:true,
         payment_methods: [
           {
             account_id: "",
-            credit: 0,
+            debit: 0,
             description: "",
           },
           {
             account_id: "",
-            credit: 0,
+            debit: 0,
             description: "",
           },
           {
             account_id: "",
-            credit: 0,
+            debit: 0,
             description: "",
           },
         ],
@@ -808,6 +810,8 @@ export default {
           //     (a, b) => +a + +b.quantity_in_minor_unit,
           //     0
           //   );
+
+          
           console.log("this.selected_item");
           console.log(this.selected_item);
           this.showThisProduct(this.selected_item);
@@ -914,6 +918,7 @@ export default {
     paymentMethods(payments) {
       this.invoice.payment_methods = payments.payment_methods;
       this.invoice.paid_amount = payments.paid_amount;
+      this.invoice.only_cash = false;
     },
     show_product_dialog(item) {
       this.product_info_dialog = true;
@@ -928,26 +933,27 @@ export default {
       )
         return;
 
-      selected_product.sales_unit_id =
+      selected_product.invoiced_unit_id =
         selected_product.units[
-          selected_product.main_sales_unit_id - 1
+          selected_product.main_invoiced_unit_id - 1
         ].pivot.id;
 
+      selected_product.expires_at = selected_product.purchase_details[0].expires_at;
       selected_product.unit_price =
         selected_product.units[
-          selected_product.main_sales_unit_id - 1
+          selected_product.main_invoiced_unit_id - 1
         ].pivot.purchase_price;
 
-      selected_product.sales_quantity = 1;
+      selected_product.invoiced_quantity = 1;
       selected_product.current_quantity =
         selected_product.purchase_details[0].quantity_in_minor_unit /
-        selected_product.units[selected_product.main_sales_unit_id - 1].pivot
+        selected_product.units[selected_product.main_invoiced_unit_id - 1].pivot
           .contains;
 
       selected_product.actual_quantity = selected_product.current_quantity;
       selected_product.actual_quantity_in_minor_unit = parseInt(
         selected_product.actual_quantity *
-          selected_product.units[selected_product.main_sales_unit_id - 1].pivot
+          selected_product.units[selected_product.main_invoiced_unit_id - 1].pivot
             .contains
       );
       console.log("selected_product");
@@ -961,7 +967,7 @@ export default {
 
     product_unit_change(item) {
       let sales_unit = item.units.find(
-        (elem) => elem.pivot.id == item.sales_unit_id
+        (elem) => elem.pivot.id == item.invoiced_unit_id
       );
 
       item.unit_price = sales_unit.pivot.sales_price;
@@ -1001,13 +1007,13 @@ export default {
     total_befor_tax(item) {
       if (item.sales_discount_type_id == 1) {
         item.total_befor_tax =
-          item.sales_quantity * item.unit_price -
-          (item.sales_quantity * item.unit_price * item.sales_discount) / 100;
+          item.invoiced_quantity * item.unit_price -
+          (item.invoiced_quantity * item.unit_price * item.sales_discount) / 100;
 
         return item.total_befor_tax;
       }
       item.total_befor_tax =
-        item.sales_quantity * item.unit_price - item.sales_discount;
+        item.invoiced_quantity * item.unit_price - item.sales_discount;
 
       return item.total_befor_tax;
     },
@@ -1015,13 +1021,13 @@ export default {
       console.log(item);
 
       let sales_unit = item.units.find(
-        (elem) => elem.pivot.id == item.sales_unit_id
+        (elem) => elem.pivot.id == item.invoiced_unit_id
       );
 
       console.log("sales_unit");
       console.log(sales_unit);
       item.quantity_in_minor_unit =
-        item.sales_quantity * sales_unit.pivot.contains;
+        item.invoiced_quantity * sales_unit.pivot.contains;
 
       console.log(item.quantity_in_minor_unit);
 
@@ -1057,18 +1063,18 @@ export default {
       console.log(this.invoice.invoice_details);
       console.log("seles", this.selected_product);
       //set defaultsales_id from main salesid
-      this.selected_product.sales_unit_id =
+      this.selected_product.invoiced_unit_id =
         this.selected_product.units[
-          this.selected_product.main_sales_unit_id - 1
+          this.selected_product.main_invoiced_unit_id - 1
         ].pivot.id;
 
       this.selected_product.unit_price =
         this.selected_product.units[
-          this.selected_product.main_sales_unit_id - 1
+          this.selected_product.main_invoiced_unit_id - 1
         ].pivot.sales_price;
 
-      this.selected_product.sales_quantity = 1;
-      console.log("nnj", this.selected_product.sales_unit_id);
+      this.selected_product.invoiced_quantity = 1;
+      console.log("nnj", this.selected_product.invoiced_unit_id);
       this.invoice.invoice_details.unshift(
         JSON.parse(JSON.stringify(this.selected_product))
       );
@@ -1120,17 +1126,17 @@ export default {
           this.invoice.payment_methods = [
             {
               account_id: "",
-              credit: 0,
+              debit: 0,
+              description: "",
+            },  
+            {
+              account_id: "",
+              debit: 0,
               description: "",
             },
             {
               account_id: "",
-              credit: 0,
-              description: "",
-            },
-            {
-              account_id: "",
-              credit: 0,
+              debit: 0,
               description: "",
             },
           ];

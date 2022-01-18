@@ -566,6 +566,7 @@
                                 no-data-text
                                 non-linear
                                 v-model="purchase.paid_amount"
+                                @change="purchase.only_cash == true"
                               >
                               </v-text-field>
                             </div>
@@ -663,6 +664,7 @@ export default {
   },
   data() {
     return {
+      
       title: "فاتورة شراء جديدة",
       is_new_purchase: true,
       additional_expenses_from_accounts: [],
@@ -774,6 +776,7 @@ export default {
 
       payment_conditions: [],
       new_purchase: {
+        only_cash:true,
         payment_condition_id: 0,
         payment_methods: [
           {
@@ -818,6 +821,8 @@ export default {
           .substr(0, 10),
       },
       purchase: {
+        only_cash:true,
+        
         payment_condition_id: 0,
         payment_methods: [
           {
@@ -866,7 +871,7 @@ export default {
       date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
         .toISOString()
         .substr(0, 10),
-      issue_date_is_down: false,
+      issue_date_is_down: false, 
       maturity_date_is_down: false,
       formatted_issue_date: this.formatDate(
         new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
@@ -1057,6 +1062,7 @@ export default {
     paymentMethods(payments) {
       this.purchase.payment_methods = payments.payment_methods;
       this.purchase.paid_amount = payments.paid_amount;
+      this.purchase.only_cash = false;
     },
     show_product_dialog(item) {
       this.product_info_dialog = true;
@@ -1173,9 +1179,12 @@ export default {
     },
     checkExicting() {},
     submit() {
+      
+
+      //this.$router.go(0); reload page if needed
       /* remove zero amount or not account methods */
       // this.purchase.payment_methods = this.purchase.payment_methods.filter(
-      //   (elem) => elem.account_id != "" && elem.credit != 0
+      //     (elem) => elem.account_id != "" && elem.credit != 0
       // );
       if (this.is_new_purchase)
         Purchase.store(this.purchase).then((response) =>

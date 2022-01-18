@@ -221,129 +221,10 @@ class PurchaseController extends Controller
      */
     public function store(Request $request)
     {
+
         $request['company_id'] = 1;
-
-
-
         $purchase = Purchase::create($request->all());
-
-        $supplier_account_id = Person::find($request->supplier_id)['supplier_account_id'];
-
-        $supplier_account = [
-            "company_id" => 1,
-            "account_id" => $supplier_account_id,
-            "debit" =>  0,
-            "credit" => $request['total_amount'],
-            "document_id" => $purchase->id,
-            "document_type_id" => 1,
-            "currency_code" => 1,
-            "currency_rate" => 1,
-            "description" => 'حساب المورد',
-        ];
-        $this->addTransactionEntry($supplier_account);
-        if ($request['paid_amount'] != 0) {
-            $supplier_account = [
-                "company_id" => 1,
-                "account_id" => $supplier_account_id,
-                "debit" =>  $request['paid_amount'],
-                "credit" => 0,
-                "document_id" => $purchase->id,
-                "document_type_id" => 1,
-                "currency_code" => 1,
-                "currency_rate" => 1,
-                "description" => 'مدفوعة للمورد',
-            ];
-            $this->addTransactionEntry($supplier_account);
-        }
-
-
-
-
-
-
-        $additional_expenses_from_account_id = $request['additional_expenses_from_account_id'];
-        $additional_expenses = [
-            "company_id" => 1,
-            "account_id" => $additional_expenses_from_account_id, //5103
-            "debit" =>  0,
-            "credit" => $request['additional_expenses'],
-            "document_id" => $purchase->id,
-            "document_type_id" => 1,
-            "currency_code" => 1,
-            "currency_rate" => 1,
-            "description" => 'مصاريف إضافية',
-        ];
-        $this->addTransactionEntry($additional_expenses);
-        $additional_expenses = [
-            "company_id" => 1,
-            "account_id" => 63, //5103
-            "debit" =>  $request['additional_expenses'],
-            "credit" => 0,
-            "document_id" => $purchase->id,
-            "document_type_id" => 1,
-            "currency_code" => 1,
-            "currency_rate" => 1,
-            "description" => 'مصاريف إضافية',
-        ];
-        $this->addTransactionEntry($additional_expenses);
-
-
-        $payment_methods = $request->payment_methods;
-
-        if (is_array($request['payment_methods'])) {
-
-
-            foreach ($payment_methods as $payment_method) {
-                if ($payment_method['account_id'] && $payment_method['credit'] > 0) {
-
-                    $supplier_account = [
-                        "company_id" => 1,
-                        "account_id" => $payment_method['account_id'],
-                        "debit" =>  -1,
-                        "credit" => $payment_method['credit'],
-                        "document_id" => $purchase->id,
-                        "document_type_id" => 1,
-                        "currency_code" => 1,
-                        "currency_rate" => 1,
-                        "description" => 'مدفوعة للمورد',
-                    ];
-                    $this->addTransactionEntry($supplier_account);
-                }
-            }
-        }
-
-
-        foreach ($request->purchase_details as $purchase_detail) {
-            //transaction  inventory-
-            Product::find($purchase_detail['id'])->increment('quantity_in_minor_unit',$purchase_detail['quantity_in_minor_unit']);
-            
-            
-             
-            
-
-            //$account_id = (PurchaseDetail::where()->get())['account_id'];
-
-
-            $inventory_account_id = Inventory::find($purchase_detail['inventory_id'])['account_id'];
-
-
-
-
-            $entry = [
-                "company_id" => 1,
-                "account_id" => $inventory_account_id,
-                "debit" =>  $purchase_detail['total'],
-                "credit" => 0,
-                "document_id" => $purchase->id,
-                "document_type_id" => 1,
-                "currency_code" => 1,
-                "currency_rate" => 1,
-                "description" => 'some description',
-            ];
-            $this->addTransactionEntry($entry);
-            $purchase->purchase_details()->create($purchase_detail);
-        }
-
+        $this->storePurchaseInfo($request, $purchase);
         return $purchase;
     }
 
@@ -393,16 +274,41 @@ class PurchaseController extends Controller
         $purchase = Purchase::find($request->id);
         $purchase->update($request->all());
 
+        $this->storePurchaseInfo($request, $purchase);
 
         //----
 
+       
+
+        return $purchase;
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Purchase  $purchase
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Purchase $purchase)
+    {
+        //
+    }
+    private function addTransactionEntry($entry)
+    {
+
+
+        $account_id = Transaction::create($entry);
+        return true;
+    }
+    private function storePurchaseInfo($request, $purchase)
+    {
         $supplier_account_id = Person::find($request->supplier_id)['supplier_account_id'];
 
         $supplier_account = [
             "company_id" => 1,
             "account_id" => $supplier_account_id,
             "debit" =>  0,
-            "credit" => $request['total_amount'] - $request['additional_expenses'],
+            "credit" => $request['total_amount'],
             "document_id" => $purchase->id,
             "document_type_id" => 1,
             "currency_code" => 1,
@@ -411,22 +317,53 @@ class PurchaseController extends Controller
         ];
         $this->addTransactionEntry($supplier_account);
 
-        $supplier_account = [
-            "company_id" => 1,
-            "account_id" => $supplier_account_id,
-            "debit" =>  $request['paid_amount'],
-            "credit" => 0,
-            "document_id" => $purchase->id,
-            "document_type_id" => 1,
-            "currency_code" => 1,
-            "currency_rate" => 1,
-            "description" => 'مدفوعة للمورد',
-        ];
-        $this->addTransactionEntry($supplier_account);
+        if ($request['paid_amount'] != 0) {
+            if ($request['only_cash']) {
+                $supplier_account = [
+                    "company_id" => 1,
+                    "account_id" => $supplier_account_id,
+                    "debit" =>  $request['paid_amount'],
+                    "credit" => 0,
+                    "document_id" => $purchase->id,
+                    "document_type_id" => 1,
+                    "currency_code" => 1,
+                    "currency_rate" => 1,
+                    "description" => 'مدفوعة للمورد',
+                ];
+                $this->addTransactionEntry($supplier_account);
+                $cash = [
+                    "company_id" => 1,
+                    "account_id" => 4,
+                    "debit" =>  0,
+                    "credit" => $request['paid_amount'],
+                    "document_id" => $purchase->id,
+                    "document_type_id" => 1,
+                    "currency_code" => 1,
+                    "currency_rate" => 1,
+                    "description" => 'مدفوعة للمورد من الصندوق',
+                ];
+                $this->addTransactionEntry($cash);
+            } else {
+                $payment_methods = $request->payment_methods;
+                foreach ($payment_methods as $payment_method) {
+                    if ($payment_method['account_id'] && $payment_method['credit'] > 0) {
 
-
-
-
+                        $supplier_account = [
+                            "company_id" => 1,
+                            "account_id" => $payment_method['account_id'],
+                            "debit" =>  -1,
+                            "credit" => $payment_method['credit'],
+                            "document_id" => $purchase->id,
+                            "document_type_id" => 1,
+                            "currency_code" => 1,
+                            "currency_rate" => 1,
+                            "description" => 'مدفوعة للمورد',
+                        ];
+                        $this->addTransactionEntry($supplier_account);
+                    }
+                }
+            }
+        }
 
         $additional_expenses_from_account_id = $request['additional_expenses_from_account_id'];
         $additional_expenses = [
@@ -455,39 +392,19 @@ class PurchaseController extends Controller
         $this->addTransactionEntry($additional_expenses);
 
 
-        $payment_methods = $request->payment_methods;
-
-        if (is_array($request['payment_methods'])) {
-
-
-            foreach ($payment_methods as $payment_method) {
-                $supplier_account = [
-                    "company_id" => 1,
-                    "account_id" => $payment_method['account_id'],
-                    "debit" =>  -1,
-                    "credit" => $payment_method['credit'],
-                    "document_id" => $purchase->id,
-                    "document_type_id" => 1,
-                    "currency_code" => 1,
-                    "currency_rate" => 1,
-                    "description" => 'مدفوعة للمورد',
-                ];
-                $this->addTransactionEntry($supplier_account);
-            }
-        }
-
 
         foreach ($request->purchase_details as $purchase_detail) {
             //transaction  inventory-
+            Product::find($purchase_detail['id'])->increment('quantity_in_minor_unit', $purchase_detail['quantity_in_minor_unit']);
+
+
+
 
 
             //$account_id = (PurchaseDetail::where()->get())['account_id'];
 
 
             $inventory_account_id = Inventory::find($purchase_detail['inventory_id'])['account_id'];
-
-
-
 
             $entry = [
                 "company_id" => 1,
@@ -503,25 +420,5 @@ class PurchaseController extends Controller
             $this->addTransactionEntry($entry);
             $purchase->purchase_details()->create($purchase_detail);
         }
-
-        return $purchase;
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Purchase  $purchase
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Purchase $purchase)
-    {
-        //
-    }
-    private function addTransactionEntry($entry)
-    {
-
-
-        $account_id = Transaction::create($entry);
-        return true;
     }
 }

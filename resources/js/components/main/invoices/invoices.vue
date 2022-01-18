@@ -10,13 +10,13 @@
     >
       <template v-slot:top>
         <v-toolbar flat color="white">
-          <v-toolbar-title>إدارة الموردين</v-toolbar-title>
+          <v-toolbar-title>إدارة العملاء</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
           <v-btn
             elevation
             color="primary"
             @click.stop="addUpdateSupplier('', 'add')"
-            >إضافة مورد</v-btn
+            >إضافة عميل</v-btn
           >
         </v-toolbar>
 
@@ -24,7 +24,7 @@
           <v-col cols="12" lg="3">
             <v-text-field
               v-model="search.company_name"
-              label="اسم المورد"
+              label="اسم العميل"
               class="mx-4"
             ></v-text-field>
           </v-col>
@@ -150,7 +150,7 @@
         {{ item.maturity_date.split(" ")[0] }}
       </template>
       <template v-slot:item.actions="{ item }">
-        <router-link :to="'invoices/' + item.id"
+        <router-link :to="'invoice/' + item.id"
           ><v-icon small>mdi-pencil</v-icon></router-link
         >
 
@@ -210,7 +210,7 @@ export default {
           sortable: false,
           value: "invoice_reference",
         },
-        { text: "اسم المورد", align: "center", value: "company_name" },
+        { text: "اسم العميل", align: "center", value: "company_name" },
         { text: "تاريخ الإصدار", align: "center", value: "issue_date" },
         { text: "	تاريخ الاستحقاق", align: "center", value: "maturity_date" },
         { text: "قيمة الفاتورة", align: "center", value: "total_amount" },
@@ -234,6 +234,8 @@ export default {
       });
     },
     getInvoices() {
+
+      
       const { sortBy, sortDesc, page, itemsPerPage } = this.options;
       Invoice.getAll({
         page,

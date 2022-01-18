@@ -26,6 +26,7 @@ class CreateInvoicesTable extends Migration
             $table->text('description')->nullable();
             $table->unsignedInteger('customer_id',)->default('1');
             
+            $table->boolean('only_cash')->default('1'); 
             
             $table->timestamp('issue_date')->useCurrent = true;
             $table->timestamp('maturity_date')->useCurrent = true;

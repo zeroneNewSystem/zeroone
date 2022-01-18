@@ -800,6 +800,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 //
 //
 //
+//
 
 
 
@@ -867,7 +868,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       }, {
         text: "الكمية",
         align: "center",
-        value: "sales_quantity",
+        value: "invoiced_quantity",
         sortable: false
       }, {
         text: "الوحدة",
@@ -917,17 +918,18 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       }],
       payment_conditions: [],
       invoice: {
+        only_cash: true,
         payment_methods: [{
           account_id: "",
-          credit: 0,
+          debit: 0,
           description: ""
         }, {
           account_id: "",
-          credit: 0,
+          debit: 0,
           description: ""
         }, {
           account_id: "",
-          credit: 0,
+          debit: 0,
           description: ""
         }],
         paid_amount: 0,
@@ -1134,6 +1136,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
     paymentMethods: function paymentMethods(payments) {
       this.invoice.payment_methods = payments.payment_methods;
       this.invoice.paid_amount = payments.paid_amount;
+      this.invoice.only_cash = false;
     },
     show_product_dialog: function show_product_dialog(item) {
       this.product_info_dialog = true;
@@ -1144,12 +1147,13 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       if (this.invoice.invoice_details.findIndex(function (elem) {
         return elem.id == selected_product.id;
       }) >= 0) return;
-      selected_product.sales_unit_id = selected_product.units[selected_product.main_sales_unit_id - 1].pivot.id;
-      selected_product.unit_price = selected_product.units[selected_product.main_sales_unit_id - 1].pivot.purchase_price;
-      selected_product.sales_quantity = 1;
-      selected_product.current_quantity = selected_product.purchase_details[0].quantity_in_minor_unit / selected_product.units[selected_product.main_sales_unit_id - 1].pivot.contains;
+      selected_product.invoiced_unit_id = selected_product.units[selected_product.main_invoiced_unit_id - 1].pivot.id;
+      selected_product.expires_at = selected_product.purchase_details[0].expires_at;
+      selected_product.unit_price = selected_product.units[selected_product.main_invoiced_unit_id - 1].pivot.purchase_price;
+      selected_product.invoiced_quantity = 1;
+      selected_product.current_quantity = selected_product.purchase_details[0].quantity_in_minor_unit / selected_product.units[selected_product.main_invoiced_unit_id - 1].pivot.contains;
       selected_product.actual_quantity = selected_product.current_quantity;
-      selected_product.actual_quantity_in_minor_unit = parseInt(selected_product.actual_quantity * selected_product.units[selected_product.main_sales_unit_id - 1].pivot.contains);
+      selected_product.actual_quantity_in_minor_unit = parseInt(selected_product.actual_quantity * selected_product.units[selected_product.main_invoiced_unit_id - 1].pivot.contains);
       console.log("selected_product");
       console.log(selected_product);
       selected_product["document_type_id"] = 2; // purchase
@@ -1161,7 +1165,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
     },
     product_unit_change: function product_unit_change(item) {
       var sales_unit = item.units.find(function (elem) {
-        return elem.pivot.id == item.sales_unit_id;
+        return elem.pivot.id == item.invoiced_unit_id;
       });
       item.unit_price = sales_unit.pivot.sales_price;
     },
@@ -1190,21 +1194,21 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
     },
     total_befor_tax: function total_befor_tax(item) {
       if (item.sales_discount_type_id == 1) {
-        item.total_befor_tax = item.sales_quantity * item.unit_price - item.sales_quantity * item.unit_price * item.sales_discount / 100;
+        item.total_befor_tax = item.invoiced_quantity * item.unit_price - item.invoiced_quantity * item.unit_price * item.sales_discount / 100;
         return item.total_befor_tax;
       }
 
-      item.total_befor_tax = item.sales_quantity * item.unit_price - item.sales_discount;
+      item.total_befor_tax = item.invoiced_quantity * item.unit_price - item.sales_discount;
       return item.total_befor_tax;
     },
     quantity_in_minor_unit: function quantity_in_minor_unit(item) {
       console.log(item);
       var sales_unit = item.units.find(function (elem) {
-        return elem.pivot.id == item.sales_unit_id;
+        return elem.pivot.id == item.invoiced_unit_id;
       });
       console.log("sales_unit");
       console.log(sales_unit);
-      item.quantity_in_minor_unit = item.sales_quantity * sales_unit.pivot.contains;
+      item.quantity_in_minor_unit = item.invoiced_quantity * sales_unit.pivot.contains;
       console.log(item.quantity_in_minor_unit);
       return item.quantity_in_minor_unit;
     },
@@ -1237,10 +1241,10 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       console.log(this.invoice.invoice_details);
       console.log("seles", this.selected_product); //set defaultsales_id from main salesid
 
-      this.selected_product.sales_unit_id = this.selected_product.units[this.selected_product.main_sales_unit_id - 1].pivot.id;
-      this.selected_product.unit_price = this.selected_product.units[this.selected_product.main_sales_unit_id - 1].pivot.sales_price;
-      this.selected_product.sales_quantity = 1;
-      console.log("nnj", this.selected_product.sales_unit_id);
+      this.selected_product.invoiced_unit_id = this.selected_product.units[this.selected_product.main_invoiced_unit_id - 1].pivot.id;
+      this.selected_product.unit_price = this.selected_product.units[this.selected_product.main_invoiced_unit_id - 1].pivot.sales_price;
+      this.selected_product.invoiced_quantity = 1;
+      console.log("nnj", this.selected_product.invoiced_unit_id);
       this.invoice.invoice_details.unshift(JSON.parse(JSON.stringify(this.selected_product)));
       console.log("nib", this.invoice.invoice_details);
       this.selected_product = [];
@@ -1297,15 +1301,15 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
         if (_this5.invoice.payment_methods.length == 0) _this5.invoice.payment_methods = [{
           account_id: "",
-          credit: 0,
+          debit: 0,
           description: ""
         }, {
           account_id: "",
-          credit: 0,
+          debit: 0,
           description: ""
         }, {
           account_id: "",
-          credit: 0,
+          debit: 0,
           description: ""
         }];
         _this5.customers = response.data.customers;
@@ -1507,7 +1511,7 @@ __webpack_require__.r(__webpack_exports__);
       }, {
         text: " القيمة",
         align: "center",
-        value: "credit",
+        value: "debit",
         sortable: false
       }, {
         text: "ملاحظات",
@@ -1528,7 +1532,7 @@ __webpack_require__.r(__webpack_exports__);
     },
     paid_amount: function paid_amount(v) {
       return v.payment_methods.reduce(function (a, b) {
-        return +a + +b.credit;
+        return +a + +b.debit;
       }, 0);
     }
   },
@@ -1537,7 +1541,7 @@ __webpack_require__.r(__webpack_exports__);
     addPaymentMethod: function addPaymentMethod() {
       this.payment_methods.push({
         account_id: "",
-        credit: 0,
+        debit: 0,
         description: ""
       });
     },
@@ -1834,7 +1838,7 @@ __webpack_require__.r(__webpack_exports__);
         text: " افتراضية البيع ",
         align: "center",
         sortable: false,
-        value: "main_sales_unit_id"
+        value: "main_invoiced_unit_id"
       }, {
         text: " افتراضية الشراء ",
         align: "center",
@@ -2041,10 +2045,16 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   store: function store(invoice) {
+    console.log('invoice', invoice);
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/invoices", invoice);
   },
   get: function get(id) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/invoices/" + id);
+  },
+  getAll: function getAll(params) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/invoices/all", {
+      params: params
+    });
   },
   update: function update(invoice) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("/invoices", invoice);
@@ -3742,20 +3752,18 @@ var render = function() {
                                             }
                                           },
                                           model: {
-                                            value: item.purchase_details[0].expires_at.split(
+                                            value: item.expires_at.split(
                                               " "
                                             )[0],
                                             callback: function($$v) {
                                               _vm.$set(
-                                                item.purchase_details[0].expires_at.split(
-                                                  " "
-                                                ),
+                                                item.expires_at.split(" "),
                                                 0,
                                                 $$v
                                               )
                                             },
                                             expression:
-                                              "item.purchase_details[0].expires_at.split(' ')[0]"
+                                              "item.expires_at.split(' ')[0]"
                                           }
                                         },
                                         "v-text-field",
@@ -3996,18 +4004,18 @@ var render = function() {
                                       }
                                     },
                                     model: {
-                                      value: item.sales_unit_id,
+                                      value: item.invoiced_unit_id,
                                       callback: function($$v) {
-                                        _vm.$set(item, "sales_unit_id", $$v)
+                                        _vm.$set(item, "invoiced_unit_id", $$v)
                                       },
-                                      expression: "item.sales_unit_id"
+                                      expression: "item.invoiced_unit_id"
                                     }
                                   })
                                 ]
                               }
                             },
                             {
-                              key: "item.sales_quantity",
+                              key: "item.invoiced_quantity",
                               fn: function(ref) {
                                 var item = ref.item
                                 return [
@@ -4021,11 +4029,11 @@ var render = function() {
                                       outlined: ""
                                     },
                                     model: {
-                                      value: item.sales_quantity,
+                                      value: item.invoiced_quantity,
                                       callback: function($$v) {
-                                        _vm.$set(item, "sales_quantity", $$v)
+                                        _vm.$set(item, "invoiced_quantity", $$v)
                                       },
-                                      expression: "item.sales_quantity"
+                                      expression: "item.invoiced_quantity"
                                     }
                                   })
                                 ]
@@ -4347,6 +4355,15 @@ var render = function() {
                                                               "no-data-text":
                                                                 "",
                                                               "non-linear": ""
+                                                            },
+                                                            on: {
+                                                              change: function(
+                                                                $event
+                                                              ) {
+                                                                _vm.invoice
+                                                                  .only_cash ==
+                                                                  true
+                                                              }
                                                             },
                                                             model: {
                                                               value:
@@ -4780,7 +4797,7 @@ var render = function() {
                         }
                       },
                       {
-                        key: "item.credit",
+                        key: "item.debit",
                         fn: function(ref) {
                           var item = ref.item
                           return [
@@ -4793,11 +4810,11 @@ var render = function() {
                                 outlined: ""
                               },
                               model: {
-                                value: item.credit,
+                                value: item.debit,
                                 callback: function($$v) {
-                                  _vm.$set(item, "credit", $$v)
+                                  _vm.$set(item, "debit", $$v)
                                 },
-                                expression: "item.credit"
+                                expression: "item.debit"
                               }
                             })
                           ]
@@ -5560,12 +5577,12 @@ var render = function() {
                         },
                         scopedSlots: _vm._u([
                           {
-                            key: "item.main_sales_unit_id",
+                            key: "item.main_invoiced_unit_id",
                             fn: function(ref) {
                               var item = ref.item
                               return [
                                 _vm.product.units.indexOf(item) + 1 ==
-                                _vm.product.main_sales_unit_id
+                                _vm.product.main_invoiced_unit_id
                                   ? _c("v-icon", { attrs: { small: "" } }, [
                                       _vm._v("mdi-check")
                                     ])

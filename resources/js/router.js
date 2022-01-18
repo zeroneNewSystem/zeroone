@@ -147,6 +147,39 @@ const router = new VueRouter({
                     }
                 },
                 {
+                    path: "/bond",
+                    name: "bond",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import ("./components/main/bonds/bond"),
+                        mainView: () =>
+                            import ("./components/main/bonds/bond")
+                    }
+                },
+                {
+                    path: "/bonds",
+                    name: "bonds",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import ("./components/main/bonds/bonds"),
+                        mainView: () =>
+                            import ("./components/main/bonds/bonds")
+                    }
+                },
+                {
+                    path: "/bonds/:id",
+                    name: "bonds",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import ("./components/main/bonds/bond-info"),
+                        mainView: () =>
+                            import ("./components/main/bonds/bond-info")
+                    }
+                },
+                {
                     path: "/purchase",
                     name: "purchase",
                     meta: { requiresAuth: true },

@@ -150,7 +150,7 @@
         {{ item.maturity_date.split(" ")[0] }}
       </template>
       <template v-slot:item.actions="{ item }">
-        <router-link :to="'purchases/' + item.id"
+        <router-link :to="'purchase/' + item.id"
           ><v-icon small>mdi-pencil</v-icon></router-link
         >
 

@@ -942,7 +942,7 @@ var render = function() {
               return [
                 _c(
                   "router-link",
-                  { attrs: { to: "purchases/" + item.id } },
+                  { attrs: { to: "purchase/" + item.id } },
                   [
                     _c("v-icon", { attrs: { small: "" } }, [
                       _vm._v("mdi-pencil")

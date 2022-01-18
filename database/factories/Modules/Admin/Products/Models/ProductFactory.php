@@ -31,7 +31,7 @@ class ProductFactory extends Factory
             'prdct_form_id'  => 1,
             'prdct_type_id'  => 1,
             'minor_unit'  => 1,
-            'main_sales_unit_id'  => 1,
+            'main_invoiced_unit_id'  => 1,
             'main_purchase_unit_id'  => 1,
             'product_cogs_account_id'  => 1,
             'product_sales_account_id'  => 1,

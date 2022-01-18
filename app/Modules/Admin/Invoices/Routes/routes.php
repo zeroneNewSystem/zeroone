@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Route;
 Route::group(["prefix" => "invoices"], function () {
 
     Route::get('/', 'InvoiceController@index');
+    Route::get('/all', 'InvoiceController@all');
     Route::get('/{id}', 'InvoiceController@index');
 
 

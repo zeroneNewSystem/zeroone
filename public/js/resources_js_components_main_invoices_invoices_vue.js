@@ -240,7 +240,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         sortable: false,
         value: "invoice_reference"
       }, {
-        text: "اسم المورد",
+        text: "اسم العميل",
         align: "center",
         value: "company_name"
       }, {
@@ -359,10 +359,16 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   store: function store(invoice) {
+    console.log('invoice', invoice);
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/invoices", invoice);
   },
   get: function get(id) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/invoices/" + id);
+  },
+  getAll: function getAll(params) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/invoices/all", {
+      params: params
+    });
   },
   update: function update(invoice) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("/invoices", invoice);
@@ -486,7 +492,7 @@ var render = function() {
                   "v-toolbar",
                   { attrs: { flat: "", color: "white" } },
                   [
-                    _c("v-toolbar-title", [_vm._v("إدارة الموردين")]),
+                    _c("v-toolbar-title", [_vm._v("إدارة العملاء")]),
                     _vm._v(" "),
                     _c("v-divider", {
                       staticClass: "mx-4",
@@ -504,7 +510,7 @@ var render = function() {
                           }
                         }
                       },
-                      [_vm._v("إضافة مورد")]
+                      [_vm._v("إضافة عميل")]
                     )
                   ],
                   1
@@ -519,7 +525,7 @@ var render = function() {
                       [
                         _c("v-text-field", {
                           staticClass: "mx-4",
-                          attrs: { label: "اسم المورد" },
+                          attrs: { label: "اسم العميل" },
                           model: {
                             value: _vm.search.company_name,
                             callback: function($$v) {
@@ -936,7 +942,7 @@ var render = function() {
               return [
                 _c(
                   "router-link",
-                  { attrs: { to: "invoices/" + item.id } },
+                  { attrs: { to: "invoice/" + item.id } },
                   [
                     _c("v-icon", { attrs: { small: "" } }, [
                       _vm._v("mdi-pencil")

@@ -30,6 +30,7 @@ class CreateInvoiceDetailsTable extends Migration
             $table->integer('quantity_in_minor_unit',);
             $table->integer('inventory_id',);
             $table->double('vat')->default(0.0);
+            $table->double('average_cost')->default(0.0);
             $table->double('invoice_discount')->default(0.0);
             $table->double('sales_discount')->default(0.0);
             
