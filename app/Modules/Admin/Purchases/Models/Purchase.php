@@ -12,6 +12,7 @@ class Purchase extends Model
     protected $guarded = ['id'];
     use HasFactory;
     public function purchase_details(){
+        
         return $this->hasMany(PurchaseDetail::class,'document_id'); 
     }   
     public function person()

@@ -183,6 +183,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
@@ -240,7 +243,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         sortable: false,
         value: "purchase_reference"
       }, {
-        text: "اسم المورد",
+        text: "اسم المشتريات",
         align: "center",
         value: "company_name"
       }, {
@@ -280,7 +283,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           page = _this$options.page,
           itemsPerPage = _this$options.itemsPerPage;
       _apis_Purchase__WEBPACK_IMPORTED_MODULE_0__.default.delete({
-        purchase_id: purchase.id,
+        id: purchase.id,
         page: page,
         itemsPerPage: itemsPerPage,
         search: this.search
@@ -374,7 +377,7 @@ __webpack_require__.r(__webpack_exports__);
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("/purchases", purchase);
   },
   "delete": function _delete(params) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.delete("/purchases/", {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.delete("/purchases", {
       params: params
     });
   }
@@ -492,7 +495,7 @@ var render = function() {
                   "v-toolbar",
                   { attrs: { flat: "", color: "white" } },
                   [
-                    _c("v-toolbar-title", [_vm._v("إدارة الموردين")]),
+                    _c("v-toolbar-title", [_vm._v("إدارة المشتريات")]),
                     _vm._v(" "),
                     _c("v-divider", {
                       staticClass: "mx-4",
@@ -510,7 +513,7 @@ var render = function() {
                           }
                         }
                       },
-                      [_vm._v("إضافة مورد")]
+                      [_vm._v("إضافة مشتريات")]
                     )
                   ],
                   1
@@ -947,6 +950,15 @@ var render = function() {
                     _c("v-icon", { attrs: { small: "" } }, [
                       _vm._v("mdi-pencil")
                     ])
+                  ],
+                  1
+                ),
+                _vm._v(" "),
+                _c(
+                  "router-link",
+                  { attrs: { to: "purchase/" + item.id } },
+                  [
+                    _c("v-icon", { attrs: { small: "" } }, [_vm._v("mdi-card")])
                   ],
                   1
                 ),

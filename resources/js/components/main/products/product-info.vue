@@ -356,7 +356,9 @@ export default {
   }),
   methods: {
     close() {
-      this.$parent.$data.product_info_dialog = false;
+      //this.$parent.$data.product_info_dialog = false;
+      this.$emit("dialogFalse");
+      
     },
     emit_product() {},
     save(item) {

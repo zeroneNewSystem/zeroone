@@ -280,15 +280,27 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
+      agree: false,
+      functionToAddProduct: "",
       someVariableUnderYourControl: 1,
       is_new_stock: true,
       index_of_selected_product: "",
       selected_item: [],
+      selected_flem_fromSet: "",
       sets: [],
       dialog: false,
       account_div_update: 0,
@@ -409,6 +421,60 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     };
   },
   methods: {
+    setId: function setId(id) {
+      debugger;
+    },
+    agreeToAdd: function agreeToAdd() {
+      var _this = this;
+
+      // this.agree = true;
+      this.index_of_selected_product = this.sets.findIndex(function (elem) {
+        return elem.id == _this.selected_flem_fromSet;
+      });
+      console.log(this.index_of_selected_product);
+      var selected_item = JSON.parse(JSON.stringify(this.selected_item));
+      console.log(selected_item);
+      selected_item["purchase_details"][0] = selected_item["purchase_details"][this.index_of_selected_product];
+      this.showThisProduct(selected_item);
+      console.log("index");
+      console.log("index");
+      window.removeEventListener("keydown", this.functionToAddProduct);
+      var input_barcode = document.getElementById("barcode");
+      this.$nextTick(function () {
+        input_barcode.focus();
+      });
+      this.dialog = false;
+      this.agree = false;
+      return; //e.preventDefault();
+
+      console.log(selectedElm);
+      selectedElm = selectedElm[action[e.key] + "ElementSibling"]; // loop if top/bottom edges reached or "home"/"end" keys clicked
+
+      if (!selectedElm || e.key == "Home" || e.key == "End") {
+        goToStart = action[e.key] == "next" || e.key == "Home";
+        selectedElm = listElm.children[goToStart ? 0 : listElm.children.length - 1];
+      }
+
+      selectedElm.focus();
+      return; // Mark first list item
+
+      this.$nextTick(function () {
+        listElm.firstElementChild.focus();
+        var selectedElm = document.activeElement,
+            goToStart,
+            // map actions to event's key
+        action = {
+          ArrowUp: "previous",
+          Up: "previous",
+          ArrowDown: "next",
+          Down: "next"
+        };
+
+        _this.functionToAddProduct = function (e) {};
+
+        window.addEventListener("keydown", _this.functionToAddProduct);
+      }); // Event listener
+    },
     bgblue: function bgblue(item) {
       if (item.id == "owners" || item.id == "revenues" || item.id == "expenses") $("#nib" + item.id).parent().addClass("first-level");
       if (this.account_div_update == 0) this.account_div_update += 1;
@@ -438,7 +504,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       this.someVariableUnderYourControl++;
     },
     getProducts: function getProducts(val, type) {
-      var _this = this;
+      var _this2 = this;
 
       if (val.length > 2) {
         this.loading = true;
@@ -452,11 +518,11 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         }; // Simulated ajax query ajax
 
         _apis_Product__WEBPACK_IMPORTED_MODULE_0__.default.search(params).then(function (response) {
-          _this.loading = false;
+          _this2.loading = false;
           console.log("hi", response.data);
 
           if (response.data.length !== 0) {
-            _this.found_products = JSON.parse(JSON.stringify(response.data.products));
+            _this2.found_products = JSON.parse(JSON.stringify(response.data.products));
           }
         });
       }
@@ -486,7 +552,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       return;
     },
     searchAndAddToStockTackes: function searchAndAddToStockTackes() {
-      var _this2 = this;
+      var _this3 = this;
 
       var params = {
         barcode: this.searched_barcode,
@@ -494,44 +560,44 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       };
       _apis_Product__WEBPACK_IMPORTED_MODULE_0__.default.stockTakeBarcodeSearch(params).then(function (response) {
         if (response.data.products.length == 0) {
-          _this2.is_exists = [ false || "الصنف غير موجود "];
+          _this3.is_exists = [ false || "الصنف غير موجود "];
           return;
         }
 
-        _this2.is_exists = [true];
+        _this3.is_exists = [true];
         response.data.products[0].actual_quantity = 0;
         response.data.products[0].actual_quantity_in_minor_unit = 0;
-        _this2.selected_item = JSON.parse(JSON.stringify(response.data.products[0]));
-        if (_this2.selected_item.purchase_details.length == 0) return;
+        _this3.selected_item = JSON.parse(JSON.stringify(response.data.products[0]));
+        if (_this3.selected_item.purchase_details.length == 0) return;
 
-        if (_this2.selected_item.purchase_details.length == 1) {
-          _this2.showThisProduct(_this2.selected_item);
+        if (_this3.selected_item.purchase_details.length == 1) {
+          _this3.showThisProduct(_this3.selected_item);
         }
 
-        var products_grouped = true;
+        var products_grouped = false;
 
         if (products_grouped) {
-          _this2.selected_item.purchase_details[0].quantity_in_minor_unit = _this2.selected_item.quantity_in_minor_unit; // this.selected_item.purchase_details[0].quantity_in_minor_unit =
+          _this3.selected_item.purchase_details[0].quantity_in_minor_unit = _this3.selected_item.quantity_in_minor_unit; // this.selected_item.purchase_details[0].quantity_in_minor_unit =
           //   this.selected_item.purchase_details.reduce(
           //     (a, b) => +a + +b.quantity_in_minor_unit,
           //     0
           //   );
 
           console.log("this.selected_item");
-          console.log(_this2.selected_item);
+          console.log(_this3.selected_item);
 
-          _this2.showThisProduct(_this2.selected_item);
+          _this3.showThisProduct(_this3.selected_item);
 
           return;
         }
 
-        _this2.sets = _this2.selected_item.purchase_details;
-        _this2.dialog = true;
+        _this3.sets = _this3.selected_item.purchase_details;
+        _this3.dialog = true;
 
-        _this2.$nextTick().then(function () {
+        _this3.$nextTick().then(function () {
           var listElm = document.querySelector("ul"); // Mark first list item
 
-          _this2.$nextTick(function () {
+          _this3.$nextTick(function () {
             listElm.firstElementChild.focus();
             var selectedElm = document.activeElement,
                 goToStart,
@@ -543,34 +609,35 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
               Down: "next"
             };
 
-            var f = function f(e) {
-              if (e.key === "Enter") {
+            _this3.functionToAddProduct = function (e) {
+              if (e.key === "Enter" && _this3.dialog) {
                 var parent = selectedElm.parentNode;
                 console.log(parent);
                 console.log(selectedElm);
-                _this2.index_of_selected_product = Array.prototype.indexOf.call(listElm.children, selectedElm);
-                var selected_item = JSON.parse(JSON.stringify(_this2.selected_item));
+                _this3.index_of_selected_product = Array.prototype.indexOf.call(listElm.children, selectedElm);
+                var selected_item = JSON.parse(JSON.stringify(_this3.selected_item));
                 console.log(selected_item);
-                selected_item["purchase_details"][0] = selected_item["purchase_details"][_this2.index_of_selected_product];
+                selected_item["purchase_details"][0] = selected_item["purchase_details"][_this3.index_of_selected_product];
 
-                _this2.showThisProduct(selected_item);
+                _this3.showThisProduct(selected_item);
 
                 console.log("index");
                 console.log("index");
-                window.removeEventListener("keydown", f);
+                window.removeEventListener("keydown", _this3.functionToAddProduct);
                 console.log("input_barcode");
                 console.log(input_barcode);
                 console.log("input_barcode");
                 var input_barcode = document.getElementById("barcode");
 
-                _this2.$nextTick(function () {
+                _this3.$nextTick(function () {
                   input_barcode.focus();
                 });
 
                 console.log("selectedElm");
                 console.log(selectedElm);
                 console.log("selectedElm");
-                _this2.dialog = false;
+                _this3.dialog = false;
+                _this3.agree = false;
                 return;
               } //e.preventDefault();
 
@@ -586,7 +653,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
               selectedElm.focus();
             };
 
-            window.addEventListener("keydown", f);
+            window.addEventListener("keydown", _this3.functionToAddProduct);
           }); // Event listener
 
         }); //-----add
@@ -610,25 +677,25 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
     }
   },
   created: function created() {
-    var _this3 = this;
+    var _this4 = this;
 
     _apis_StockTake__WEBPACK_IMPORTED_MODULE_1__.default.create().then(function (response) {
-      _this3.revenue_accounts = [{
+      _this4.revenue_accounts = [{
         header: "حسابات حقوق الملاك"
       }].concat(_toConsumableArray(response.data[3]), [{
         divider: true
       }, {
         header: "حسابات الإيرادات"
       }], _toConsumableArray(response.data[4]));
-      console.log(_this3.revenue_accounts);
-      _this3.expense_accounts = [{
+      console.log(_this4.revenue_accounts);
+      _this4.expense_accounts = [{
         header: "حسابات حقوق الملاك"
       }].concat(_toConsumableArray(response.data[3]), [{
         divider: true
       }, {
         header: "حسابات المصروفات"
       }], _toConsumableArray(response.data[5]));
-      _this3.inventories = response.data["inventories"];
+      _this4.inventories = response.data["inventories"];
     });
   },
   watch: {
@@ -762,7 +829,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.v-application ol[data-v-1d8c3a13],\r\n.v-application ul[data-v-1d8c3a13] {\r\n  padding-left: 0;\n}\nul[data-v-1d8c3a13] {\r\n  list-style: none;\r\n  border: 1px solid silver;\r\n  max-height: 170px;\r\n  padding: 0;\r\n  margin: 0;\r\n  scroll-behavior: smooth; /* nice smooth movement */\r\n  overflow: hidden; /* set to hidden by OP's request */\n}\nli[data-v-1d8c3a13] {\r\n  padding: 0.5em;\r\n  margin: 0;\n}\nli[data-v-1d8c3a13]:focus {\r\n  background: lightsalmon;\r\n  outline: none;\n}\n.theme--light.v-subheader[data-v-1d8c3a13] {\r\n  background: rgb(255, 231, 243);\r\n  justify-content: center;\n}\n.first-level[data-v-1d8c3a13] {\r\n  background: rgb(103, 133, 196);\r\n  justify-content: center;\n}\r\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.v-application ol[data-v-1d8c3a13],\r\n.v-application ul[data-v-1d8c3a13] {\r\n  padding-left: 0;\n}\nul[data-v-1d8c3a13] {\r\n  list-style: none;\r\n  border: 1px solid silver;\r\n  max-height: 170px;\r\n  padding: 0;\r\n  margin: 0;\r\n  scroll-behavior: smooth; /* nice smooth movement */\r\n  overflow: hidden; /* set to hidden by OP's request */\n}\nul > div[data-v-1d8c3a13] {\r\n  padding: 0.5em;\r\n  margin: 0;\n}\nul > div[data-v-1d8c3a13]:focus {\r\n  background: #e91e63;\r\n  outline: none;\n}\n.theme--light.v-subheader[data-v-1d8c3a13] {\r\n  background: rgb(255, 231, 243);\r\n  justify-content: center;\n}\n.first-level[data-v-1d8c3a13] {\r\n  background: rgb(103, 133, 196);\r\n  justify-content: center;\n}\r\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -921,7 +988,7 @@ var render = function() {
                   staticStyle: {
                     margin: "0 10px",
                     "font-size": "14px",
-                    padding: "10pxz"
+                    padding: "10px"
                   }
                 },
                 [
@@ -936,22 +1003,59 @@ var render = function() {
                   "ul",
                   _vm._l(_vm.sets, function(set) {
                     return _c(
-                      "li",
-                      { key: set + "d", attrs: { tabIndex: "-1" } },
+                      "div",
+                      {
+                        key: set.id + "d",
+                        attrs: { tabIndex: "-1" },
+                        on: {
+                          blur: function($event) {
+                            _vm.selected_flem_fromSet = set.id
+                          }
+                        }
+                      },
                       [
-                        _vm._v(
-                          "\n            " +
-                            _vm._s(
-                              set.id +
-                                " - " +
-                                set.document_type_id +
-                                " - " +
-                                set.document_id +
-                                set.expires_at
-                            ) +
-                            "\n          "
+                        _c(
+                          "v-row",
+                          [
+                            _c("v-col", [
+                              _vm._v(
+                                "\n                " +
+                                  _vm._s(set.id) +
+                                  "\n              "
+                              )
+                            ]),
+                            _vm._v(" "),
+                            _c("v-col", [
+                              _vm._v(
+                                "\n                " +
+                                  _vm._s(set.document_type_id) +
+                                  "\n              "
+                              )
+                            ]),
+                            _vm._v(" "),
+                            _c("v-col", [
+                              _vm._v(
+                                "\n                " +
+                                  _vm._s(set.document_id) +
+                                  "\n              "
+                              )
+                            ]),
+                            _vm._v(" "),
+                            _c("v-col", [
+                              _vm._v(
+                                "\n                " +
+                                  _vm._s(
+                                    set.expires_at &&
+                                      set.expires_at.split(" ")[0]
+                                  ) +
+                                  "\n              "
+                              )
+                            ])
+                          ],
+                          1
                         )
-                      ]
+                      ],
+                      1
                     )
                   }),
                   0
@@ -980,13 +1084,9 @@ var render = function() {
                     "v-btn",
                     {
                       attrs: { color: "green darken-1", text: "" },
-                      on: {
-                        click: function($event) {
-                          _vm.dialog = false
-                        }
-                      }
+                      on: { click: _vm.agreeToAdd }
                     },
-                    [_vm._v("\n          Agree\n        ")]
+                    [_vm._v(" Agree ")]
                   )
                 ],
                 1
@@ -1346,10 +1446,7 @@ var render = function() {
                             return [
                               _vm._v(
                                 "\n            " +
-                                  _vm._s(
-                                    item.expires_at &&
-                                      item.expires_at.split(" ")[0]
-                                  ) +
+                                  _vm._s(item.expires_at) +
                                   "\n          "
                               )
                             ]

@@ -651,30 +651,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 
@@ -744,12 +720,6 @@ __webpack_require__.r(__webpack_exports__);
         sortable: false,
         value: "sales_price"
       }, {
-        text: "الباركود",
-        align: "center",
-        sortable: false,
-        value: "barcode",
-        width: "150"
-      }, {
         text: "actions ",
         align: "center",
         value: "actions"
@@ -803,7 +773,9 @@ __webpack_require__.r(__webpack_exports__);
       /*-----------------------product---------------------------*/
       product: {
         company_id: "1",
+        barcode: "",
         serial_number: "serial_number",
+        average_cost: 0,
         ar_name: "ar_name",
         en_name: "en_name",
         prdct_units: [{
@@ -819,13 +791,13 @@ __webpack_require__.r(__webpack_exports__);
         prdct_type_id: 1,
         main_invoiced_unit_id: 1,
         main_purchase_unit_id: 1,
-        product_cogs_account_id: 1,
+        product_cogs_account_id: 53,
         product_sales_account_id: 1,
         product_purchase_return_account_id: 1,
         product_sales_return_account_id: 1,
-        sales_discount: 10,
+        sales_discount: 0,
         sales_discount_type_id: 1,
-        purchase_discount: 10,
+        purchase_discount: 0,
         purchase_discount_type_id: 1,
         purchase_tax: 1,
         sales_tax: 1,
@@ -836,7 +808,7 @@ __webpack_require__.r(__webpack_exports__);
         opening_balance_cost: 150,
         profit_ratio: 5.4,
         side_effect: "side_effect",
-        description: "description",
+        description: "",
         inventory_id: 1,
         image: "no-image.png",
         distribution_policy_id: 1,
@@ -944,6 +916,12 @@ __webpack_require__.r(__webpack_exports__);
     // });
     _apis_Product__WEBPACK_IMPORTED_MODULE_1__.default.create() //get method
     .then(function (response) {
+      _this.product.product_cogs_account_id = +response.data.settings.product_cogs_account_id;
+      _this.product.product_sales_account_id = +response.data.settings.product_sales_account_id;
+      _this.product.product_sales_return_account_id = +response.data.settings.product_sales_return_account_id;
+      _this.product.product_purchase_return_account_id = +response.data.settings.product_purchase_return_account_id;
+      _this.product.purchase_tax = +response.data.settings.purchase_tax;
+      _this.product.sales_tax = +response.data.settings.sales_tax;
       _this.prdct_forms = response.data.prdct_forms;
       _this.prdct_groups = response.data.prdct_groups;
       _this.prdct_units = response.data.prdct_units;
@@ -1051,8 +1029,16 @@ __webpack_require__.r(__webpack_exports__);
         this.product.main_invoiced_unit_id = 1;
       }
 
+      if (index + 1 < this.product.main_invoiced_unit_id) {
+        this.product.main_invoiced_unit_id -= 1;
+      }
+
       if (index + 1 == this.product.main_purchase_unit_id) {
         this.product.main_purchase_unit_id = 1;
+      }
+
+      if (index + 1 < this.product.main_purchase_unit_id) {
+        this.product.main_purchase_unit_id -= 1;
       }
     },
     prventTwiseUnitSelection: function prventTwiseUnitSelection(item) {
@@ -1211,6 +1197,7 @@ __webpack_require__.r(__webpack_exports__);
       this.selectedGroups = [];
       this.product = this.product = JSON.parse(JSON.stringify({
         company_id: "1",
+        barcode: "",
         serial_number: "serial_number",
         ar_name: "ar_name",
         en_name: "en_name",
@@ -1227,7 +1214,7 @@ __webpack_require__.r(__webpack_exports__);
         prdct_type_id: 1,
         main_invoiced_unit_id: 1,
         main_purchase_unit_id: 1,
-        product_cogs_account_id: 1,
+        product_cogs_account_id: 53,
         product_sales_account_id: 1,
         product_purchase_return_account_id: 1,
         product_sales_return_account_id: 1,
@@ -1626,6 +1613,18 @@ var render = function() {
                           attrs: {
                             elevation: "",
                             color: "primary",
+                            to: "/products"
+                          }
+                        },
+                        [_vm._v("أرصدة افتتاحية للمخزون")]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "v-btn",
+                        {
+                          attrs: {
+                            elevation: "",
+                            color: "primary",
                             to: "/stock_takes"
                           }
                         },
@@ -1693,7 +1692,7 @@ var render = function() {
                           _vm._v(" "),
                           _c(
                             "v-col",
-                            { attrs: { cols: "12", lg: "4" } },
+                            { attrs: { cols: "12", lg: "3" } },
                             [
                               _c("v-autocomplete", {
                                 attrs: {
@@ -1718,7 +1717,7 @@ var render = function() {
                           _vm._v(" "),
                           _c(
                             "v-col",
-                            { attrs: { cols: "12", lg: "4" } },
+                            { attrs: { cols: "12", lg: "3" } },
                             [
                               _c("v-checkbox", {
                                 staticStyle: {
@@ -1736,6 +1735,28 @@ var render = function() {
                                     _vm.$set(_vm.product, "is_active", $$v)
                                   },
                                   expression: "product.is_active"
+                                }
+                              })
+                            ],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "v-col",
+                            { attrs: { cols: "12", lg: "3" } },
+                            [
+                              _c("v-text-field", {
+                                attrs: {
+                                  disabled: "",
+                                  autocomplete: "off",
+                                  label: " متوسط تكلفة الوحدة الصغرى"
+                                },
+                                model: {
+                                  value: _vm.product.average_cost,
+                                  callback: function($$v) {
+                                    _vm.$set(_vm.product, "average_cost", $$v)
+                                  },
+                                  expression: "product.average_cost"
                                 }
                               })
                             ],
@@ -1817,9 +1838,48 @@ var render = function() {
                                 1
                               ),
                               _vm._v(" "),
-                               false
-                                ? 0
-                                : _vm._e(),
+                               true
+                                ? _c(
+                                    "v-col",
+                                    { attrs: { cols: "12", lg: "4" } },
+                                    [
+                                      _c("v-text-field", {
+                                        attrs: {
+                                          autocomplete: "off",
+                                          "append-icon": "mdi-alpha-g-circle",
+                                          label:
+                                            " الباركود (اضغط على G لتوليد رقم عشوائي)",
+                                          rules: _vm.required.concat(
+                                            _vm.isunique
+                                          )
+                                        },
+                                        on: {
+                                          "click:append": function($event) {
+                                            return _vm.toggleMarker(
+                                              12,
+                                              "barcode"
+                                            )
+                                          },
+                                          blur: function($event) {
+                                            return _vm.checkExicting("serial")
+                                          }
+                                        },
+                                        model: {
+                                          value: _vm.product.barcode,
+                                          callback: function($$v) {
+                                            _vm.$set(
+                                              _vm.product,
+                                              "barcode",
+                                              $$v
+                                            )
+                                          },
+                                          expression: "product.barcode"
+                                        }
+                                      })
+                                    ],
+                                    1
+                                  )
+                                : 0,
                               _vm._v(" "),
                               _c(
                                 "v-col",
@@ -2345,48 +2405,6 @@ var render = function() {
                                                   }
                                                 },
                                                 {
-                                                  key: "item.barcode",
-                                                  fn: function(ref) {
-                                                    var item = ref.item
-                                                    return [
-                                                      _c("v-text-field", {
-                                                        staticClass:
-                                                          "product-unit-barcode",
-                                                        attrs: {
-                                                          outlined: "",
-                                                          "append-icon":
-                                                            "mdi-alpha-g-circle",
-                                                          rules: _vm.required
-                                                        },
-                                                        on: {
-                                                          "click:append": function(
-                                                            $event
-                                                          ) {
-                                                            return _vm.unit_barcode(
-                                                              12,
-                                                              item
-                                                            )
-                                                          }
-                                                        },
-                                                        model: {
-                                                          value: item.barcode,
-                                                          callback: function(
-                                                            $$v
-                                                          ) {
-                                                            _vm.$set(
-                                                              item,
-                                                              "barcode",
-                                                              $$v
-                                                            )
-                                                          },
-                                                          expression:
-                                                            "item.barcode"
-                                                        }
-                                                      })
-                                                    ]
-                                                  }
-                                                },
-                                                {
                                                   key: "item.actions",
                                                   fn: function(ref) {
                                                     var item = ref.item
@@ -2442,7 +2460,7 @@ var render = function() {
                                               ],
                                               null,
                                               false,
-                                              857084160
+                                              4277472014
                                             )
                                           })
                                         ],
@@ -2879,35 +2897,8 @@ var render = function() {
                               _vm._v(" "),
                               _c("v-col", { attrs: { cols: "12", lg: "12" } }),
                               _vm._v(" "),
-                              _vm.is_storable
-                                ? _c(
-                                    "v-col",
-                                    { attrs: { cols: "12", lg: "3" } },
-                                    [
-                                      _c("v-text-field", {
-                                        attrs: {
-                                          autocomplete: "off",
-                                          label:
-                                            " الرصيد الافتتاحي من وحدة الشراء الافتراضية"
-                                        },
-                                        model: {
-                                          value:
-                                            _vm.product
-                                              .opening_balance_quantity,
-                                          callback: function($$v) {
-                                            _vm.$set(
-                                              _vm.product,
-                                              "opening_balance_quantity",
-                                              $$v
-                                            )
-                                          },
-                                          expression:
-                                            "product.opening_balance_quantity"
-                                        }
-                                      })
-                                    ],
-                                    1
-                                  )
+                               false
+                                ? 0
                                 : _vm._e(),
                               _vm._v(" "),
                               _vm.is_storable
@@ -2939,31 +2930,6 @@ var render = function() {
                                     1
                                   )
                                 : _vm._e(),
-                              _vm._v(" "),
-                              _c(
-                                "v-col",
-                                { attrs: { cols: "12", lg: "3" } },
-                                [
-                                  _c("v-text-field", {
-                                    attrs: {
-                                      autocomplete: "off",
-                                      label: " متوسط تكلفة الوحدة"
-                                    },
-                                    model: {
-                                      value: _vm.product.opening_balance_cost,
-                                      callback: function($$v) {
-                                        _vm.$set(
-                                          _vm.product,
-                                          "opening_balance_cost",
-                                          $$v
-                                        )
-                                      },
-                                      expression: "product.opening_balance_cost"
-                                    }
-                                  })
-                                ],
-                                1
-                              ),
                               _vm._v(" "),
                                false
                                 ? 0

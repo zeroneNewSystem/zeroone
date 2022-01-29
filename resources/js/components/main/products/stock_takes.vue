@@ -2,22 +2,33 @@
   <v-container>
     <v-dialog v-model="dialog" max-width="600px" persistent>
       <v-card>
-        <p style="margin: 0 10px; font-size: 14px; padding: 10pxz">
+        <p style="margin: 0 10px; font-size: 14px; padding: 10px">
           قم باختيار الصنف المناسب واضغط موافق
         </p>
 
         <v-card-text>
           <ul>
-            <li v-for="set in sets" tabIndex="-1" :key="set + 'd'">
-              {{
-                set.id +
-                " - " +
-                set.document_type_id +
-                " - " +
-                set.document_id +
-                set.expires_at
-              }}
-            </li>
+            <div
+              v-for="set in sets"
+              tabIndex="-1"
+              :key="set.id + 'd'"
+              @blur="selected_flem_fromSet = set.id"
+            >
+              <v-row>
+                <v-col>
+                  {{ set.id }}
+                </v-col>
+                <v-col>
+                  {{ set.document_type_id }}
+                </v-col>
+                <v-col>
+                  {{ set.document_id }}
+                </v-col>
+                <v-col>
+                  {{ set.expires_at && set.expires_at.split(" ")[0] }}
+                </v-col>
+              </v-row>
+            </div>
           </ul>
         </v-card-text>
 
@@ -26,9 +37,7 @@
           <v-btn color="green darken-1" text @click="dialog = false">
             Disagree
           </v-btn>
-          <v-btn color="green darken-1" text @click="dialog = false">
-            Agree
-          </v-btn>
+          <v-btn color="green darken-1" text @click="agreeToAdd"> Agree </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -167,7 +176,7 @@
               <div>{{ item.ar_name }}</div>
             </template>
             <template v-slot:item.expires_at="{ item }">
-              {{ item.expires_at && item.expires_at.split(" ")[0] }}
+              {{ item.expires_at }}
             </template>
             <template v-slot:item.unit_price="{ item }">
               <v-text-field
@@ -259,10 +268,13 @@ import StockTake from "../../../apis/StockTake";
 export default {
   data() {
     return {
+      agree: false,
+      functionToAddProduct: "",
       someVariableUnderYourControl: 1,
       is_new_stock: true,
       index_of_selected_product: "",
       selected_item: [],
+      selected_flem_fromSet: "",
       sets: [],
       dialog: false,
       account_div_update: 0,
@@ -379,6 +391,75 @@ export default {
     };
   },
   methods: {
+    setId(id) {
+      debugger
+    },
+    agreeToAdd() {
+      // this.agree = true;
+
+      this.index_of_selected_product = this.sets.findIndex(
+        (elem) => elem.id == this.selected_flem_fromSet
+      );
+
+      console.log(this.index_of_selected_product);
+
+      let selected_item = JSON.parse(JSON.stringify(this.selected_item));
+
+      console.log(selected_item);
+      selected_item["purchase_details"][0] =
+        selected_item["purchase_details"][this.index_of_selected_product];
+
+      this.showThisProduct(selected_item);
+      console.log("index");
+
+      console.log("index");
+
+      window.removeEventListener("keydown", this.functionToAddProduct);
+
+      let input_barcode = document.getElementById("barcode");
+      this.$nextTick(() => {
+        input_barcode.focus();
+      });
+
+      this.dialog = false;
+      this.agree = false;
+      return;
+
+      //e.preventDefault();
+
+      console.log(selectedElm);
+      selectedElm = selectedElm[action[e.key] + "ElementSibling"];
+
+      // loop if top/bottom edges reached or "home"/"end" keys clicked
+      if (!selectedElm || e.key == "Home" || e.key == "End") {
+        goToStart = action[e.key] == "next" || e.key == "Home";
+        selectedElm =
+          listElm.children[goToStart ? 0 : listElm.children.length - 1];
+      }
+
+      selectedElm.focus();
+
+      return;
+
+      // Mark first list item
+      this.$nextTick(() => {
+        listElm.firstElementChild.focus();
+        var selectedElm = document.activeElement,
+          goToStart,
+          // map actions to event's key
+          action = {
+            ArrowUp: "previous",
+            Up: "previous",
+            ArrowDown: "next",
+            Down: "next",
+          };
+
+        this.functionToAddProduct = (e) => {};
+        window.addEventListener("keydown", this.functionToAddProduct);
+      });
+
+      // Event listener
+    },
     bgblue(item) {
       if (item.id == "owners" || item.id == "revenues" || item.id == "expenses")
         $("#nib" + item.id)
@@ -516,7 +597,7 @@ export default {
         if (this.selected_item.purchase_details.length == 1) {
           this.showThisProduct(this.selected_item);
         }
-        let products_grouped = true;
+        let products_grouped = false;
         if (products_grouped) {
           this.selected_item.purchase_details[0].quantity_in_minor_unit =
             this.selected_item.quantity_in_minor_unit;
@@ -552,8 +633,8 @@ export default {
                 Down: "next",
               };
 
-            let f = (e) => {
-              if (e.key === "Enter") {
+            this.functionToAddProduct = (e) => {
+              if (e.key === "Enter" && this.dialog) {
                 var parent = selectedElm.parentNode;
                 console.log(parent);
                 console.log(selectedElm);
@@ -578,7 +659,10 @@ export default {
 
                 console.log("index");
 
-                window.removeEventListener("keydown", f);
+                window.removeEventListener(
+                  "keydown",
+                  this.functionToAddProduct
+                );
 
                 console.log("input_barcode");
                 console.log(input_barcode);
@@ -592,6 +676,7 @@ export default {
                 console.log(selectedElm);
                 console.log("selectedElm");
                 this.dialog = false;
+                this.agree = false;
                 return;
               }
               //e.preventDefault();
@@ -608,7 +693,7 @@ export default {
 
               selectedElm.focus();
             };
-            window.addEventListener("keydown", f);
+            window.addEventListener("keydown", this.functionToAddProduct);
           });
 
           // Event listener
@@ -688,12 +773,12 @@ ul {
   overflow: hidden; /* set to hidden by OP's request */
 }
 
-li {
+ul > div {
   padding: 0.5em;
   margin: 0;
 }
-li:focus {
-  background: lightsalmon;
+ul > div:focus {
+  background: #e91e63;
   outline: none;
 }
 

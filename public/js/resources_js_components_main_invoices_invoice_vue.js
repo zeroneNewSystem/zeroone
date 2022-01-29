@@ -157,7 +157,7 @@ __webpack_require__.r(__webpack_exports__);
   computed: {},
   methods: {
     loadCities: function loadCities() {
-      this.$emit("changeCountry", this.customer.country_id);
+      this.$emit("dialogFalse", this.customer.country_id);
     },
     closeDialog: function closeDialog() {
       this.$parent.$data.add_update_customer_dialog = false;
@@ -1921,7 +1921,8 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     close: function close() {
-      this.$parent.$data.product_info_dialog = false;
+      //this.$parent.$data.product_info_dialog = false;
+      this.$emit("dialogFalse");
     },
     emit_product: function emit_product() {},
     save: function save(item) {

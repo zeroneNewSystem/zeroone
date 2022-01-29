@@ -66,8 +66,10 @@ class ProductController extends Controller
 
 
         $products = Product::where('ar_name', 'LIKE', '%' . $request->search . '%')
+            ->orWhere('barcode', 'LIKE', '%' . $request->search . '%')
             ->with('groups')
             ->with('units')
+            //->with('sum')
             ->orderBy('id', 'DESC')
             // ->orWhere('en_name', 'LIKE', '%' . $request->search . '%')
             // ->orWhere('barcode', 'LIKE', '%' . $request->search . '%')
@@ -97,6 +99,15 @@ class ProductController extends Controller
 
         return response()->json(
             [
+                'settings' => [
+                    'product_cogs_account_id' => '60',
+                    'product_sales_account_id' => 53,
+                    'product_sales_return_account_id' => '54',
+                    'product_purchase_return_account_id' => '61',
+                    'sales_tax' => '5',
+                    'purchase_tax' => '5',
+
+                ],
                 'prdct_units' => PrdctUnit::all(),
                 'prdct_groups' => PrdctGroup::all(),
                 'prdct_forms' => PrdctForm::all(),
@@ -208,7 +219,7 @@ class ProductController extends Controller
         $res = Product::where('id', $request->id)->delete();
 
         $products = Product::where('ar_name', 'LIKE', '%' . $request->search . '%')
-        ->orderBy('id', 'DESC')
+            ->orderBy('id', 'DESC')
             // ->orWhere('en_name', 'LIKE', '%' . $request->search . '%')
             // ->orWhere('barcode', 'LIKE', '%' . $request->search . '%')
             ->paginate($request->itemsPerPage != -1 ? $request->itemsPerPage : '');

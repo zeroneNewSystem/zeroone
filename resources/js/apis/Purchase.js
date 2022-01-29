@@ -18,6 +18,6 @@ export default {
         return Api.put("/purchases", purchase);
     },
     delete(params) {
-        return Api.delete("/purchases/", { params: params });
+        return Api.delete("/purchases", { params: params });
     }
 };

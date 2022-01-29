@@ -6,8 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 class CreatePurchaseDetailsTable extends Migration
 {
-    
-    /**
+        /**
      * Run the migrations.
      *
      * @return void
@@ -28,7 +27,8 @@ class CreatePurchaseDetailsTable extends Migration
             $table->double('profit_ratio')->default(0.0);
             $table->double('sales_price')->default(0.0);
             $table->boolean('bonus', 1)->default(0);
-            $table->integer('quantity_in_minor_unit',);
+            $table->integer('quantity_in_minor_unit')->default(0);
+            $table->integer('sum_quantity_in_minor_unit',)->default(-1);
             $table->integer('inventory_id',);
             $table->double('vat')->default(0.0);
             $table->double('purchase_discount')->default(0.0);

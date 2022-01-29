@@ -361,7 +361,8 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     close: function close() {
-      this.$parent.$data.product_info_dialog = false;
+      //this.$parent.$data.product_info_dialog = false;
+      this.$emit("dialogFalse");
     },
     emit_product: function emit_product() {},
     save: function save(item) {
@@ -1539,6 +1540,13 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -1969,7 +1977,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       this.selected_product.unit_price = this.selected_product.units[this.selected_product.main_purchase_unit_id - 1].pivot.purchase_price;
       this.selected_product.purchased_quantity = 1;
       console.log("nnj", this.selected_product.purchased_unit_id);
-      this.purchase.purchase_details.unshift(JSON.parse(JSON.stringify(this.selected_product)));
+      this.purchase.purchase_details.push(JSON.parse(JSON.stringify(this.selected_product)));
       console.log("nib", this.purchase.purchase_details);
       this.selected_product = [];
     },
@@ -2180,7 +2188,7 @@ __webpack_require__.r(__webpack_exports__);
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("/purchases", purchase);
   },
   "delete": function _delete(params) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.delete("/purchases/", {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.delete("/purchases", {
       params: params
     });
   }
@@ -4292,6 +4300,11 @@ var render = function() {
               prdct_forms: _vm.prdct_forms,
               prdct_taxes: _vm.prdct_taxes,
               prdct_types: _vm.prdct_types
+            },
+            on: {
+              dialogFalse: function($event) {
+                _vm.product_info_dialog = false
+              }
             }
           },
           [
@@ -4392,55 +4405,9 @@ var render = function() {
                                   1
                                 ),
                                 _vm._v(" "),
-                                _c(
-                                  "v-col",
-                                  {
-                                    staticClass: "pa-0",
-                                    attrs: { cols: "12" }
-                                  },
-                                  [
-                                    _c("v-text-field", {
-                                      staticClass: "purchase-info",
-                                      attrs: {
-                                        outlined: "",
-                                        placeholder:
-                                          "أدخل العام (رقمين) والشهر",
-                                        autocomplete: "off",
-                                        prefix: " تاريخ اختباري | ",
-                                        rules: _vm.is_valid_date
-                                      },
-                                      on: {
-                                        keydown: function($event) {
-                                          if (
-                                            !$event.type.indexOf("key") &&
-                                            _vm._k(
-                                              $event.keyCode,
-                                              "enter",
-                                              13,
-                                              $event.key,
-                                              "Enter"
-                                            )
-                                          ) {
-                                            return null
-                                          }
-                                          return _vm.changeDateFormat()
-                                        }
-                                      },
-                                      model: {
-                                        value: _vm.purchase.test_date,
-                                        callback: function($$v) {
-                                          _vm.$set(
-                                            _vm.purchase,
-                                            "test_date",
-                                            $$v
-                                          )
-                                        },
-                                        expression: "purchase.test_date"
-                                      }
-                                    })
-                                  ],
-                                  1
-                                ),
+                                 false
+                                  ? 0
+                                  : _vm._e(),
                                 _vm._v(" "),
                                 _c(
                                   "v-col",
@@ -4487,7 +4454,13 @@ var render = function() {
                                             _c("v-autocomplete", {
                                               attrs: {
                                                 items: _vm.suppliers,
-                                                "item-text": "name",
+                                                "item-text": function(item) {
+                                                  return (
+                                                    item.company_name +
+                                                    " : " +
+                                                    item.name
+                                                  )
+                                                },
                                                 "item-value": "id",
                                                 rules: _vm.vld_selected,
                                                 label: "المورد"
@@ -4859,6 +4832,28 @@ var render = function() {
                                                 _vm._s(
                                                   _vm.supplierInfo() &&
                                                     _vm.supplierInfo().name
+                                                ) +
+                                                "\n                    "
+                                            )
+                                          ]
+                                        ),
+                                        _vm._v(" "),
+                                        _c(
+                                          "v-col",
+                                          { attrs: { cols: "12", lg: "6" } },
+                                          [_vm._v(" اسم الشركة ")]
+                                        ),
+                                        _vm._v(" "),
+                                        _c(
+                                          "v-col",
+                                          { attrs: { cols: "12", lg: "6" } },
+                                          [
+                                            _vm._v(
+                                              "\n                      " +
+                                                _vm._s(
+                                                  _vm.supplierInfo() &&
+                                                    _vm.supplierInfo()
+                                                      .company_name
                                                 ) +
                                                 "\n                    "
                                             )

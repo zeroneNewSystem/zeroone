@@ -224,7 +224,7 @@ class PurchaseController extends Controller
 
         $request['company_id'] = 1;
         $purchase = Purchase::create($request->all());
-        $this->storePurchaseInfo($request, $purchase);
+        $this->storeLinkedData($request, $purchase);
         return $purchase;
     }
 
@@ -262,23 +262,15 @@ class PurchaseController extends Controller
 
         // delete all transactions 
 
-        Transaction::where('document_type_id', 1)
-            ->where('document_id', $request->id)
-            ->delete();
-
-        //delete all purchase details
-        PurchaseDetail::where('document_type_id', 1)
-            ->where('document_id', $request->id)
-            ->delete();
-
+        $this->deleteLinkedData($request);
         $purchase = Purchase::find($request->id);
         $purchase->update($request->all());
 
-        $this->storePurchaseInfo($request, $purchase);
+        $this->storeLinkedData($request, $purchase);
 
         //----
 
-       
+
 
         return $purchase;
     }
@@ -289,9 +281,29 @@ class PurchaseController extends Controller
      * @param  \App\Models\Purchase  $purchase
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Purchase $purchase)
+    public function destroy(Request $request)
     {
-        //
+
+        $this->deleteLinkedData($request);
+        Purchase::find($request->id)->delete();
+
+
+
+        // delete all transactions 
+
+
+        //return $request->id;
+
+
+
+
+
+
+
+
+
+
+        return $this->all($request);
     }
     private function addTransactionEntry($entry)
     {
@@ -300,7 +312,7 @@ class PurchaseController extends Controller
         $account_id = Transaction::create($entry);
         return true;
     }
-    private function storePurchaseInfo($request, $purchase)
+    private function storeLinkedData($request, $purchase)
     {
         $supplier_account_id = Person::find($request->supplier_id)['supplier_account_id'];
 
@@ -418,7 +430,65 @@ class PurchaseController extends Controller
                 "description" => 'some description',
             ];
             $this->addTransactionEntry($entry);
+
+
+
+            $old_purchase_detail = PurchaseDetail::where([
+                'product_id' => $purchase_detail['product_id'],
+                'expires_at' => $purchase_detail['expires_at'],
+            ])->where('sum_quantity_in_minor_unit', '!=', -1);
+
+            if (!$old_purchase_detail->exists()) {
+                $purchase_detail['sum_quantity_in_minor_unit'] = $purchase_detail['quantity_in_minor_unit'];
+            } else {
+
+                $old_purchase_detail->increment(
+                    'sum_quantity_in_minor_unit',
+                    $purchase_detail['quantity_in_minor_unit']
+                );
+            }
+
             $purchase->purchase_details()->create($purchase_detail);
+        }
+    }
+    private function deleteLinkedData($request)
+    {
+        Transaction::where('document_type_id', 1)
+            ->where('document_id', $request->id)
+            ->delete();
+
+        // delete purchase 
+
+        $purchase_details = PurchaseDetail::where('document_type_id', 1)
+            ->where('document_id', $request->id)->get();
+        foreach ($purchase_details as $purchase_detail) {
+            if ($purchase_detail['sum_quantity_in_minor_unit'] == -1) {
+
+                PurchaseDetail::where('product_id', $purchase_detail['product_id'])
+                    ->where('sum_quantity_in_minor_unit', '!=', -1)
+                    ->where('expires_at', $purchase_detail['expires_at'])
+                    ->decrement(
+                        'sum_quantity_in_minor_unit',
+                        $purchase_detail['quantity_in_minor_unit']
+                    );
+
+                //and decrement quantity from product..... and then continue      
+
+
+            } else {
+                $sum =  $purchase_detail['sum_quantity_in_minor_unit'] - $purchase_detail['quantity_in_minor_unit'];
+                $products = PurchaseDetail::where([
+                    'product_id' => $purchase_detail['product_id'],
+                    'expires_at' => $purchase_detail['expires_at'],
+                    'sum_quantity_in_minor_unit' => -1,
+                ]);
+                if ($products->exists())
+                    $products->first()->update(['sum_quantity_in_minor_unit' => $sum]);
+            }
+
+            $purchase_detail->delete();
+
+            Product::find($purchase_detail['product_id'])->decrement('quantity_in_minor_unit', $purchase_detail['quantity_in_minor_unit']);
         }
     }
 }

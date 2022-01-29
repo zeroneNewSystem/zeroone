@@ -335,7 +335,7 @@ __webpack_require__.r(__webpack_exports__);
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("/purchases", purchase);
   },
   "delete": function _delete(params) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.delete("/purchases/", {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.delete("/purchases", {
       params: params
     });
   }

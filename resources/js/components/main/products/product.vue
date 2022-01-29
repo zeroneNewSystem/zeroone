@@ -21,39 +21,21 @@
       <v-container>
         <v-row justify="start">
           <v-col style="text-align: end">
-            <v-btn
-              elevation
-              color="primary"
-              to="/products"
+            <v-btn elevation color="primary" to="/products"
               >إدارة المخزون</v-btn
             >
-            <v-btn
-              elevation
-              color="primary"
-              to="/stock_takes"
+            <v-btn elevation color="primary" to="/products"
+              >أرصدة افتتاحية للمخزون</v-btn
+            >
+            <v-btn elevation color="primary" to="/stock_takes"
               >جرد المخزون</v-btn
             >
 
-            <v-btn
-              elevation
-              color="primary"
-              to=""
-              >نقل المخزون</v-btn
-            >
+            <v-btn elevation color="primary" to="">نقل المخزون</v-btn>
 
-            <v-btn
-              elevation
-              color="primary"
-              to=""
-              >المجموعات</v-btn
-            >
+            <v-btn elevation color="primary" to="">المجموعات</v-btn>
 
-            <v-btn
-              elevation
-              color="primary"
-              to=""
-              >الأنواع</v-btn
-            >
+            <v-btn elevation color="primary" to="">الأنواع</v-btn>
           </v-col>
         </v-row>
       </v-container>
@@ -69,7 +51,8 @@
               <v-col cols="12" lg="3">
                 {{ formTitle }}
               </v-col>
-              <v-col cols="12" lg="4">
+
+              <v-col cols="12" lg="3">
                 <v-autocomplete
                   label="نوع الصنف"
                   v-model="product.prdct_type_id"
@@ -80,7 +63,7 @@
                   @change="productType"
                 ></v-autocomplete>
               </v-col>
-              <v-col cols="12" lg="4">
+              <v-col cols="12" lg="3">
                 <v-checkbox
                   v-model="product.is_active"
                   style="
@@ -91,6 +74,14 @@
                   color="#e91e63"
                   label="المنتج نشط"
                 ></v-checkbox>
+              </v-col>
+              <v-col cols="12" lg="3">
+                <v-text-field
+                  disabled
+                  autocomplete="off"
+                  v-model="product.average_cost"
+                  label=" متوسط تكلفة الوحدة الصغرى"
+                ></v-text-field>
               </v-col>
             </v-row>
           </v-card-title>
@@ -116,13 +107,13 @@
                     @blur="checkExicting('en_name')"
                   ></v-text-field>
                 </v-col>
-                <v-col cols="12" lg="4" v-if="false">
+                <v-col cols="12" lg="4" v-if="true">
                   <v-text-field
                     autocomplete="off"
                     append-icon="mdi-alpha-g-circle"
-                    @click:append="toggleMarker(12, 'serial number')"
-                    v-model="product.serial_number"
-                    label=" الرقم التسلسلي (اضغط على G لتوليد رقم عشوائي)"
+                    @click:append="toggleMarker(12, 'barcode')"
+                    v-model="product.barcode"
+                    label=" الباركود (اضغط على G لتوليد رقم عشوائي)"
                     :rules="required.concat(isunique)"
                     @blur="checkExicting('serial')"
                   ></v-text-field>
@@ -302,16 +293,7 @@
                           :rules="required"
                         ></v-text-field>
                       </template>
-                      <template v-slot:item.barcode="{ item }">
-                        <v-text-field
-                          class="product-unit-barcode"
-                          outlined
-                          append-icon="mdi-alpha-g-circle"
-                          @click:append="unit_barcode(12, item)"
-                          v-model="item.barcode"
-                          :rules="required"
-                        ></v-text-field>
-                      </template>
+                      
                       <template v-slot:item.actions="{ item }">
                         <v-icon
                           color="red"
@@ -476,7 +458,7 @@
                 <v-col cols="12" lg="12"> </v-col>
                 <v-col cols="12" lg="12"> </v-col>
 
-                <v-col cols="12" lg="3" v-if="is_storable">
+                <v-col cols="12" lg="3" v-if="false">
                   <v-text-field
                     autocomplete="off"
                     v-model="product.opening_balance_quantity"
@@ -493,13 +475,7 @@
                     :rules="required"
                   ></v-autocomplete>
                 </v-col>
-                <v-col cols="12" lg="3">
-                  <v-text-field
-                    autocomplete="off"
-                    v-model="product.opening_balance_cost"
-                    label=" متوسط تكلفة الوحدة"
-                  ></v-text-field>
-                </v-col>
+
                 <v-col cols="12" lg="3" v-if="false">
                   <v-autocomplete
                     label="سياسة التوزيع"
@@ -732,13 +708,7 @@ export default {
           sortable: false,
           value: "sales_price",
         },
-        {
-          text: "الباركود",
-          align: "center",
-          sortable: false,
-          value: "barcode",
-          width: "150",
-        },
+
         { text: "actions ", align: "center", value: "actions" },
       ],
 
@@ -783,7 +753,10 @@ export default {
       product: {
         company_id: "1",
 
+        barcode: "",
         serial_number: "serial_number",
+
+        average_cost: 0,
         ar_name: "ar_name",
         en_name: "en_name",
         prdct_units: [
@@ -804,14 +777,14 @@ export default {
         main_invoiced_unit_id: 1,
         main_purchase_unit_id: 1,
 
-        product_cogs_account_id: 1,
+        product_cogs_account_id: 53,
         product_sales_account_id: 1,
         product_purchase_return_account_id: 1,
         product_sales_return_account_id: 1,
 
-        sales_discount: 10,
+        sales_discount: 0,
         sales_discount_type_id: 1,
-        purchase_discount: 10,
+        purchase_discount: 0,
         purchase_discount_type_id: 1,
         purchase_tax: 1,
         sales_tax: 1,
@@ -822,7 +795,7 @@ export default {
         opening_balance_cost: 150,
         profit_ratio: 5.4,
         side_effect: "side_effect",
-        description: "description",
+        description: "",
         inventory_id: 1,
         image: "no-image.png",
 
@@ -940,6 +913,19 @@ export default {
     // });
     Product.create() //get method
       .then((response) => {
+        this.product.product_cogs_account_id =
+          +response.data.settings.product_cogs_account_id;
+        this.product.product_sales_account_id =
+          +response.data.settings.product_sales_account_id;
+        this.product.product_sales_return_account_id =
+          +response.data.settings.product_sales_return_account_id;
+        this.product.product_purchase_return_account_id =
+          +response.data.settings.product_purchase_return_account_id;
+        this.product.purchase_tax =
+          +response.data.settings.purchase_tax;
+        this.product.sales_tax =
+          +response.data.settings.sales_tax;
+
         this.prdct_forms = response.data.prdct_forms;
         this.prdct_groups = response.data.prdct_groups;
         this.prdct_units = response.data.prdct_units;
@@ -1049,8 +1035,15 @@ export default {
       if (index + 1 == this.product.main_invoiced_unit_id) {
         this.product.main_invoiced_unit_id = 1;
       }
+      if (index + 1 < this.product.main_invoiced_unit_id) {
+        this.product.main_invoiced_unit_id -= 1;
+      }
       if (index + 1 == this.product.main_purchase_unit_id) {
         this.product.main_purchase_unit_id = 1;
+      }
+
+      if (index + 1 < this.product.main_purchase_unit_id) {
+        this.product.main_purchase_unit_id -= 1;
       }
     },
 
@@ -1230,7 +1223,7 @@ export default {
       this.product = this.product = JSON.parse(
         JSON.stringify({
           company_id: "1",
-
+          barcode: "",
           serial_number: "serial_number",
           ar_name: "ar_name",
           en_name: "en_name",
@@ -1252,7 +1245,7 @@ export default {
           main_invoiced_unit_id: 1,
           main_purchase_unit_id: 1,
 
-          product_cogs_account_id: 1,
+          product_cogs_account_id: 53,
           product_sales_account_id: 1,
           product_purchase_return_account_id: 1,
           product_sales_return_account_id: 1,

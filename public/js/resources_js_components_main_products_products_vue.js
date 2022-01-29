@@ -361,7 +361,8 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     close: function close() {
-      this.$parent.$data.product_info_dialog = false;
+      //this.$parent.$data.product_info_dialog = false;
+      this.$emit("dialogFalse");
     },
     emit_product: function emit_product() {},
     save: function save(item) {
@@ -1669,8 +1670,7 @@ var render = function() {
             product: _vm.product_info_product,
             prdct_forms: _vm.prdct_forms,
             prdct_taxes: _vm.prdct_taxes,
-            prdct_types: _vm.prdct_types,
-            suppliers: _vm.suppliers
+            prdct_types: _vm.prdct_types
           }
         },
         [

@@ -3,16 +3,41 @@
 namespace App\Modules\Admin\Products\Models;
 
 use App\Models\Tax;
+use App\Modules\Admin\Purchases\Models\Purchase;
+use App\Modules\Admin\Purchases\Models\PurchaseDetail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Product extends Model
 {
+
+
+    
     
 
     protected $guarded = ['id'];
     use HasFactory;
+
+    function purchases(){
+        return $this->hasMany(PurchaseDetail::class);
+    }
+
+    function sum(){
+        
+        return $this->purchases()
+            ->selectRaw('
+        sum(sum_quantity_in_minor_unit) as sum_quantity_in_minor_unit,
+        
+        product_id')
+            ->groupBy(['product_id']);
+    
+
+    }
+
+
+
+
     public function groups()
     {
         return $this->belongsToMany(PrdctGroup::class, 'prdct_groups_products');
@@ -45,4 +70,6 @@ class Product extends Model
     public function select(){
         return PrdctForm::all();
     }
+
+
 }

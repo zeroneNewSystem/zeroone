@@ -307,11 +307,13 @@ Route::route('/api/extra/cities/(\d+)', function ($country_id) {
 });
 
 Route::route('/api/extra/product/exists/ar_name/(.+)', function ($ar_name) {
+
+    
     
     $database = new Connection();
     $db = $database->open();
     $sth = $db->prepare("SELECT * FROM products WHERE ar_name =:ar_name");
-    $sth->execute(['ar_name' => $ar_name]);
+    $sth->execute(['ar_name' => urldecode($ar_name)]);
 
     $products = $sth->fetchAll(\PDO::FETCH_ASSOC);
 
@@ -321,10 +323,11 @@ Route::route('/api/extra/product/exists/ar_name/(.+)', function ($ar_name) {
 });
 Route::route('/api/extra/product/exists/en_name/(.+)', function ($en_name) {
     
+
     $database = new Connection();
     $db = $database->open();
     $sth = $db->prepare("SELECT * FROM products WHERE en_name =:en_name");
-    $sth->execute(['en_name' => $en_name]);
+    $sth->execute(['en_name' => urldecode($en_name)]);
 
     $products = $sth->fetchAll(\PDO::FETCH_ASSOC);
 

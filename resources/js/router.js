@@ -26,6 +26,18 @@ const router = new VueRouter({
                 },
 
                 {
+                    path: "/settings",
+                    name: "settings",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import ("./components/main/settings/settings"),
+                        mainView: () =>
+                            import ("./components/main/settings/settings")
+                    }
+                },
+
+                {
                     path: "/product",
                     name: "product",
                     meta: { requiresAuth: true },
@@ -168,6 +180,7 @@ const router = new VueRouter({
                             import ("./components/main/bonds/bonds")
                     }
                 },
+
                 {
                     path: "/bonds/:id",
                     name: "bonds",
@@ -296,11 +309,15 @@ const router = new VueRouter({
                     meta: { requiresAuth: true },
                     components: {
                         default: () =>
-                            import ("./components/main/products/inventory_transfers"),
+                            import (
+                                "./components/main/products/inventory_transfers"
+                            ),
                         mainView: () =>
-                            import ("./components/main/products/inventory_transfers")
+                            import (
+                                "./components/main/products/inventory_transfers"
+                            )
                     }
-                },
+                }
             ]
         },
 

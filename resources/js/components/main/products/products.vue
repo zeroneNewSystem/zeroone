@@ -6,7 +6,7 @@
       :prdct_forms="prdct_forms"
       :prdct_taxes="prdct_taxes"
       :prdct_types="prdct_types"
-      :suppliers="suppliers"
+      
     >
       <span slot="title"> معلومات الصنف</span>
     </product-info>
