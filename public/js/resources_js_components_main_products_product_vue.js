@@ -683,12 +683,12 @@ __webpack_require__.r(__webpack_exports__);
         text: " افتراضية البيع ",
         align: "center",
         sortable: false,
-        value: "main_invoiced_unit_id"
+        value: "main_sales_unit_id"
       }, {
         text: " افتراضية الشراء ",
         align: "center",
         sortable: false,
-        value: "main_purchase_unit_id"
+        value: "main_bought_unit_id"
       }, {
         text: " الوحدة",
         align: "center",
@@ -789,12 +789,12 @@ __webpack_require__.r(__webpack_exports__);
         prdct_group_ids: [1, 2],
         prdct_form_id: 1,
         prdct_type_id: 1,
-        main_invoiced_unit_id: 1,
-        main_purchase_unit_id: 1,
-        product_cogs_account_id: 53,
-        product_sales_account_id: 1,
-        product_purchase_return_account_id: 1,
-        product_sales_return_account_id: 1,
+        main_sales_unit_id: 1,
+        main_bought_unit_id: 1,
+        cogs_account_id: 53,
+        sales_account_id: 1,
+        bought_return_account_id: 1,
+        sales_return_account_id: 1,
         sales_discount: 0,
         sales_discount_type_id: 1,
         purchase_discount: 0,
@@ -916,10 +916,10 @@ __webpack_require__.r(__webpack_exports__);
     // });
     _apis_Product__WEBPACK_IMPORTED_MODULE_1__.default.create() //get method
     .then(function (response) {
-      _this.product.product_cogs_account_id = +response.data.settings.product_cogs_account_id;
-      _this.product.product_sales_account_id = +response.data.settings.product_sales_account_id;
-      _this.product.product_sales_return_account_id = +response.data.settings.product_sales_return_account_id;
-      _this.product.product_purchase_return_account_id = +response.data.settings.product_purchase_return_account_id;
+      _this.product.cogs_account_id = +response.data.settings.cogs_account_id;
+      _this.product.sales_account_id = +response.data.settings.sales_account_id;
+      _this.product.sales_return_account_id = +response.data.settings.sales_return_account_id;
+      _this.product.bought_return_account_id = +response.data.settings.bought_return_account_id;
       _this.product.purchase_tax = +response.data.settings.purchase_tax;
       _this.product.sales_tax = +response.data.settings.sales_tax;
       _this.prdct_forms = response.data.prdct_forms;
@@ -1025,20 +1025,20 @@ __webpack_require__.r(__webpack_exports__);
         this.product.prdct_units[0].contains = 1;
       }
 
-      if (index + 1 == this.product.main_invoiced_unit_id) {
-        this.product.main_invoiced_unit_id = 1;
+      if (index + 1 == this.product.main_sales_unit_id) {
+        this.product.main_sales_unit_id = 1;
       }
 
-      if (index + 1 < this.product.main_invoiced_unit_id) {
-        this.product.main_invoiced_unit_id -= 1;
+      if (index + 1 < this.product.main_sales_unit_id) {
+        this.product.main_sales_unit_id -= 1;
       }
 
-      if (index + 1 == this.product.main_purchase_unit_id) {
-        this.product.main_purchase_unit_id = 1;
+      if (index + 1 == this.product.main_bought_unit_id) {
+        this.product.main_bought_unit_id = 1;
       }
 
-      if (index + 1 < this.product.main_purchase_unit_id) {
-        this.product.main_purchase_unit_id -= 1;
+      if (index + 1 < this.product.main_bought_unit_id) {
+        this.product.main_bought_unit_id -= 1;
       }
     },
     prventTwiseUnitSelection: function prventTwiseUnitSelection(item) {
@@ -1212,12 +1212,12 @@ __webpack_require__.r(__webpack_exports__);
         prdct_group_ids: [1, 2],
         prdct_form_id: 1,
         prdct_type_id: 1,
-        main_invoiced_unit_id: 1,
-        main_purchase_unit_id: 1,
-        product_cogs_account_id: 53,
-        product_sales_account_id: 1,
-        product_purchase_return_account_id: 1,
-        product_sales_return_account_id: 1,
+        main_sales_unit_id: 1,
+        main_bought_unit_id: 1,
+        cogs_account_id: 53,
+        sales_account_id: 1,
+        bought_return_account_id: 1,
+        sales_return_account_id: 1,
         sales_discount: 10,
         sales_discount_type_id: 1,
         purchase_discount: 10,
@@ -2104,7 +2104,7 @@ var render = function() {
                                               [
                                                 {
                                                   key:
-                                                    "item.main_invoiced_unit_id",
+                                                    "item.main_sales_unit_id",
                                                   fn: function(ref) {
                                                     var item = ref.item
                                                     return [
@@ -2116,18 +2116,18 @@ var render = function() {
                                                           model: {
                                                             value:
                                                               _vm.product
-                                                                .main_invoiced_unit_id,
+                                                                .main_sales_unit_id,
                                                             callback: function(
                                                               $$v
                                                             ) {
                                                               _vm.$set(
                                                                 _vm.product,
-                                                                "main_invoiced_unit_id",
+                                                                "main_sales_unit_id",
                                                                 $$v
                                                               )
                                                             },
                                                             expression:
-                                                              "product.main_invoiced_unit_id"
+                                                              "product.main_sales_unit_id"
                                                           }
                                                         },
                                                         [
@@ -2162,7 +2162,7 @@ var render = function() {
                                                 },
                                                 {
                                                   key:
-                                                    "item.main_purchase_unit_id",
+                                                    "item.main_bought_unit_id",
                                                   fn: function(ref) {
                                                     var item = ref.item
                                                     return [
@@ -2174,18 +2174,18 @@ var render = function() {
                                                           model: {
                                                             value:
                                                               _vm.product
-                                                                .main_purchase_unit_id,
+                                                                .main_bought_unit_id,
                                                             callback: function(
                                                               $$v
                                                             ) {
                                                               _vm.$set(
                                                                 _vm.product,
-                                                                "main_purchase_unit_id",
+                                                                "main_bought_unit_id",
                                                                 $$v
                                                               )
                                                             },
                                                             expression:
-                                                              "product.main_purchase_unit_id"
+                                                              "product.main_bought_unit_id"
                                                           }
                                                         },
                                                         [
@@ -2460,7 +2460,7 @@ var render = function() {
                                               ],
                                               null,
                                               false,
-                                              4277472014
+                                              1746279246
                                             )
                                           })
                                         ],
@@ -2591,16 +2591,16 @@ var render = function() {
                                                     model: {
                                                       value:
                                                         _vm.product
-                                                          .product_sales_account_id,
+                                                          .sales_account_id,
                                                       callback: function($$v) {
                                                         _vm.$set(
                                                           _vm.product,
-                                                          "product_sales_account_id",
+                                                          "sales_account_id",
                                                           $$v
                                                         )
                                                       },
                                                       expression:
-                                                        "product.product_sales_account_id"
+                                                        "product.sales_account_id"
                                                     }
                                                   })
                                                 : _vm._e()
@@ -2626,16 +2626,16 @@ var render = function() {
                                                     model: {
                                                       value:
                                                         _vm.product
-                                                          .product_sales_return_account_id,
+                                                          .sales_return_account_id,
                                                       callback: function($$v) {
                                                         _vm.$set(
                                                           _vm.product,
-                                                          "product_sales_return_account_id",
+                                                          "sales_return_account_id",
                                                           $$v
                                                         )
                                                       },
                                                       expression:
-                                                        "product.product_sales_return_account_id"
+                                                        "product.sales_return_account_id"
                                                     }
                                                   })
                                                 : _vm._e()
@@ -2769,17 +2769,16 @@ var render = function() {
                                                 },
                                                 model: {
                                                   value:
-                                                    _vm.product
-                                                      .product_cogs_account_id,
+                                                    _vm.product.cogs_account_id,
                                                   callback: function($$v) {
                                                     _vm.$set(
                                                       _vm.product,
-                                                      "product_cogs_account_id",
+                                                      "cogs_account_id",
                                                       $$v
                                                     )
                                                   },
                                                   expression:
-                                                    "product.product_cogs_account_id"
+                                                    "product.cogs_account_id"
                                                 }
                                               })
                                             : _vm._e()
@@ -2805,16 +2804,16 @@ var render = function() {
                                                 model: {
                                                   value:
                                                     _vm.product
-                                                      .product_purchase_return_account_id,
+                                                      .bought_return_account_id,
                                                   callback: function($$v) {
                                                     _vm.$set(
                                                       _vm.product,
-                                                      "product_purchase_return_account_id",
+                                                      "bought_return_account_id",
                                                       $$v
                                                     )
                                                   },
                                                   expression:
-                                                    "product.product_purchase_return_account_id"
+                                                    "product.bought_return_account_id"
                                                 }
                                               })
                                             : _vm._e()

@@ -278,12 +278,12 @@ __webpack_require__.r(__webpack_exports__);
         text: " افتراضية البيع ",
         align: "center",
         sortable: false,
-        value: "main_invoiced_unit_id"
+        value: "main_sales_unit_id"
       }, {
         text: " افتراضية الشراء ",
         align: "center",
         sortable: false,
-        value: "main_purchase_unit_id"
+        value: "main_bought_unit_id"
       }, {
         text: " الوحدة",
         align: "center",
@@ -1460,12 +1460,12 @@ var render = function() {
                         },
                         scopedSlots: _vm._u([
                           {
-                            key: "item.main_invoiced_unit_id",
+                            key: "item.main_sales_unit_id",
                             fn: function(ref) {
                               var item = ref.item
                               return [
                                 _vm.product.units.indexOf(item) + 1 ==
-                                _vm.product.main_invoiced_unit_id
+                                _vm.product.main_sales_unit_id
                                   ? _c("v-icon", { attrs: { small: "" } }, [
                                       _vm._v("mdi-check")
                                     ])
@@ -1474,12 +1474,12 @@ var render = function() {
                             }
                           },
                           {
-                            key: "item.main_purchase_unit_id",
+                            key: "item.main_bought_unit_id",
                             fn: function(ref) {
                               var item = ref.item
                               return [
                                 _vm.product.units.indexOf(item) + 1 ==
-                                _vm.product.main_purchase_unit_id
+                                _vm.product.main_bought_unit_id
                                   ? _c("v-icon", { attrs: { small: "" } }, [
                                       _vm._v("mdi-check")
                                     ])

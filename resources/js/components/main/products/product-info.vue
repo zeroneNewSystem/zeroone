@@ -188,21 +188,21 @@
               :items="product.units"
               hide-default-footer
             >
-              <template v-slot:item.main_invoiced_unit_id="{ item }">
+              <template v-slot:item.main_sales_unit_id="{ item }">
                 <v-icon
                   v-if="
                     product.units.indexOf(item) + 1 ==
-                    product.main_invoiced_unit_id
+                    product.main_sales_unit_id
                   "
                   small
                   >mdi-check</v-icon
                 >
               </template>
-              <template v-slot:item.main_purchase_unit_id="{ item }">
+              <template v-slot:item.main_bought_unit_id="{ item }">
                 <v-icon
                   v-if="
                     product.units.indexOf(item) + 1 ==
-                    product.main_purchase_unit_id
+                    product.main_bought_unit_id
                   "
                   small
                   >mdi-check</v-icon
@@ -265,13 +265,13 @@ export default {
         text: " افتراضية البيع ",
         align: "center",
         sortable: false,
-        value: "main_invoiced_unit_id",
+        value: "main_sales_unit_id",
       },
       {
         text: " افتراضية الشراء ",
         align: "center",
         sortable: false,
-        value: "main_purchase_unit_id",
+        value: "main_bought_unit_id",
       },
       {
         text: " الوحدة",

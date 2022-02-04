@@ -100,10 +100,10 @@ class ProductController extends Controller
         return response()->json(
             [
                 'settings' => [
-                    'product_cogs_account_id' => '60',
-                    'product_sales_account_id' => 53,
-                    'product_sales_return_account_id' => '54',
-                    'product_purchase_return_account_id' => '61',
+                    'cogs_account_id' => '60',
+                    'sales_account_id' => 53,
+                    'sales_return_account_id' => '54',
+                    'bought_return_account_id' => '61',
                     'sales_tax' => '5',
                     'purchase_tax' => '5',
 

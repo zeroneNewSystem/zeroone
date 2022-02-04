@@ -278,12 +278,12 @@ __webpack_require__.r(__webpack_exports__);
         text: " افتراضية البيع ",
         align: "center",
         sortable: false,
-        value: "main_invoiced_unit_id"
+        value: "main_sales_unit_id"
       }, {
         text: " افتراضية الشراء ",
         align: "center",
         sortable: false,
-        value: "main_purchase_unit_id"
+        value: "main_bought_unit_id"
       }, {
         text: " الوحدة",
         align: "center",
@@ -1859,8 +1859,8 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         //-----add
 
 
-        selected_product.purchased_unit_id = selected_product.units[selected_product.main_purchase_unit_id - 1].pivot.id;
-        selected_product.unit_price = selected_product.units[selected_product.main_purchase_unit_id - 1].pivot.purchase_price;
+        selected_product.purchased_unit_id = selected_product.units[selected_product.main_bought_unit_id - 1].pivot.id;
+        selected_product.unit_price = selected_product.units[selected_product.main_bought_unit_id - 1].pivot.purchase_price;
         selected_product.purchased_quantity = 1; //---------
 
         selected_product["document_type_id"] = 1; // purchase
@@ -1973,8 +1973,8 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       console.log(this.purchase.purchase_details);
       console.log("seles", this.selected_product); //set defaultpurchase_id from main purchsedid
 
-      this.selected_product.purchased_unit_id = this.selected_product.units[this.selected_product.main_purchase_unit_id - 1].pivot.id;
-      this.selected_product.unit_price = this.selected_product.units[this.selected_product.main_purchase_unit_id - 1].pivot.purchase_price;
+      this.selected_product.purchased_unit_id = this.selected_product.units[this.selected_product.main_bought_unit_id - 1].pivot.id;
+      this.selected_product.unit_price = this.selected_product.units[this.selected_product.main_bought_unit_id - 1].pivot.purchase_price;
       this.selected_product.purchased_quantity = 1;
       console.log("nnj", this.selected_product.purchased_unit_id);
       this.purchase.purchase_details.push(JSON.parse(JSON.stringify(this.selected_product)));
@@ -3270,12 +3270,12 @@ var render = function() {
                         },
                         scopedSlots: _vm._u([
                           {
-                            key: "item.main_invoiced_unit_id",
+                            key: "item.main_sales_unit_id",
                             fn: function(ref) {
                               var item = ref.item
                               return [
                                 _vm.product.units.indexOf(item) + 1 ==
-                                _vm.product.main_invoiced_unit_id
+                                _vm.product.main_sales_unit_id
                                   ? _c("v-icon", { attrs: { small: "" } }, [
                                       _vm._v("mdi-check")
                                     ])
@@ -3284,12 +3284,12 @@ var render = function() {
                             }
                           },
                           {
-                            key: "item.main_purchase_unit_id",
+                            key: "item.main_bought_unit_id",
                             fn: function(ref) {
                               var item = ref.item
                               return [
                                 _vm.product.units.indexOf(item) + 1 ==
-                                _vm.product.main_purchase_unit_id
+                                _vm.product.main_bought_unit_id
                                   ? _c("v-icon", { attrs: { small: "" } }, [
                                       _vm._v("mdi-check")
                                     ])

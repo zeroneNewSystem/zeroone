@@ -848,12 +848,12 @@ export default {
       //set defaultpurchase_id from main purchsedid
       this.selected_product.purchased_unit_id =
         this.selected_product.units[
-          this.selected_product.main_purchase_unit_id - 1
+          this.selected_product.main_bought_unit_id - 1
         ].pivot.id;
 
       this.selected_product.unit_price =
         this.selected_product.units[
-          this.selected_product.main_purchase_unit_id - 1
+          this.selected_product.main_bought_unit_id - 1
         ].pivot.purchase_price;
 
       this.selected_product.purchased_quantity = 1;

@@ -935,25 +935,25 @@ export default {
 
       selected_product.invoiced_unit_id =
         selected_product.units[
-          selected_product.main_invoiced_unit_id - 1
+          selected_product.main_sales_unit_id - 1
         ].pivot.id;
 
       selected_product.expires_at = selected_product.purchase_details[0].expires_at;
       selected_product.unit_price =
         selected_product.units[
-          selected_product.main_invoiced_unit_id - 1
+          selected_product.main_sales_unit_id - 1
         ].pivot.purchase_price;
 
       selected_product.invoiced_quantity = 1;
       selected_product.current_quantity =
         selected_product.purchase_details[0].quantity_in_minor_unit /
-        selected_product.units[selected_product.main_invoiced_unit_id - 1].pivot
+        selected_product.units[selected_product.main_sales_unit_id - 1].pivot
           .contains;
 
       selected_product.actual_quantity = selected_product.current_quantity;
       selected_product.actual_quantity_in_minor_unit = parseInt(
         selected_product.actual_quantity *
-          selected_product.units[selected_product.main_invoiced_unit_id - 1].pivot
+          selected_product.units[selected_product.main_sales_unit_id - 1].pivot
             .contains
       );
       console.log("selected_product");
@@ -1065,12 +1065,12 @@ export default {
       //set defaultsales_id from main salesid
       this.selected_product.invoiced_unit_id =
         this.selected_product.units[
-          this.selected_product.main_invoiced_unit_id - 1
+          this.selected_product.main_sales_unit_id - 1
         ].pivot.id;
 
       this.selected_product.unit_price =
         this.selected_product.units[
-          this.selected_product.main_invoiced_unit_id - 1
+          this.selected_product.main_sales_unit_id - 1
         ].pivot.sales_price;
 
       this.selected_product.invoiced_quantity = 1;

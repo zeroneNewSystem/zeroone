@@ -28,17 +28,17 @@ class CreateProductsTable extends Migration
             $table->unsignedInteger ('minor_unit');
             $table->integer('quantity_in_minor_unit',)->default(0);
             
-            $table->unsignedInteger ('main_invoiced_unit_id');
-            $table->unsignedInteger ('main_purchase_unit_id');
+            $table->unsignedInteger ('main_sales_unit_id');
+            $table->unsignedInteger ('main_bought_unit_id');
 
             $table->double('average_cost')->default(0.0);
 
 
-            $table->unsignedInteger ('product_cogs_account_id');
-            $table->unsignedInteger ('product_sales_account_id');
+            $table->unsignedInteger ('cogs_account_id');
+            $table->unsignedInteger ('sales_account_id');
             
-            $table->unsignedInteger ('product_sales_return_account_id');
-            $table->unsignedInteger ('product_purchase_return_account_id');
+            $table->unsignedInteger ('sales_return_account_id');
+            $table->unsignedInteger ('bought_return_account_id');
             $table->double('sales_discount')->default(0.0);
             $table->unsignedInteger ('sales_discount_type_id')->default(0)->comment('0-percent, 1-amounr');
 

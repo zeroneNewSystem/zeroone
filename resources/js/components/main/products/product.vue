@@ -208,10 +208,10 @@
                         toString(Math.floor(Math.random(1, 100) * 100))
                       "
                     >
-                      <template v-slot:item.main_invoiced_unit_id="{ item }">
+                      <template v-slot:item.main_sales_unit_id="{ item }">
                         <v-radio-group
                           class="product-radio"
-                          v-model="product.main_invoiced_unit_id"
+                          v-model="product.main_sales_unit_id"
                         >
                           <div
                             style="
@@ -226,10 +226,10 @@
                           </div>
                         </v-radio-group>
                       </template>
-                      <template v-slot:item.main_purchase_unit_id="{ item }">
+                      <template v-slot:item.main_bought_unit_id="{ item }">
                         <v-radio-group
                           class="product-radio"
-                          v-model="product.main_purchase_unit_id"
+                          v-model="product.main_bought_unit_id"
                         >
                           <div
                             style="
@@ -356,7 +356,7 @@
                     <v-col cols="6" lg="3"
                       ><v-autocomplete
                         label="حساب المبيعات"
-                        v-model="product.product_sales_account_id"
+                        v-model="product.sales_account_id"
                         :items="product_sales_accounts"
                         item-text="ar_name"
                         item-value="id"
@@ -367,7 +367,7 @@
                     <v-col cols="6" lg="3"
                       ><v-autocomplete
                         label="حساب مردود المبيعات"
-                        v-model="product.product_sales_return_account_id"
+                        v-model="product.sales_return_account_id"
                         :items="product_sales_return_accounts"
                         item-text="ar_name"
                         item-value="id"
@@ -414,7 +414,7 @@
                     <v-col cols="6" lg="3"
                       ><v-autocomplete
                         label="حساب تكلفة المبيعات"
-                        v-model="product.product_cogs_account_id"
+                        v-model="product.cogs_account_id"
                         :items="product_cogs_accounts"
                         item-text="ar_name"
                         item-value="id"
@@ -425,7 +425,7 @@
                     <v-col cols="6" lg="3"
                       ><v-autocomplete
                         label="حساب مردود المشتريات"
-                        v-model="product.product_purchase_return_account_id"
+                        v-model="product.bought_return_account_id"
                         :items="product_purchase_return_accounts"
                         item-text="ar_name"
                         item-value="id"
@@ -664,13 +664,13 @@ export default {
           text: " افتراضية البيع ",
           align: "center",
           sortable: false,
-          value: "main_invoiced_unit_id",
+          value: "main_sales_unit_id",
         },
         {
           text: " افتراضية الشراء ",
           align: "center",
           sortable: false,
-          value: "main_purchase_unit_id",
+          value: "main_bought_unit_id",
         },
         {
           text: " الوحدة",
@@ -774,13 +774,13 @@ export default {
         prdct_group_ids: [1, 2],
         prdct_form_id: 1,
         prdct_type_id: 1,
-        main_invoiced_unit_id: 1,
-        main_purchase_unit_id: 1,
+        main_sales_unit_id: 1,
+        main_bought_unit_id: 1,
 
-        product_cogs_account_id: 53,
-        product_sales_account_id: 1,
-        product_purchase_return_account_id: 1,
-        product_sales_return_account_id: 1,
+        cogs_account_id: 53,
+        sales_account_id: 1,
+        bought_return_account_id: 1,
+        sales_return_account_id: 1,
 
         sales_discount: 0,
         sales_discount_type_id: 1,
@@ -913,14 +913,14 @@ export default {
     // });
     Product.create() //get method
       .then((response) => {
-        this.product.product_cogs_account_id =
-          +response.data.settings.product_cogs_account_id;
-        this.product.product_sales_account_id =
-          +response.data.settings.product_sales_account_id;
-        this.product.product_sales_return_account_id =
-          +response.data.settings.product_sales_return_account_id;
-        this.product.product_purchase_return_account_id =
-          +response.data.settings.product_purchase_return_account_id;
+        this.product.cogs_account_id =
+          +response.data.settings.cogs_account_id;
+        this.product.sales_account_id =
+          +response.data.settings.sales_account_id;
+        this.product.sales_return_account_id =
+          +response.data.settings.sales_return_account_id;
+        this.product.bought_return_account_id =
+          +response.data.settings.bought_return_account_id;
         this.product.purchase_tax =
           +response.data.settings.purchase_tax;
         this.product.sales_tax =
@@ -1032,18 +1032,18 @@ export default {
         this.product.prdct_units[0].contains = 1;
       }
 
-      if (index + 1 == this.product.main_invoiced_unit_id) {
-        this.product.main_invoiced_unit_id = 1;
+      if (index + 1 == this.product.main_sales_unit_id) {
+        this.product.main_sales_unit_id = 1;
       }
-      if (index + 1 < this.product.main_invoiced_unit_id) {
-        this.product.main_invoiced_unit_id -= 1;
+      if (index + 1 < this.product.main_sales_unit_id) {
+        this.product.main_sales_unit_id -= 1;
       }
-      if (index + 1 == this.product.main_purchase_unit_id) {
-        this.product.main_purchase_unit_id = 1;
+      if (index + 1 == this.product.main_bought_unit_id) {
+        this.product.main_bought_unit_id = 1;
       }
 
-      if (index + 1 < this.product.main_purchase_unit_id) {
-        this.product.main_purchase_unit_id -= 1;
+      if (index + 1 < this.product.main_bought_unit_id) {
+        this.product.main_bought_unit_id -= 1;
       }
     },
 
@@ -1242,13 +1242,13 @@ export default {
           prdct_group_ids: [1, 2],
           prdct_form_id: 1,
           prdct_type_id: 1,
-          main_invoiced_unit_id: 1,
-          main_purchase_unit_id: 1,
+          main_sales_unit_id: 1,
+          main_bought_unit_id: 1,
 
-          product_cogs_account_id: 53,
-          product_sales_account_id: 1,
-          product_purchase_return_account_id: 1,
-          product_sales_return_account_id: 1,
+          cogs_account_id: 53,
+          sales_account_id: 1,
+          bought_return_account_id: 1,
+          sales_return_account_id: 1,
 
           sales_discount: 10,
           sales_discount_type_id: 1,

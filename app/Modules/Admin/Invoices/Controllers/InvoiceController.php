@@ -306,8 +306,8 @@ class InvoiceController extends Controller
             $product->decrement('quantity_in_minor_unit', $invoice_detail['quantity_in_minor_unit']);
             //$account_id = (InvoiceDetail::where()->get())['account_id'];
             $inventory_account_id = Inventory::find($invoice_detail['inventory_id'])['account_id'];
-            $cogs_account_id = $product['product_cogs_account_id'];
-            $sales_account_id = $product['product_sales_account_id'];
+            $cogs_account_id = $product['cogs_account_id'];
+            $sales_account_id = $product['sales_account_id'];
             // حساب المبيعات حساب دائن
             $entry = [
                 "company_id" => 1,
