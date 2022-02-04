@@ -188,11 +188,11 @@
               :items="product.units"
               hide-default-footer
             >
-              <template v-slot:item.main_sales_unit_id="{ item }">
+              <template v-slot:item.main_soldunit_id="{ item }">
                 <v-icon
                   v-if="
                     product.units.indexOf(item) + 1 ==
-                    product.main_sales_unit_id
+                    product.main_soldunit_id
                   "
                   small
                   >mdi-check</v-icon
@@ -215,11 +215,11 @@
               <template v-slot:item.from_unit="{ item }">
                 {{ product.units[0] && product.units[0].ar_name }}
               </template>
-              <template v-slot:item.purchase_price="{ item }">
-                {{ item.pivot.purchase_price }}
+              <template v-slot:item.bought_price="{ item }">
+                {{ item.pivot.bought_price }}
               </template>
-              <template v-slot:item.sales_price="{ item }">
-                {{ item.pivot.sales_price }}
+              <template v-slot:item.soldprice="{ item }">
+                {{ item.pivot.soldprice }}
               </template>
               <template v-slot:item.barcode="{ item }">
                 {{ item.pivot.barcode }}
@@ -265,7 +265,7 @@ export default {
         text: " افتراضية البيع ",
         align: "center",
         sortable: false,
-        value: "main_sales_unit_id",
+        value: "main_soldunit_id",
       },
       {
         text: " افتراضية الشراء ",
@@ -301,13 +301,13 @@ export default {
         text: "سعر الشراء",
         align: "center",
         sortable: false,
-        value: "purchase_price",
+        value: "bought_price",
       },
       {
         text: "سعر البيع",
         align: "center",
         sortable: false,
-        value: "sales_price",
+        value: "soldprice",
       },
       {
         text: "الباركود",

@@ -156,7 +156,7 @@
           <v-row>
             <v-data-table
               disable-pagination
-              :headers="sales_header"
+              :headers="soldheader"
               :items="invoice.invoice_details"
               class="elevation-1"
               :hide-default-footer="true"
@@ -226,9 +226,9 @@
                   hide-details
                 ></v-text-field>
               </template>
-              <template v-slot:item.sales_price="{ item }">
+              <template v-slot:item.soldprice="{ item }">
                 <v-text-field
-                  v-model="item.sales_price"
+                  v-model="item.soldprice"
                   flat
                   type="number"
                   outlined
@@ -237,7 +237,7 @@
                   hide-details
                 ></v-text-field>
               </template>
-              <template v-slot:item.sales_tax="{ item }">
+              <template v-slot:item.soldtax="{ item }">
                 <v-text-field
                   type="number"
                   flat
@@ -245,10 +245,10 @@
                   hide-details
                   outlined
                   autocomplete="off"
-                  v-model="item.sales_tax"
+                  v-model="item.soldtax"
                 ></v-text-field>
               </template>
-              <template v-slot:item.sales_tax_value="{ item }">
+              <template v-slot:item.soldtax_value="{ item }">
                 <v-text-field
                   flat
                   disabled
@@ -256,11 +256,11 @@
                   hide-details
                   outlined
                   autocomplete="off"
-                  :value="sales_tax_value(item).toFixed(2)"
+                  :value="soldtax_value(item).toFixed(2)"
                 ></v-text-field>
               </template>
 
-              <template v-slot:item.sales_discount="{ item }">
+              <template v-slot:item.solddiscount="{ item }">
                 <v-row class="justify-center">
                   <v-col cols="6" class="pl-0">
                     <v-text-field
@@ -270,12 +270,12 @@
                       hide-details
                       outlined
                       autocomplete="off"
-                      v-model="item.sales_discount"
+                      v-model="item.solddiscount"
                     ></v-text-field>
                   </v-col>
                   <v-col cols="6" class="pr-0">
                     <v-autocomplete
-                      v-model="item.sales_discount_type_id"
+                      v-model="item.solddiscount_type_id"
                       :items="discount_types"
                       item-text="ar_name"
                       item-value="id"
@@ -591,7 +591,7 @@ export default {
 
       found_products: [],
       selected_product: [],
-      sales_header: [
+      soldheader: [
         {
           text: "اسم الصنف",
           align: "center",
@@ -635,7 +635,7 @@ export default {
         {
           text: "خصم البيع",
           align: "center",
-          value: "sales_discount",
+          value: "solddiscount",
           sortable: false,
           width: 100,
         },
@@ -649,13 +649,13 @@ export default {
         {
           text: "الضريبة % ",
           align: "center",
-          value: "sales_tax",
+          value: "soldtax",
           sortable: false,
         },
         {
           text: "قيمة الضريبة",
           align: "center",
-          value: "sales_tax_value",
+          value: "soldtax_value",
           sortable: false,
         },
         {
@@ -699,7 +699,7 @@ export default {
         patch_number: Math.floor(Math.random() * (99999 - 10000 + 1) + 10000),
 
         invoice_details: [],
-        sales_reference: "",
+        soldreference: "",
         description: "",
         customer_id: "",
         issue_date: new Date(
@@ -935,25 +935,25 @@ export default {
 
       selected_product.invoiced_unit_id =
         selected_product.units[
-          selected_product.main_sales_unit_id - 1
+          selected_product.main_soldunit_id - 1
         ].pivot.id;
 
       selected_product.expires_at = selected_product.purchase_details[0].expires_at;
       selected_product.unit_price =
         selected_product.units[
-          selected_product.main_sales_unit_id - 1
-        ].pivot.purchase_price;
+          selected_product.main_soldunit_id - 1
+        ].pivot.bought_price;
 
       selected_product.invoiced_quantity = 1;
       selected_product.current_quantity =
         selected_product.purchase_details[0].quantity_in_minor_unit /
-        selected_product.units[selected_product.main_sales_unit_id - 1].pivot
+        selected_product.units[selected_product.main_soldunit_id - 1].pivot
           .contains;
 
       selected_product.actual_quantity = selected_product.current_quantity;
       selected_product.actual_quantity_in_minor_unit = parseInt(
         selected_product.actual_quantity *
-          selected_product.units[selected_product.main_sales_unit_id - 1].pivot
+          selected_product.units[selected_product.main_soldunit_id - 1].pivot
             .contains
       );
       console.log("selected_product");
@@ -966,15 +966,15 @@ export default {
     },
 
     product_unit_change(item) {
-      let sales_unit = item.units.find(
+      let soldunit = item.units.find(
         (elem) => elem.pivot.id == item.invoiced_unit_id
       );
 
-      item.unit_price = sales_unit.pivot.sales_price;
+      item.unit_price = soldunit.pivot.soldprice;
     },
     total_vat() {
       this.invoice.total_vat = this.invoice.invoice_details.reduce(
-        (a, b) => +a + +b.sales_tax_value,
+        (a, b) => +a + +b.soldtax_value,
         0
       );
       return this.invoice.total_vat;
@@ -995,39 +995,39 @@ export default {
     },
 
     total(item) {
-      item.total = this.sales_tax_value(item) + this.total_befor_tax(item);
+      item.total = this.soldtax_value(item) + this.total_befor_tax(item);
       return item.total;
     },
 
-    sales_tax_value(item) {
-      item.sales_tax_value =
-        (this.total_befor_tax(item) * item.sales_tax) / 100;
-      return item.sales_tax_value;
+    soldtax_value(item) {
+      item.soldtax_value =
+        (this.total_befor_tax(item) * item.soldtax) / 100;
+      return item.soldtax_value;
     },
     total_befor_tax(item) {
-      if (item.sales_discount_type_id == 1) {
+      if (item.solddiscount_type_id == 1) {
         item.total_befor_tax =
           item.invoiced_quantity * item.unit_price -
-          (item.invoiced_quantity * item.unit_price * item.sales_discount) / 100;
+          (item.invoiced_quantity * item.unit_price * item.solddiscount) / 100;
 
         return item.total_befor_tax;
       }
       item.total_befor_tax =
-        item.invoiced_quantity * item.unit_price - item.sales_discount;
+        item.invoiced_quantity * item.unit_price - item.solddiscount;
 
       return item.total_befor_tax;
     },
     quantity_in_minor_unit(item) {
       console.log(item);
 
-      let sales_unit = item.units.find(
+      let soldunit = item.units.find(
         (elem) => elem.pivot.id == item.invoiced_unit_id
       );
 
-      console.log("sales_unit");
-      console.log(sales_unit);
+      console.log("soldunit");
+      console.log(soldunit);
       item.quantity_in_minor_unit =
-        item.invoiced_quantity * sales_unit.pivot.contains;
+        item.invoiced_quantity * soldunit.pivot.contains;
 
       console.log(item.quantity_in_minor_unit);
 
@@ -1062,16 +1062,16 @@ export default {
     addProductToInvoice() {
       console.log(this.invoice.invoice_details);
       console.log("seles", this.selected_product);
-      //set defaultsales_id from main salesid
+      //set defaultsoldid from main salesid
       this.selected_product.invoiced_unit_id =
         this.selected_product.units[
-          this.selected_product.main_sales_unit_id - 1
+          this.selected_product.main_soldunit_id - 1
         ].pivot.id;
 
       this.selected_product.unit_price =
         this.selected_product.units[
-          this.selected_product.main_sales_unit_id - 1
-        ].pivot.sales_price;
+          this.selected_product.main_soldunit_id - 1
+        ].pivot.soldprice;
 
       this.selected_product.invoiced_quantity = 1;
       console.log("nnj", this.selected_product.invoiced_unit_id);

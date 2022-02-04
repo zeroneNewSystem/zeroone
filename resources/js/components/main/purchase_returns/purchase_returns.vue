@@ -10,13 +10,12 @@
         @changeCountry="loadCities"
       ></add-update-supplier>
       <product-info
-        :dialog="product_info_dialog"
-        :product="product_info_product"
+        :dialog="info_dialog"
+        :product="info_product"
         :prdct_forms="prdct_forms"
         :prdct_taxes="prdct_taxes"
         :prdct_types="prdct_types"
-        
-        @dialogFalse="product_info_dialog = false"
+        @dialogFalse="info_dialog = false"
       >
         <span slot="title"> معلومات الصنف</span>
       </product-info>
@@ -27,7 +26,7 @@
           </v-row>
         </v-card-title>
         <v-card-text>
-          <router-link class="btn btn-info m-b-5 m-r-2" to="/purchase/1">
+          <router-link class="btn btn-info m-b-5 m-r-2" to="/document/1">
             <v-icon class="white--text">mdi-view-module</v-icon>إدارة الفواتير
           </router-link>
           <v-container>
@@ -36,10 +35,10 @@
                 <v-row>
                   <v-col cols="12" class="pa-0">
                     <v-text-field
-                      class="purchase-info"
+                      class="document-info"
                       outlined
                       autocomplete="off"
-                      v-model="purchase.purchase_reference"
+                      v-model="document.document_reference"
                       prefix=" رقم المرجع | "
                       :rules="required.concat(isunique)"
                       @blur="checkExicting()"
@@ -47,11 +46,11 @@
                   </v-col>
                   <v-col cols="12" class="pa-0" v-if="false">
                     <v-text-field
-                      class="purchase-info"
+                      class="document-info"
                       outlined
                       placeholder="أدخل العام (رقمين) والشهر"
                       autocomplete="off"
-                      v-model="purchase.test_date"
+                      v-model="document.test_date"
                       prefix=" تاريخ اختباري | "
                       :rules="is_valid_date"
                       @keydown.enter="changeDateFormat()"
@@ -60,7 +59,7 @@
                   <v-col cols="12" class="pa-0">
                     <v-text-field
                       autocomplete="off"
-                      v-model="purchase.description"
+                      v-model="document.description"
                       label="الوصف"
                     ></v-text-field>
                   </v-col>
@@ -68,10 +67,11 @@
                     <v-row>
                       <v-col cols="10">
                         <v-autocomplete
-                          v-model="purchase.supplier_id"
+                          v-model="document.supplier_id"
                           :items="suppliers"
-                          :item-text="(item) => item.company_name + ' : ' + item.name"
-                          
+                          :item-text="
+                            (item) => item.company_name + ' : ' + item.name
+                          "
                           item-value="id"
                           :rules="vld_selected"
                           label="المورد"
@@ -98,7 +98,7 @@
                     >
                       <template v-slot:activator="{ on, attrs }">
                         <v-text-field
-                          v-model="purchase.issue_date"
+                          v-model="document.issue_date"
                           label="تاريخ الاصدار"
                           prepend-icon="mdi-calendar"
                           v-bind="attrs"
@@ -108,7 +108,7 @@
                         ></v-text-field>
                       </template>
                       <v-date-picker
-                        v-model="purchase.issue_date"
+                        v-model="document.issue_date"
                         no-title
                         @input="issue_date_is_down = false"
                         @change="getDays"
@@ -118,7 +118,7 @@
                   <v-col cols="12" class="pa-0">
                     <v-text-field
                       label="الدفع بعد "
-                      v-model="purchase.payment_condition_id"
+                      v-model="document.payment_condition_id"
                       suffix="يوم"
                       @change="getMaturityDate"
                     ></v-text-field>
@@ -135,7 +135,7 @@
                     >
                       <template v-slot:activator="{ on, attrs }">
                         <v-text-field
-                          v-model="purchase.maturity_date"
+                          v-model="document.maturity_date"
                           label="تاريخ الاستحقاق"
                           prepend-icon="mdi-calendar"
                           v-bind="attrs"
@@ -145,7 +145,7 @@
                         ></v-text-field>
                       </template>
                       <v-date-picker
-                        v-model="purchase.maturity_date"
+                        v-model="document.maturity_date"
                         no-title
                         @input="maturity_date_is_down = false"
                         @change="getDays"
@@ -189,8 +189,8 @@
             <v-row>
               <v-data-table
                 disable-pagination
-                :headers="purchase_header"
-                :items="purchase.purchase_details"
+                :headers="document_header"
+                :items="document.document_details"
                 class="elevation-1"
                 :hide-default-footer="true"
                 :item-key="toString(Math.floor(Math.random(1, 100) * 100))"
@@ -211,7 +211,7 @@
                         flat
                         hide-no-data
                         label="اسم الصنف"
-                        @change="addProductToPurchase"
+                        @change="addProductToPurchase_return"
                       ></v-autocomplete>
                     </v-col>
                     <v-col cols="12" sm="6" md="4">
@@ -219,7 +219,7 @@
                         autocomplete="off"
                         v-model="searched_barcode"
                         label="الباركود"
-                        @keydown.enter="searchAndAddToPurchase"
+                        @keydown.enter="searchAndAddToPurchase_return"
                         :rules="is_exists"
                       ></v-text-field>
                     </v-col>
@@ -230,7 +230,7 @@
                 <template v-slot:item.ar_name="{ item }">
                   <div>{{ item.ar_name }}</div>
 
-                  <a @click="show_product_dialog(item)">
+                  <a @click="show_dialog(item)">
                     <v-icon> mdi-information </v-icon>
                   </a>
                 </template>
@@ -289,7 +289,7 @@
                     hide-details
                   ></v-text-field>
                 </template>
-                <template v-slot:item.purchase_tax="{ item }">
+                <template v-slot:item.document_tax="{ item }">
                   <v-text-field
                     type="number"
                     flat
@@ -297,10 +297,10 @@
                     hide-details
                     outlined
                     autocomplete="off"
-                    v-model="item.purchase_tax"
+                    v-model="item.document_tax"
                   ></v-text-field>
                 </template>
-                <template v-slot:item.purchase_tax_value="{ item }">
+                <template v-slot:item.document_tax_value="{ item }">
                   <v-text-field
                     flat
                     disabled
@@ -308,11 +308,11 @@
                     hide-details
                     outlined
                     autocomplete="off"
-                    :value="purchase_tax_value(item).toFixed(2)"
+                    :value="document_tax_value(item).toFixed(2)"
                   ></v-text-field>
                 </template>
 
-                <template v-slot:item.purchase_discount="{ item }">
+                <template v-slot:item.document_discount="{ item }">
                   <v-row class="justify-center">
                     <v-col cols="6" class="pl-0">
                       <v-text-field
@@ -322,12 +322,12 @@
                         hide-details
                         outlined
                         autocomplete="off"
-                        v-model="item.purchase_discount"
+                        v-model="item.document_discount"
                       ></v-text-field>
                     </v-col>
                     <v-col cols="6" class="pr-0">
                       <v-autocomplete
-                        v-model="item.purchase_discount_type_id"
+                        v-model="item.document_discount_type_id"
                         :items="discount_types"
                         item-text="ar_name"
                         item-value="id"
@@ -349,9 +349,9 @@
                   >
                 </template>
 
-                <template v-slot:item.product_unit_id="{ item }">
+                <template v-slot:item.unit_id="{ item }">
                   <v-autocomplete
-                    v-model="item.purchased_unit_id"
+                    v-model="item.unit_id"
                     :items="item.units"
                     item-text="ar_name"
                     item-value="pivot.id"
@@ -361,11 +361,11 @@
                     hide-details
                     solo-inverted
                     outlined
-                    @change="product_unit_change(item)"
+                    @change="unit_change(item)"
                   >
                   </v-autocomplete>
                 </template>
-                <template v-slot:item.purchased_quantity="{ item }">
+                <template v-slot:item.documentd_quantity="{ item }">
                   <v-text-field
                     type="number"
                     hide-no-data
@@ -373,7 +373,7 @@
                     autocomplete="off"
                     single-line
                     outlined
-                    v-model="item.purchased_quantity"
+                    v-model="item.documentd_quantity"
                   ></v-text-field>
                 </template>
                 <template v-slot:item.quantity_in_minor_unit="{ item }">
@@ -419,7 +419,7 @@
                     <v-divider class="mx-4" inset vertical></v-divider>
                     <v-spacer></v-spacer>
                   </v-toolbar>
-                  <div class="purchase-footer">
+                  <div class="document-footer">
                     <v-row>
                       <v-col cols="12" lg="6">
                         <v-row justify="start">
@@ -484,7 +484,7 @@
                                 no-data
                                 no-data-text
                                 non-linear
-                                v-model="purchase.additional_expenses"
+                                v-model="document.additional_expenses"
                               >
                               </v-text-field>
                             </div>
@@ -518,7 +518,7 @@
                                 no-data-text
                                 non-linear
                                 v-model="
-                                  purchase.additional_expenses_from_account_id
+                                  document.additional_expenses_from_account_id
                                 "
                                 :items="additional_expenses_from_accounts"
                                 item-text="ar_name"
@@ -572,8 +572,8 @@
                                 no-data
                                 no-data-text
                                 non-linear
-                                v-model="purchase.paid_amount"
-                                @change="purchase.only_cash == true"
+                                v-model="document.paid_amount"
+                                @change="document.only_cash == true"
                               >
                               </v-text-field>
                             </div>
@@ -582,9 +582,11 @@
                           <v-col cols="12" lg="4">
                             <payment-method
                               @payment_methods="paymentMethods"
-                              :purchase_total="purchase.total_amount"
+                              :document_total="
+                                document.total_amount
+                              "
                               :accounts="additional_expenses_from_accounts"
-                              :payment_methods="purchase.payment_methods"
+                              :payment_methods="document.payment_methods"
                             ></payment-method>
                           </v-col>
                         </v-row>
@@ -655,13 +657,15 @@
 </template>
 
 <script>
+let route = window.location.pathname.replace(/^\/([^\/]*).*$/, "$1");
+
 import Product from "../../../apis/Product";
-import Purchase from "../../../apis/Purchase";
+import Purchase_return from "../../../apis/PurchaseReturn";
 import ProductInfo from "../products/product-info.vue";
 import PaymentMethod from "./payment-methods";
 import AddUpdateSupplier from "./AddUpdateSupplier.vue";
 import Country from "../../../apis/Country";
-import Supplier from "../../../apis/Supplier";
+let Supplier = null;
 import Account from "../../../apis/Account";
 export default {
   components: {
@@ -671,16 +675,15 @@ export default {
   },
   data() {
     return {
-      
       title: "فاتورة شراء جديدة",
-      is_new_purchase: true,
+      is_new_document: true,
       additional_expenses_from_accounts: [],
       additional_expenses_from_account_id: "",
       searched_barcode: "",
       /*----------------info----------------- */
       payment_method_dialog: false,
-      product_info_product: "",
-      product_info_dialog: false,
+      info_product: "",
+      info_dialog: false,
       prdct_forms: [],
       prdct_taxes: [],
       prdct_types: [],
@@ -704,7 +707,7 @@ export default {
 
       found_products: [],
       selected_product: [],
-      purchase_header: [
+      document_header: [
         {
           text: "اسم الصنف",
           align: "center",
@@ -722,13 +725,13 @@ export default {
         {
           text: "الكمية",
           align: "center",
-          value: "purchased_quantity",
+          value: "documentd_quantity",
           sortable: false,
         },
         {
           text: "الوحدة",
           align: "center",
-          value: "product_unit_id",
+          value: "unit_id",
           sortable: false,
         },
 
@@ -748,7 +751,7 @@ export default {
         {
           text: "خصم الشراء",
           align: "center",
-          value: "purchase_discount",
+          value: "document_discount",
           sortable: false,
           width: 100,
         },
@@ -762,13 +765,13 @@ export default {
         {
           text: "الضريبة % ",
           align: "center",
-          value: "purchase_tax",
+          value: "document_tax",
           sortable: false,
         },
         {
           text: "قيمة الضريبة",
           align: "center",
-          value: "purchase_tax_value",
+          value: "document_tax_value",
           sortable: false,
         },
         {
@@ -782,8 +785,8 @@ export default {
       ],
 
       payment_conditions: [],
-      new_purchase: {
-        only_cash:true,
+      new_document: {
+        only_cash: true,
         payment_condition_id: 0,
         payment_methods: [
           {
@@ -812,8 +815,8 @@ export default {
 
         patch_number: Math.floor(Math.random() * (99999 - 10000 + 1) + 10000),
 
-        purchase_details: [],
-        purchase_reference: "",
+        document_details: [],
+        document_reference: "",
         description: "",
         supplier_id: "",
         issue_date: new Date(
@@ -827,9 +830,9 @@ export default {
           .toISOString()
           .substr(0, 10),
       },
-      purchase: {
-        only_cash:true,
-        
+      document: {
+        only_cash: true,
+
         payment_condition_id: 0,
         payment_methods: [
           {
@@ -858,8 +861,8 @@ export default {
 
         patch_number: Math.floor(Math.random() * (99999 - 10000 + 1) + 10000),
 
-        purchase_details: [],
-        purchase_reference: "",
+        document_details: [],
+        document_reference: "",
         description: "",
         supplier_id: "",
         issue_date: new Date(
@@ -878,7 +881,7 @@ export default {
       date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
         .toISOString()
         .substr(0, 10),
-      issue_date_is_down: false, 
+      issue_date_is_down: false,
       maturity_date_is_down: false,
       formatted_issue_date: this.formatDate(
         new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
@@ -919,19 +922,25 @@ export default {
 
       for (
         let index = 0;
-        index < this.purchase.purchase_details.length;
+        index < this.document.document_details.length;
         index++
       ) {
         if (
-          this.purchase.purchase_details[index].barcode == item.barcode &&
-          this.purchase.purchase_details[index].expires_at == item.expires_at
+          this.document.document_details[index].barcode ==
+            item.barcode &&
+          this.document.document_details[index].expires_at ==
+            item.expires_at
         ) {
           if (firstIndex == -1) firstIndex = index;
           occurrences++;
           if (occurrences == 2) {
-            this.purchase.purchase_details[firstIndex].purchased_quantity +=
-              this.purchase.purchase_details[index].purchased_quantity;
-            this.purchase.purchase_details.splice(index, 1);
+            this.document.document_details[
+              firstIndex
+            ].documentd_quantity +=
+              this.document.document_details[
+                index
+              ].documentd_quantity;
+            this.document.document_details.splice(index, 1);
             return;
           }
         }
@@ -945,35 +954,35 @@ export default {
       return result;
     },
     getDays() {
-      this.purchase.payment_condition_id = parseInt(
-        (new Date(this.purchase.maturity_date) -
-          new Date(this.purchase.issue_date)) /
+      this.document.payment_condition_id = parseInt(
+        (new Date(this.document.maturity_date) -
+          new Date(this.document.issue_date)) /
           (1000 * 60 * 60 * 24),
         10
       );
     },
     getMaturityDate() {
-      this.purchase.maturity_date = this.addays(
-        this.purchase.issue_date,
-        this.purchase.payment_condition_id
+      this.document.maturity_date = this.addays(
+        this.document.issue_date,
+        this.document.payment_condition_id
       )
         .toISOString()
         .substr(0, 10);
     },
     supplierInfo() {
       return this.suppliers.find(
-        (elem) => elem.id == this.purchase.supplier_id
+        (elem) => elem.id == this.document.supplier_id
       );
     },
     changeDateFormat() {
-      let chunks = this.purchase.test_date.match(/.{1,2}/g);
+      let chunks = this.document.test_date.match(/.{1,2}/g);
       if (chunks[1].length == 1) chunks[1] = "0" + chunks[1];
 
       let date = "20" + chunks[0] + "-" + chunks[1] + "-01";
 
       if (!isNaN(Date.parse(date))) {
         console.log(Date.parse(date));
-        this.purchase.test_date = date;
+        this.document.test_date = date;
         this.is_valid_date = [];
         return;
       }
@@ -982,7 +991,7 @@ export default {
     },
     addSupplierToList(supplier) {
       this.suppliers.push(supplier);
-      this.purchase.supplier_id = supplier.id;
+      this.document.supplier_id = supplier.id;
     },
     loadCities(country_id) {
       this.cities = [];
@@ -996,10 +1005,10 @@ export default {
       this.operation = "add";
       this.passed_supplier = {};
     },
-    searchAndAddToPurchase() {
+    searchAndAddToPurchase_return() {
       let params = { barcode: this.searched_barcode };
 
-      Product.purchaseBarcodeSearch(params).then((response) => {
+      Product.documentBarcodeSearch(params).then((response) => {
         if (response.data.products.length == 0) {
           this.is_exists = [false || "الصنف غير موجود "];
           return;
@@ -1010,11 +1019,12 @@ export default {
         //CHECK IF PRODUCT HAS EXPIRATION DATE --> ADD QUANTITY
 
         if (!selected_product.has_expiration_date) {
-          let index = this.purchase.purchase_details.findIndex(
+          let index = this.document.document_details.findIndex(
             (elem) => elem.barcode == selected_product.barcode
           );
           if (index != -1) {
-            this.purchase.purchase_details[index].purchased_quantity++;
+            this.document.document_details[index]
+              .documentd_quantity++;
             return;
           }
         }
@@ -1023,32 +1033,33 @@ export default {
 
         //-----add
 
-        selected_product.purchased_unit_id =
+        selected_product.unit_id =
           selected_product.units[
-            selected_product.main_bought_unit_id - 1
+            selected_product.main_document_unit_id - 1
           ].pivot.id;
 
         selected_product.unit_price =
           selected_product.units[
-            selected_product.main_bought_unit_id - 1
-          ].pivot.bought_price;
+            selected_product.main_document_unit_id - 1
+          ].pivot.document_price;
 
-        selected_product.purchased_quantity = 1;
+        selected_product.documentd_quantity = 1;
 
         //---------
-        selected_product["document_type_id"] = 1; // purchase
-        selected_product["product_id"] = selected_product["id"]; // purchase
+        selected_product["document_type_id"] = 1; // document
+        selected_product["product_id"] = selected_product["id"]; // document
 
-        this.purchase.purchase_details.push(selected_product);
+        this.document.document_details.push(selected_product);
       });
     },
     remaining_amount() {
-      return (this.purchase.remaining_amount =
-        this.purchase.total_amount - this.purchase.paid_amount);
+      return (this.document.remaining_amount =
+        this.document.total_amount - this.document.paid_amount);
     },
     payAllCash() {
-      this.purchase.paid_amount = this.purchase.total_amount.toFixed(2);
-      this.purchase.payment_methods = [
+      this.document.paid_amount =
+        this.document.total_amount.toFixed(2);
+      this.document.payment_methods = [
         {
           account_id: "",
           credit: 0,
@@ -1067,78 +1078,83 @@ export default {
       ];
     },
     paymentMethods(payments) {
-      this.purchase.payment_methods = payments.payment_methods;
-      this.purchase.paid_amount = payments.paid_amount;
-      this.purchase.only_cash = false;
+      this.document.payment_methods = payments.payment_methods;
+      this.document.paid_amount = payments.paid_amount;
+      this.document.only_cash = false;
     },
-    show_product_dialog(item) {
-      this.product_info_dialog = true;
+    show_dialog(item) {
+      this.info_dialog = true;
       console.log(item);
-      this.product_info_product = item;
+      this.info_product = item;
     },
-    product_unit_change(item) {
-      let purchased_unit = item.units.find(
-        (elem) => elem.pivot.id == item.purchased_unit_id
+    unit_change(item) {
+      let documentd_unit = item.units.find(
+        (elem) => elem.pivot.id == item.unit_id
       );
 
-      item.unit_price = purchased_unit.pivot.bought_price;
+      item.unit_price = documentd_unit.pivot.document_price;
     },
     total_vat() {
-      this.purchase.total_vat = this.purchase.purchase_details.reduce(
-        (a, b) => +a + +b.purchase_tax_value,
-        0
-      );
-      return this.purchase.total_vat;
+      this.document.total_vat =
+        this.document.document_details.reduce(
+          (a, b) => +a + +b.document_tax_value,
+          0
+        );
+      return this.document.total_vat;
     },
     total_amount() {
-      this.purchase.total_amount =
+      this.document.total_amount =
         this.total_without_products_vat() + this.total_vat();
 
-      return this.purchase.total_amount;
+      return this.document.total_amount;
     },
 
     total_without_products_vat() {
-      return this.purchase.purchase_details.reduce(
+      return this.document.document_details.reduce(
         (a, b) => +a + +b.total_befor_tax,
         0
       );
     },
 
     total(item) {
-      item.total = this.purchase_tax_value(item) + this.total_befor_tax(item);
+      item.total =
+        this.document_tax_value(item) + this.total_befor_tax(item);
       return item.total;
     },
 
-    purchase_tax_value(item) {
-      item.purchase_tax_value =
-        (this.total_befor_tax(item) * item.purchase_tax) / 100;
-      return item.purchase_tax_value;
+    document_tax_value(item) {
+      item.document_tax_value =
+        (this.total_befor_tax(item) * item.document_tax) / 100;
+      return item.document_tax_value;
     },
     total_befor_tax(item) {
-      if (item.purchase_discount_type_id == 1) {
+      if (item.document_discount_type_id == 1) {
         item.total_befor_tax =
-          item.purchased_quantity * item.unit_price -
-          (item.purchased_quantity * item.unit_price * item.purchase_discount) /
+          item.documentd_quantity * item.unit_price -
+          (item.documentd_quantity *
+            item.unit_price *
+            item.document_discount) /
             100;
 
         return item.total_befor_tax;
       }
       item.total_befor_tax =
-        item.purchased_quantity * item.unit_price - item.purchase_discount;
+        item.documentd_quantity * item.unit_price -
+        item.document_discount;
 
       return item.total_befor_tax;
     },
     quantity_in_minor_unit(item) {
-      let purchased_unit = item.units.find(
-        (elem) => elem.pivot.id == item.purchased_unit_id
+      let documentd_unit = item.units.find(
+        (elem) => elem.pivot.id == item.unit_id
       );
       item.quantity_in_minor_unit =
-        item.purchased_quantity * purchased_unit.pivot.contains;
+        item.documentd_quantity * documentd_unit.pivot.contains;
       return item.quantity_in_minor_unit;
     },
     deleteItem(item) {
-      this.purchase.purchase_details.splice(
-        this.purchase.purchase_details.indexOf(item),
+      this.document.document_details.splice(
+        this.document.document_details.indexOf(item),
         1
       );
     },
@@ -1162,47 +1178,45 @@ export default {
       }
     },
 
-    addProductToPurchase() {
-      console.log(this.purchase.purchase_details);
+    addProductToPurchase_return() {
+      console.log(this.document.document_details);
       console.log("seles", this.selected_product);
-      //set defaultpurchase_id from main purchsedid
-      this.selected_product.purchased_unit_id =
+      //set defaultdocument_id from main purchsedid
+      this.selected_product.unit_id =
         this.selected_product.units[
-          this.selected_product.main_bought_unit_id - 1
+          this.selected_product.main_document_unit_id - 1
         ].pivot.id;
 
       this.selected_product.unit_price =
         this.selected_product.units[
-          this.selected_product.main_bought_unit_id - 1
-        ].pivot.bought_price;
+          this.selected_product.main_document_unit_id - 1
+        ].pivot.document_price;
 
-      this.selected_product.purchased_quantity = 1;
-      console.log("nnj", this.selected_product.purchased_unit_id);
-      this.purchase.purchase_details.push(
+      this.selected_product.documentd_quantity = 1;
+      console.log("nnj", this.selected_product.unit_id);
+      this.document.document_details.push(
         JSON.parse(JSON.stringify(this.selected_product))
       );
-      console.log("nib", this.purchase.purchase_details);
+      console.log("nib", this.document.document_details);
       this.selected_product = [];
     },
     checkExicting() {},
     submit() {
-      
-
       //this.$router.go(0); reload page if needed
       /* remove zero amount or not account methods */
-      // this.purchase.payment_methods = this.purchase.payment_methods.filter(
+      // this.document.payment_methods = this.document.payment_methods.filter(
       //     (elem) => elem.account_id != "" && elem.credit != 0
       // );
-      if (this.is_new_purchase)
-        Purchase.store(this.purchase).then((response) =>
+      if (this.is_new_document)
+        Purchase_return.store(this.document).then((response) =>
           console.log(response.data)
         );
       else
-        Purchase.update(this.purchase).then((response) =>
+        Purchase_return.update(this.document).then((response) =>
           console.log(response.data)
         );
 
-      console.log(this.purchase);
+      console.log(this.document);
     },
 
     /*------------------dateTime----------------------*/
@@ -1218,26 +1232,29 @@ export default {
       const [month, day, year] = date.split("/");
       return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
     },
-    createPage(to, status) {
+    async createPage(to, status) {
+      Supplier = (await import("../../../apis/Supplier")).default;
+      console.log(Supplier);
       let params = to.params;
       console.log();
 
       if (Object.keys(params).length != 0) {
-        this.is_new_purchase = false;
+        this.is_new_document = false;
         this.title = "تعديل فاتورة رقم " + params.id;
-        Purchase.get(params.id).then((response) => {
-          this.purchase = response.data.purchase;
-          console.log(this.purchase);
-          this.purchase.issue_date = this.purchase.issue_date.split(" ")[0];
-          this.purchase.maturity_date =
-            this.purchase.maturity_date.split(" ")[0];
-          this.purchase.purchase_details.forEach((elem) => {
+        Purchase_return.get(params.id).then((response) => {
+          this.document = response.data.document;
+          console.log(this.document);
+          this.document.issue_date =
+            this.document.issue_date.split(" ")[0];
+          this.document.maturity_date =
+            this.document.maturity_date.split(" ")[0];
+          this.document.document_details.forEach((elem) => {
             if (elem.expires_at)
               elem.expires_at = elem.expires_at.split(" ")[0];
           });
 
-          if (this.purchase.payment_methods.length == 0)
-            this.purchase.payment_methods = [
+          if (this.document.payment_methods.length == 0)
+            this.document.payment_methods = [
               {
                 account_id: "",
                 credit: 0,
@@ -1267,7 +1284,9 @@ export default {
               (this.additional_expenses_from_accounts = response.data.accounts)
           );
         } else {
-          this.purchase = JSON.parse(JSON.stringify(this.new_purchase));
+          this.document = JSON.parse(
+            JSON.stringify(this.new_document)
+          );
           this.$refs.form.reset();
         }
       }
@@ -1289,7 +1308,7 @@ export default {
   > .v-input__slot {
   padding: 0px;
 }
-.purchase-footer {
+.document-footer {
   min-width: 0;
   overflow: hidden;
 }
@@ -1304,7 +1323,7 @@ export default {
 .text-red input {
   color: red !important;
 }
-.purchase-info .v-text-field__prefix {
+.document-info .v-text-field__prefix {
   margin-right: 10px;
 }
 /* Chrome, Safari, Edge, Opera */

@@ -278,7 +278,7 @@ __webpack_require__.r(__webpack_exports__);
         text: " افتراضية البيع ",
         align: "center",
         sortable: false,
-        value: "main_sales_unit_id"
+        value: "main_soldunit_id"
       }, {
         text: " افتراضية الشراء ",
         align: "center",
@@ -308,12 +308,12 @@ __webpack_require__.r(__webpack_exports__);
         text: "سعر الشراء",
         align: "center",
         sortable: false,
-        value: "purchase_price"
+        value: "bought_price"
       }, {
         text: "سعر البيع",
         align: "center",
         sortable: false,
-        value: "sales_price"
+        value: "soldprice"
       }, {
         text: "الباركود",
         align: "center",
@@ -1460,12 +1460,12 @@ var render = function() {
                         },
                         scopedSlots: _vm._u([
                           {
-                            key: "item.main_sales_unit_id",
+                            key: "item.main_soldunit_id",
                             fn: function(ref) {
                               var item = ref.item
                               return [
                                 _vm.product.units.indexOf(item) + 1 ==
-                                _vm.product.main_sales_unit_id
+                                _vm.product.main_soldunit_id
                                   ? _c("v-icon", { attrs: { small: "" } }, [
                                       _vm._v("mdi-check")
                                     ])
@@ -1524,26 +1524,26 @@ var render = function() {
                             }
                           },
                           {
-                            key: "item.purchase_price",
+                            key: "item.bought_price",
                             fn: function(ref) {
                               var item = ref.item
                               return [
                                 _vm._v(
                                   "\n              " +
-                                    _vm._s(item.pivot.purchase_price) +
+                                    _vm._s(item.pivot.bought_price) +
                                     "\n            "
                                 )
                               ]
                             }
                           },
                           {
-                            key: "item.sales_price",
+                            key: "item.soldprice",
                             fn: function(ref) {
                               var item = ref.item
                               return [
                                 _vm._v(
                                   "\n              " +
-                                    _vm._s(item.pivot.sales_price) +
+                                    _vm._s(item.pivot.soldprice) +
                                     "\n            "
                                 )
                               ]

@@ -203,9 +203,9 @@
                   hide-details
                 ></v-text-field>
               </template>
-              <template v-slot:item.sales_price="{ item }">
+              <template v-slot:item.soldprice="{ item }">
                 <v-text-field
-                  v-model="item.sales_price"
+                  v-model="item.soldprice"
                   flat
                   outlined
                   autocomplete="off"
@@ -740,7 +740,7 @@ export default {
         (elem) => elem.pivot.id == item.purchased_unit_id
       );
 
-      item.unit_price = purchased_unit.pivot.purchase_price;
+      item.unit_price = purchased_unit.pivot.bought_price;
     },
     total_vat() {
       this.purchase.total_vat = this.purchase.purchase_details.reduce(
@@ -854,7 +854,7 @@ export default {
       this.selected_product.unit_price =
         this.selected_product.units[
           this.selected_product.main_bought_unit_id - 1
-        ].pivot.purchase_price;
+        ].pivot.bought_price;
 
       this.selected_product.purchased_quantity = 1;
       console.log("nnj", this.selected_product.purchased_unit_id);

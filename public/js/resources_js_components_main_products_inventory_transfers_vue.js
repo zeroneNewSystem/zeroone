@@ -413,7 +413,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       var purchased_unit = item.units.find(function (elem) {
         return elem.pivot.id == item.purchased_unit_id;
       });
-      item.unit_price = purchased_unit.pivot.purchase_price;
+      item.unit_price = purchased_unit.pivot.bought_price;
       item.current_quantity = parseInt(item.purchase_details[0].quantity_in_minor_unit / purchased_unit.pivot.contains);
       item.actual_quantity = item.current_quantity;
       item.actual_quantity_in_minor_unit = parseInt(item.actual_quantity * purchased_unit.pivot.contains);
@@ -459,7 +459,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         return elem.id == selected_product.id;
       }) >= 0) return;
       selected_product.purchased_unit_id = selected_product.units[selected_product.main_bought_unit_id - 1].pivot.id;
-      selected_product.unit_price = selected_product.units[selected_product.main_bought_unit_id - 1].pivot.purchase_price;
+      selected_product.unit_price = selected_product.units[selected_product.main_bought_unit_id - 1].pivot.bought_price;
       selected_product.purchased_quantity = 1;
       selected_product.current_quantity = selected_product.purchase_details[0].quantity_in_minor_unit / selected_product.units[selected_product.main_bought_unit_id - 1].pivot.contains;
       selected_product.actual_quantity = selected_product.current_quantity;
@@ -583,7 +583,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       console.log("seles", this.selected_product); //set defaultpurchase_id from main purchsedid
 
       this.selected_product.purchased_unit_id = this.selected_product.units[this.selected_product.main_bought_unit_id - 1].pivot.id;
-      this.selected_product.unit_price = this.selected_product.units[this.selected_product.main_bought_unit_id - 1].pivot.purchase_price;
+      this.selected_product.unit_price = this.selected_product.units[this.selected_product.main_bought_unit_id - 1].pivot.bought_price;
       this.selected_product.purchased_quantity = 1;
       console.log("nnj", this.selected_product.purchased_unit_id);
       this.purchase.purchase_details.unshift(JSON.parse(JSON.stringify(this.selected_product)));

@@ -278,7 +278,7 @@ __webpack_require__.r(__webpack_exports__);
         text: " افتراضية البيع ",
         align: "center",
         sortable: false,
-        value: "main_sales_unit_id"
+        value: "main_soldunit_id"
       }, {
         text: " افتراضية الشراء ",
         align: "center",
@@ -308,12 +308,12 @@ __webpack_require__.r(__webpack_exports__);
         text: "سعر الشراء",
         align: "center",
         sortable: false,
-        value: "purchase_price"
+        value: "bought_price"
       }, {
         text: "سعر البيع",
         align: "center",
         sortable: false,
-        value: "sales_price"
+        value: "soldprice"
       }, {
         text: "الباركود",
         align: "center",
@@ -1860,7 +1860,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 
         selected_product.purchased_unit_id = selected_product.units[selected_product.main_bought_unit_id - 1].pivot.id;
-        selected_product.unit_price = selected_product.units[selected_product.main_bought_unit_id - 1].pivot.purchase_price;
+        selected_product.unit_price = selected_product.units[selected_product.main_bought_unit_id - 1].pivot.bought_price;
         selected_product.purchased_quantity = 1; //---------
 
         selected_product["document_type_id"] = 1; // purchase
@@ -1903,7 +1903,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       var purchased_unit = item.units.find(function (elem) {
         return elem.pivot.id == item.purchased_unit_id;
       });
-      item.unit_price = purchased_unit.pivot.purchase_price;
+      item.unit_price = purchased_unit.pivot.bought_price;
     },
     total_vat: function total_vat() {
       this.purchase.total_vat = this.purchase.purchase_details.reduce(function (a, b) {
@@ -1974,7 +1974,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       console.log("seles", this.selected_product); //set defaultpurchase_id from main purchsedid
 
       this.selected_product.purchased_unit_id = this.selected_product.units[this.selected_product.main_bought_unit_id - 1].pivot.id;
-      this.selected_product.unit_price = this.selected_product.units[this.selected_product.main_bought_unit_id - 1].pivot.purchase_price;
+      this.selected_product.unit_price = this.selected_product.units[this.selected_product.main_bought_unit_id - 1].pivot.bought_price;
       this.selected_product.purchased_quantity = 1;
       console.log("nnj", this.selected_product.purchased_unit_id);
       this.purchase.purchase_details.push(JSON.parse(JSON.stringify(this.selected_product)));
@@ -3270,12 +3270,12 @@ var render = function() {
                         },
                         scopedSlots: _vm._u([
                           {
-                            key: "item.main_sales_unit_id",
+                            key: "item.main_soldunit_id",
                             fn: function(ref) {
                               var item = ref.item
                               return [
                                 _vm.product.units.indexOf(item) + 1 ==
-                                _vm.product.main_sales_unit_id
+                                _vm.product.main_soldunit_id
                                   ? _c("v-icon", { attrs: { small: "" } }, [
                                       _vm._v("mdi-check")
                                     ])
@@ -3334,26 +3334,26 @@ var render = function() {
                             }
                           },
                           {
-                            key: "item.purchase_price",
+                            key: "item.bought_price",
                             fn: function(ref) {
                               var item = ref.item
                               return [
                                 _vm._v(
                                   "\n              " +
-                                    _vm._s(item.pivot.purchase_price) +
+                                    _vm._s(item.pivot.bought_price) +
                                     "\n            "
                                 )
                               ]
                             }
                           },
                           {
-                            key: "item.sales_price",
+                            key: "item.soldprice",
                             fn: function(ref) {
                               var item = ref.item
                               return [
                                 _vm._v(
                                   "\n              " +
-                                    _vm._s(item.pivot.sales_price) +
+                                    _vm._s(item.pivot.soldprice) +
                                     "\n            "
                                 )
                               ]
@@ -5266,7 +5266,7 @@ var render = function() {
                                 }
                               },
                               {
-                                key: "item.sales_price",
+                                key: "item.soldprice",
                                 fn: function(ref) {
                                   var item = ref.item
                                   return [
@@ -5280,11 +5280,11 @@ var render = function() {
                                         "hide-details": ""
                                       },
                                       model: {
-                                        value: item.sales_price,
+                                        value: item.soldprice,
                                         callback: function($$v) {
-                                          _vm.$set(item, "sales_price", $$v)
+                                          _vm.$set(item, "soldprice", $$v)
                                         },
-                                        expression: "item.sales_price"
+                                        expression: "item.soldprice"
                                       }
                                     })
                                   ]

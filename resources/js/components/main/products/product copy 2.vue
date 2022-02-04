@@ -655,13 +655,13 @@ export default {
           text: "سعر الشراء",
           align: "center",
           sortable: false,
-          value: "unit_purchase_price",
+          value: "unit_bought_price",
         },
         {
           text: "سعر البيع",
           align: "center",
           sortable: false,
-          value: "unit_sales_price",
+          value: "unit_soldprice",
         },
         {
           text: "الباركود",

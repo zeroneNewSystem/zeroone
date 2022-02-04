@@ -412,7 +412,7 @@ export default {
         (elem) => elem.pivot.id == item.purchased_unit_id
       );
 
-      item.unit_price = purchased_unit.pivot.purchase_price;
+      item.unit_price = purchased_unit.pivot.bought_price;
 
       item.current_quantity = parseInt(
         item.purchase_details[0].quantity_in_minor_unit /
@@ -476,7 +476,7 @@ export default {
       selected_product.unit_price =
         selected_product.units[
           selected_product.main_bought_unit_id - 1
-        ].pivot.purchase_price;
+        ].pivot.bought_price;
 
       selected_product.purchased_quantity = 1;
       selected_product.current_quantity =
@@ -633,7 +633,7 @@ export default {
       this.selected_product.unit_price =
         this.selected_product.units[
           this.selected_product.main_bought_unit_id - 1
-        ].pivot.purchase_price;
+        ].pivot.bought_price;
 
       this.selected_product.purchased_quantity = 1;
       console.log("nnj", this.selected_product.purchased_unit_id);

@@ -155,7 +155,7 @@
                 <v-col cols="12" lg="3">
                   <v-text-field
                     autocomplete="off"
-                    v-model="product.sales_tax"
+                    v-model="product.soldtax"
                     label="ضريبة المبيعات%"
                     :rules="vld_numbering"
                     value="0"
@@ -213,10 +213,10 @@
                         toString(Math.floor(Math.random(1, 100) * 100))
                       "
                     >
-                      <template v-slot:item.main_sales_unit_id="{ item }">
+                      <template v-slot:item.main_soldunit_id="{ item }">
                         <v-radio-group
                           class="product-radio"
-                          v-model="product.main_sales_unit_id"
+                          v-model="product.main_soldunit_id"
                         >
                           <div
                             style="
@@ -284,17 +284,17 @@
                           :rules="required"
                         ></v-text-field>
                       </template>
-                      <template v-slot:item.purchase_price="{ item }">
+                      <template v-slot:item.bought_price="{ item }">
                         <v-text-field
                           outlined
-                          v-model="item.purchase_price"
+                          v-model="item.bought_price"
                           :rules="required"
                         ></v-text-field>
                       </template>
-                      <template v-slot:item.sales_price="{ item }">
+                      <template v-slot:item.soldprice="{ item }">
                         <v-text-field
                           outlined
-                          v-model="item.sales_price"
+                          v-model="item.soldprice"
                           :rules="required"
                         ></v-text-field>
                       </template>
@@ -370,8 +370,8 @@
                     <v-col cols="6" lg="3"
                       ><v-autocomplete
                         label="حساب المبيعات"
-                        v-model="product.sales_account_id"
-                        :items="product_sales_accounts"
+                        v-model="product.soldaccount_id"
+                        :items="product_soldaccounts"
                         item-text="ar_name"
                         item-value="id"
                         :rules="required"
@@ -381,8 +381,8 @@
                     <v-col cols="6" lg="3"
                       ><v-autocomplete
                         label="حساب مردود المبيعات"
-                        v-model="product.sales_return_account_id"
-                        :items="product_sales_return_accounts"
+                        v-model="product.soldreturn_account_id"
+                        :items="product_soldreturn_accounts"
                         item-text="ar_name"
                         item-value="id"
                         :rules="required"
@@ -392,14 +392,14 @@
                     <v-col cols="6" lg="2">
                       <v-text-field
                         autocomplete="off"
-                        v-model="product.sales_discount"
+                        v-model="product.solddiscount"
                         label="خصم عند البيع"
                       ></v-text-field>
                     </v-col>
                     <v-col cols="6" lg="2">
                       <v-autocomplete
                         label="طريقة الحساب"
-                        v-model="product.sales_discount_type_id"
+                        v-model="product.solddiscount_type_id"
                         :items="discount_types"
                         item-text="ar_name"
                         item-value="id"
@@ -671,8 +671,8 @@ export default {
       /*-----------------------taxes---------------------------*/
       taxes: [],
       /*-----------------------accounts---------------------------*/
-      product_sales_accounts: [],
-      product_sales_return_accounts: [],
+      product_soldaccounts: [],
+      product_soldreturn_accounts: [],
       product_purchase_return_accounts: [],
       product_cogs_accounts: [],
 
@@ -682,7 +682,7 @@ export default {
           text: " افتراضية البيع ",
           align: "center",
           sortable: false,
-          value: "main_sales_unit_id",
+          value: "main_soldunit_id",
         },
         {
           text: " افتراضية الشراء ",
@@ -718,13 +718,13 @@ export default {
           text: "سعر الشراء",
           align: "center",
           sortable: false,
-          value: "purchase_price",
+          value: "bought_price",
         },
         {
           text: "سعر البيع",
           align: "center",
           sortable: false,
-          value: "sales_price",
+          value: "soldprice",
         },
         {
           text: "الباركود",
@@ -742,8 +742,8 @@ export default {
           id: "",
           prdct_unit_id: "",
           contains: 1,
-          purchase_price: "20",
-          sales_price: "25",
+          bought_price: "20",
+          soldprice: "25",
           barcode: "",
         },
       ],
@@ -782,8 +782,8 @@ export default {
             prdct_unit_id: 1,
             contains: 1,
 
-            purchase_price: "9",
-            sales_price: "8",
+            bought_price: "9",
+            soldprice: "8",
             barcode: "0",
           },
         ],
@@ -791,18 +791,18 @@ export default {
         prdct_group_ids: [1, 2],
         prdct_form_id: 1,
         prdct_type_id: 1,
-        main_sales_unit_id: 1,
+        main_soldunit_id: 1,
         main_bought_unit_id: 1,
 
         cogs_account_id: 1,
-        sales_account_id: 1,
+        soldaccount_id: 1,
 
-        sales_discount: 10,
-        sales_discount_type_id: 1,
+        solddiscount: 10,
+        solddiscount_type_id: 1,
         purchase_discount: 10,
         purchase_discount_type_id: 1,
         purchase_tax: 1,
-        sales_tax: 1,
+        soldtax: 1,
         min_alert: 1,
         max_alert: 10,
         stagnation_period: 100,
@@ -884,9 +884,9 @@ export default {
         this.inventories = response.data.inventories;
         this.distribution_policies = response.data.distribution_policies;
         //this.taxes = response.data.taxes;
-        this.product_sales_accounts = response.data.product_sales_accounts;
-        this.product_sales_return_accounts =
-          response.data.product_sales_accounts;
+        this.product_soldaccounts = response.data.product_soldaccounts;
+        this.product_soldreturn_accounts =
+          response.data.product_soldaccounts;
         this.product_purchase_return_accounts =
           response.data.product_cogs_accounts;
         this.product_cogs_accounts = response.data.product_cogs_accounts;
@@ -968,8 +968,8 @@ export default {
           id: "",
           contains: 1,
 
-          purchase_price: "",
-          sales_price: "",
+          bought_price: "",
+          soldprice: "",
           barcode: "",
         });
         return;
@@ -978,8 +978,8 @@ export default {
         this.product.prdct_units[0].contains = 1;
       }
 
-      if (index + 1 == this.product.main_sales_unit_id) {
-        this.product.main_sales_unit_id = 1;
+      if (index + 1 == this.product.main_soldunit_id) {
+        this.product.main_soldunit_id = 1;
       }
       if (index + 1 == this.product.main_bought_unit_id) {
         this.product.main_bought_unit_id = 1;
@@ -1004,8 +1004,8 @@ export default {
         contains: 1,
         id: "",
 
-        purchase_price: "12",
-        sales_price: "25",
+        bought_price: "12",
+        soldprice: "25",
         barcode: "",
       });
     },

@@ -673,8 +673,8 @@ __webpack_require__.r(__webpack_exports__);
       taxes: [],
 
       /*-----------------------accounts---------------------------*/
-      product_sales_accounts: [],
-      product_sales_return_accounts: [],
+      product_soldaccounts: [],
+      product_soldreturn_accounts: [],
       product_purchase_return_accounts: [],
       product_cogs_accounts: [],
 
@@ -683,7 +683,7 @@ __webpack_require__.r(__webpack_exports__);
         text: " افتراضية البيع ",
         align: "center",
         sortable: false,
-        value: "main_sales_unit_id"
+        value: "main_soldunit_id"
       }, {
         text: " افتراضية الشراء ",
         align: "center",
@@ -713,12 +713,12 @@ __webpack_require__.r(__webpack_exports__);
         text: "سعر الشراء",
         align: "center",
         sortable: false,
-        value: "purchase_price"
+        value: "bought_price"
       }, {
         text: "سعر البيع",
         align: "center",
         sortable: false,
-        value: "sales_price"
+        value: "soldprice"
       }, {
         text: "actions ",
         align: "center",
@@ -730,8 +730,8 @@ __webpack_require__.r(__webpack_exports__);
         id: "",
         prdct_unit_id: "",
         contains: 1,
-        purchase_price: "20",
-        sales_price: "25",
+        bought_price: "20",
+        soldprice: "25",
         barcode: ""
       }],
 
@@ -782,25 +782,25 @@ __webpack_require__.r(__webpack_exports__);
           id: "",
           prdct_unit_id: 1,
           contains: 1,
-          purchase_price: "9",
-          sales_price: "8",
+          bought_price: "9",
+          soldprice: "8",
           barcode: ""
         }],
         prdct_group_ids: [1, 2],
         prdct_form_id: 1,
         prdct_type_id: 1,
-        main_sales_unit_id: 1,
+        main_soldunit_id: 1,
         main_bought_unit_id: 1,
         cogs_account_id: 53,
-        sales_account_id: 1,
+        soldaccount_id: 1,
         bought_return_account_id: 1,
-        sales_return_account_id: 1,
-        sales_discount: 0,
-        sales_discount_type_id: 1,
+        soldreturn_account_id: 1,
+        solddiscount: 0,
+        solddiscount_type_id: 1,
         purchase_discount: 0,
         purchase_discount_type_id: 1,
         purchase_tax: 1,
-        sales_tax: 1,
+        soldtax: 1,
         min_alert: 1,
         max_alert: 10,
         stagnation_period: 100,
@@ -853,7 +853,7 @@ __webpack_require__.r(__webpack_exports__);
       if (true_for.indexOf(this.product.prdct_type_id) > -1) return true;
       return false;
     },
-    sales_tax: function sales_tax() {
+    soldtax: function soldtax() {
       var false_for = [5];
       if (false_for.indexOf(this.product.prdct_type_id) > -1) return false;
       return true;
@@ -917,11 +917,11 @@ __webpack_require__.r(__webpack_exports__);
     _apis_Product__WEBPACK_IMPORTED_MODULE_1__.default.create() //get method
     .then(function (response) {
       _this.product.cogs_account_id = +response.data.settings.cogs_account_id;
-      _this.product.sales_account_id = +response.data.settings.sales_account_id;
-      _this.product.sales_return_account_id = +response.data.settings.sales_return_account_id;
+      _this.product.soldaccount_id = +response.data.settings.soldaccount_id;
+      _this.product.soldreturn_account_id = +response.data.settings.soldreturn_account_id;
       _this.product.bought_return_account_id = +response.data.settings.bought_return_account_id;
       _this.product.purchase_tax = +response.data.settings.purchase_tax;
-      _this.product.sales_tax = +response.data.settings.sales_tax;
+      _this.product.soldtax = +response.data.settings.soldtax;
       _this.prdct_forms = response.data.prdct_forms;
       _this.prdct_groups = response.data.prdct_groups;
       _this.prdct_units = response.data.prdct_units;
@@ -929,8 +929,8 @@ __webpack_require__.r(__webpack_exports__);
       _this.inventories = response.data.inventories;
       _this.distribution_policies = response.data.distribution_policies; //this.taxes = response.data.taxes;
 
-      _this.product_sales_accounts = response.data.product_sales_accounts;
-      _this.product_sales_return_accounts = response.data.product_sales_accounts;
+      _this.product_soldaccounts = response.data.product_soldaccounts;
+      _this.product_soldreturn_accounts = response.data.product_soldaccounts;
       _this.product_purchase_return_accounts = response.data.product_cogs_accounts;
       _this.product_cogs_accounts = response.data.product_cogs_accounts;
     })["catch"](function (errors) {
@@ -1014,8 +1014,8 @@ __webpack_require__.r(__webpack_exports__);
           prdct_unit_id: "",
           id: "",
           contains: 1,
-          purchase_price: "",
-          sales_price: "",
+          bought_price: "",
+          soldprice: "",
           barcode: ""
         });
         return;
@@ -1025,12 +1025,12 @@ __webpack_require__.r(__webpack_exports__);
         this.product.prdct_units[0].contains = 1;
       }
 
-      if (index + 1 == this.product.main_sales_unit_id) {
-        this.product.main_sales_unit_id = 1;
+      if (index + 1 == this.product.main_soldunit_id) {
+        this.product.main_soldunit_id = 1;
       }
 
-      if (index + 1 < this.product.main_sales_unit_id) {
-        this.product.main_sales_unit_id -= 1;
+      if (index + 1 < this.product.main_soldunit_id) {
+        this.product.main_soldunit_id -= 1;
       }
 
       if (index + 1 == this.product.main_bought_unit_id) {
@@ -1059,8 +1059,8 @@ __webpack_require__.r(__webpack_exports__);
         prdct_unit_id: "",
         contains: 1,
         id: "",
-        purchase_price: "12",
-        sales_price: "25",
+        bought_price: "12",
+        soldprice: "25",
         barcode: ""
       });
     },
@@ -1205,25 +1205,25 @@ __webpack_require__.r(__webpack_exports__);
           id: "",
           prdct_unit_id: 1,
           contains: 1,
-          purchase_price: "9",
-          sales_price: "8",
+          bought_price: "9",
+          soldprice: "8",
           barcode: ""
         }],
         prdct_group_ids: [1, 2],
         prdct_form_id: 1,
         prdct_type_id: 1,
-        main_sales_unit_id: 1,
+        main_soldunit_id: 1,
         main_bought_unit_id: 1,
         cogs_account_id: 53,
-        sales_account_id: 1,
+        soldaccount_id: 1,
         bought_return_account_id: 1,
-        sales_return_account_id: 1,
-        sales_discount: 10,
-        sales_discount_type_id: 1,
+        soldreturn_account_id: 1,
+        solddiscount: 10,
+        solddiscount_type_id: 1,
         purchase_discount: 10,
         purchase_discount_type_id: 1,
         purchase_tax: 1,
-        sales_tax: 1,
+        soldtax: 1,
         min_alert: 1,
         max_alert: 10,
         stagnation_period: 100,
@@ -1920,7 +1920,7 @@ var render = function() {
                                 ? 0
                                 : _vm._e(),
                               _vm._v(" "),
-                              _vm.sales_tax
+                              _vm.soldtax
                                 ? _c(
                                     "v-col",
                                     { attrs: { cols: "12", lg: "4" } },
@@ -1933,15 +1933,15 @@ var render = function() {
                                           value: "0"
                                         },
                                         model: {
-                                          value: _vm.product.sales_tax,
+                                          value: _vm.product.soldtax,
                                           callback: function($$v) {
                                             _vm.$set(
                                               _vm.product,
-                                              "sales_tax",
+                                              "soldtax",
                                               $$v
                                             )
                                           },
-                                          expression: "product.sales_tax"
+                                          expression: "product.soldtax"
                                         }
                                       })
                                     ],
@@ -2103,8 +2103,7 @@ var render = function() {
                                             scopedSlots: _vm._u(
                                               [
                                                 {
-                                                  key:
-                                                    "item.main_sales_unit_id",
+                                                  key: "item.main_soldunit_id",
                                                   fn: function(ref) {
                                                     var item = ref.item
                                                     return [
@@ -2116,18 +2115,18 @@ var render = function() {
                                                           model: {
                                                             value:
                                                               _vm.product
-                                                                .main_sales_unit_id,
+                                                                .main_soldunit_id,
                                                             callback: function(
                                                               $$v
                                                             ) {
                                                               _vm.$set(
                                                                 _vm.product,
-                                                                "main_sales_unit_id",
+                                                                "main_soldunit_id",
                                                                 $$v
                                                               )
                                                             },
                                                             expression:
-                                                              "product.main_sales_unit_id"
+                                                              "product.main_soldunit_id"
                                                           }
                                                         },
                                                         [
@@ -2347,7 +2346,7 @@ var render = function() {
                                                   }
                                                 },
                                                 {
-                                                  key: "item.purchase_price",
+                                                  key: "item.bought_price",
                                                   fn: function(ref) {
                                                     var item = ref.item
                                                     return [
@@ -2358,25 +2357,25 @@ var render = function() {
                                                         },
                                                         model: {
                                                           value:
-                                                            item.purchase_price,
+                                                            item.bought_price,
                                                           callback: function(
                                                             $$v
                                                           ) {
                                                             _vm.$set(
                                                               item,
-                                                              "purchase_price",
+                                                              "bought_price",
                                                               $$v
                                                             )
                                                           },
                                                           expression:
-                                                            "item.purchase_price"
+                                                            "item.bought_price"
                                                         }
                                                       })
                                                     ]
                                                   }
                                                 },
                                                 {
-                                                  key: "item.sales_price",
+                                                  key: "item.soldprice",
                                                   fn: function(ref) {
                                                     var item = ref.item
                                                     return [
@@ -2386,19 +2385,18 @@ var render = function() {
                                                           rules: _vm.required
                                                         },
                                                         model: {
-                                                          value:
-                                                            item.sales_price,
+                                                          value: item.soldprice,
                                                           callback: function(
                                                             $$v
                                                           ) {
                                                             _vm.$set(
                                                               item,
-                                                              "sales_price",
+                                                              "soldprice",
                                                               $$v
                                                             )
                                                           },
                                                           expression:
-                                                            "item.sales_price"
+                                                            "item.soldprice"
                                                         }
                                                       })
                                                     ]
@@ -2460,7 +2458,7 @@ var render = function() {
                                               ],
                                               null,
                                               false,
-                                              1746279246
+                                              3030015630
                                             )
                                           })
                                         ],
@@ -2583,7 +2581,7 @@ var render = function() {
                                                     attrs: {
                                                       label: "حساب المبيعات",
                                                       items:
-                                                        _vm.product_sales_accounts,
+                                                        _vm.product_soldaccounts,
                                                       "item-text": "ar_name",
                                                       "item-value": "id",
                                                       rules: _vm.required
@@ -2591,16 +2589,16 @@ var render = function() {
                                                     model: {
                                                       value:
                                                         _vm.product
-                                                          .sales_account_id,
+                                                          .soldaccount_id,
                                                       callback: function($$v) {
                                                         _vm.$set(
                                                           _vm.product,
-                                                          "sales_account_id",
+                                                          "soldaccount_id",
                                                           $$v
                                                         )
                                                       },
                                                       expression:
-                                                        "product.sales_account_id"
+                                                        "product.soldaccount_id"
                                                     }
                                                   })
                                                 : _vm._e()
@@ -2618,7 +2616,7 @@ var render = function() {
                                                       label:
                                                         "حساب مردود المبيعات",
                                                       items:
-                                                        _vm.product_sales_return_accounts,
+                                                        _vm.product_soldreturn_accounts,
                                                       "item-text": "ar_name",
                                                       "item-value": "id",
                                                       rules: _vm.required
@@ -2626,16 +2624,16 @@ var render = function() {
                                                     model: {
                                                       value:
                                                         _vm.product
-                                                          .sales_return_account_id,
+                                                          .soldreturn_account_id,
                                                       callback: function($$v) {
                                                         _vm.$set(
                                                           _vm.product,
-                                                          "sales_return_account_id",
+                                                          "soldreturn_account_id",
                                                           $$v
                                                         )
                                                       },
                                                       expression:
-                                                        "product.sales_return_account_id"
+                                                        "product.soldreturn_account_id"
                                                     }
                                                   })
                                                 : _vm._e()
@@ -2654,16 +2652,16 @@ var render = function() {
                                                 },
                                                 model: {
                                                   value:
-                                                    _vm.product.sales_discount,
+                                                    _vm.product.solddiscount,
                                                   callback: function($$v) {
                                                     _vm.$set(
                                                       _vm.product,
-                                                      "sales_discount",
+                                                      "solddiscount",
                                                       $$v
                                                     )
                                                   },
                                                   expression:
-                                                    "product.sales_discount"
+                                                    "product.solddiscount"
                                                 }
                                               })
                                             ],
@@ -2685,16 +2683,16 @@ var render = function() {
                                                 model: {
                                                   value:
                                                     _vm.product
-                                                      .sales_discount_type_id,
+                                                      .solddiscount_type_id,
                                                   callback: function($$v) {
                                                     _vm.$set(
                                                       _vm.product,
-                                                      "sales_discount_type_id",
+                                                      "solddiscount_type_id",
                                                       $$v
                                                     )
                                                   },
                                                   expression:
-                                                    "product.sales_discount_type_id"
+                                                    "product.solddiscount_type_id"
                                                 }
                                               })
                                             ],
