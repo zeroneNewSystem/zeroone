@@ -273,7 +273,7 @@
 
               <template v-slot:item.product_unit_id="{ item }">
                 <v-autocomplete
-                  v-model="item.purchased_unit_id"
+                  v-model="item.unit_id"
                   :items="item.units"
                   item-text="ar_name"
                   item-value="pivot.id"
@@ -287,14 +287,14 @@
                 >
                 </v-autocomplete>
               </template>
-              <template v-slot:item.purchased_quantity="{ item }">
+              <template v-slot:item.quantity="{ item }">
                 <v-text-field
                   hide-no-data
                   hide-details
                   autocomplete="off"
                   single-line
                   outlined
-                  v-model="item.purchased_quantity"
+                  v-model="item.quantity"
                 ></v-text-field>
               </template>
               <template v-slot:item.quantity_in_minor_unit="{ item }">
@@ -597,7 +597,7 @@ export default {
         {
           text: "الكمية",
           align: "center",
-          value: "purchased_quantity",
+          value: "quantity",
           sortable: false,
         },
         {
@@ -736,11 +736,11 @@ export default {
       this.product_info_product = item;
     },
     product_unit_change(item) {
-      let purchased_unit = item.units.find(
-        (elem) => elem.pivot.id == item.purchased_unit_id
+      let unit = item.units.find(
+        (elem) => elem.pivot.id == item.unit_id
       );
 
-      item.unit_price = purchased_unit.pivot.bought_price;
+      item.unit_price = unit.pivot.bought_price;
     },
     total_vat() {
       this.purchase.total_vat = this.purchase.purchase_details.reduce(
@@ -778,23 +778,23 @@ export default {
       console.log(item.purchase_discount_type_id);
       if (item.purchase_discount_type_id == 1) {
         item.total_befor_tax =
-          item.purchased_quantity * item.unit_price -
-          (item.purchased_quantity * item.unit_price * item.purchase_discount) /
+          item.quantity * item.unit_price -
+          (item.quantity * item.unit_price * item.purchase_discount) /
             100;
 
         return item.total_befor_tax;
       }
       item.total_befor_tax =
-        item.purchased_quantity * item.unit_price - item.purchase_discount;
+        item.quantity * item.unit_price - item.purchase_discount;
 
       return item.total_befor_tax;
     },
     quantity_in_minor_unit(item) {
-      let purchased_unit = item.units.find(
-        (elem) => elem.pivot.id == item.purchased_unit_id
+      let unit = item.units.find(
+        (elem) => elem.pivot.id == item.unit_id
       );
       item.quantity_in_minor_unit =
-        item.purchased_quantity * purchased_unit.pivot.contains;
+        item.quantity * unit.pivot.contains;
       return item.quantity_in_minor_unit;
     },
     deleteItem(item) {
@@ -846,7 +846,7 @@ export default {
       console.log(this.purchase.purchase_details);
       console.log("seles", this.selected_product);
       //set defaultpurchase_id from main purchsedid
-      this.selected_product.purchased_unit_id =
+      this.selected_product.unit_id =
         this.selected_product.units[
           this.selected_product.main_bought_unit_id - 1
         ].pivot.id;
@@ -856,8 +856,8 @@ export default {
           this.selected_product.main_bought_unit_id - 1
         ].pivot.bought_price;
 
-      this.selected_product.purchased_quantity = 1;
-      console.log("nnj", this.selected_product.purchased_unit_id);
+      this.selected_product.quantity = 1;
+      console.log("nnj", this.selected_product.unit_id);
       this.purchase.purchase_details.unshift(
         JSON.parse(JSON.stringify(this.selected_product))
       );

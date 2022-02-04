@@ -21,8 +21,8 @@ class CreatePurchaseDetailsTable extends Migration
             $table->integer('document_type_id',);
             $table->integer('product_id',);
             $table->datetime('expires_at')->nullable();
-            $table->integer('purchased_unit_id');
-            $table->integer('purchased_quantity',)->default(0);
+            $table->integer('unit_id');
+            $table->integer('quantity',)->default(0);
             $table->double('unit_price')->default(0.0);
             $table->double('profit_ratio')->default(0.0);
             $table->double('soldprice')->default(0.0);
@@ -35,7 +35,7 @@ class CreatePurchaseDetailsTable extends Migration
             $table->double('solddiscount')->default(0.0);
             
             $table->double('total')->default(0.0);
-            $table->boolean('purchased_drugs_is_with_bonous')->default(0);
+            $table->boolean('drugs_is_with_bonous')->default(0);
 
             $table->index('company_id');
             $table->index('product_id');

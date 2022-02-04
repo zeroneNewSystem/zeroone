@@ -400,23 +400,23 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       this.inventory_transfers.stock_take_details.splice(this.inventory_transfers.stock_take_details.indexOf(item), 1);
     },
     actual_quantity_change: function actual_quantity_change(item) {
-      var purchased_unit = item.units.find(function (elem) {
-        return elem.pivot.id == item.purchased_unit_id;
+      var unit = item.units.find(function (elem) {
+        return elem.pivot.id == item.unit_id;
       });
-      console.log(purchased_unit);
-      console.log("purchased_unit");
-      item.actual_quantity_in_minor_unit = parseInt(item.actual_quantity * purchased_unit.pivot.contains);
+      console.log(unit);
+      console.log("unit");
+      item.actual_quantity_in_minor_unit = parseInt(item.actual_quantity * unit.pivot.contains);
       console.log(item.actual_quantity_in_minor_unit);
     },
     product_unit_change: function product_unit_change(item) {
       //alert(1)
-      var purchased_unit = item.units.find(function (elem) {
-        return elem.pivot.id == item.purchased_unit_id;
+      var unit = item.units.find(function (elem) {
+        return elem.pivot.id == item.unit_id;
       });
-      item.unit_price = purchased_unit.pivot.bought_price;
-      item.current_quantity = parseInt(item.purchase_details[0].quantity_in_minor_unit / purchased_unit.pivot.contains);
+      item.unit_price = unit.pivot.bought_price;
+      item.current_quantity = parseInt(item.purchase_details[0].quantity_in_minor_unit / unit.pivot.contains);
       item.actual_quantity = item.current_quantity;
-      item.actual_quantity_in_minor_unit = parseInt(item.actual_quantity * purchased_unit.pivot.contains);
+      item.actual_quantity_in_minor_unit = parseInt(item.actual_quantity * unit.pivot.contains);
       this.someVariableUnderYourControl++;
     },
     getProducts: function getProducts(val, type) {
@@ -458,9 +458,9 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       if (this.inventory_transfers.stock_take_details.findIndex(function (elem) {
         return elem.id == selected_product.id;
       }) >= 0) return;
-      selected_product.purchased_unit_id = selected_product.units[selected_product.main_bought_unit_id - 1].pivot.id;
+      selected_product.unit_id = selected_product.units[selected_product.main_bought_unit_id - 1].pivot.id;
       selected_product.unit_price = selected_product.units[selected_product.main_bought_unit_id - 1].pivot.bought_price;
-      selected_product.purchased_quantity = 1;
+      selected_product.quantity = 1;
       selected_product.current_quantity = selected_product.purchase_details[0].quantity_in_minor_unit / selected_product.units[selected_product.main_bought_unit_id - 1].pivot.contains;
       selected_product.actual_quantity = selected_product.current_quantity;
       selected_product.actual_quantity_in_minor_unit = parseInt(selected_product.actual_quantity * selected_product.units[selected_product.main_bought_unit_id - 1].pivot.contains);
@@ -582,10 +582,10 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       console.log(this.purchase.purchase_details);
       console.log("seles", this.selected_product); //set defaultpurchase_id from main purchsedid
 
-      this.selected_product.purchased_unit_id = this.selected_product.units[this.selected_product.main_bought_unit_id - 1].pivot.id;
+      this.selected_product.unit_id = this.selected_product.units[this.selected_product.main_bought_unit_id - 1].pivot.id;
       this.selected_product.unit_price = this.selected_product.units[this.selected_product.main_bought_unit_id - 1].pivot.bought_price;
-      this.selected_product.purchased_quantity = 1;
-      console.log("nnj", this.selected_product.purchased_unit_id);
+      this.selected_product.quantity = 1;
+      console.log("nnj", this.selected_product.unit_id);
       this.purchase.purchase_details.unshift(JSON.parse(JSON.stringify(this.selected_product)));
       console.log("nib", this.purchase.purchase_details);
       this.selected_product = [];
@@ -1374,11 +1374,11 @@ var render = function() {
                                   }
                                 },
                                 model: {
-                                  value: item.purchased_unit_id,
+                                  value: item.unit_id,
                                   callback: function($$v) {
-                                    _vm.$set(item, "purchased_unit_id", $$v)
+                                    _vm.$set(item, "unit_id", $$v)
                                   },
-                                  expression: "item.purchased_unit_id"
+                                  expression: "item.unit_id"
                                 }
                               })
                             ]

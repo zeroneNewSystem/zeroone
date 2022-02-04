@@ -189,7 +189,7 @@
 
             <template v-slot:item.product_unit_id="{ item }">
               <v-autocomplete
-                v-model="item.purchased_unit_id"
+                v-model="item.unit_id"
                 :items="item.units"
                 item-text="ar_name"
                 item-value="pivot.id"
@@ -395,33 +395,33 @@ export default {
       );
     },
     actual_quantity_change(item) {
-      let purchased_unit = item.units.find(
-        (elem) => elem.pivot.id == item.purchased_unit_id
+      let unit = item.units.find(
+        (elem) => elem.pivot.id == item.unit_id
       );
-      console.log(purchased_unit);
-      console.log("purchased_unit");
+      console.log(unit);
+      console.log("unit");
       item.actual_quantity_in_minor_unit = parseInt(
-        item.actual_quantity * purchased_unit.pivot.contains
+        item.actual_quantity * unit.pivot.contains
       );
 
       console.log(item.actual_quantity_in_minor_unit);
     },
     product_unit_change(item) {
       //alert(1)
-      let purchased_unit = item.units.find(
-        (elem) => elem.pivot.id == item.purchased_unit_id
+      let unit = item.units.find(
+        (elem) => elem.pivot.id == item.unit_id
       );
 
-      item.unit_price = purchased_unit.pivot.bought_price;
+      item.unit_price = unit.pivot.bought_price;
 
       item.current_quantity = parseInt(
         item.purchase_details[0].quantity_in_minor_unit /
-          purchased_unit.pivot.contains
+          unit.pivot.contains
       );
 
       item.actual_quantity = item.current_quantity;
       item.actual_quantity_in_minor_unit = parseInt(
-        item.actual_quantity * purchased_unit.pivot.contains
+        item.actual_quantity * unit.pivot.contains
       );
       this.someVariableUnderYourControl++;
     },
@@ -468,7 +468,7 @@ export default {
         ) >= 0
       )
         return;
-      selected_product.purchased_unit_id =
+      selected_product.unit_id =
         selected_product.units[
           selected_product.main_bought_unit_id - 1
         ].pivot.id;
@@ -478,7 +478,7 @@ export default {
           selected_product.main_bought_unit_id - 1
         ].pivot.bought_price;
 
-      selected_product.purchased_quantity = 1;
+      selected_product.quantity = 1;
       selected_product.current_quantity =
         selected_product.purchase_details[0].quantity_in_minor_unit /
         selected_product.units[selected_product.main_bought_unit_id - 1].pivot
@@ -625,7 +625,7 @@ export default {
       console.log(this.purchase.purchase_details);
       console.log("seles", this.selected_product);
       //set defaultpurchase_id from main purchsedid
-      this.selected_product.purchased_unit_id =
+      this.selected_product.unit_id =
         this.selected_product.units[
           this.selected_product.main_bought_unit_id - 1
         ].pivot.id;
@@ -635,8 +635,8 @@ export default {
           this.selected_product.main_bought_unit_id - 1
         ].pivot.bought_price;
 
-      this.selected_product.purchased_quantity = 1;
-      console.log("nnj", this.selected_product.purchased_unit_id);
+      this.selected_product.quantity = 1;
+      console.log("nnj", this.selected_product.unit_id);
       this.purchase.purchase_details.unshift(
         JSON.parse(JSON.stringify(this.selected_product))
       );

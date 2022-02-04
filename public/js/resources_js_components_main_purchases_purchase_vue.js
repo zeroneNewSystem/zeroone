@@ -1614,7 +1614,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       }, {
         text: "الكمية",
         align: "center",
-        value: "purchased_quantity",
+        value: "quantity",
         sortable: false
       }, {
         text: "الوحدة",
@@ -1773,7 +1773,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
           occurrences++;
 
           if (occurrences == 2) {
-            this.purchase.purchase_details[firstIndex].purchased_quantity += this.purchase.purchase_details[index].purchased_quantity;
+            this.purchase.purchase_details[firstIndex].quantity += this.purchase.purchase_details[index].quantity;
             this.purchase.purchase_details.splice(index, 1);
             return;
           }
@@ -1852,16 +1852,16 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
           });
 
           if (index != -1) {
-            _this3.purchase.purchase_details[index].purchased_quantity++;
+            _this3.purchase.purchase_details[index].quantity++;
             return;
           }
         } //this.found_products = response.data.products;
         //-----add
 
 
-        selected_product.purchased_unit_id = selected_product.units[selected_product.main_bought_unit_id - 1].pivot.id;
+        selected_product.unit_id = selected_product.units[selected_product.main_bought_unit_id - 1].pivot.id;
         selected_product.unit_price = selected_product.units[selected_product.main_bought_unit_id - 1].pivot.bought_price;
-        selected_product.purchased_quantity = 1; //---------
+        selected_product.quantity = 1; //---------
 
         selected_product["document_type_id"] = 1; // purchase
 
@@ -1900,10 +1900,10 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       this.product_info_product = item;
     },
     product_unit_change: function product_unit_change(item) {
-      var purchased_unit = item.units.find(function (elem) {
-        return elem.pivot.id == item.purchased_unit_id;
+      var unit = item.units.find(function (elem) {
+        return elem.pivot.id == item.unit_id;
       });
-      item.unit_price = purchased_unit.pivot.bought_price;
+      item.unit_price = unit.pivot.bought_price;
     },
     total_vat: function total_vat() {
       this.purchase.total_vat = this.purchase.purchase_details.reduce(function (a, b) {
@@ -1930,18 +1930,18 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
     },
     total_befor_tax: function total_befor_tax(item) {
       if (item.purchase_discount_type_id == 1) {
-        item.total_befor_tax = item.purchased_quantity * item.unit_price - item.purchased_quantity * item.unit_price * item.purchase_discount / 100;
+        item.total_befor_tax = item.quantity * item.unit_price - item.quantity * item.unit_price * item.purchase_discount / 100;
         return item.total_befor_tax;
       }
 
-      item.total_befor_tax = item.purchased_quantity * item.unit_price - item.purchase_discount;
+      item.total_befor_tax = item.quantity * item.unit_price - item.purchase_discount;
       return item.total_befor_tax;
     },
     quantity_in_minor_unit: function quantity_in_minor_unit(item) {
-      var purchased_unit = item.units.find(function (elem) {
-        return elem.pivot.id == item.purchased_unit_id;
+      var unit = item.units.find(function (elem) {
+        return elem.pivot.id == item.unit_id;
       });
-      item.quantity_in_minor_unit = item.purchased_quantity * purchased_unit.pivot.contains;
+      item.quantity_in_minor_unit = item.quantity * unit.pivot.contains;
       return item.quantity_in_minor_unit;
     },
     deleteItem: function deleteItem(item) {
@@ -1973,10 +1973,10 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       console.log(this.purchase.purchase_details);
       console.log("seles", this.selected_product); //set defaultpurchase_id from main purchsedid
 
-      this.selected_product.purchased_unit_id = this.selected_product.units[this.selected_product.main_bought_unit_id - 1].pivot.id;
+      this.selected_product.unit_id = this.selected_product.units[this.selected_product.main_bought_unit_id - 1].pivot.id;
       this.selected_product.unit_price = this.selected_product.units[this.selected_product.main_bought_unit_id - 1].pivot.bought_price;
-      this.selected_product.purchased_quantity = 1;
-      console.log("nnj", this.selected_product.purchased_unit_id);
+      this.selected_product.quantity = 1;
+      console.log("nnj", this.selected_product.unit_id);
       this.purchase.purchase_details.push(JSON.parse(JSON.stringify(this.selected_product)));
       console.log("nib", this.purchase.purchase_details);
       this.selected_product = [];
@@ -5469,22 +5469,18 @@ var render = function() {
                                         }
                                       },
                                       model: {
-                                        value: item.purchased_unit_id,
+                                        value: item.unit_id,
                                         callback: function($$v) {
-                                          _vm.$set(
-                                            item,
-                                            "purchased_unit_id",
-                                            $$v
-                                          )
+                                          _vm.$set(item, "unit_id", $$v)
                                         },
-                                        expression: "item.purchased_unit_id"
+                                        expression: "item.unit_id"
                                       }
                                     })
                                   ]
                                 }
                               },
                               {
-                                key: "item.purchased_quantity",
+                                key: "item.quantity",
                                 fn: function(ref) {
                                   var item = ref.item
                                   return [
@@ -5498,15 +5494,11 @@ var render = function() {
                                         outlined: ""
                                       },
                                       model: {
-                                        value: item.purchased_quantity,
+                                        value: item.quantity,
                                         callback: function($$v) {
-                                          _vm.$set(
-                                            item,
-                                            "purchased_quantity",
-                                            $$v
-                                          )
+                                          _vm.$set(item, "quantity", $$v)
                                         },
-                                        expression: "item.purchased_quantity"
+                                        expression: "item.quantity"
                                       }
                                     })
                                   ]
