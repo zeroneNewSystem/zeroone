@@ -115,7 +115,7 @@ export default {
           },
           {
             name: "أوامر الشراء",
-            link: "/purchase_orders",
+            link: "/orders",
             icon: "",
           },
           {
@@ -221,7 +221,7 @@ export default {
           },
           {
             name: "الضرائب",
-            link: "/purchase_orders",
+            link: "/orders",
             icon: "",
           },
           {

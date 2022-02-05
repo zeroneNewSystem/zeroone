@@ -47,8 +47,8 @@ class PurchaseController extends Controller
             });
         };
 
-        if ($search && $search['purchase_reference'])
-            $purchases = $purchases->where('purchase_reference', 'like', '%' . $search['purchase_reference'] . '%');
+        if ($search && $search['reference'])
+            $purchases = $purchases->where('reference', 'like', '%' . $search['reference'] . '%');
 
 
 
@@ -113,20 +113,20 @@ class PurchaseController extends Controller
 
 
 
-        $purchase_details =  DB::table('purchase_details')
+        $details =  DB::table('details')
             ->where('document_id', $id)
             ->where('document_type_id', 1)
-            ->leftjoin('products', 'purchase_details.product_id', '=', 'products.id')
+            ->leftjoin('products', 'details.product_id', '=', 'products.id')
             ->get();
 
 
 
-        // return      $purchase_details;
+        // return      $details;
 
 
         $units = [];
-        foreach ($purchase_details as &$purchase_detail) {
-            $pivots = DB::table('prdct_units_products')->where('product_id', $purchase_detail->id)->get();
+        foreach ($details as &$detail) {
+            $pivots = DB::table('prdct_units_products')->where('product_id', $detail->id)->get();
             foreach ($pivots as &$pivot) {
                 $unit = DB::table('prdct_units')->where('id', $pivot->prdct_unit_id)->get();
                 //return $unit[0];
@@ -135,15 +135,15 @@ class PurchaseController extends Controller
             }
 
 
-            $purchase_detail->units = $units;
+            $detail->units = $units;
         }
 
 
-        $purchase->purchase_details = $purchase_details;
+        $purchase->details = $details;
 
         return [
             'purchase' => $purchase,
-            'suppliers' => Person::where('company_id', '1')->where('is_supplier', '1')->get(),
+            'people' => Person::where('company_id', '1')->where('is_supplier', '1')->get(),
             'accounts' => $this->cashAndBanks()
 
         ];
@@ -154,17 +154,17 @@ class PurchaseController extends Controller
         $purchases =  DB::table('purchases')->get();
         foreach ($purchases as &$purchase) {
 
-            $purchase_details =  DB::table('purchase_details')
+            $details =  DB::table('details')
                 ->where('document_id', 1)
                 ->where('document_type_id', 1)
-                ->leftjoin('products', 'purchase_details.product_id', '=', 'products.id')
+                ->leftjoin('products', 'details.product_id', '=', 'products.id')
                 ->get();
 
 
 
             $units = [];
-            foreach ($purchase_details as &$purchase_detail) {
-                $pivots = DB::table('prdct_units_products')->where('product_id', $purchase_detail->id)->get();
+            foreach ($details as &$detail) {
+                $pivots = DB::table('prdct_units_products')->where('product_id', $detail->id)->get();
                 foreach ($pivots as &$pivot) {
                     $unit = DB::table('prdct_units')->where('id', $pivot->prdct_unit_id)->get();
                     //return $unit[0];
@@ -173,11 +173,11 @@ class PurchaseController extends Controller
                 }
 
 
-                $purchase_detail->units = $units;
+                $detail->units = $units;
             }
 
 
-            $purchase->purchase_details = $purchase_details;
+            $purchase->details = $details;
         }
         return $purchases;
     }
@@ -186,7 +186,7 @@ class PurchaseController extends Controller
 
 
         $purchases = Purchase::where('ar_name', 'LIKE', '%' . $request->search . '%')
-            ->with('purchase_details')
+            ->with('details')
 
             ->orderBy('id', 'DESC')
             // ->orWhere('en_name', 'LIKE', '%' . $request->search . '%')
@@ -405,9 +405,9 @@ class PurchaseController extends Controller
 
 
 
-        foreach ($request->purchase_details as $purchase_detail) {
+        foreach ($request->details as $detail) {
             //transaction  inventory-
-            Product::find($purchase_detail['id'])->increment('quantity_in_minor_unit', $purchase_detail['quantity_in_minor_unit']);
+            Product::find($detail['id'])->increment('quantity_in_minor_unit', $detail['quantity_in_minor_unit']);
 
 
 
@@ -416,12 +416,12 @@ class PurchaseController extends Controller
             //$account_id = (PurchaseDetail::where()->get())['account_id'];
 
 
-            $inventory_account_id = Inventory::find($purchase_detail['inventory_id'])['account_id'];
+            $inventory_account_id = Inventory::find($detail['inventory_id'])['account_id'];
 
             $entry = [
                 "company_id" => 1,
                 "account_id" => $inventory_account_id,
-                "debit" =>  $purchase_detail['total'],
+                "debit" =>  $detail['total'],
                 "credit" => 0,
                 "document_id" => $purchase->id,
                 "document_type_id" => 1,
@@ -433,22 +433,22 @@ class PurchaseController extends Controller
 
 
 
-            $old_purchase_detail = PurchaseDetail::where([
-                'product_id' => $purchase_detail['product_id'],
-                'expires_at' => $purchase_detail['expires_at'],
+            $old_detail = PurchaseDetail::where([
+                'product_id' => $detail['product_id'],
+                'expires_at' => $detail['expires_at'],
             ])->where('sum_quantity_in_minor_unit', '!=', -1);
 
-            if (!$old_purchase_detail->exists()) {
-                $purchase_detail['sum_quantity_in_minor_unit'] = $purchase_detail['quantity_in_minor_unit'];
+            if (!$old_detail->exists()) {
+                $detail['sum_quantity_in_minor_unit'] = $detail['quantity_in_minor_unit'];
             } else {
 
-                $old_purchase_detail->increment(
+                $old_detail->increment(
                     'sum_quantity_in_minor_unit',
-                    $purchase_detail['quantity_in_minor_unit']
+                    $detail['quantity_in_minor_unit']
                 );
             }
 
-            $purchase->purchase_details()->create($purchase_detail);
+            $purchase->details()->create($detail);
         }
     }
     private function deleteLinkedData($request)
@@ -459,36 +459,36 @@ class PurchaseController extends Controller
 
         // delete purchase 
 
-        $purchase_details = PurchaseDetail::where('document_type_id', 1)
+        $details = PurchaseDetail::where('document_type_id', 1)
             ->where('document_id', $request->id)->get();
-        foreach ($purchase_details as $purchase_detail) {
-            if ($purchase_detail['sum_quantity_in_minor_unit'] == -1) {
+        foreach ($details as $detail) {
+            if ($detail['sum_quantity_in_minor_unit'] == -1) {
 
-                PurchaseDetail::where('product_id', $purchase_detail['product_id'])
+                PurchaseDetail::where('product_id', $detail['product_id'])
                     ->where('sum_quantity_in_minor_unit', '!=', -1)
-                    ->where('expires_at', $purchase_detail['expires_at'])
+                    ->where('expires_at', $detail['expires_at'])
                     ->decrement(
                         'sum_quantity_in_minor_unit',
-                        $purchase_detail['quantity_in_minor_unit']
+                        $detail['quantity_in_minor_unit']
                     );
 
                 //and decrement quantity from product..... and then continue      
 
 
             } else {
-                $sum =  $purchase_detail['sum_quantity_in_minor_unit'] - $purchase_detail['quantity_in_minor_unit'];
+                $sum =  $detail['sum_quantity_in_minor_unit'] - $detail['quantity_in_minor_unit'];
                 $products = PurchaseDetail::where([
-                    'product_id' => $purchase_detail['product_id'],
-                    'expires_at' => $purchase_detail['expires_at'],
+                    'product_id' => $detail['product_id'],
+                    'expires_at' => $detail['expires_at'],
                     'sum_quantity_in_minor_unit' => -1,
                 ]);
                 if ($products->exists())
                     $products->first()->update(['sum_quantity_in_minor_unit' => $sum]);
             }
 
-            $purchase_detail->delete();
+            $detail->delete();
 
-            Product::find($purchase_detail['product_id'])->decrement('quantity_in_minor_unit', $purchase_detail['quantity_in_minor_unit']);
+            Product::find($detail['product_id'])->decrement('quantity_in_minor_unit', $detail['quantity_in_minor_unit']);
         }
     }
 }

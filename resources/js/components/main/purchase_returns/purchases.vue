@@ -15,7 +15,7 @@
           <v-btn
             elevation
             color="primary"
-            @click.stop="addUpdateSupplier('', 'add')"
+            @click.stop="AddUpdatePerson('', 'add')"
             >إضافة مشتريات</v-btn
           >
         </v-toolbar>
@@ -30,7 +30,7 @@
           </v-col>
           <v-col cols="12" lg="2">
             <v-text-field
-              v-model="search.purchase_reference"
+              v-model="search.reference"
               label="رقم المرجع"
               class="mx-4"
             ></v-text-field>
@@ -189,7 +189,7 @@ export default {
       ],
       search: {
         company_name: "",
-        purchase_reference: "",
+        reference: "",
         minimum: "",
         maximum: "",
         status_id: "",
@@ -211,7 +211,7 @@ export default {
           text: "المرجع",
           align: "center",
           sortable: false,
-          value: "purchase_reference",
+          value: "reference",
         },
         { text: "اسم المشتريات", align: "center", value: "company_name" },
         { text: "تاريخ الإصدار", align: "center", value: "issue_date" },
@@ -258,7 +258,7 @@ export default {
 
         this.search = {
           company_name: "",
-          purchase_reference: "",
+          reference: "",
           minimum: "",
           maximum: "",
           status_id: "",

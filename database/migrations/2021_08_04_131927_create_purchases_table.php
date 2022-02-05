@@ -17,8 +17,8 @@ class CreatePurchasesTable extends Migration
             $table->id();
             $table->unsignedInteger ('company_id');
 
-            $table->string('purchase_reference')->nullable();
-            $table->unsignedInteger('purchase_type_id')->default('1');
+            $table->string('reference')->nullable();
+            $table->unsignedInteger('type_id')->default('1');
             $table->unsignedInteger('currency_id')->default('1');
             $table->double('currency_rates')->default('1');
             $table->text('description')->nullable();
@@ -41,7 +41,7 @@ class CreatePurchasesTable extends Migration
             $table->double('paid_amount')->default(0.0);
             $table->tinyInteger('status_id',)->default(1);
             $table->tinyInteger('payment_status_id',)->default(1);
-            $table->tinyInteger('type_id',)->default(1);
+            
             $table->text('notes')->nullable();
             $table->unsignedInteger('additional_expenses_from_account_id')->nullable();
 
@@ -51,7 +51,7 @@ class CreatePurchasesTable extends Migration
             $table->softDeletes();
 
             $table->index('company_id');
-            $table->index('purchase_reference');
+            $table->index('reference');
             
         });
     }

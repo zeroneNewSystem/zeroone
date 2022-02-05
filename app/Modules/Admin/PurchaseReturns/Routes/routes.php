@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Route;
  * Time: 17:50
  */
 
-Route::group(["prefix" => "purchase_returns"], function () {
+Route::group(["prefix" => "returns"], function () {
 
     Route::get('/', 'PurchaseReturnController@index');
     Route::get('/all', 'PurchaseReturnController@all');

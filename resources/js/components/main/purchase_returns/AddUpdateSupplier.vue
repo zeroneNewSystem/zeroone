@@ -154,7 +154,7 @@ export default {
           this.supplier["id"] = response.data;
           this.$parent.$data.add_update_supplier_dialog = false;
           this.isloading = false;
-          this.$emit("addUpdateSupplier", this.supplier);
+          this.$emit("AddUpdatePerson", this.supplier);
         });
         return;
       }
@@ -162,7 +162,7 @@ export default {
         Supplier.update(this.supplier).then((response) => {
           this.$parent.$data.add_update_supplier_dialog = false;
           this.isloading = false;
-          this.$emit("addUpdateSupplier", this.supplier);
+          this.$emit("AddUpdatePerson", this.supplier);
         });
         return;
       }

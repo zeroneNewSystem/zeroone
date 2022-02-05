@@ -30,35 +30,35 @@
             <v-btn
               elevation
               color="primary"
-              @click.stop="addUpdateSupplier('', 'add')"
+              @click.stop="AddUpdatePerson('', 'add')"
               >جرد المخزون</v-btn
             >
 
             <v-btn
               elevation
               color="primary"
-              @click.stop="addUpdateSupplier('', 'add')"
+              @click.stop="AddUpdatePerson('', 'add')"
               >نقل المخزون</v-btn
             >
 
             <v-btn
               elevation
               color="primary"
-              @click.stop="addUpdateSupplier('', 'add')"
+              @click.stop="AddUpdatePerson('', 'add')"
               >المجموعات</v-btn
             >
 
             <v-btn
               elevation
               color="primary"
-              @click.stop="addUpdateSupplier('', 'add')"
+              @click.stop="AddUpdatePerson('', 'add')"
               >الأنواع</v-btn
             >
 
             <v-btn
               elevation
               color="primary"
-              @click.stop="addUpdateSupplier('', 'add')"
+              @click.stop="AddUpdatePerson('', 'add')"
               >إضافة صنف جديد</v-btn
             >
           </v-col>

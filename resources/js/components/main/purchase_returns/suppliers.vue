@@ -5,7 +5,7 @@
       :supplier="passed_supplier"
       :operation="operation"
       :cities="cities"
-      @addUpdateSupplier="addSupplierToList"
+      @AddUpdatePerson="addSupplierToList"
       @changeCountry="loadCities"
     ></add-update-supplier>
 
@@ -41,7 +41,7 @@
           <v-btn
             elevation
             color="primary"
-            @click.stop="addUpdateSupplier('', 'add')"
+            @click.stop="AddUpdatePerson('', 'add')"
             >إضافة مورد</v-btn
           >
         </v-toolbar>
@@ -106,7 +106,7 @@
         {{ item.is_active ? "نشط" : "غير نشط" }}
       </template>
       <template v-slot:item.actions="{ item }">
-        <v-btn icon @click.stop="addUpdateSupplier(item, 'update')">
+        <v-btn icon @click.stop="AddUpdatePerson(item, 'update')">
           <v-icon small class="outlined font-size-12">mdi-pencil</v-icon>
         </v-btn>
         <router-link :to="'suppliers/' + item.id"
@@ -127,11 +127,11 @@
 import Supplier from "../../../apis/Supplier";
 import Country from "../../../apis/Country";
 import SupplierInfo from "./supplier-info.vue";
-import AddUpdateSupplier from "./AddUpdateSupplier.vue";
+import AddUpdatePerson from "./AddUpdatePerson.vue";
 export default {
   components: {
     SupplierInfo,
-    AddUpdateSupplier,
+    AddUpdatePerson,
   },
   data() {
     return {
@@ -478,7 +478,7 @@ export default {
         );
       }
     },
-    addUpdateSupplier(item, operation) {
+    AddUpdatePerson(item, operation) {
       this.operation = operation;
       if (operation == "add") {
         this.passed_supplier = {

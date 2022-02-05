@@ -221,7 +221,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }],
       search: {
         company_name: "",
-        purchase_reference: "",
+        reference: "",
         minimum: "",
         maximum: "",
         status_id: "",
@@ -241,7 +241,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         text: "المرجع",
         align: "center",
         sortable: false,
-        value: "purchase_reference"
+        value: "reference"
       }, {
         text: "اسم المشتريات",
         align: "center",
@@ -321,7 +321,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         _this3.purchases_total = response.data.total;
         _this3.search = {
           company_name: "",
-          purchase_reference: "",
+          reference: "",
           minimum: "",
           maximum: "",
           status_id: "",
@@ -509,7 +509,7 @@ var render = function() {
                         on: {
                           click: function($event) {
                             $event.stopPropagation()
-                            return _vm.addUpdateSupplier("", "add")
+                            return _vm.AddUpdatePerson("", "add")
                           }
                         }
                       },
@@ -549,11 +549,11 @@ var render = function() {
                           staticClass: "mx-4",
                           attrs: { label: "رقم المرجع" },
                           model: {
-                            value: _vm.search.purchase_reference,
+                            value: _vm.search.reference,
                             callback: function($$v) {
-                              _vm.$set(_vm.search, "purchase_reference", $$v)
+                              _vm.$set(_vm.search, "reference", $$v)
                             },
-                            expression: "search.purchase_reference"
+                            expression: "search.reference"
                           }
                         })
                       ],

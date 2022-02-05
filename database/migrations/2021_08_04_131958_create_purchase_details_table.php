@@ -13,7 +13,7 @@ class CreatePurchaseDetailsTable extends Migration
      */
     public function up()
     {
-        Schema::create('purchase_details', function (Blueprint $table) {
+        Schema::create('details', function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('company_id');
 
@@ -25,14 +25,14 @@ class CreatePurchaseDetailsTable extends Migration
             $table->integer('quantity',)->default(0);
             $table->double('unit_price')->default(0.0);
             $table->double('profit_ratio')->default(0.0);
-            $table->double('soldprice')->default(0.0);
+            $table->double('sold_price')->default(0.0);
             $table->boolean('bonus', 1)->default(0);
             $table->integer('quantity_in_minor_unit')->default(0);
             $table->integer('sum_quantity_in_minor_unit',)->default(-1);
             $table->integer('inventory_id',);
             $table->double('vat')->default(0.0);
-            $table->double('purchase_discount')->default(0.0);
-            $table->double('solddiscount')->default(0.0);
+            $table->double('discount')->default(0.0);
+            $table->double('sold_discount')->default(0.0);
             
             $table->double('total')->default(0.0);
             $table->boolean('drugs_is_with_bonous')->default(0);
@@ -50,6 +50,6 @@ class CreatePurchaseDetailsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('purchase_details');
+        Schema::dropIfExists('details');
     }
 }

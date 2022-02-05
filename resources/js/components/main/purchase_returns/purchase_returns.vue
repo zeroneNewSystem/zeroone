@@ -6,7 +6,7 @@
         :supplier="passed_supplier"
         :operation="operation"
         :cities="cities"
-        @addUpdateSupplier="addSupplierToList"
+        @AddUpdatePerson="addSupplierToList"
         @changeCountry="loadCities"
       ></add-update-supplier>
       <product-info
@@ -278,9 +278,9 @@
                     hide-details
                   ></v-text-field>
                 </template>
-                <template v-slot:item.soldprice="{ item }">
+                <template v-slot:item.sold_price="{ item }">
                   <v-text-field
-                    v-model="item.soldprice"
+                    v-model="item.sold_price"
                     flat
                     type="number"
                     outlined
@@ -663,7 +663,7 @@ import Product from "../../../apis/Product";
 import Purchase_return from "../../../apis/PurchaseReturn";
 import ProductInfo from "../products/product-info.vue";
 import PaymentMethod from "./payment-methods";
-import AddUpdateSupplier from "./AddUpdateSupplier.vue";
+import AddUpdatePerson from "./AddUpdatePerson.vue";
 import Country from "../../../apis/Country";
 let Supplier = null;
 import Account from "../../../apis/Account";
@@ -671,7 +671,7 @@ export default {
   components: {
     ProductInfo,
     PaymentMethod,
-    AddUpdateSupplier,
+    AddUpdatePerson,
   },
   data() {
     return {

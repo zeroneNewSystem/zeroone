@@ -13,7 +13,7 @@ class CreatePurchaseStatusesTable extends Migration
      */
     public function up()
     {
-        Schema::create('purchase_statuses', function (Blueprint $table) {
+        Schema::create('statuses', function (Blueprint $table) {
             $table->id();
             $table->string('ar_name');
             $table->string('en_name');
@@ -27,6 +27,6 @@ class CreatePurchaseStatusesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('purchase_statuses');
+        Schema::dropIfExists('statuses');
     }
 }

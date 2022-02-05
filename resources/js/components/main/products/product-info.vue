@@ -188,11 +188,11 @@
               :items="product.units"
               hide-default-footer
             >
-              <template v-slot:item.main_soldunit_id="{ item }">
+              <template v-slot:item.main_sold_unit_id="{ item }">
                 <v-icon
                   v-if="
                     product.units.indexOf(item) + 1 ==
-                    product.main_soldunit_id
+                    product.main_sold_unit_id
                   "
                   small
                   >mdi-check</v-icon
@@ -218,8 +218,8 @@
               <template v-slot:item.bought_price="{ item }">
                 {{ item.pivot.bought_price }}
               </template>
-              <template v-slot:item.soldprice="{ item }">
-                {{ item.pivot.soldprice }}
+              <template v-slot:item.sold_price="{ item }">
+                {{ item.pivot.sold_price }}
               </template>
               <template v-slot:item.barcode="{ item }">
                 {{ item.pivot.barcode }}
@@ -265,7 +265,7 @@ export default {
         text: " افتراضية البيع ",
         align: "center",
         sortable: false,
-        value: "main_soldunit_id",
+        value: "main_sold_unit_id",
       },
       {
         text: " افتراضية الشراء ",
@@ -307,7 +307,7 @@ export default {
         text: "سعر البيع",
         align: "center",
         sortable: false,
-        value: "soldprice",
+        value: "sold_price",
       },
       {
         text: "الباركود",

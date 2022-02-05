@@ -270,7 +270,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       pur_loading: false,
       remain_amount: 0,
       receipt_loading: false,
-      purchase_headers: [{
+      headers: [{
         text: "م",
         align: "center",
         width: "5",
@@ -279,7 +279,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }, {
         text: "رقم المرجع",
         align: "center",
-        value: "purchase_reference"
+        value: "reference"
       }, {
         text: "جهة الاتصال",
         align: "center",
@@ -336,7 +336,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       total_amount: 0,
       purchases: [],
       receipts: [],
-      purchase_statuses: [{
+      statuses: [{
         id: 1,
         ar_name: "موافق عليه"
       }, {
@@ -386,7 +386,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         var _this = this;
 
         var pur_page = this.pur_options.page;
-        var pur_itemsPerPage = this.pur_options.itemsPerPage; //console.log(this.purchase_options)
+        var pur_itemsPerPage = this.pur_options.itemsPerPage; //console.log(this.options)
 
         console.log("itemsPerPage", pur_itemsPerPage);
         _apis_Supplier__WEBPACK_IMPORTED_MODULE_0__.default.getOne({
@@ -1191,7 +1191,7 @@ var render = function() {
                             staticClass: "elevation-1",
                             staticStyle: { width: "100%" },
                             attrs: {
-                              headers: _vm.purchase_headers,
+                              headers: _vm.headers,
                               items: _vm.purchases,
                               options: _vm.pur_options,
                               "server-items-length": _vm.purchases_total,
@@ -1231,9 +1231,7 @@ var render = function() {
                                     _vm._v(
                                       "\n                " +
                                         _vm._s(
-                                          _vm.purchase_statuses.find(function(
-                                            elem
-                                          ) {
+                                          _vm.statuses.find(function(elem) {
                                             return elem.id == item.status_id
                                           }).ar_name
                                         ) +

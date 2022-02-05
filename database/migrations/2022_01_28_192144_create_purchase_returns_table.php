@@ -13,13 +13,13 @@ class CreatePurchaseReturnsTable extends Migration
      */
     public function up()
     {
-        Schema::create('purchase_returns', function (Blueprint $table) {
+        Schema::create('returns', function (Blueprint $table) {
             
             $table->id();
             $table->unsignedInteger ('company_id');
 
-            $table->string('purchase_return_reference')->nullable();
-            $table->unsignedInteger('purchase_return_type_id')->default('1');
+            $table->string('return_reference')->nullable();
+            $table->unsignedInteger('return_type_id')->default('1');
             $table->unsignedInteger('currency_id')->default('1');
             $table->double('currency_rates')->default('1');
             $table->text('description')->nullable();
@@ -52,7 +52,7 @@ class CreatePurchaseReturnsTable extends Migration
             $table->softDeletes();
 
             $table->index('company_id');
-            $table->index('purchase_return_reference');
+            $table->index('return_reference');
             
         
         });
@@ -65,6 +65,6 @@ class CreatePurchaseReturnsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('purchase_returns');
+        Schema::dropIfExists('returns');
     }
 }

@@ -107,7 +107,7 @@
 
               <v-row>
                 <v-col cols="12" lg="4" style="text-align: center">
-                  {{ purchase_total.toFixed(2) }}
+                  {{ total.toFixed(2) }}
                 </v-col>
                 <v-col cols="12" lg="4" style="text-align: center">
                   {{ paid_amount.toFixed(2) }}
@@ -135,7 +135,7 @@
 
 <script>
 export default {
-  props: ["purchase_total","accounts","payment_methods"],
+  props: ["total","accounts","payment_methods"],
   data() {
     return {
       /*-------------------validators---------------------------*/
@@ -180,7 +180,7 @@ export default {
     };
   },
   computed: {
-    remaining_amount: (v) => v.purchase_total - v.paid_amount,
+    remaining_amount: (v) => v.total - v.paid_amount,
     paid_amount: (v) => v.payment_methods.reduce((a, b) => +a + +b.credit, 0),
   },
   methods: {

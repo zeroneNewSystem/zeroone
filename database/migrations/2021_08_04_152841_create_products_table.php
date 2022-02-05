@@ -28,25 +28,25 @@ class CreateProductsTable extends Migration
             $table->unsignedInteger ('minor_unit');
             $table->integer('quantity_in_minor_unit',)->default(0);
             
-            $table->unsignedInteger ('main_soldunit_id');
+            $table->unsignedInteger ('main_sold_unit_id');
             $table->unsignedInteger ('main_bought_unit_id');
 
             $table->double('average_cost')->default(0.0);
 
 
             $table->unsignedInteger ('cogs_account_id');
-            $table->unsignedInteger ('soldaccount_id');
+            $table->unsignedInteger ('sold_account_id');
             
-            $table->unsignedInteger ('soldreturn_account_id');
+            $table->unsignedInteger ('sold_return_account_id');
             $table->unsignedInteger ('bought_return_account_id');
-            $table->double('solddiscount')->default(0.0);
-            $table->unsignedInteger ('solddiscount_type_id')->default(0)->comment('0-percent, 1-amounr');
+            $table->double('sold_discount')->default(0.0);
+            $table->unsignedInteger ('sold_discount_type_id')->default(0)->comment('0-percent, 1-amounr');
 
-            $table->double('purchase_discount')->default(0.0);
-            $table->unsignedInteger ('purchase_discount_type_id',)->default(0)->comment('0-percent, 1-amounr');
+            $table->double('discount')->default(0.0);
+            $table->unsignedInteger ('discount_type_id',)->default(0)->comment('0-percent, 1-amounr');
 
-            $table->unsignedInteger ('purchase_tax',);
-            $table->unsignedInteger ('soldtax',);
+            $table->unsignedInteger ('bought_tax',);
+            $table->unsignedInteger ('sold_tax',);
 
             $table->integer('min_alert',)->default(0);
             $table->integer('max_alert',)->default(0);

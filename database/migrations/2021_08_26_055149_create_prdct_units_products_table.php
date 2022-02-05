@@ -22,7 +22,7 @@ class CreatePrdctUnitsProductsTable extends Migration
             $table->unsignedInteger('contains');
             
             $table->unsignedInteger('bought_price')->nullable();
-            $table->unsignedInteger('soldprice')->nullable();
+            $table->unsignedInteger('sold_price')->nullable();
             $table->string('barcode')->nullable();
 
             $table->timestamps();

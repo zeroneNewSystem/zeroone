@@ -853,7 +853,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       loading: false,
       found_products: [],
       selected_product: [],
-      soldheader: [{
+      sold_header: [{
         text: "اسم الصنف",
         align: "center",
         value: "ar_name",
@@ -888,7 +888,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       }, {
         text: "خصم البيع",
         align: "center",
-        value: "solddiscount",
+        value: "sold_discount",
         sortable: false,
         width: 100
       }, {
@@ -899,12 +899,12 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       }, {
         text: "الضريبة % ",
         align: "center",
-        value: "soldtax",
+        value: "sold_tax",
         sortable: false
       }, {
         text: "قيمة الضريبة",
         align: "center",
-        value: "soldtax_value",
+        value: "sold_tax_value",
         sortable: false
       }, {
         text: "القيمة",
@@ -940,7 +940,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         total_amount: 0,
         patch_number: Math.floor(Math.random() * (99999 - 10000 + 1) + 10000),
         invoice_details: [],
-        soldreference: "",
+        sold_reference: "",
         description: "",
         customer_id: "",
         issue_date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10),
@@ -1032,9 +1032,9 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         response.data.products[0].actual_quantity = 0;
         response.data.products[0].actual_quantity_in_minor_unit = 0;
         _this3.selected_item = JSON.parse(JSON.stringify(response.data.products[0]));
-        if (_this3.selected_item.purchase_details.length == 0) return;
+        if (_this3.selected_item.details.length == 0) return;
 
-        if (_this3.selected_item.purchase_details.length == 1) {
+        if (_this3.selected_item.details.length == 1) {
           _this3.showThisProduct(_this3.selected_item);
         }
 
@@ -1147,13 +1147,13 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       if (this.invoice.invoice_details.findIndex(function (elem) {
         return elem.id == selected_product.id;
       }) >= 0) return;
-      selected_product.invoiced_unit_id = selected_product.units[selected_product.main_soldunit_id - 1].pivot.id;
-      selected_product.expires_at = selected_product.purchase_details[0].expires_at;
-      selected_product.unit_price = selected_product.units[selected_product.main_soldunit_id - 1].pivot.bought_price;
+      selected_product.invoiced_unit_id = selected_product.units[selected_product.main_sold_unit_id - 1].pivot.id;
+      selected_product.expires_at = selected_product.details[0].expires_at;
+      selected_product.unit_price = selected_product.units[selected_product.main_sold_unit_id - 1].pivot.bought_price;
       selected_product.invoiced_quantity = 1;
-      selected_product.current_quantity = selected_product.purchase_details[0].quantity_in_minor_unit / selected_product.units[selected_product.main_soldunit_id - 1].pivot.contains;
+      selected_product.current_quantity = selected_product.details[0].quantity_in_minor_unit / selected_product.units[selected_product.main_sold_unit_id - 1].pivot.contains;
       selected_product.actual_quantity = selected_product.current_quantity;
-      selected_product.actual_quantity_in_minor_unit = parseInt(selected_product.actual_quantity * selected_product.units[selected_product.main_soldunit_id - 1].pivot.contains);
+      selected_product.actual_quantity_in_minor_unit = parseInt(selected_product.actual_quantity * selected_product.units[selected_product.main_sold_unit_id - 1].pivot.contains);
       console.log("selected_product");
       console.log(selected_product);
       selected_product["document_type_id"] = 2; // purchase
@@ -1164,14 +1164,14 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       return;
     },
     product_unit_change: function product_unit_change(item) {
-      var soldunit = item.units.find(function (elem) {
+      var sold_unit = item.units.find(function (elem) {
         return elem.pivot.id == item.invoiced_unit_id;
       });
-      item.unit_price = soldunit.pivot.soldprice;
+      item.unit_price = sold_unit.pivot.sold_price;
     },
     total_vat: function total_vat() {
       this.invoice.total_vat = this.invoice.invoice_details.reduce(function (a, b) {
-        return +a + +b.soldtax_value;
+        return +a + +b.sold_tax_value;
       }, 0);
       return this.invoice.total_vat;
     },
@@ -1185,30 +1185,30 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       }, 0);
     },
     total: function total(item) {
-      item.total = this.soldtax_value(item) + this.total_befor_tax(item);
+      item.total = this.sold_tax_value(item) + this.total_befor_tax(item);
       return item.total;
     },
-    soldtax_value: function soldtax_value(item) {
-      item.soldtax_value = this.total_befor_tax(item) * item.soldtax / 100;
-      return item.soldtax_value;
+    sold_tax_value: function sold_tax_value(item) {
+      item.sold_tax_value = this.total_befor_tax(item) * item.sold_tax / 100;
+      return item.sold_tax_value;
     },
     total_befor_tax: function total_befor_tax(item) {
-      if (item.solddiscount_type_id == 1) {
-        item.total_befor_tax = item.invoiced_quantity * item.unit_price - item.invoiced_quantity * item.unit_price * item.solddiscount / 100;
+      if (item.sold_discount_type_id == 1) {
+        item.total_befor_tax = item.invoiced_quantity * item.unit_price - item.invoiced_quantity * item.unit_price * item.sold_discount / 100;
         return item.total_befor_tax;
       }
 
-      item.total_befor_tax = item.invoiced_quantity * item.unit_price - item.solddiscount;
+      item.total_befor_tax = item.invoiced_quantity * item.unit_price - item.sold_discount;
       return item.total_befor_tax;
     },
     quantity_in_minor_unit: function quantity_in_minor_unit(item) {
       console.log(item);
-      var soldunit = item.units.find(function (elem) {
+      var sold_unit = item.units.find(function (elem) {
         return elem.pivot.id == item.invoiced_unit_id;
       });
-      console.log("soldunit");
-      console.log(soldunit);
-      item.quantity_in_minor_unit = item.invoiced_quantity * soldunit.pivot.contains;
+      console.log("sold_unit");
+      console.log(sold_unit);
+      item.quantity_in_minor_unit = item.invoiced_quantity * sold_unit.pivot.contains;
       console.log(item.quantity_in_minor_unit);
       return item.quantity_in_minor_unit;
     },
@@ -1239,10 +1239,10 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
     },
     addProductToInvoice: function addProductToInvoice() {
       console.log(this.invoice.invoice_details);
-      console.log("seles", this.selected_product); //set defaultsoldid from main salesid
+      console.log("seles", this.selected_product); //set defaultsold_id from main salesid
 
-      this.selected_product.invoiced_unit_id = this.selected_product.units[this.selected_product.main_soldunit_id - 1].pivot.id;
-      this.selected_product.unit_price = this.selected_product.units[this.selected_product.main_soldunit_id - 1].pivot.soldprice;
+      this.selected_product.invoiced_unit_id = this.selected_product.units[this.selected_product.main_sold_unit_id - 1].pivot.id;
+      this.selected_product.unit_price = this.selected_product.units[this.selected_product.main_sold_unit_id - 1].pivot.sold_price;
       this.selected_product.invoiced_quantity = 1;
       console.log("nnj", this.selected_product.invoiced_unit_id);
       this.invoice.invoice_details.unshift(JSON.parse(JSON.stringify(this.selected_product)));
@@ -1838,7 +1838,7 @@ __webpack_require__.r(__webpack_exports__);
         text: " افتراضية البيع ",
         align: "center",
         sortable: false,
-        value: "main_soldunit_id"
+        value: "main_sold_unit_id"
       }, {
         text: " افتراضية الشراء ",
         align: "center",
@@ -1873,7 +1873,7 @@ __webpack_require__.r(__webpack_exports__);
         text: "سعر البيع",
         align: "center",
         sortable: false,
-        value: "soldprice"
+        value: "sold_price"
       }, {
         text: "الباركود",
         align: "center",
@@ -3564,7 +3564,7 @@ var render = function() {
                           staticClass: "elevation-1",
                           attrs: {
                             "disable-pagination": "",
-                            headers: _vm.soldheader,
+                            headers: _vm.sold_header,
                             items: _vm.invoice.invoice_details,
                             "hide-default-footer": true,
                             "item-key": _vm.toString(
@@ -3803,7 +3803,7 @@ var render = function() {
                               }
                             },
                             {
-                              key: "item.soldprice",
+                              key: "item.sold_price",
                               fn: function(ref) {
                                 var item = ref.item
                                 return [
@@ -3817,18 +3817,18 @@ var render = function() {
                                       "hide-details": ""
                                     },
                                     model: {
-                                      value: item.soldprice,
+                                      value: item.sold_price,
                                       callback: function($$v) {
-                                        _vm.$set(item, "soldprice", $$v)
+                                        _vm.$set(item, "sold_price", $$v)
                                       },
-                                      expression: "item.soldprice"
+                                      expression: "item.sold_price"
                                     }
                                   })
                                 ]
                               }
                             },
                             {
-                              key: "item.soldtax",
+                              key: "item.sold_tax",
                               fn: function(ref) {
                                 var item = ref.item
                                 return [
@@ -3842,18 +3842,18 @@ var render = function() {
                                       autocomplete: "off"
                                     },
                                     model: {
-                                      value: item.soldtax,
+                                      value: item.sold_tax,
                                       callback: function($$v) {
-                                        _vm.$set(item, "soldtax", $$v)
+                                        _vm.$set(item, "sold_tax", $$v)
                                       },
-                                      expression: "item.soldtax"
+                                      expression: "item.sold_tax"
                                     }
                                   })
                                 ]
                               }
                             },
                             {
-                              key: "item.soldtax_value",
+                              key: "item.sold_tax_value",
                               fn: function(ref) {
                                 var item = ref.item
                                 return [
@@ -3865,14 +3865,14 @@ var render = function() {
                                       "hide-details": "",
                                       outlined: "",
                                       autocomplete: "off",
-                                      value: _vm.soldtax_value(item).toFixed(2)
+                                      value: _vm.sold_tax_value(item).toFixed(2)
                                     }
                                   })
                                 ]
                               }
                             },
                             {
-                              key: "item.solddiscount",
+                              key: "item.sold_discount",
                               fn: function(ref) {
                                 var item = ref.item
                                 return [
@@ -3897,15 +3897,15 @@ var render = function() {
                                               autocomplete: "off"
                                             },
                                             model: {
-                                              value: item.solddiscount,
+                                              value: item.sold_discount,
                                               callback: function($$v) {
                                                 _vm.$set(
                                                   item,
-                                                  "solddiscount",
+                                                  "sold_discount",
                                                   $$v
                                                 )
                                               },
-                                              expression: "item.solddiscount"
+                                              expression: "item.sold_discount"
                                             }
                                           })
                                         ],
@@ -3938,16 +3938,16 @@ var render = function() {
                                               }
                                             },
                                             model: {
-                                              value: item.solddiscount_type_id,
+                                              value: item.sold_discount_type_id,
                                               callback: function($$v) {
                                                 _vm.$set(
                                                   item,
-                                                  "solddiscount_type_id",
+                                                  "sold_discount_type_id",
                                                   $$v
                                                 )
                                               },
                                               expression:
-                                                "item.solddiscount_type_id"
+                                                "item.sold_discount_type_id"
                                             }
                                           })
                                         ],
@@ -5575,12 +5575,12 @@ var render = function() {
                         },
                         scopedSlots: _vm._u([
                           {
-                            key: "item.main_soldunit_id",
+                            key: "item.main_sold_unit_id",
                             fn: function(ref) {
                               var item = ref.item
                               return [
                                 _vm.product.units.indexOf(item) + 1 ==
-                                _vm.product.main_soldunit_id
+                                _vm.product.main_sold_unit_id
                                   ? _c("v-icon", { attrs: { small: "" } }, [
                                       _vm._v("mdi-check")
                                     ])
@@ -5652,13 +5652,13 @@ var render = function() {
                             }
                           },
                           {
-                            key: "item.soldprice",
+                            key: "item.sold_price",
                             fn: function(ref) {
                               var item = ref.item
                               return [
                                 _vm._v(
                                   "\n              " +
-                                    _vm._s(item.pivot.soldprice) +
+                                    _vm._s(item.pivot.sold_price) +
                                     "\n            "
                                 )
                               ]

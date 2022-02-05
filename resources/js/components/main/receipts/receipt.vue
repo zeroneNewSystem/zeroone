@@ -156,7 +156,7 @@
       <v-data-table
         hide-default-footer
         style="width: 100%"
-        :headers="purchase_headers"
+        :headers="headers"
         :items="purchases"
         class="elevation-1"
       >
@@ -200,7 +200,7 @@ export default {
       supplier: "",
       receipts: [],
       purchases: [],
-      purchase_headers: [
+      headers: [
         {
           text: "م",
           align: "center",
@@ -208,7 +208,7 @@ export default {
           sortable: false,
           value: "id",
         },
-        { text: "رقم المرجع", align: "center", value: "purchase_reference" },
+        { text: "رقم المرجع", align: "center", value: "reference" },
         {
           text: "تاريخ الاصدار",
           align: "center",

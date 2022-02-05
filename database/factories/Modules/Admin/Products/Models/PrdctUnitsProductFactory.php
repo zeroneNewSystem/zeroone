@@ -28,7 +28,7 @@ class PrdctUnitsProductFactory extends Factory
             'contains'  => $this->faker->randomNumber(1,100),
             
             'bought_price'  => $this->faker->randomNumber(1,6),
-            'soldprice'  => $this->faker->randomNumber(1,6),
+            'sold_price'  => $this->faker->randomNumber(1,6),
             'barcode'  => $this->faker->randomNumber(1,6),
             
 

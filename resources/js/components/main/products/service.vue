@@ -155,7 +155,7 @@
                 <v-col cols="12" lg="3">
                   <v-text-field
                     autocomplete="off"
-                    v-model="product.soldtax"
+                    v-model="product.sold_tax"
                     label="ضريبة المبيعات%"
                     :rules="vld_numbering"
                     value="0"
@@ -164,7 +164,7 @@
                 <v-col cols="12" lg="3">
                   <v-text-field
                     autocomplete="off"
-                    v-model="product.purchase_tax"
+                    v-model="product.bought_tax"
                     label="ضريبة المشتريات%"
                     :rules="vld_numbering"
                     value="0"
@@ -213,10 +213,10 @@
                         toString(Math.floor(Math.random(1, 100) * 100))
                       "
                     >
-                      <template v-slot:item.main_soldunit_id="{ item }">
+                      <template v-slot:item.main_sold_unit_id="{ item }">
                         <v-radio-group
                           class="product-radio"
-                          v-model="product.main_soldunit_id"
+                          v-model="product.main_sold_unit_id"
                         >
                           <div
                             style="
@@ -291,10 +291,10 @@
                           :rules="required"
                         ></v-text-field>
                       </template>
-                      <template v-slot:item.soldprice="{ item }">
+                      <template v-slot:item.sold_price="{ item }">
                         <v-text-field
                           outlined
-                          v-model="item.soldprice"
+                          v-model="item.sold_price"
                           :rules="required"
                         ></v-text-field>
                       </template>
@@ -370,8 +370,8 @@
                     <v-col cols="6" lg="3"
                       ><v-autocomplete
                         label="حساب المبيعات"
-                        v-model="product.soldaccount_id"
-                        :items="product_soldaccounts"
+                        v-model="product.sold_account_id"
+                        :items="product_sold_accounts"
                         item-text="ar_name"
                         item-value="id"
                         :rules="required"
@@ -381,8 +381,8 @@
                     <v-col cols="6" lg="3"
                       ><v-autocomplete
                         label="حساب مردود المبيعات"
-                        v-model="product.soldreturn_account_id"
-                        :items="product_soldreturn_accounts"
+                        v-model="product.sold_return_account_id"
+                        :items="product_sold_return_accounts"
                         item-text="ar_name"
                         item-value="id"
                         :rules="required"
@@ -392,14 +392,14 @@
                     <v-col cols="6" lg="2">
                       <v-text-field
                         autocomplete="off"
-                        v-model="product.solddiscount"
+                        v-model="product.sold_discount"
                         label="خصم عند البيع"
                       ></v-text-field>
                     </v-col>
                     <v-col cols="6" lg="2">
                       <v-autocomplete
                         label="طريقة الحساب"
-                        v-model="product.solddiscount_type_id"
+                        v-model="product.sold_discount_type_id"
                         :items="discount_types"
                         item-text="ar_name"
                         item-value="id"
@@ -440,7 +440,7 @@
                       ><v-autocomplete
                         label="حساب مردود المشتتريات"
                         v-model="product.bought_return_account_id"
-                        :items="product_purchase_return_accounts"
+                        :items="product_return_accounts"
                         item-text="ar_name"
                         item-value="id"
                         :rules="required"
@@ -450,14 +450,14 @@
                     <v-col cols="6" lg="2">
                       <v-text-field
                         autocomplete="off"
-                        v-model="product.purchase_discount"
+                        v-model="product.discount"
                         label="خصم عند الشراء"
                       ></v-text-field>
                     </v-col>
                     <v-col cols="6" lg="2">
                       <v-autocomplete
                         label="طريقة الحساب"
-                        v-model="product.purchase_discount_type_id"
+                        v-model="product.discount_type_id"
                         :items="discount_types"
                         item-text="ar_name"
                         item-value="id"
@@ -671,9 +671,9 @@ export default {
       /*-----------------------taxes---------------------------*/
       taxes: [],
       /*-----------------------accounts---------------------------*/
-      product_soldaccounts: [],
-      product_soldreturn_accounts: [],
-      product_purchase_return_accounts: [],
+      product_sold_accounts: [],
+      product_sold_return_accounts: [],
+      product_return_accounts: [],
       product_cogs_accounts: [],
 
       /*-----------------------extra units---------------------------*/
@@ -682,7 +682,7 @@ export default {
           text: " افتراضية البيع ",
           align: "center",
           sortable: false,
-          value: "main_soldunit_id",
+          value: "main_sold_unit_id",
         },
         {
           text: " افتراضية الشراء ",
@@ -724,7 +724,7 @@ export default {
           text: "سعر البيع",
           align: "center",
           sortable: false,
-          value: "soldprice",
+          value: "sold_price",
         },
         {
           text: "الباركود",
@@ -743,7 +743,7 @@ export default {
           prdct_unit_id: "",
           contains: 1,
           bought_price: "20",
-          soldprice: "25",
+          sold_price: "25",
           barcode: "",
         },
       ],
@@ -783,7 +783,7 @@ export default {
             contains: 1,
 
             bought_price: "9",
-            soldprice: "8",
+            sold_price: "8",
             barcode: "0",
           },
         ],
@@ -791,18 +791,18 @@ export default {
         prdct_group_ids: [1, 2],
         prdct_form_id: 1,
         prdct_type_id: 1,
-        main_soldunit_id: 1,
+        main_sold_unit_id: 1,
         main_bought_unit_id: 1,
 
         cogs_account_id: 1,
-        soldaccount_id: 1,
+        sold_account_id: 1,
 
-        solddiscount: 10,
-        solddiscount_type_id: 1,
-        purchase_discount: 10,
-        purchase_discount_type_id: 1,
-        purchase_tax: 1,
-        soldtax: 1,
+        sold_discount: 10,
+        sold_discount_type_id: 1,
+        discount: 10,
+        discount_type_id: 1,
+        tax: 1,
+        sold_tax: 1,
         min_alert: 1,
         max_alert: 10,
         stagnation_period: 100,
@@ -884,10 +884,10 @@ export default {
         this.inventories = response.data.inventories;
         this.distribution_policies = response.data.distribution_policies;
         //this.taxes = response.data.taxes;
-        this.product_soldaccounts = response.data.product_soldaccounts;
-        this.product_soldreturn_accounts =
-          response.data.product_soldaccounts;
-        this.product_purchase_return_accounts =
+        this.product_sold_accounts = response.data.product_sold_accounts;
+        this.product_sold_return_accounts =
+          response.data.product_sold_accounts;
+        this.product_return_accounts =
           response.data.product_cogs_accounts;
         this.product_cogs_accounts = response.data.product_cogs_accounts;
       })
@@ -969,7 +969,7 @@ export default {
           contains: 1,
 
           bought_price: "",
-          soldprice: "",
+          sold_price: "",
           barcode: "",
         });
         return;
@@ -978,8 +978,8 @@ export default {
         this.product.prdct_units[0].contains = 1;
       }
 
-      if (index + 1 == this.product.main_soldunit_id) {
-        this.product.main_soldunit_id = 1;
+      if (index + 1 == this.product.main_sold_unit_id) {
+        this.product.main_sold_unit_id = 1;
       }
       if (index + 1 == this.product.main_bought_unit_id) {
         this.product.main_bought_unit_id = 1;
@@ -1005,7 +1005,7 @@ export default {
         id: "",
 
         bought_price: "12",
-        soldprice: "25",
+        sold_price: "25",
         barcode: "",
       });
     },

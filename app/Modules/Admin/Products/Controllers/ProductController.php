@@ -101,11 +101,11 @@ class ProductController extends Controller
             [
                 'settings' => [
                     'cogs_account_id' => '60',
-                    'soldaccount_id' => 53,
-                    'soldreturn_account_id' => '54',
+                    'sold_account_id' => 53,
+                    'sold_return_account_id' => '54',
                     'bought_return_account_id' => '61',
-                    'soldtax' => '5',
-                    'purchase_tax' => '5',
+                    'sold_tax' => '5',
+                    'bought_tax' => '5',
 
                 ],
                 'prdct_units' => PrdctUnit::all(),
@@ -115,10 +115,10 @@ class ProductController extends Controller
                 'inventories' => Inventory::all(),
                 'distribution_policies' => DistributionPolicy::all(),
                 'taxes' => Tax::all(),
-                'product_soldaccounts' =>  $this->showAccounts(41),
-                //'product_soldreturn_accounts' =>  $this->showAccounts(4),
+                'product_sold_accounts' =>  $this->showAccounts(41),
+                //'product_sold_return_accounts' =>  $this->showAccounts(4),
                 'product_cogs_accounts' =>  $this->showAccounts(5),
-                //'product_purchase_return_accounts' =>  $this->showAccounts(4),
+                //'product_return_accounts' =>  $this->showAccounts(4),
             ]
 
         );

@@ -434,7 +434,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       console.log(this.index_of_selected_product);
       var selected_item = JSON.parse(JSON.stringify(this.selected_item));
       console.log(selected_item);
-      selected_item["purchase_details"][0] = selected_item["purchase_details"][this.index_of_selected_product];
+      selected_item["details"][0] = selected_item["details"][this.index_of_selected_product];
       this.showThisProduct(selected_item);
       console.log("index");
       console.log("index");
@@ -498,7 +498,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         return elem.pivot.id == item.unit_id;
       });
       item.unit_price = unit.pivot.bought_price;
-      item.current_quantity = parseInt(item.purchase_details[0].quantity_in_minor_unit / unit.pivot.contains);
+      item.current_quantity = parseInt(item.details[0].quantity_in_minor_unit / unit.pivot.contains);
       item.actual_quantity = item.current_quantity;
       item.actual_quantity_in_minor_unit = parseInt(item.actual_quantity * unit.pivot.contains);
       this.someVariableUnderYourControl++;
@@ -545,7 +545,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       selected_product.unit_id = selected_product.units[selected_product.main_bought_unit_id - 1].pivot.id;
       selected_product.unit_price = selected_product.units[selected_product.main_bought_unit_id - 1].pivot.bought_price;
       selected_product.quantity = 1;
-      selected_product.current_quantity = selected_product.purchase_details[0].quantity_in_minor_unit / selected_product.units[selected_product.main_bought_unit_id - 1].pivot.contains;
+      selected_product.current_quantity = selected_product.details[0].quantity_in_minor_unit / selected_product.units[selected_product.main_bought_unit_id - 1].pivot.contains;
       selected_product.actual_quantity = selected_product.current_quantity;
       selected_product.actual_quantity_in_minor_unit = parseInt(selected_product.actual_quantity * selected_product.units[selected_product.main_bought_unit_id - 1].pivot.contains);
       this.stocktake.stock_take_details.unshift(selected_product);
@@ -568,17 +568,17 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         response.data.products[0].actual_quantity = 0;
         response.data.products[0].actual_quantity_in_minor_unit = 0;
         _this3.selected_item = JSON.parse(JSON.stringify(response.data.products[0]));
-        if (_this3.selected_item.purchase_details.length == 0) return;
+        if (_this3.selected_item.details.length == 0) return;
 
-        if (_this3.selected_item.purchase_details.length == 1) {
+        if (_this3.selected_item.details.length == 1) {
           _this3.showThisProduct(_this3.selected_item);
         }
 
         var products_grouped = false;
 
         if (products_grouped) {
-          _this3.selected_item.purchase_details[0].quantity_in_minor_unit = _this3.selected_item.quantity_in_minor_unit; // this.selected_item.purchase_details[0].quantity_in_minor_unit =
-          //   this.selected_item.purchase_details.reduce(
+          _this3.selected_item.details[0].quantity_in_minor_unit = _this3.selected_item.quantity_in_minor_unit; // this.selected_item.details[0].quantity_in_minor_unit =
+          //   this.selected_item.details.reduce(
           //     (a, b) => +a + +b.quantity_in_minor_unit,
           //     0
           //   );
@@ -591,7 +591,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
           return;
         }
 
-        _this3.sets = _this3.selected_item.purchase_details;
+        _this3.sets = _this3.selected_item.details;
         _this3.dialog = true;
 
         _this3.$nextTick().then(function () {
@@ -617,7 +617,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
                 _this3.index_of_selected_product = Array.prototype.indexOf.call(listElm.children, selectedElm);
                 var selected_item = JSON.parse(JSON.stringify(_this3.selected_item));
                 console.log(selected_item);
-                selected_item["purchase_details"][0] = selected_item["purchase_details"][_this3.index_of_selected_product];
+                selected_item["details"][0] = selected_item["details"][_this3.index_of_selected_product];
 
                 _this3.showThisProduct(selected_item);
 
@@ -664,15 +664,15 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       });
     },
     addProductToPurchase: function addProductToPurchase() {
-      console.log(this.purchase.purchase_details);
-      console.log("seles", this.selected_product); //set defaultpurchase_id from main purchsedid
+      console.log(this.purchase.details);
+      console.log("seles", this.selected_product); //set defaultid from main purchsedid
 
       this.selected_product.unit_id = this.selected_product.units[this.selected_product.main_bought_unit_id - 1].pivot.id;
       this.selected_product.unit_price = this.selected_product.units[this.selected_product.main_bought_unit_id - 1].pivot.bought_price;
       this.selected_product.quantity = 1;
       console.log("nnj", this.selected_product.unit_id);
-      this.purchase.purchase_details.unshift(JSON.parse(JSON.stringify(this.selected_product)));
-      console.log("nib", this.purchase.purchase_details);
+      this.purchase.details.unshift(JSON.parse(JSON.stringify(this.selected_product)));
+      console.log("nib", this.purchase.details);
       this.selected_product = [];
     }
   },
@@ -1538,7 +1538,7 @@ var render = function() {
                             return [
                               _vm._v(
                                 "\n            " +
-                                  _vm._s(item.purchase_details[0].document_id) +
+                                  _vm._s(item.details[0].document_id) +
                                   "\n          "
                               )
                             ]
@@ -1551,9 +1551,7 @@ var render = function() {
                             return [
                               _vm._v(
                                 "\n            " +
-                                  _vm._s(
-                                    item.purchase_details[0].document_type_id
-                                  ) +
+                                  _vm._s(item.details[0].document_type_id) +
                                   "\n          "
                               )
                             ]

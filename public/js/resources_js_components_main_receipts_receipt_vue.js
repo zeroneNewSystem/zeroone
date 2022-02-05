@@ -230,7 +230,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       supplier: "",
       receipts: [],
       purchases: [],
-      purchase_headers: [{
+      headers: [{
         text: "م",
         align: "center",
         width: "5",
@@ -239,7 +239,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }, {
         text: "رقم المرجع",
         align: "center",
-        value: "purchase_reference"
+        value: "reference"
       }, {
         text: "تاريخ الاصدار",
         align: "center",
@@ -1069,7 +1069,7 @@ var render = function() {
             staticStyle: { width: "100%" },
             attrs: {
               "hide-default-footer": "",
-              headers: _vm.purchase_headers,
+              headers: _vm.headers,
               items: _vm.purchases
             },
             scopedSlots: _vm._u([

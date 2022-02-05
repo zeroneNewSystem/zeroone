@@ -60,18 +60,18 @@ Route::route('/api/extra/invoice/barcode/(\d+)/inventory_id/(\d+)', function ($b
     ]);
     
     $products = $sth->fetchAll(\PDO::FETCH_ASSOC);
-    $product['purchase_details'] = [];
+    $product['details'] = [];
     
     foreach ($products as &$product) {
-        $sql_string = "SELECT * FROM purchase_details WHERE product_id = " . $product['id'];
+        $sql_string = "SELECT * FROM details WHERE product_id = " . $product['id'];
     
         $sth = $db->prepare($sql_string); //and quantity in minamal units is bigeer than 0
     
         $sth->execute();
-        $purchase_details = $sth->fetchAll(\PDO::FETCH_ASSOC);
+        $details = $sth->fetchAll(\PDO::FETCH_ASSOC);
         //----INVENTORY METHOD FROM SETTINGS 
     
-        $product['purchase_details'] = $purchase_details;
+        $product['details'] = $details;
         
         // if  inventory_method == FIFO
         
@@ -170,18 +170,18 @@ Route::route('/api/extra/stock_take/barcode/(\d+)/inventory_id/(\d+)', function 
     ]);
 
     $products = $sth->fetchAll(\PDO::FETCH_ASSOC);
-    $product['purchase_details'] = [];
+    $product['details'] = [];
 
     foreach ($products as &$product) {
-        $sql_string = "SELECT * FROM purchase_details WHERE product_id = " . $product['id'];
+        $sql_string = "SELECT * FROM details WHERE product_id = " . $product['id'];
 
         $sth = $db->prepare($sql_string); //and quantity in minamal units is bigeer than 0
 
         $sth->execute();
-        $purchase_details = $sth->fetchAll(\PDO::FETCH_ASSOC);
+        $details = $sth->fetchAll(\PDO::FETCH_ASSOC);
         //----INVENTORY METHOD FROM SETTINGS 
 
-        $product['purchase_details'] = $purchase_details;
+        $product['details'] = $details;
         
         // if  inventory_method == FIFO
         
@@ -236,12 +236,12 @@ Route::route('/api/extra/stock_take/barcode/(\d+)', function ($barcode) {
 
     foreach ($products as &$product) {
 
-        $sth = $db->prepare("SELECT * FROM purchase_details WHERE product_id = " . $product['id']);
+        $sth = $db->prepare("SELECT * FROM details WHERE product_id = " . $product['id']);
         $sth->execute();
-        $purchase_details = $sth->fetchAll(\PDO::FETCH_ASSOC);
+        $details = $sth->fetchAll(\PDO::FETCH_ASSOC);
         //----INVENTORY METHOD FROM SETTINGS 
 
-        $product['purchase_details'] = $purchase_details;
+        $product['details'] = $details;
 
 
 

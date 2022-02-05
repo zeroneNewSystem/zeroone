@@ -25,14 +25,14 @@ class CreateInvoiceDetailsTable extends Migration
             $table->integer('invoiced_quantity',)->default(0);
             $table->double('unit_price')->default(0.0);
             $table->double('profit_ratio')->default(0.0);
-            $table->double('soldprice')->default(0.0);
+            $table->double('sold_price')->default(0.0);
             $table->boolean('bonus', 1)->default(0);
             $table->integer('quantity_in_minor_unit',);
             $table->integer('inventory_id',);
             $table->double('vat')->default(0.0);
             $table->double('average_cost')->default(0.0);
             $table->double('invoice_discount')->default(0.0);
-            $table->double('solddiscount')->default(0.0);
+            $table->double('sold_discount')->default(0.0);
             
             $table->double('total')->default(0.0);
             $table->boolean('invoiced_drugs_is_with_bonous')->default(0);

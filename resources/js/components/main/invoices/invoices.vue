@@ -15,7 +15,7 @@
           <v-btn
             elevation
             color="primary"
-            @click.stop="addUpdateSupplier('', 'add')"
+            @click.stop="AddUpdatePerson('', 'add')"
             >إضافة عميل</v-btn
           >
         </v-toolbar>

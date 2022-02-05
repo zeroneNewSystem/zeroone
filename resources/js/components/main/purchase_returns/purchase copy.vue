@@ -21,7 +21,7 @@
             <v-col cols="12" lg="6">
               <v-text-field
                 autocomplete="off"
-                v-model="purchase.purchase_reference"
+                v-model="purchase.reference"
                 label="رقم المرجع"
                 :rules="required.concat(isunique)"
                 @blur="checkExicting()"
@@ -116,8 +116,8 @@
           <v-row>
             <v-data-table
               disable-pagination
-              :headers="purchase_header"
-              :items="purchase.purchase_details"
+              :headers="header"
+              :items="purchase.details"
               class="elevation-1"
               :hide-default-footer="true"
               :item-key="toString(Math.floor(Math.random(1, 100) * 100))"
@@ -203,9 +203,9 @@
                   hide-details
                 ></v-text-field>
               </template>
-              <template v-slot:item.soldprice="{ item }">
+              <template v-slot:item.sold_price="{ item }">
                 <v-text-field
-                  v-model="item.soldprice"
+                  v-model="item.sold_price"
                   flat
                   outlined
                   autocomplete="off"
@@ -213,17 +213,17 @@
                   hide-details
                 ></v-text-field>
               </template>
-              <template v-slot:item.purchase_tax="{ item }">
+              <template v-slot:item.bought_tax="{ item }">
                 <v-text-field
                   flat
                   hide-no-data
                   hide-details
                   outlined
                   autocomplete="off"
-                  v-model="item.purchase_tax"
+                  v-model="item.bought_tax"
                 ></v-text-field>
               </template>
-              <template v-slot:item.purchase_tax_value="{ item }">
+              <template v-slot:item.tax_value="{ item }">
                 <v-text-field
                   flat
                   disabled
@@ -231,11 +231,11 @@
                   hide-details
                   outlined
                   autocomplete="off"
-                  :value="purchase_tax_value(item).toFixed(2)"
+                  :value="tax_value(item).toFixed(2)"
                 ></v-text-field>
               </template>
 
-              <template v-slot:item.purchase_discount="{ item }">
+              <template v-slot:item.discount="{ item }">
                 <v-row class="justify-center">
                   <v-col cols="6" class="pl-0">
                     <v-text-field
@@ -244,12 +244,12 @@
                       hide-details
                       outlined
                       autocomplete="off"
-                      v-model="item.purchase_discount"
+                      v-model="item.discount"
                     ></v-text-field>
                   </v-col>
                   <v-col cols="6" class="pr-0">
                     <v-autocomplete
-                      v-model="item.purchase_discount_type_id"
+                      v-model="item.discount_type_id"
                       :items="discount_types"
                       item-text="ar_name"
                       item-value="id"
@@ -475,7 +475,7 @@
                         <v-col cols="12" lg="4">
                           <payment-method
                             @payment_methods="paymentMethods"
-                            :purchase_total="purchase.total_amount"
+                            :total="purchase.total_amount"
                           ></payment-method>
                         </v-col>
                       </v-row>
@@ -579,7 +579,7 @@ export default {
       found_products: [],
       found_product: [],
       selected_product: [],
-      purchase_header: [
+      header: [
         {
           text: "اسم الصنف",
           align: "center",
@@ -623,7 +623,7 @@ export default {
         {
           text: "خصم الشراء",
           align: "center",
-          value: "purchase_discount",
+          value: "discount",
           sortable: false,
           width: 100,
         },
@@ -637,13 +637,13 @@ export default {
         {
           text: "الضريبة % ",
           align: "center",
-          value: "purchase_tax",
+          value: "tax",
           sortable: false,
         },
         {
           text: "قيمة الضريبة",
           align: "center",
-          value: "purchase_tax_value",
+          value: "tax_value",
           sortable: false,
         },
         {
@@ -668,8 +668,8 @@ export default {
         total_amount: 0,
 
         patch_number: Math.random(10000, 99999),
-        purchase_details: [],
-        purchase_reference: "",
+        details: [],
+        reference: "",
         description: "",
         supplier_id: "",
         issue_date: new Date(
@@ -743,8 +743,8 @@ export default {
       item.unit_price = unit.pivot.bought_price;
     },
     total_vat() {
-      this.purchase.total_vat = this.purchase.purchase_details.reduce(
-        (a, b) => +a + +b.purchase_tax_value,
+      this.purchase.total_vat = this.purchase.details.reduce(
+        (a, b) => +a + +b.tax_value,
         0
       );
       return this.purchase.total_vat;
@@ -758,34 +758,34 @@ export default {
     },
 
     total_without_products_vat() {
-      return this.purchase.purchase_details.reduce(
+      return this.purchase.details.reduce(
         (a, b) => +a + +b.total_befor_tax,
         0
       );
     },
 
     total(item) {
-      item.total = this.purchase_tax_value(item) + this.total_befor_tax(item);
+      item.total = this.tax_value(item) + this.total_befor_tax(item);
       return item.total;
     },
 
-    purchase_tax_value(item) {
-      item.purchase_tax_value =
-        (this.total_befor_tax(item) * item.purchase_tax) / 100;
-      return item.purchase_tax_value;
+    tax_value(item) {
+      item.tax_value =
+        (this.total_befor_tax(item) * item.bought_tax) / 100;
+      return item.tax_value;
     },
     total_befor_tax(item) {
-      console.log(item.purchase_discount_type_id);
-      if (item.purchase_discount_type_id == 1) {
+      console.log(item.discount_type_id);
+      if (item.discount_type_id == 1) {
         item.total_befor_tax =
           item.quantity * item.unit_price -
-          (item.quantity * item.unit_price * item.purchase_discount) /
+          (item.quantity * item.unit_price * item.discount) /
             100;
 
         return item.total_befor_tax;
       }
       item.total_befor_tax =
-        item.quantity * item.unit_price - item.purchase_discount;
+        item.quantity * item.unit_price - item.discount;
 
       return item.total_befor_tax;
     },
@@ -798,8 +798,8 @@ export default {
       return item.quantity_in_minor_unit;
     },
     deleteItem(item) {
-      this.purchase.purchase_details.splice(
-        this.purchase.purchase_details.indexOf(item),
+      this.purchase.details.splice(
+        this.purchase.details.indexOf(item),
         1
       );
     },
@@ -843,9 +843,9 @@ export default {
       }
     },
     addProductToPurchase() {
-      console.log(this.purchase.purchase_details);
+      console.log(this.purchase.details);
       console.log("seles", this.selected_product);
-      //set defaultpurchase_id from main purchsedid
+      //set defaultid from main purchsedid
       this.selected_product.unit_id =
         this.selected_product.units[
           this.selected_product.main_bought_unit_id - 1
@@ -858,10 +858,10 @@ export default {
 
       this.selected_product.quantity = 1;
       console.log("nnj", this.selected_product.unit_id);
-      this.purchase.purchase_details.unshift(
+      this.purchase.details.unshift(
         JSON.parse(JSON.stringify(this.selected_product))
       );
-      console.log("nib", this.purchase.purchase_details);
+      console.log("nib", this.purchase.details);
       this.selected_product = [];
     },
     checkExicting() {},

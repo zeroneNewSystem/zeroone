@@ -307,11 +307,11 @@ class InvoiceController extends Controller
             //$account_id = (InvoiceDetail::where()->get())['account_id'];
             $inventory_account_id = Inventory::find($invoice_detail['inventory_id'])['account_id'];
             $cogs_account_id = $product['cogs_account_id'];
-            $soldaccount_id = $product['soldaccount_id'];
+            $sold_account_id = $product['sold_account_id'];
             // حساب المبيعات حساب دائن
             $entry = [
                 "company_id" => 1,
-                "account_id" => $soldaccount_id,
+                "account_id" => $sold_account_id,
                 "debit" =>  0,
                 "credit" => $invoice_detail['total'],
                 "document_id" => $invoice->id,

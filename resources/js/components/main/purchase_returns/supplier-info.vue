@@ -131,7 +131,7 @@
             <v-row>
               <v-data-table
                 style="width: 100%"
-                :headers="purchase_headers"
+                :headers="headers"
                 :items="purchases"
                 :options.sync="pur_options"
                 :server-items-length="purchases_total"
@@ -144,7 +144,7 @@
                 </template>
                 <template v-slot:item.status="{ item }">
                   {{
-                    purchase_statuses.find((elem) => elem.id == item.status_id)
+                    statuses.find((elem) => elem.id == item.status_id)
                       .ar_name
                   }}
                 </template>
@@ -229,7 +229,7 @@ export default {
       pur_loading: false,
       remain_amount: 0,
       receipt_loading: false,
-      purchase_headers: [
+      headers: [
         {
           text: "م",
           align: "center",
@@ -237,7 +237,7 @@ export default {
           sortable: false,
           value: "id",
         },
-        { text: "رقم المرجع", align: "center", value: "purchase_reference" },
+        { text: "رقم المرجع", align: "center", value: "reference" },
         {
           text: "جهة الاتصال",
           align: "center",
@@ -275,7 +275,7 @@ export default {
       total_amount: 0,
       purchases: [],
       receipts: [],
-      purchase_statuses: [
+      statuses: [
         { id: 1, ar_name: "موافق عليه" },
         { id: 2, ar_name: "بانتظار الموافقة" },
         { id: 3, ar_name: "ألغيت" },
@@ -313,7 +313,7 @@ export default {
         let pur_page = this.pur_options.page;
         let pur_itemsPerPage = this.pur_options.itemsPerPage;
 
-        //console.log(this.purchase_options)
+        //console.log(this.options)
 
         console.log("itemsPerPage", pur_itemsPerPage);
 

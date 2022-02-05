@@ -1,21 +1,20 @@
 <template>
   <v-form ref="form">
     <div>
-      <add-update-supplier
-        :dialog="add_update_supplier_dialog"
-        :supplier="passed_supplier"
+      <add-update-person
+        :dialog="add_update_person_dialog"
+        :person="passed_person"
         :operation="operation"
         :cities="cities"
-        @addUpdateSupplier="addSupplierToList"
+        @addUpdatePerson="addPersonToList"
         @changeCountry="loadCities"
-      ></add-update-supplier>
+      ></add-update-person>
       <product-info
         :dialog="product_info_dialog"
         :product="product_info_product"
         :prdct_forms="prdct_forms"
         :prdct_taxes="prdct_taxes"
         :prdct_types="prdct_types"
-        
         @dialogFalse="product_info_dialog = false"
       >
         <span slot="title"> معلومات الصنف</span>
@@ -39,7 +38,7 @@
                       class="purchase-info"
                       outlined
                       autocomplete="off"
-                      v-model="purchase.purchase_reference"
+                      v-model="document.reference"
                       prefix=" رقم المرجع | "
                       :rules="required.concat(isunique)"
                       @blur="checkExicting()"
@@ -51,7 +50,7 @@
                       outlined
                       placeholder="أدخل العام (رقمين) والشهر"
                       autocomplete="off"
-                      v-model="purchase.test_date"
+                      v-model="document.test_date"
                       prefix=" تاريخ اختباري | "
                       :rules="is_valid_date"
                       @keydown.enter="changeDateFormat()"
@@ -60,7 +59,7 @@
                   <v-col cols="12" class="pa-0">
                     <v-text-field
                       autocomplete="off"
-                      v-model="purchase.description"
+                      v-model="document.description"
                       label="الوصف"
                     ></v-text-field>
                   </v-col>
@@ -68,10 +67,11 @@
                     <v-row>
                       <v-col cols="10">
                         <v-autocomplete
-                          v-model="purchase.supplier_id"
-                          :items="suppliers"
-                          :item-text="(item) => item.company_name + ' : ' + item.name"
-                          
+                          v-model="document.person_id"
+                          :items="people"
+                          :item-text="
+                            (item) => item.company_name + ' : ' + item.name
+                          "
                           item-value="id"
                           :rules="vld_selected"
                           label="المورد"
@@ -79,7 +79,7 @@
                         </v-autocomplete>
                       </v-col>
                       <v-col cols="2">
-                        <v-btn elevation="0" dark @click="addSupplier">
+                        <v-btn elevation="0" dark @click="addPerson">
                           <v-icon> mdi-plus </v-icon>
                         </v-btn>
                       </v-col>
@@ -98,7 +98,7 @@
                     >
                       <template v-slot:activator="{ on, attrs }">
                         <v-text-field
-                          v-model="purchase.issue_date"
+                          v-model="document.issue_date"
                           label="تاريخ الاصدار"
                           prepend-icon="mdi-calendar"
                           v-bind="attrs"
@@ -108,7 +108,7 @@
                         ></v-text-field>
                       </template>
                       <v-date-picker
-                        v-model="purchase.issue_date"
+                        v-model="document.issue_date"
                         no-title
                         @input="issue_date_is_down = false"
                         @change="getDays"
@@ -118,7 +118,7 @@
                   <v-col cols="12" class="pa-0">
                     <v-text-field
                       label="الدفع بعد "
-                      v-model="purchase.payment_condition_id"
+                      v-model="document.payment_condition_id"
                       suffix="يوم"
                       @change="getMaturityDate"
                     ></v-text-field>
@@ -135,7 +135,7 @@
                     >
                       <template v-slot:activator="{ on, attrs }">
                         <v-text-field
-                          v-model="purchase.maturity_date"
+                          v-model="document.maturity_date"
                           label="تاريخ الاستحقاق"
                           prepend-icon="mdi-calendar"
                           v-bind="attrs"
@@ -145,7 +145,7 @@
                         ></v-text-field>
                       </template>
                       <v-date-picker
-                        v-model="purchase.maturity_date"
+                        v-model="document.maturity_date"
                         no-title
                         @input="maturity_date_is_down = false"
                         @change="getDays"
@@ -163,21 +163,21 @@
                     <v-row>
                       <v-col cols="12" lg="6"> الاسم </v-col>
                       <v-col cols="12" lg="6">
-                        {{ supplierInfo() && supplierInfo().name }}
+                        {{ personInfo() && personInfo().name }}
                       </v-col>
                       <v-col cols="12" lg="6"> اسم الشركة </v-col>
                       <v-col cols="12" lg="6">
-                        {{ supplierInfo() && supplierInfo().company_name }}
+                        {{ personInfo() && personInfo().company_name }}
                       </v-col>
                       <v-col cols="12" lg="6"> الهاتف </v-col>
                       <v-col cols="12" lg="6">
-                        {{ supplierInfo() && supplierInfo().phone01 }} </v-col
+                        {{ personInfo() && personInfo().phone01 }} </v-col
                       ><v-col cols="12" lg="6"> البريد الالكتروني </v-col>
                       <v-col cols="12" lg="6">
-                        {{ supplierInfo() && supplierInfo().email }} </v-col
+                        {{ personInfo() && personInfo().email }} </v-col
                       ><v-col cols="12" lg="6"> الرقم الضريبي </v-col>
                       <v-col cols="12" lg="6">
-                        {{ supplierInfo() && supplierInfo().tax_number }}
+                        {{ personInfo() && personInfo().tax_number }}
                       </v-col>
                     </v-row>
                   </v-card-text>
@@ -189,8 +189,8 @@
             <v-row>
               <v-data-table
                 disable-pagination
-                :headers="purchase_header"
-                :items="purchase.purchase_details"
+                :headers="header"
+                :items="document.details"
                 class="elevation-1"
                 :hide-default-footer="true"
                 :item-key="toString(Math.floor(Math.random(1, 100) * 100))"
@@ -211,7 +211,7 @@
                         flat
                         hide-no-data
                         label="اسم الصنف"
-                        @change="addProductToPurchase"
+                        @change="addProductToDocument"
                       ></v-autocomplete>
                     </v-col>
                     <v-col cols="12" sm="6" md="4">
@@ -219,7 +219,7 @@
                         autocomplete="off"
                         v-model="searched_barcode"
                         label="الباركود"
-                        @keydown.enter="searchAndAddToPurchase"
+                        @keydown.enter="searchAndAddToDocument"
                         :rules="is_exists"
                       ></v-text-field>
                     </v-col>
@@ -278,9 +278,9 @@
                     hide-details
                   ></v-text-field>
                 </template>
-                <template v-slot:item.soldprice="{ item }">
+                <template v-slot:item.sold_price="{ item }">
                   <v-text-field
-                    v-model="item.soldprice"
+                    v-model="item.sold_price"
                     flat
                     type="number"
                     outlined
@@ -289,7 +289,7 @@
                     hide-details
                   ></v-text-field>
                 </template>
-                <template v-slot:item.purchase_tax="{ item }">
+                <template v-slot:item.bought_tax="{ item }">
                   <v-text-field
                     type="number"
                     flat
@@ -297,10 +297,10 @@
                     hide-details
                     outlined
                     autocomplete="off"
-                    v-model="item.purchase_tax"
+                    v-model="item.bought_tax"
                   ></v-text-field>
                 </template>
-                <template v-slot:item.purchase_tax_value="{ item }">
+                <template v-slot:item.tax_value="{ item }">
                   <v-text-field
                     flat
                     disabled
@@ -308,11 +308,11 @@
                     hide-details
                     outlined
                     autocomplete="off"
-                    :value="purchase_tax_value(item).toFixed(2)"
+                    :value="tax_value(item).toFixed(2)"
                   ></v-text-field>
                 </template>
 
-                <template v-slot:item.purchase_discount="{ item }">
+                <template v-slot:item.discount="{ item }">
                   <v-row class="justify-center">
                     <v-col cols="6" class="pl-0">
                       <v-text-field
@@ -322,12 +322,12 @@
                         hide-details
                         outlined
                         autocomplete="off"
-                        v-model="item.purchase_discount"
+                        v-model="item.discount"
                       ></v-text-field>
                     </v-col>
                     <v-col cols="6" class="pr-0">
                       <v-autocomplete
-                        v-model="item.purchase_discount_type_id"
+                        v-model="item.discount_type_id"
                         :items="discount_types"
                         item-text="ar_name"
                         item-value="id"
@@ -484,7 +484,7 @@
                                 no-data
                                 no-data-text
                                 non-linear
-                                v-model="purchase.additional_expenses"
+                                v-model="document.additional_expenses"
                               >
                               </v-text-field>
                             </div>
@@ -518,7 +518,7 @@
                                 no-data-text
                                 non-linear
                                 v-model="
-                                  purchase.additional_expenses_from_account_id
+                                  document.additional_expenses_from_account_id
                                 "
                                 :items="additional_expenses_from_accounts"
                                 item-text="ar_name"
@@ -572,8 +572,8 @@
                                 no-data
                                 no-data-text
                                 non-linear
-                                v-model="purchase.paid_amount"
-                                @change="purchase.only_cash == true"
+                                v-model="document.paid_amount"
+                                @change="document.only_cash == true"
                               >
                               </v-text-field>
                             </div>
@@ -582,9 +582,9 @@
                           <v-col cols="12" lg="4">
                             <payment-method
                               @payment_methods="paymentMethods"
-                              :purchase_total="purchase.total_amount"
+                              :total="document.total_amount"
                               :accounts="additional_expenses_from_accounts"
-                              :payment_methods="purchase.payment_methods"
+                              :payment_methods="document.payment_methods"
                             ></payment-method>
                           </v-col>
                         </v-row>
@@ -655,25 +655,30 @@
 </template>
 
 <script>
+let route = window.location.pathname.replace(/^\/([^\/]*).*$/, "$1");
+
 import Product from "../../../apis/Product";
-import Purchase from "../../../apis/Purchase";
+//import Document from "../../../apis/Document";
 import ProductInfo from "../products/product-info.vue";
 import PaymentMethod from "./payment-methods";
-import AddUpdateSupplier from "./AddUpdateSupplier.vue";
+import AddUpdatePerson from "./AddUpdatePerson.vue";
 import Country from "../../../apis/Country";
-import Supplier from "../../../apis/Supplier";
+//import Person from "../../../apis/Person";
 import Account from "../../../apis/Account";
+
+let Person = null;
+let Document = null;
+
 export default {
   components: {
     ProductInfo,
     PaymentMethod,
-    AddUpdateSupplier,
+    AddUpdatePerson,
   },
   data() {
     return {
-      
       title: "فاتورة شراء جديدة",
-      is_new_purchase: true,
+      is_new_document: true,
       additional_expenses_from_accounts: [],
       additional_expenses_from_account_id: "",
       searched_barcode: "",
@@ -693,18 +698,18 @@ export default {
         { id: 2, ar_name: "قيمة", en_name: "amount" },
       ],
 
-      add_update_supplier_dialog: false,
-      passed_supplier: "",
+      add_update_person_dialog: false,
+      passed_person: "",
       operation: "add",
       cities: [],
-      suppliers: [],
+      people: [],
       name_search: "",
 
       loading: false,
 
       found_products: [],
       selected_product: [],
-      purchase_header: [
+      header: [
         {
           text: "اسم الصنف",
           align: "center",
@@ -748,7 +753,7 @@ export default {
         {
           text: "خصم الشراء",
           align: "center",
-          value: "purchase_discount",
+          value: "discount",
           sortable: false,
           width: 100,
         },
@@ -762,13 +767,13 @@ export default {
         {
           text: "الضريبة % ",
           align: "center",
-          value: "purchase_tax",
+          value: "bought_tax",
           sortable: false,
         },
         {
           text: "قيمة الضريبة",
           align: "center",
-          value: "purchase_tax_value",
+          value: "tax_value",
           sortable: false,
         },
         {
@@ -782,8 +787,8 @@ export default {
       ],
 
       payment_conditions: [],
-      new_purchase: {
-        only_cash:true,
+      new_document: {
+        only_cash: true,
         payment_condition_id: 0,
         payment_methods: [
           {
@@ -812,10 +817,10 @@ export default {
 
         patch_number: Math.floor(Math.random() * (99999 - 10000 + 1) + 10000),
 
-        purchase_details: [],
-        purchase_reference: "",
+        details: [],
+        reference: "",
         description: "",
-        supplier_id: "",
+        person_id: "",
         issue_date: new Date(
           Date.now() - new Date().getTimezoneOffset() * 60000
         )
@@ -827,9 +832,9 @@ export default {
           .toISOString()
           .substr(0, 10),
       },
-      purchase: {
-        only_cash:true,
-        
+      document: {
+        only_cash: true,
+
         payment_condition_id: 0,
         payment_methods: [
           {
@@ -858,10 +863,10 @@ export default {
 
         patch_number: Math.floor(Math.random() * (99999 - 10000 + 1) + 10000),
 
-        purchase_details: [],
-        purchase_reference: "",
+        details: [],
+        reference: "",
         description: "",
-        supplier_id: "",
+        person_id: "",
         issue_date: new Date(
           Date.now() - new Date().getTimezoneOffset() * 60000
         )
@@ -878,7 +883,7 @@ export default {
       date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
         .toISOString()
         .substr(0, 10),
-      issue_date_is_down: false, 
+      issue_date_is_down: false,
       maturity_date_is_down: false,
       formatted_issue_date: this.formatDate(
         new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
@@ -917,21 +922,17 @@ export default {
       let occurrences = 0;
       let firstIndex = -1;
 
-      for (
-        let index = 0;
-        index < this.purchase.purchase_details.length;
-        index++
-      ) {
+      for (let index = 0; index < this.document.details.length; index++) {
         if (
-          this.purchase.purchase_details[index].barcode == item.barcode &&
-          this.purchase.purchase_details[index].expires_at == item.expires_at
+          this.document.details[index].barcode == item.barcode &&
+          this.document.details[index].expires_at == item.expires_at
         ) {
           if (firstIndex == -1) firstIndex = index;
           occurrences++;
           if (occurrences == 2) {
-            this.purchase.purchase_details[firstIndex].quantity +=
-              this.purchase.purchase_details[index].quantity;
-            this.purchase.purchase_details.splice(index, 1);
+            this.document.details[firstIndex].quantity +=
+              this.document.details[index].quantity;
+            this.document.details.splice(index, 1);
             return;
           }
         }
@@ -945,44 +946,44 @@ export default {
       return result;
     },
     getDays() {
-      this.purchase.payment_condition_id = parseInt(
-        (new Date(this.purchase.maturity_date) -
-          new Date(this.purchase.issue_date)) /
+      this.document.payment_condition_id = parseInt(
+        (new Date(this.document.maturity_date) -
+          new Date(this.document.issue_date)) /
           (1000 * 60 * 60 * 24),
         10
       );
     },
     getMaturityDate() {
-      this.purchase.maturity_date = this.addays(
-        this.purchase.issue_date,
-        this.purchase.payment_condition_id
+      this.document.maturity_date = this.addays(
+        this.document.issue_date,
+        this.document.payment_condition_id
       )
         .toISOString()
         .substr(0, 10);
     },
-    supplierInfo() {
-      return this.suppliers.find(
-        (elem) => elem.id == this.purchase.supplier_id
+    personInfo() {
+      return this.people.find(
+        (elem) => elem.id == this.document.person_id
       );
     },
     changeDateFormat() {
-      let chunks = this.purchase.test_date.match(/.{1,2}/g);
+      let chunks = this.document.test_date.match(/.{1,2}/g);
       if (chunks[1].length == 1) chunks[1] = "0" + chunks[1];
 
       let date = "20" + chunks[0] + "-" + chunks[1] + "-01";
 
       if (!isNaN(Date.parse(date))) {
         console.log(Date.parse(date));
-        this.purchase.test_date = date;
+        this.document.test_date = date;
         this.is_valid_date = [];
         return;
       }
 
       this.is_valid_date = ["التاريخ غير صحيح"];
     },
-    addSupplierToList(supplier) {
-      this.suppliers.push(supplier);
-      this.purchase.supplier_id = supplier.id;
+    addPersonToList(person) {
+      this.people.push(person);
+      this.document.person_id = person.id;
     },
     loadCities(country_id) {
       this.cities = [];
@@ -991,12 +992,12 @@ export default {
       );
     },
 
-    addSupplier() {
-      this.add_update_supplier_dialog = true;
+    addPerson() {
+      this.add_update_person_dialog = true;
       this.operation = "add";
-      this.passed_supplier = {};
+      this.passed_person = {};
     },
-    searchAndAddToPurchase() {
+    searchAndAddToDocument() {
       let params = { barcode: this.searched_barcode };
 
       Product.purchaseBarcodeSearch(params).then((response) => {
@@ -1010,11 +1011,11 @@ export default {
         //CHECK IF PRODUCT HAS EXPIRATION DATE --> ADD QUANTITY
 
         if (!selected_product.has_expiration_date) {
-          let index = this.purchase.purchase_details.findIndex(
+          let index = this.document.details.findIndex(
             (elem) => elem.barcode == selected_product.barcode
           );
           if (index != -1) {
-            this.purchase.purchase_details[index].quantity++;
+            this.document.details[index].quantity++;
             return;
           }
         }
@@ -1039,16 +1040,16 @@ export default {
         selected_product["document_type_id"] = 1; // purchase
         selected_product["product_id"] = selected_product["id"]; // purchase
 
-        this.purchase.purchase_details.push(selected_product);
+        this.document.details.push(selected_product);
       });
     },
     remaining_amount() {
-      return (this.purchase.remaining_amount =
-        this.purchase.total_amount - this.purchase.paid_amount);
+      return (this.document.remaining_amount =
+        this.document.total_amount - this.document.paid_amount);
     },
     payAllCash() {
-      this.purchase.paid_amount = this.purchase.total_amount.toFixed(2);
-      this.purchase.payment_methods = [
+      this.document.paid_amount = this.document.total_amount.toFixed(2);
+      this.document.payment_methods = [
         {
           account_id: "",
           credit: 0,
@@ -1067,9 +1068,9 @@ export default {
       ];
     },
     paymentMethods(payments) {
-      this.purchase.payment_methods = payments.payment_methods;
-      this.purchase.paid_amount = payments.paid_amount;
-      this.purchase.only_cash = false;
+      this.document.payment_methods = payments.payment_methods;
+      this.document.paid_amount = payments.paid_amount;
+      this.document.only_cash = false;
     },
     show_product_dialog(item) {
       this.product_info_dialog = true;
@@ -1077,70 +1078,56 @@ export default {
       this.product_info_product = item;
     },
     product_unit_change(item) {
-      let unit = item.units.find(
-        (elem) => elem.pivot.id == item.unit_id
-      );
+      let unit = item.units.find((elem) => elem.pivot.id == item.unit_id);
 
       item.unit_price = unit.pivot.bought_price;
     },
     total_vat() {
-      this.purchase.total_vat = this.purchase.purchase_details.reduce(
-        (a, b) => +a + +b.purchase_tax_value,
+      this.document.total_vat = this.document.details.reduce(
+        (a, b) => +a + +b.tax_value,
         0
       );
-      return this.purchase.total_vat;
+      return this.document.total_vat;
     },
     total_amount() {
-      this.purchase.total_amount =
+      this.document.total_amount =
         this.total_without_products_vat() + this.total_vat();
 
-      return this.purchase.total_amount;
+      return this.document.total_amount;
     },
 
     total_without_products_vat() {
-      return this.purchase.purchase_details.reduce(
-        (a, b) => +a + +b.total_befor_tax,
-        0
-      );
+      return this.document.details.reduce((a, b) => +a + +b.total_befor_tax, 0);
     },
 
     total(item) {
-      item.total = this.purchase_tax_value(item) + this.total_befor_tax(item);
+      item.total = this.tax_value(item) + this.total_befor_tax(item);
       return item.total;
     },
 
-    purchase_tax_value(item) {
-      item.purchase_tax_value =
-        (this.total_befor_tax(item) * item.purchase_tax) / 100;
-      return item.purchase_tax_value;
+    tax_value(item) {
+      item.tax_value = (this.total_befor_tax(item) * item.bought_tax) / 100;
+      return item.tax_value;
     },
     total_befor_tax(item) {
-      if (item.purchase_discount_type_id == 1) {
+      if (item.discount_type_id == 1) {
         item.total_befor_tax =
           item.quantity * item.unit_price -
-          (item.quantity * item.unit_price * item.purchase_discount) /
-            100;
+          (item.quantity * item.unit_price * item.discount) / 100;
 
         return item.total_befor_tax;
       }
-      item.total_befor_tax =
-        item.quantity * item.unit_price - item.purchase_discount;
+      item.total_befor_tax = item.quantity * item.unit_price - item.discount;
 
       return item.total_befor_tax;
     },
     quantity_in_minor_unit(item) {
-      let unit = item.units.find(
-        (elem) => elem.pivot.id == item.unit_id
-      );
-      item.quantity_in_minor_unit =
-        item.quantity * unit.pivot.contains;
+      let unit = item.units.find((elem) => elem.pivot.id == item.unit_id);
+      item.quantity_in_minor_unit = item.quantity * unit.pivot.contains;
       return item.quantity_in_minor_unit;
     },
     deleteItem(item) {
-      this.purchase.purchase_details.splice(
-        this.purchase.purchase_details.indexOf(item),
-        1
-      );
+      this.document.details.splice(this.document.details.indexOf(item), 1);
     },
     getProducts(val, type) {
       if (val.length > 2) {
@@ -1162,10 +1149,10 @@ export default {
       }
     },
 
-    addProductToPurchase() {
-      console.log(this.purchase.purchase_details);
+    addProductToDocument() {
+      console.log(this.document.details);
       console.log("seles", this.selected_product);
-      //set defaultpurchase_id from main purchsedid
+      //set defaultid from main purchsedid
       this.selected_product.unit_id =
         this.selected_product.units[
           this.selected_product.main_bought_unit_id - 1
@@ -1178,31 +1165,29 @@ export default {
 
       this.selected_product.quantity = 1;
       console.log("nnj", this.selected_product.unit_id);
-      this.purchase.purchase_details.push(
+      this.document.details.push(
         JSON.parse(JSON.stringify(this.selected_product))
       );
-      console.log("nib", this.purchase.purchase_details);
+      console.log("nib", this.document.details);
       this.selected_product = [];
     },
     checkExicting() {},
     submit() {
-      
-
       //this.$router.go(0); reload page if needed
       /* remove zero amount or not account methods */
-      // this.purchase.payment_methods = this.purchase.payment_methods.filter(
+      // this.document.payment_methods = this.document.payment_methods.filter(
       //     (elem) => elem.account_id != "" && elem.credit != 0
       // );
-      if (this.is_new_purchase)
-        Purchase.store(this.purchase).then((response) =>
+      if (this.is_new_document)
+        Document.store(this.document).then((response) =>
           console.log(response.data)
         );
       else
-        Purchase.update(this.purchase).then((response) =>
+        Document.update(this.document).then((response) =>
           console.log(response.data)
         );
 
-      console.log(this.purchase);
+      console.log(this.document);
     },
 
     /*------------------dateTime----------------------*/
@@ -1223,21 +1208,22 @@ export default {
       console.log();
 
       if (Object.keys(params).length != 0) {
-        this.is_new_purchase = false;
+        alert(1212);
+        this.is_new_document = false;
         this.title = "تعديل فاتورة رقم " + params.id;
-        Purchase.get(params.id).then((response) => {
-          this.purchase = response.data.purchase;
-          console.log(this.purchase);
-          this.purchase.issue_date = this.purchase.issue_date.split(" ")[0];
-          this.purchase.maturity_date =
-            this.purchase.maturity_date.split(" ")[0];
-          this.purchase.purchase_details.forEach((elem) => {
+        Document.get(params.id).then((response) => {
+          this.document = response.data.purchase;
+          console.log(this.document);
+          this.document.issue_date = this.document.issue_date.split(" ")[0];
+          this.document.maturity_date =
+            this.document.maturity_date.split(" ")[0];
+          this.document.details.forEach((elem) => {
             if (elem.expires_at)
               elem.expires_at = elem.expires_at.split(" ")[0];
           });
 
-          if (this.purchase.payment_methods.length == 0)
-            this.purchase.payment_methods = [
+          if (this.document.payment_methods.length == 0)
+            this.document.payment_methods = [
               {
                 account_id: "",
                 credit: 0,
@@ -1254,27 +1240,83 @@ export default {
                 description: "",
               },
             ];
-          this.suppliers = response.data.suppliers;
+          this.people = response.data.people;
           this.additional_expenses_from_accounts =
             response.data.accounts.accounts;
           console.log(response.data.accounts.accounts);
         });
       } else {
+        alert(1212);
         if (status == "new") {
-          Supplier.get().then((response) => (this.suppliers = response.data));
+          alert(222);
+          Person.get().then((response) => (this.people = response.data));
           Account.cashAndBanks().then(
             (response) =>
               (this.additional_expenses_from_accounts = response.data.accounts)
           );
         } else {
-          this.purchase = JSON.parse(JSON.stringify(this.new_purchase));
+          this.document = JSON.parse(JSON.stringify(this.new_document));
           this.$refs.form.reset();
         }
       }
     },
   },
-  created() {
-    this.createPage(this.$route, "new");
+  async created() {
+    if (route == "nibras") {
+      Person = (await import("../../../apis/Person")).default;
+      Document = (await import("../../../apis/Purchase")).default;
+    }
+    if (route == "nibra")
+      Person = (await import("../../../apis/Person")).default;
+
+    if (this.$route.params.id) {
+      this.is_new_document = false;
+      this.title = "تعديل فاتورة رقم " + this.$route.params.id;
+      Document.get(this.$route.params.id).then((response) => {
+        this.document = response.data.purchase;
+        console.log(this.document);
+        this.document.issue_date = this.document.issue_date.split(" ")[0];
+        this.document.maturity_date = this.document.maturity_date.split(" ")[0];
+        this.document.purchase_details.forEach((elem) => {
+          if (elem.expires_at) elem.expires_at = elem.expires_at.split(" ")[0];
+        });
+
+        if (this.document.payment_methods.length == 0)
+          this.document.payment_methods = [
+            {
+              account_id: "",
+              debit: 0,
+              description: "",
+            },
+            {
+              account_id: "",
+              debit: 0,
+              description: "",
+            },
+            {
+              account_id: "",
+              debit: 0,
+              description: "",
+            },
+          ];
+        this.people = response.data.people;
+        this.additional_expenses_from_accounts =
+          response.data.accounts.accounts;
+        console.log(response.data.accounts.accounts);
+      });
+    } else {
+      Person.get().then((response) => (this.people = response.data));
+      Account.cashAndBanks().then(
+        (response) =>
+          (this.additional_expenses_from_accounts = response.data.accounts)
+      );
+    }
+
+    // if (route == "nibras")
+    //   Person = (await import("../../../apis/Person")).default;
+
+    // console.log(this.$route);
+    //this.createPage(this.$route, "new");
   },
 };
 </script>

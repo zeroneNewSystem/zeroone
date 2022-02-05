@@ -214,10 +214,10 @@
               </v-autocomplete>
             </template>
             <template v-slot:item.document_id="{ item }">
-              {{ item.purchase_details[0].document_id }}
+              {{ item.details[0].document_id }}
             </template>
             <template v-slot:item.document_type_id="{ item }">
-              {{ item.purchase_details[0].document_type_id }}
+              {{ item.details[0].document_type_id }}
             </template>
             <template v-slot:item.current_quantity="{ item }">
               <v-text-field
@@ -406,8 +406,8 @@ export default {
       let selected_item = JSON.parse(JSON.stringify(this.selected_item));
 
       console.log(selected_item);
-      selected_item["purchase_details"][0] =
-        selected_item["purchase_details"][this.index_of_selected_product];
+      selected_item["details"][0] =
+        selected_item["details"][this.index_of_selected_product];
 
       this.showThisProduct(selected_item);
       console.log("index");
@@ -496,7 +496,7 @@ export default {
       item.unit_price = unit.pivot.bought_price;
 
       item.current_quantity = parseInt(
-        item.purchase_details[0].quantity_in_minor_unit /
+        item.details[0].quantity_in_minor_unit /
           unit.pivot.contains
       );
 
@@ -561,7 +561,7 @@ export default {
 
       selected_product.quantity = 1;
       selected_product.current_quantity =
-        selected_product.purchase_details[0].quantity_in_minor_unit /
+        selected_product.details[0].quantity_in_minor_unit /
         selected_product.units[selected_product.main_bought_unit_id - 1].pivot
           .contains;
 
@@ -593,17 +593,17 @@ export default {
           JSON.stringify(response.data.products[0])
         );
 
-        if (this.selected_item.purchase_details.length == 0) return;
-        if (this.selected_item.purchase_details.length == 1) {
+        if (this.selected_item.details.length == 0) return;
+        if (this.selected_item.details.length == 1) {
           this.showThisProduct(this.selected_item);
         }
         let products_grouped = false;
         if (products_grouped) {
-          this.selected_item.purchase_details[0].quantity_in_minor_unit =
+          this.selected_item.details[0].quantity_in_minor_unit =
             this.selected_item.quantity_in_minor_unit;
 
-          // this.selected_item.purchase_details[0].quantity_in_minor_unit =
-          //   this.selected_item.purchase_details.reduce(
+          // this.selected_item.details[0].quantity_in_minor_unit =
+          //   this.selected_item.details.reduce(
           //     (a, b) => +a + +b.quantity_in_minor_unit,
           //     0
           //   );
@@ -613,7 +613,7 @@ export default {
           return;
         }
 
-        this.sets = this.selected_item.purchase_details;
+        this.sets = this.selected_item.details;
 
         this.dialog = true;
 
@@ -649,8 +649,8 @@ export default {
                 );
 
                 console.log(selected_item);
-                selected_item["purchase_details"][0] =
-                  selected_item["purchase_details"][
+                selected_item["details"][0] =
+                  selected_item["details"][
                     this.index_of_selected_product
                   ];
 
@@ -707,9 +707,9 @@ export default {
       });
     },
     addProductToPurchase() {
-      console.log(this.purchase.purchase_details);
+      console.log(this.purchase.details);
       console.log("seles", this.selected_product);
-      //set defaultpurchase_id from main purchsedid
+      //set defaultid from main purchsedid
       this.selected_product.unit_id =
         this.selected_product.units[
           this.selected_product.main_bought_unit_id - 1
@@ -722,10 +722,10 @@ export default {
 
       this.selected_product.quantity = 1;
       console.log("nnj", this.selected_product.unit_id);
-      this.purchase.purchase_details.unshift(
+      this.purchase.details.unshift(
         JSON.parse(JSON.stringify(this.selected_product))
       );
-      console.log("nib", this.purchase.purchase_details);
+      console.log("nib", this.purchase.details);
       this.selected_product = [];
     },
   },

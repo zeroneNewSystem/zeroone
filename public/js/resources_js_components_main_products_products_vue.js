@@ -278,7 +278,7 @@ __webpack_require__.r(__webpack_exports__);
         text: " افتراضية البيع ",
         align: "center",
         sortable: false,
-        value: "main_soldunit_id"
+        value: "main_sold_unit_id"
       }, {
         text: " افتراضية الشراء ",
         align: "center",
@@ -313,7 +313,7 @@ __webpack_require__.r(__webpack_exports__);
         text: "سعر البيع",
         align: "center",
         sortable: false,
-        value: "soldprice"
+        value: "sold_price"
       }, {
         text: "الباركود",
         align: "center",
@@ -1460,12 +1460,12 @@ var render = function() {
                         },
                         scopedSlots: _vm._u([
                           {
-                            key: "item.main_soldunit_id",
+                            key: "item.main_sold_unit_id",
                             fn: function(ref) {
                               var item = ref.item
                               return [
                                 _vm.product.units.indexOf(item) + 1 ==
-                                _vm.product.main_soldunit_id
+                                _vm.product.main_sold_unit_id
                                   ? _c("v-icon", { attrs: { small: "" } }, [
                                       _vm._v("mdi-check")
                                     ])
@@ -1537,13 +1537,13 @@ var render = function() {
                             }
                           },
                           {
-                            key: "item.soldprice",
+                            key: "item.sold_price",
                             fn: function(ref) {
                               var item = ref.item
                               return [
                                 _vm._v(
                                   "\n              " +
-                                    _vm._s(item.pivot.soldprice) +
+                                    _vm._s(item.pivot.sold_price) +
                                     "\n            "
                                 )
                               ]
@@ -1730,7 +1730,7 @@ var render = function() {
                             on: {
                               click: function($event) {
                                 $event.stopPropagation()
-                                return _vm.addUpdateSupplier("", "add")
+                                return _vm.AddUpdatePerson("", "add")
                               }
                             }
                           },
@@ -1744,7 +1744,7 @@ var render = function() {
                             on: {
                               click: function($event) {
                                 $event.stopPropagation()
-                                return _vm.addUpdateSupplier("", "add")
+                                return _vm.AddUpdatePerson("", "add")
                               }
                             }
                           },
@@ -1758,7 +1758,7 @@ var render = function() {
                             on: {
                               click: function($event) {
                                 $event.stopPropagation()
-                                return _vm.addUpdateSupplier("", "add")
+                                return _vm.AddUpdatePerson("", "add")
                               }
                             }
                           },
@@ -1772,7 +1772,7 @@ var render = function() {
                             on: {
                               click: function($event) {
                                 $event.stopPropagation()
-                                return _vm.addUpdateSupplier("", "add")
+                                return _vm.AddUpdatePerson("", "add")
                               }
                             }
                           },
@@ -1786,7 +1786,7 @@ var render = function() {
                             on: {
                               click: function($event) {
                                 $event.stopPropagation()
-                                return _vm.addUpdateSupplier("", "add")
+                                return _vm.AddUpdatePerson("", "add")
                               }
                             }
                           },

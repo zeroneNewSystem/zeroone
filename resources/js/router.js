@@ -25,6 +25,7 @@ const router = new VueRouter({
                     }
                 },
 
+
                 {
                     path: "/settings",
                     name: "settings",
@@ -225,6 +226,7 @@ const router = new VueRouter({
                             import ("./components/main/purchases/purchase")
                     }
                 },
+
                 {
                     path: "/invoices",
                     name: "invoices",
@@ -317,7 +319,17 @@ const router = new VueRouter({
                                 "./components/main/products/inventory_transfers"
                             )
                     }
-                }
+                }, {
+                    path: "/:document",
+                    name: "document",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import ("./components/main/purchases/purchase"),
+                        mainView: () =>
+                            import ("./components/main/purchases/purchase")
+                    }
+                },
             ]
         },
 

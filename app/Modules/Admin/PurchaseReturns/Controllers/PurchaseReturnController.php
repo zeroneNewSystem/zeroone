@@ -33,38 +33,38 @@ class PurchaseReturnController extends Controller
         $search  = json_decode($request->search, true);
 
 
-        $purchase_returns = PurchaseReturn::where('purchase_returns.company_id', 1);
+        $returns = PurchaseReturn::where('returns.company_id', 1);
 
 
         
-        $purchase_returns = $purchase_returns->leftJoin('people', 'people.id', 'purchase_returns.company_id')
-        ->select('purchase_returns.*', 'people.company_name');
+        $returns = $returns->leftJoin('people', 'people.id', 'returns.company_id')
+        ->select('returns.*', 'people.company_name');
         
 
 
         if ($search && $search['company_name']) {
 
             $company_name = $search['company_name'];
-            $purchase_returns = $purchase_returns->whereHas('person', function ($q) use ($company_name) {
+            $returns = $returns->whereHas('person', function ($q) use ($company_name) {
                 $q->where('company_name', 'like', '%' . $company_name . '%');
             });
         };
 
-        if ($search && $search['purchase_return_reference'])
-            $purchase_returns = $purchase_returns->where('purchase_return_reference', 'like', '%' . $search['purchase_return_reference'] . '%');
+        if ($search && $search['return_reference'])
+            $returns = $returns->where('return_reference', 'like', '%' . $search['return_reference'] . '%');
 
 
 
         if ($search && $search['status_id'])
-            $purchase_returns = $purchase_returns->where('status_id', $search['status_id']);
+            $returns = $returns->where('status_id', $search['status_id']);
         if ($search && $search['minimum'])
-            $purchase_returns = $purchase_returns->where('total_amount', '>=', $search['minimum']);
+            $returns = $returns->where('total_amount', '>=', $search['minimum']);
         if ($search && $search['maximum'])
-            $purchase_returns = $purchase_returns->where('total_amount', '<=', $search['maximum']);
+            $returns = $returns->where('total_amount', '<=', $search['maximum']);
         if ($search && $search['date_from'])
-            $purchase_returns = $purchase_returns->where('issue_date', '>=', $search['date_from']);
+            $returns = $returns->where('issue_date', '>=', $search['date_from']);
         if ($search && $search['date_to'])
-            $purchase_returns = $purchase_returns->where('issue_date', '<=', $search['date_to']);
+            $returns = $returns->where('issue_date', '<=', $search['date_to']);
 
 
 
@@ -74,15 +74,15 @@ class PurchaseReturnController extends Controller
 
 
         if ($request->has('itemsPerPage'))
-            $purchase_returns = $purchase_returns->orderBy('id', 'DESC')->paginate($request->itemsPerPage != -1 ? $request->itemsPerPage : '');
+            $returns = $returns->orderBy('id', 'DESC')->paginate($request->itemsPerPage != -1 ? $request->itemsPerPage : '');
         else
-            $purchase_returns = $purchase_returns->orderBy('id', 'DESC')->paginate(10);
+            $returns = $returns->orderBy('id', 'DESC')->paginate(10);
 
 
 
-        //$purchase_returns = $purchase_returns->get();
+        //$returns = $returns->get();
 
-        foreach ($purchase_returns as &$purchasereturn) {
+        foreach ($returns as &$purchasereturn) {
 
             $supp_documents = DB::table('supplemental_documentations')
                 ->where('document_id', $purchasereturn->id)
@@ -97,11 +97,11 @@ class PurchaseReturnController extends Controller
             //---reset
             $paid_amount = 0;
         }
-        return $purchase_returns;
+        return $returns;
     }
     public function index($id)
     {
-        $purchasereturn =  DB::table('purchase_returns')->where('id', $id)->get()[0];
+        $purchasereturn =  DB::table('returns')->where('id', $id)->get()[0];
 
 
         $methods = Transaction::where('document_id', $id)
@@ -116,20 +116,20 @@ class PurchaseReturnController extends Controller
 
 
 
-        $purchase_return_details =  DB::table('purchase_return_details')
+        $return_details =  DB::table('return_details')
             ->where('document_id', $id)
             ->where('document_type_id', 1)
-            ->leftjoin('products', 'purchase_return_details.product_id', '=', 'products.id')
+            ->leftjoin('products', 'return_details.product_id', '=', 'products.id')
             ->get();
 
 
 
-        // return      $purchase_return_details;
+        // return      $return_details;
 
 
         $units = [];
-        foreach ($purchase_return_details as &$purchase_return_detail) {
-            $pivots = DB::table('prdct_units_products')->where('product_id', $purchase_return_detail->id)->get();
+        foreach ($return_details as &$return_detail) {
+            $pivots = DB::table('prdct_units_products')->where('product_id', $return_detail->id)->get();
             foreach ($pivots as &$pivot) {
                 $unit = DB::table('prdct_units')->where('id', $pivot->prdct_unit_id)->get();
                 //return $unit[0];
@@ -138,11 +138,11 @@ class PurchaseReturnController extends Controller
             }
 
 
-            $purchase_return_detail->units = $units;
+            $return_detail->units = $units;
         }
 
 
-        $purchasereturn->purchase_return_details = $purchase_return_details;
+        $purchasereturn->return_details = $return_details;
 
         return [
             'purchasereturn' => $purchasereturn,
@@ -154,20 +154,20 @@ class PurchaseReturnController extends Controller
 
     public function index2(Request $request)
     {
-        $purchase_returns =  DB::table('purchase_returns')->get();
-        foreach ($purchase_returns as &$purchasereturn) {
+        $returns =  DB::table('returns')->get();
+        foreach ($returns as &$purchasereturn) {
 
-            $purchase_return_details =  DB::table('purchase_return_details')
+            $return_details =  DB::table('return_details')
                 ->where('document_id', 1)
                 ->where('document_type_id', 1)
-                ->leftjoin('products', 'purchase_return_details.product_id', '=', 'products.id')
+                ->leftjoin('products', 'return_details.product_id', '=', 'products.id')
                 ->get();
 
 
 
             $units = [];
-            foreach ($purchase_return_details as &$purchase_return_detail) {
-                $pivots = DB::table('prdct_units_products')->where('product_id', $purchase_return_detail->id)->get();
+            foreach ($return_details as &$return_detail) {
+                $pivots = DB::table('prdct_units_products')->where('product_id', $return_detail->id)->get();
                 foreach ($pivots as &$pivot) {
                     $unit = DB::table('prdct_units')->where('id', $pivot->prdct_unit_id)->get();
                     //return $unit[0];
@@ -176,20 +176,20 @@ class PurchaseReturnController extends Controller
                 }
 
 
-                $purchase_return_detail->units = $units;
+                $return_detail->units = $units;
             }
 
 
-            $purchasereturn->purchase_return_details = $purchase_return_details;
+            $purchasereturn->return_details = $return_details;
         }
-        return $purchase_returns;
+        return $returns;
     }
     public function index1(Request $request)
     {
 
 
-        $purchase_returns = PurchaseReturn::where('ar_name', 'LIKE', '%' . $request->search . '%')
-            ->with('purchase_return_details')
+        $returns = PurchaseReturn::where('ar_name', 'LIKE', '%' . $request->search . '%')
+            ->with('return_details')
 
             ->orderBy('id', 'DESC')
             // ->orWhere('en_name', 'LIKE', '%' . $request->search . '%')
@@ -197,7 +197,7 @@ class PurchaseReturnController extends Controller
             ->paginate($request->itemsPerPage != -1 ? $request->itemsPerPage : '');
 
         return response()->json([
-            'purchase_returns' => $purchase_returns,
+            'returns' => $returns,
         ]);
 
         //
@@ -408,9 +408,9 @@ class PurchaseReturnController extends Controller
 
 
 
-        foreach ($request->purchase_return_details as $purchase_return_detail) {
+        foreach ($request->return_details as $return_detail) {
             //transaction  inventory-
-            Product::find($purchase_return_detail['id'])->increment('quantity_in_minor_unit', $purchase_return_detail['quantity_in_minor_unit']);
+            Product::find($return_detail['id'])->increment('quantity_in_minor_unit', $return_detail['quantity_in_minor_unit']);
 
 
 
@@ -419,12 +419,12 @@ class PurchaseReturnController extends Controller
             //$account_id = (PurchaseReturnDetail::where()->get())['account_id'];
 
 
-            $inventory_account_id = Inventory::find($purchase_return_detail['inventory_id'])['account_id'];
+            $inventory_account_id = Inventory::find($return_detail['inventory_id'])['account_id'];
 
             $entry = [
                 "company_id" => 1,
                 "account_id" => $inventory_account_id,
-                "debit" =>  $purchase_return_detail['total'],
+                "debit" =>  $return_detail['total'],
                 "credit" => 0,
                 "document_id" => $purchasereturn->id,
                 "document_type_id" => 1,
@@ -436,22 +436,22 @@ class PurchaseReturnController extends Controller
 
 
 
-            $old_purchase_return_detail = PurchaseReturnDetail::where([
-                'product_id' => $purchase_return_detail['product_id'],
-                'expires_at' => $purchase_return_detail['expires_at'],
+            $old_return_detail = PurchaseReturnDetail::where([
+                'product_id' => $return_detail['product_id'],
+                'expires_at' => $return_detail['expires_at'],
             ])->where('sum_quantity_in_minor_unit', '!=', -1);
 
-            if (!$old_purchase_return_detail->exists()) {
-                $purchase_return_detail['sum_quantity_in_minor_unit'] = $purchase_return_detail['quantity_in_minor_unit'];
+            if (!$old_return_detail->exists()) {
+                $return_detail['sum_quantity_in_minor_unit'] = $return_detail['quantity_in_minor_unit'];
             } else {
 
-                $old_purchase_return_detail->increment(
+                $old_return_detail->increment(
                     'sum_quantity_in_minor_unit',
-                    $purchase_return_detail['quantity_in_minor_unit']
+                    $return_detail['quantity_in_minor_unit']
                 );
             }
 
-            $purchasereturn->purchase_return_details()->create($purchase_return_detail);
+            $purchasereturn->return_details()->create($return_detail);
         }
     }
     private function deleteLinkedData($request)
@@ -462,36 +462,36 @@ class PurchaseReturnController extends Controller
 
         // delete purchasereturn 
 
-        $purchase_return_details = PurchaseReturnDetail::where('document_type_id', 1)
+        $return_details = PurchaseReturnDetail::where('document_type_id', 1)
             ->where('document_id', $request->id)->get();
-        foreach ($purchase_return_details as $purchase_return_detail) {
-            if ($purchase_return_detail['sum_quantity_in_minor_unit'] == -1) {
+        foreach ($return_details as $return_detail) {
+            if ($return_detail['sum_quantity_in_minor_unit'] == -1) {
 
-                PurchaseReturnDetail::where('product_id', $purchase_return_detail['product_id'])
+                PurchaseReturnDetail::where('product_id', $return_detail['product_id'])
                     ->where('sum_quantity_in_minor_unit', '!=', -1)
-                    ->where('expires_at', $purchase_return_detail['expires_at'])
+                    ->where('expires_at', $return_detail['expires_at'])
                     ->decrement(
                         'sum_quantity_in_minor_unit',
-                        $purchase_return_detail['quantity_in_minor_unit']
+                        $return_detail['quantity_in_minor_unit']
                     );
 
                 //and decrement quantity from product..... and then continue      
 
 
             } else {
-                $sum =  $purchase_return_detail['sum_quantity_in_minor_unit'] - $purchase_return_detail['quantity_in_minor_unit'];
+                $sum =  $return_detail['sum_quantity_in_minor_unit'] - $return_detail['quantity_in_minor_unit'];
                 $products = PurchaseReturnDetail::where([
-                    'product_id' => $purchase_return_detail['product_id'],
-                    'expires_at' => $purchase_return_detail['expires_at'],
+                    'product_id' => $return_detail['product_id'],
+                    'expires_at' => $return_detail['expires_at'],
                     'sum_quantity_in_minor_unit' => -1,
                 ]);
                 if ($products->exists())
                     $products->first()->update(['sum_quantity_in_minor_unit' => $sum]);
             }
 
-            $purchase_return_detail->delete();
+            $return_detail->delete();
 
-            Product::find($purchase_return_detail['product_id'])->decrement('quantity_in_minor_unit', $purchase_return_detail['quantity_in_minor_unit']);
+            Product::find($return_detail['product_id'])->decrement('quantity_in_minor_unit', $return_detail['quantity_in_minor_unit']);
         }
     }
 }

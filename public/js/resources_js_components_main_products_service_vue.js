@@ -692,9 +692,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       taxes: [],
 
       /*-----------------------accounts---------------------------*/
-      product_soldaccounts: [],
-      product_soldreturn_accounts: [],
-      product_purchase_return_accounts: [],
+      product_sold_accounts: [],
+      product_sold_return_accounts: [],
+      product_return_accounts: [],
       product_cogs_accounts: [],
 
       /*-----------------------extra units---------------------------*/
@@ -702,7 +702,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         text: " افتراضية البيع ",
         align: "center",
         sortable: false,
-        value: "main_soldunit_id"
+        value: "main_sold_unit_id"
       }, {
         text: " افتراضية الشراء ",
         align: "center",
@@ -737,7 +737,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         text: "سعر البيع",
         align: "center",
         sortable: false,
-        value: "soldprice"
+        value: "sold_price"
       }, {
         text: "الباركود",
         align: "center",
@@ -756,7 +756,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         prdct_unit_id: "",
         contains: 1,
         bought_price: "20",
-        soldprice: "25",
+        sold_price: "25",
         barcode: ""
       }],
 
@@ -803,22 +803,22 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           prdct_unit_id: 1,
           contains: 1,
           bought_price: "9",
-          soldprice: "8",
+          sold_price: "8",
           barcode: "0"
         }],
         prdct_group_ids: [1, 2],
         prdct_form_id: 1,
         prdct_type_id: 1,
-        main_soldunit_id: 1,
+        main_sold_unit_id: 1,
         main_bought_unit_id: 1,
         cogs_account_id: 1,
-        soldaccount_id: 1,
-        solddiscount: 10,
-        solddiscount_type_id: 1,
-        purchase_discount: 10,
-        purchase_discount_type_id: 1,
-        purchase_tax: 1,
-        soldtax: 1,
+        sold_account_id: 1,
+        sold_discount: 10,
+        sold_discount_type_id: 1,
+        discount: 10,
+        discount_type_id: 1,
+        tax: 1,
+        sold_tax: 1,
         min_alert: 1,
         max_alert: 10,
         stagnation_period: 100,
@@ -891,9 +891,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       _this.inventories = response.data.inventories;
       _this.distribution_policies = response.data.distribution_policies; //this.taxes = response.data.taxes;
 
-      _this.product_soldaccounts = response.data.product_soldaccounts;
-      _this.product_soldreturn_accounts = response.data.product_soldaccounts;
-      _this.product_purchase_return_accounts = response.data.product_cogs_accounts;
+      _this.product_sold_accounts = response.data.product_sold_accounts;
+      _this.product_sold_return_accounts = response.data.product_sold_accounts;
+      _this.product_return_accounts = response.data.product_cogs_accounts;
       _this.product_cogs_accounts = response.data.product_cogs_accounts;
     })["catch"](function (errors) {
       _this.errors = errors.response.data.errors;
@@ -972,7 +972,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           id: "",
           contains: 1,
           bought_price: "",
-          soldprice: "",
+          sold_price: "",
           barcode: ""
         });
         return;
@@ -982,8 +982,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         this.product.prdct_units[0].contains = 1;
       }
 
-      if (index + 1 == this.product.main_soldunit_id) {
-        this.product.main_soldunit_id = 1;
+      if (index + 1 == this.product.main_sold_unit_id) {
+        this.product.main_sold_unit_id = 1;
       }
 
       if (index + 1 == this.product.main_bought_unit_id) {
@@ -1009,7 +1009,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         contains: 1,
         id: "",
         bought_price: "12",
-        soldprice: "25",
+        sold_price: "25",
         barcode: ""
       });
     },
@@ -1813,11 +1813,11 @@ var render = function() {
                                       value: "0"
                                     },
                                     model: {
-                                      value: _vm.product.soldtax,
+                                      value: _vm.product.sold_tax,
                                       callback: function($$v) {
-                                        _vm.$set(_vm.product, "soldtax", $$v)
+                                        _vm.$set(_vm.product, "sold_tax", $$v)
                                       },
-                                      expression: "product.soldtax"
+                                      expression: "product.sold_tax"
                                     }
                                   })
                                 ],
@@ -1836,15 +1836,11 @@ var render = function() {
                                       value: "0"
                                     },
                                     model: {
-                                      value: _vm.product.purchase_tax,
+                                      value: _vm.product.bought_tax,
                                       callback: function($$v) {
-                                        _vm.$set(
-                                          _vm.product,
-                                          "purchase_tax",
-                                          $$v
-                                        )
+                                        _vm.$set(_vm.product, "bought_tax", $$v)
                                       },
-                                      expression: "product.purchase_tax"
+                                      expression: "product.bought_tax"
                                     }
                                   })
                                 ],
@@ -1957,7 +1953,7 @@ var render = function() {
                                         },
                                         scopedSlots: _vm._u([
                                           {
-                                            key: "item.main_soldunit_id",
+                                            key: "item.main_sold_unit_id",
                                             fn: function(ref) {
                                               var item = ref.item
                                               return [
@@ -1969,16 +1965,16 @@ var render = function() {
                                                     model: {
                                                       value:
                                                         _vm.product
-                                                          .main_soldunit_id,
+                                                          .main_sold_unit_id,
                                                       callback: function($$v) {
                                                         _vm.$set(
                                                           _vm.product,
-                                                          "main_soldunit_id",
+                                                          "main_sold_unit_id",
                                                           $$v
                                                         )
                                                       },
                                                       expression:
-                                                        "product.main_soldunit_id"
+                                                        "product.main_sold_unit_id"
                                                     }
                                                   },
                                                   [
@@ -2205,7 +2201,7 @@ var render = function() {
                                             }
                                           },
                                           {
-                                            key: "item.soldprice",
+                                            key: "item.sold_price",
                                             fn: function(ref) {
                                               var item = ref.item
                                               return [
@@ -2215,15 +2211,16 @@ var render = function() {
                                                     rules: _vm.required
                                                   },
                                                   model: {
-                                                    value: item.soldprice,
+                                                    value: item.sold_price,
                                                     callback: function($$v) {
                                                       _vm.$set(
                                                         item,
-                                                        "soldprice",
+                                                        "sold_price",
                                                         $$v
                                                       )
                                                     },
-                                                    expression: "item.soldprice"
+                                                    expression:
+                                                      "item.sold_price"
                                                   }
                                                 })
                                               ]
@@ -2429,23 +2426,23 @@ var render = function() {
                                                 attrs: {
                                                   label: "حساب المبيعات",
                                                   items:
-                                                    _vm.product_soldaccounts,
+                                                    _vm.product_sold_accounts,
                                                   "item-text": "ar_name",
                                                   "item-value": "id",
                                                   rules: _vm.required
                                                 },
                                                 model: {
                                                   value:
-                                                    _vm.product.soldaccount_id,
+                                                    _vm.product.sold_account_id,
                                                   callback: function($$v) {
                                                     _vm.$set(
                                                       _vm.product,
-                                                      "soldaccount_id",
+                                                      "sold_account_id",
                                                       $$v
                                                     )
                                                   },
                                                   expression:
-                                                    "product.soldaccount_id"
+                                                    "product.sold_account_id"
                                                 }
                                               })
                                             : _vm._e()
@@ -2462,7 +2459,7 @@ var render = function() {
                                                 attrs: {
                                                   label: "حساب مردود المبيعات",
                                                   items:
-                                                    _vm.product_soldreturn_accounts,
+                                                    _vm.product_sold_return_accounts,
                                                   "item-text": "ar_name",
                                                   "item-value": "id",
                                                   rules: _vm.required
@@ -2470,16 +2467,16 @@ var render = function() {
                                                 model: {
                                                   value:
                                                     _vm.product
-                                                      .soldreturn_account_id,
+                                                      .sold_return_account_id,
                                                   callback: function($$v) {
                                                     _vm.$set(
                                                       _vm.product,
-                                                      "soldreturn_account_id",
+                                                      "sold_return_account_id",
                                                       $$v
                                                     )
                                                   },
                                                   expression:
-                                                    "product.soldreturn_account_id"
+                                                    "product.sold_return_account_id"
                                                 }
                                               })
                                             : _vm._e()
@@ -2497,15 +2494,16 @@ var render = function() {
                                               label: "خصم عند البيع"
                                             },
                                             model: {
-                                              value: _vm.product.solddiscount,
+                                              value: _vm.product.sold_discount,
                                               callback: function($$v) {
                                                 _vm.$set(
                                                   _vm.product,
-                                                  "solddiscount",
+                                                  "sold_discount",
                                                   $$v
                                                 )
                                               },
-                                              expression: "product.solddiscount"
+                                              expression:
+                                                "product.sold_discount"
                                             }
                                           })
                                         ],
@@ -2527,16 +2525,16 @@ var render = function() {
                                             model: {
                                               value:
                                                 _vm.product
-                                                  .solddiscount_type_id,
+                                                  .sold_discount_type_id,
                                               callback: function($$v) {
                                                 _vm.$set(
                                                   _vm.product,
-                                                  "solddiscount_type_id",
+                                                  "sold_discount_type_id",
                                                   $$v
                                                 )
                                               },
                                               expression:
-                                                "product.solddiscount_type_id"
+                                                "product.sold_discount_type_id"
                                             }
                                           })
                                         ],
@@ -2633,7 +2631,7 @@ var render = function() {
                                                   label:
                                                     "حساب مردود المشتتريات",
                                                   items:
-                                                    _vm.product_purchase_return_accounts,
+                                                    _vm.product_return_accounts,
                                                   "item-text": "ar_name",
                                                   "item-value": "id",
                                                   rules: _vm.required
@@ -2668,17 +2666,15 @@ var render = function() {
                                               label: "خصم عند الشراء"
                                             },
                                             model: {
-                                              value:
-                                                _vm.product.purchase_discount,
+                                              value: _vm.product.discount,
                                               callback: function($$v) {
                                                 _vm.$set(
                                                   _vm.product,
-                                                  "purchase_discount",
+                                                  "discount",
                                                   $$v
                                                 )
                                               },
-                                              expression:
-                                                "product.purchase_discount"
+                                              expression: "product.discount"
                                             }
                                           })
                                         ],
@@ -2699,17 +2695,16 @@ var render = function() {
                                             },
                                             model: {
                                               value:
-                                                _vm.product
-                                                  .purchase_discount_type_id,
+                                                _vm.product.discount_type_id,
                                               callback: function($$v) {
                                                 _vm.$set(
                                                   _vm.product,
-                                                  "purchase_discount_type_id",
+                                                  "discount_type_id",
                                                   $$v
                                                 )
                                               },
                                               expression:
-                                                "product.purchase_discount_type_id"
+                                                "product.discount_type_id"
                                             }
                                           })
                                         ],
