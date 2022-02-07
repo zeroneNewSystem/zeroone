@@ -138,13 +138,13 @@ __webpack_require__.r(__webpack_exports__);
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  props: ["dialog", "supplier", "cities", "operation"],
+  props: ["dialog", "person", "cities", "operation"],
   data: function data() {
     return {
       isloading: false,
       title: "إضافة مورد جديد",
       countries: [],
-      supplier_div_update: 0
+      person_div_update: 0
     };
   },
   created: function created() {
@@ -157,10 +157,10 @@ __webpack_require__.r(__webpack_exports__);
   computed: {},
   methods: {
     loadCities: function loadCities() {
-      this.$emit("changeCountry", this.supplier.country_id);
+      this.$emit("changeCountry", this.person.country_id);
     },
     closeDialog: function closeDialog() {
-      this.$parent.$data.add_update_supplier_dialog = false;
+      this.$parent.$data.add_update_person_dialog = false;
     },
     savePerson: function savePerson() {
       var _this2 = this;
@@ -169,22 +169,22 @@ __webpack_require__.r(__webpack_exports__);
       this.isloading = "blue";
 
       if (this.operation == "add") {
-        _apis_Person__WEBPACK_IMPORTED_MODULE_0__.default.store(this.supplier).then(function (response) {
-          _this2.supplier["id"] = response.data;
-          _this2.$parent.$data.add_update_supplier_dialog = false;
+        _apis_Person__WEBPACK_IMPORTED_MODULE_0__.default.store(this.person).then(function (response) {
+          _this2.person["id"] = response.data;
+          _this2.$parent.$data.add_update_person_dialog = false;
           _this2.isloading = false;
 
-          _this2.$emit("addUpdatePerson", _this2.supplier);
+          _this2.$emit("addUpdatePerson", _this2.person);
         });
         return;
       }
 
       if (this.operation == "update") {
-        _apis_Person__WEBPACK_IMPORTED_MODULE_0__.default.update(this.supplier).then(function (response) {
-          _this2.$parent.$data.add_update_supplier_dialog = false;
+        _apis_Person__WEBPACK_IMPORTED_MODULE_0__.default.update(this.person).then(function (response) {
+          _this2.$parent.$data.add_update_person_dialog = false;
           _this2.isloading = false;
 
-          _this2.$emit("addUpdatePerson", _this2.supplier);
+          _this2.$emit("addUpdatePerson", _this2.person);
         });
         return;
       }
@@ -192,16 +192,16 @@ __webpack_require__.r(__webpack_exports__);
     onParentChange: function onParentChange() {
       var _this3 = this;
 
-      var parent = this.$store.state.suppliers.find(function (elem) {
-        return elem.id == _this3.supplier.parent_id;
+      var parent = this.$store.state.persons.find(function (elem) {
+        return elem.id == _this3.person.parent_id;
       });
       console.log(parent.type_id);
-      var parent_type_code = this.$store.state.supplier_types.find(function (elem) {
+      var parent_type_code = this.$store.state.person_types.find(function (elem) {
         return elem.id == parent.type_id;
       }).type_code;
       console.log(parent_type_code);
-      this.supplier.level = parseInt(parent.level + 1);
-      this.supplier_types = this.$store.state.supplier_types.filter(function (elem) {
+      this.person.level = parseInt(parent.level + 1);
+      this.person_types = this.$store.state.person_types.filter(function (elem) {
         var length = 2;
 
         if (parent.level >= 2) {
@@ -213,13 +213,13 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     bgblue: function bgblue(item) {
-      if (Math.ceil(Math.log10(item.supplier_code + 1)) <= 2) {
-        $("#nib" + item.supplier_code).parent().addClass("first-level");
-      } else if (Math.ceil(Math.log10(item.supplier_code + 1)) <= 3) {
-        $("#nib" + item.supplier_code).parent().addClass("second-level");
+      if (Math.ceil(Math.log10(item.person_code + 1)) <= 2) {
+        $("#nib" + item.person_code).parent().addClass("first-level");
+      } else if (Math.ceil(Math.log10(item.person_code + 1)) <= 3) {
+        $("#nib" + item.person_code).parent().addClass("second-level");
       }
 
-      if (this.supplier_div_update == 0) this.supplier_div_update += 1;
+      if (this.person_div_update == 0) this.person_div_update += 1;
       return "";
     }
   }
@@ -1373,38 +1373,38 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Api */ "./resources/js/apis/Api.js");
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  store: function store(supplier) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/suppliers", supplier);
+  store: function store(supplier, route) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/" + route, supplier);
   },
-  update: function update(supplier) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("/suppliers", supplier);
+  update: function update(supplier, route) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("/" + route, supplier);
   },
-  postCreate: function postCreate(supplier) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/suppliers/create", supplier);
+  postCreate: function postCreate(supplier, route) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/" + route + "/create", supplier);
   },
-  getOne: function getOne(params) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/suppliers/getOne", {
+  getOne: function getOne(params, route) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/" + route + "/getOne", {
       params: params
     });
   },
-  get: function get(params) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/suppliers", {
+  get: function get(params, route) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/" + route, {
       params: params
     });
   },
-  getByProductID: function getByProductID(id) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/suppliers/product/" + id);
+  getByProductID: function getByProductID(id, route) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/" + route + "/product/" + id);
   },
-  search: function search(params) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/suppliers/search", {
+  search: function search(params, route) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/" + route + "/search", {
       params: params
     });
   },
-  barcodeSearch: function barcodeSearch(params) {
+  barcodeSearch: function barcodeSearch(params, route) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/router/" + params.barcode);
   },
-  "delete": function _delete(params) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.delete("/suppliers/", {
+  "delete": function _delete(params, route) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.delete("/" + route + "/", {
       params: params
     });
   }
@@ -2016,11 +2016,11 @@ var render = function() {
                           _c("v-text-field", {
                             attrs: { label: "اسم المورد *", required: "" },
                             model: {
-                              value: _vm.supplier.name,
+                              value: _vm.person.name,
                               callback: function($$v) {
-                                _vm.$set(_vm.supplier, "name", $$v)
+                                _vm.$set(_vm.person, "name", $$v)
                               },
-                              expression: "supplier.name"
+                              expression: "person.name"
                             }
                           })
                         ],
@@ -2034,11 +2034,11 @@ var render = function() {
                           _c("v-text-field", {
                             attrs: { label: "اسم الشركة*", required: "" },
                             model: {
-                              value: _vm.supplier.company_name,
+                              value: _vm.person.company_name,
                               callback: function($$v) {
-                                _vm.$set(_vm.supplier, "company_name", $$v)
+                                _vm.$set(_vm.person, "company_name", $$v)
                               },
-                              expression: "supplier.company_name"
+                              expression: "person.company_name"
                             }
                           })
                         ],
@@ -2059,11 +2059,11 @@ var render = function() {
                             },
                             on: { change: _vm.loadCities },
                             model: {
-                              value: _vm.supplier.country_id,
+                              value: _vm.person.country_id,
                               callback: function($$v) {
-                                _vm.$set(_vm.supplier, "country_id", $$v)
+                                _vm.$set(_vm.person, "country_id", $$v)
                               },
-                              expression: "supplier.country_id"
+                              expression: "person.country_id"
                             }
                           })
                         ],
@@ -2083,11 +2083,11 @@ var render = function() {
                               autocomplete: "off"
                             },
                             model: {
-                              value: _vm.supplier.city_id,
+                              value: _vm.person.city_id,
                               callback: function($$v) {
-                                _vm.$set(_vm.supplier, "city_id", $$v)
+                                _vm.$set(_vm.person, "city_id", $$v)
                               },
-                              expression: "supplier.city_id"
+                              expression: "person.city_id"
                             }
                           })
                         ],
@@ -2105,11 +2105,11 @@ var render = function() {
                               required: ""
                             },
                             model: {
-                              value: _vm.supplier.address,
+                              value: _vm.person.address,
                               callback: function($$v) {
-                                _vm.$set(_vm.supplier, "address", $$v)
+                                _vm.$set(_vm.person, "address", $$v)
                               },
-                              expression: "supplier.address"
+                              expression: "person.address"
                             }
                           })
                         ],
@@ -2126,11 +2126,11 @@ var render = function() {
                               required: ""
                             },
                             model: {
-                              value: _vm.supplier.phone01,
+                              value: _vm.person.phone01,
                               callback: function($$v) {
-                                _vm.$set(_vm.supplier, "phone01", $$v)
+                                _vm.$set(_vm.person, "phone01", $$v)
                               },
-                              expression: "supplier.phone01"
+                              expression: "person.phone01"
                             }
                           })
                         ],
@@ -2147,11 +2147,11 @@ var render = function() {
                               required: ""
                             },
                             model: {
-                              value: _vm.supplier.phone02,
+                              value: _vm.person.phone02,
                               callback: function($$v) {
-                                _vm.$set(_vm.supplier, "phone02", $$v)
+                                _vm.$set(_vm.person, "phone02", $$v)
                               },
-                              expression: "supplier.phone02"
+                              expression: "person.phone02"
                             }
                           })
                         ],
@@ -2165,11 +2165,11 @@ var render = function() {
                           _c("v-text-field", {
                             attrs: { label: "البريد الالكتروني", required: "" },
                             model: {
-                              value: _vm.supplier.email,
+                              value: _vm.person.email,
                               callback: function($$v) {
-                                _vm.$set(_vm.supplier, "email", $$v)
+                                _vm.$set(_vm.person, "email", $$v)
                               },
-                              expression: "supplier.email"
+                              expression: "person.email"
                             }
                           })
                         ],
@@ -2183,11 +2183,11 @@ var render = function() {
                           _c("v-text-field", {
                             attrs: { label: "الموقع الالكتروني", required: "" },
                             model: {
-                              value: _vm.supplier.website,
+                              value: _vm.person.website,
                               callback: function($$v) {
-                                _vm.$set(_vm.supplier, "website", $$v)
+                                _vm.$set(_vm.person, "website", $$v)
                               },
-                              expression: "supplier.website"
+                              expression: "person.website"
                             }
                           })
                         ],
@@ -2201,11 +2201,11 @@ var render = function() {
                           _c("v-text-field", {
                             attrs: { label: "الرقم الضريبي", required: "" },
                             model: {
-                              value: _vm.supplier.tax_number,
+                              value: _vm.person.tax_number,
                               callback: function($$v) {
-                                _vm.$set(_vm.supplier, "tax_number", $$v)
+                                _vm.$set(_vm.person, "tax_number", $$v)
                               },
-                              expression: "supplier.tax_number"
+                              expression: "person.tax_number"
                             }
                           })
                         ],

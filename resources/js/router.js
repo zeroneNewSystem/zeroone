@@ -238,17 +238,7 @@ const router = new VueRouter({
                             import ("./components/main/invoices/invoices")
                     }
                 },
-                {
-                    path: "/invoice",
-                    name: "invoice",
-                    meta: { requiresAuth: true },
-                    components: {
-                        default: () =>
-                            import ("./components/main/invoices/invoice"),
-                        mainView: () =>
-                            import ("./components/main/invoices/invoice")
-                    }
-                },
+
                 {
                     path: "/invoice/:id",
                     name: "invoice",

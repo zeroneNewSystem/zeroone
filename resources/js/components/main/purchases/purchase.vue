@@ -26,7 +26,7 @@
           </v-row>
         </v-card-title>
         <v-card-text>
-          <router-link class="btn btn-info m-b-5 m-r-2" to="/purchase/1">
+          <router-link class="btn btn-info m-b-5 m-r-2" to="/document/1">
             <v-icon class="white--text">mdi-view-module</v-icon>إدارة الفواتير
           </router-link>
           <v-container>
@@ -35,7 +35,7 @@
                 <v-row>
                   <v-col cols="12" class="pa-0">
                     <v-text-field
-                      class="purchase-info"
+                      class="document-info"
                       outlined
                       autocomplete="off"
                       v-model="document.reference"
@@ -46,7 +46,7 @@
                   </v-col>
                   <v-col cols="12" class="pa-0" v-if="false">
                     <v-text-field
-                      class="purchase-info"
+                      class="document-info"
                       outlined
                       placeholder="أدخل العام (رقمين) والشهر"
                       autocomplete="off"
@@ -70,11 +70,16 @@
                           v-model="document.person_id"
                           :items="people"
                           :item-text="
-                            (item) => item.company_name + ' : ' + item.name
+                            (item) => {
+                              
+                              if (this.route == 'purchase')
+                                return item.company_name + ' : ' + item.name;
+                              else return item.name;
+                            }
                           "
                           item-value="id"
                           :rules="vld_selected"
-                          label="المورد"
+                          :label="persona"
                         >
                         </v-autocomplete>
                       </v-col>
@@ -157,7 +162,7 @@
               <v-col>
                 <v-card>
                   <v-card-title style="background: lightgray">
-                    معلومات المورد
+                    {{ person_info }}
                   </v-card-title>
                   <v-card-text>
                     <v-row>
@@ -419,7 +424,7 @@
                     <v-divider class="mx-4" inset vertical></v-divider>
                     <v-spacer></v-spacer>
                   </v-toolbar>
-                  <div class="purchase-footer">
+                  <div class="document-footer">
                     <v-row>
                       <v-col cols="12" lg="6">
                         <v-row justify="start">
@@ -655,19 +660,16 @@
 </template>
 
 <script>
-let route = window.location.pathname.replace(/^\/([^\/]*).*$/, "$1");
+
 
 import Product from "../../../apis/Product";
-//import Document from "../../../apis/Document";
+import Document from "../../../apis/Document";
 import ProductInfo from "../products/product-info.vue";
 import PaymentMethod from "./payment-methods";
 import AddUpdatePerson from "./AddUpdatePerson.vue";
 import Country from "../../../apis/Country";
-//import Person from "../../../apis/Person";
+import Person from "../../../apis/Person";
 import Account from "../../../apis/Account";
-
-let Person = null;
-let Document = null;
 
 export default {
   components: {
@@ -677,7 +679,14 @@ export default {
   },
   data() {
     return {
+      route : window.location.pathname.replace(/^\/([^\/]*).*$/, "$1"),
       title: "فاتورة شراء جديدة",
+      //----
+      person_info: "معلومات المورد",
+      person_type: "suppliers",
+      persona: "المورد",
+      //----
+
       is_new_document: true,
       additional_expenses_from_accounts: [],
       additional_expenses_from_account_id: "",
@@ -962,9 +971,7 @@ export default {
         .substr(0, 10);
     },
     personInfo() {
-      return this.people.find(
-        (elem) => elem.id == this.document.person_id
-      );
+      return this.people.find((elem) => elem.id == this.document.person_id);
     },
     changeDateFormat() {
       let chunks = this.document.test_date.match(/.{1,2}/g);
@@ -1000,7 +1007,7 @@ export default {
     searchAndAddToDocument() {
       let params = { barcode: this.searched_barcode };
 
-      Product.purchaseBarcodeSearch(params).then((response) => {
+      Product.purchaseBarcodeSearch(params, this.route).then((response) => {
         if (response.data.products.length == 0) {
           this.is_exists = [false || "الصنف غير موجود "];
           return;
@@ -1037,8 +1044,8 @@ export default {
         selected_product.quantity = 1;
 
         //---------
-        selected_product["document_type_id"] = 1; // purchase
-        selected_product["product_id"] = selected_product["id"]; // purchase
+        selected_product["document_type_id"] = 1; // document
+        selected_product["product_id"] = selected_product["id"]; // document
 
         this.document.details.push(selected_product);
       });
@@ -1179,11 +1186,11 @@ export default {
       //     (elem) => elem.account_id != "" && elem.credit != 0
       // );
       if (this.is_new_document)
-        Document.store(this.document).then((response) =>
+        Document.store(this.document, this.route + "s").then((response) =>
           console.log(response.data)
         );
       else
-        Document.update(this.document).then((response) =>
+        Document.update(this.document, this.route + "s").then((response) =>
           console.log(response.data)
         );
 
@@ -1211,8 +1218,8 @@ export default {
         alert(1212);
         this.is_new_document = false;
         this.title = "تعديل فاتورة رقم " + params.id;
-        Document.get(params.id).then((response) => {
-          this.document = response.data.purchase;
+        Document.get(params.id, this.route + "s").then((response) => {
+          this.document = response.data.document;
           console.log(this.document);
           this.document.issue_date = this.document.issue_date.split(" ")[0];
           this.document.maturity_date =
@@ -1249,7 +1256,9 @@ export default {
         alert(1212);
         if (status == "new") {
           alert(222);
-          Person.get().then((response) => (this.people = response.data));
+          Person.get({}, this.route).then(
+            (response) => (this.people = response.data)
+          );
           Account.cashAndBanks().then(
             (response) =>
               (this.additional_expenses_from_accounts = response.data.accounts)
@@ -1262,22 +1271,23 @@ export default {
     },
   },
   async created() {
-    if (route == "nibras") {
-      Person = (await import("../../../apis/Person")).default;
-      Document = (await import("../../../apis/Purchase")).default;
+    if (this.route == "invoice") {
+      this.person_type = "customers";
+      this.person_info = "معلومات العميل";
+      this.persona = "العميل";
     }
-    if (route == "nibra")
-      Person = (await import("../../../apis/Person")).default;
+    // if (route == "nibra")
+    //   Person = (await import("../../../apis/Person")).default;
 
     if (this.$route.params.id) {
       this.is_new_document = false;
       this.title = "تعديل فاتورة رقم " + this.$route.params.id;
-      Document.get(this.$route.params.id).then((response) => {
-        this.document = response.data.purchase;
+      Document.get(this.$route.params.id, route + "s").then((response) => {
+        this.document = response.data.document;
         console.log(this.document);
         this.document.issue_date = this.document.issue_date.split(" ")[0];
         this.document.maturity_date = this.document.maturity_date.split(" ")[0];
-        this.document.purchase_details.forEach((elem) => {
+        this.document.document_details.forEach((elem) => {
           if (elem.expires_at) elem.expires_at = elem.expires_at.split(" ")[0];
         });
 
@@ -1305,7 +1315,9 @@ export default {
         console.log(response.data.accounts.accounts);
       });
     } else {
-      Person.get().then((response) => (this.people = response.data));
+      Person.get({}, this.person_type).then(
+        (response) => (this.people = response.data)
+      );
       Account.cashAndBanks().then(
         (response) =>
           (this.additional_expenses_from_accounts = response.data.accounts)
@@ -1331,7 +1343,7 @@ export default {
   > .v-input__slot {
   padding: 0px;
 }
-.purchase-footer {
+.document-footer {
   min-width: 0;
   overflow: hidden;
 }
@@ -1346,7 +1358,7 @@ export default {
 .text-red input {
   color: red !important;
 }
-.purchase-info .v-text-field__prefix {
+.document-info .v-text-field__prefix {
   margin-right: 10px;
 }
 /* Chrome, Safari, Edge, Opera */

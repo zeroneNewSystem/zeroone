@@ -745,8 +745,8 @@ __webpack_require__.r(__webpack_exports__);
       params: params
     });
   },
-  purchaseBarcodeSearch: function purchaseBarcodeSearch(params) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/extra/purchase/barcode/" + params.barcode);
+  purchaseBarcodeSearch: function purchaseBarcodeSearch(params, route) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/extra/" + route + "/barcode/" + params.barcode);
   },
   invoiceBarcodeSearch: function invoiceBarcodeSearch(params) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/extra/invoice/barcode/" + params.barcode + "/inventory_id/" + params.inventory_id);

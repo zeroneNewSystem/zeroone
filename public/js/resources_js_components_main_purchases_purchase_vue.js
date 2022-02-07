@@ -552,13 +552,13 @@ __webpack_require__.r(__webpack_exports__);
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  props: ["dialog", "supplier", "cities", "operation"],
+  props: ["dialog", "person", "cities", "operation"],
   data: function data() {
     return {
       isloading: false,
       title: "إضافة مورد جديد",
       countries: [],
-      supplier_div_update: 0
+      person_div_update: 0
     };
   },
   created: function created() {
@@ -571,10 +571,10 @@ __webpack_require__.r(__webpack_exports__);
   computed: {},
   methods: {
     loadCities: function loadCities() {
-      this.$emit("changeCountry", this.supplier.country_id);
+      this.$emit("changeCountry", this.person.country_id);
     },
     closeDialog: function closeDialog() {
-      this.$parent.$data.add_update_supplier_dialog = false;
+      this.$parent.$data.add_update_person_dialog = false;
     },
     savePerson: function savePerson() {
       var _this2 = this;
@@ -583,22 +583,22 @@ __webpack_require__.r(__webpack_exports__);
       this.isloading = "blue";
 
       if (this.operation == "add") {
-        _apis_Person__WEBPACK_IMPORTED_MODULE_0__.default.store(this.supplier).then(function (response) {
-          _this2.supplier["id"] = response.data;
-          _this2.$parent.$data.add_update_supplier_dialog = false;
+        _apis_Person__WEBPACK_IMPORTED_MODULE_0__.default.store(this.person).then(function (response) {
+          _this2.person["id"] = response.data;
+          _this2.$parent.$data.add_update_person_dialog = false;
           _this2.isloading = false;
 
-          _this2.$emit("addUpdatePerson", _this2.supplier);
+          _this2.$emit("addUpdatePerson", _this2.person);
         });
         return;
       }
 
       if (this.operation == "update") {
-        _apis_Person__WEBPACK_IMPORTED_MODULE_0__.default.update(this.supplier).then(function (response) {
-          _this2.$parent.$data.add_update_supplier_dialog = false;
+        _apis_Person__WEBPACK_IMPORTED_MODULE_0__.default.update(this.person).then(function (response) {
+          _this2.$parent.$data.add_update_person_dialog = false;
           _this2.isloading = false;
 
-          _this2.$emit("addUpdatePerson", _this2.supplier);
+          _this2.$emit("addUpdatePerson", _this2.person);
         });
         return;
       }
@@ -606,16 +606,16 @@ __webpack_require__.r(__webpack_exports__);
     onParentChange: function onParentChange() {
       var _this3 = this;
 
-      var parent = this.$store.state.suppliers.find(function (elem) {
-        return elem.id == _this3.supplier.parent_id;
+      var parent = this.$store.state.persons.find(function (elem) {
+        return elem.id == _this3.person.parent_id;
       });
       console.log(parent.type_id);
-      var parent_type_code = this.$store.state.supplier_types.find(function (elem) {
+      var parent_type_code = this.$store.state.person_types.find(function (elem) {
         return elem.id == parent.type_id;
       }).type_code;
       console.log(parent_type_code);
-      this.supplier.level = parseInt(parent.level + 1);
-      this.supplier_types = this.$store.state.supplier_types.filter(function (elem) {
+      this.person.level = parseInt(parent.level + 1);
+      this.person_types = this.$store.state.person_types.filter(function (elem) {
         var length = 2;
 
         if (parent.level >= 2) {
@@ -627,13 +627,13 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     bgblue: function bgblue(item) {
-      if (Math.ceil(Math.log10(item.supplier_code + 1)) <= 2) {
-        $("#nib" + item.supplier_code).parent().addClass("first-level");
-      } else if (Math.ceil(Math.log10(item.supplier_code + 1)) <= 3) {
-        $("#nib" + item.supplier_code).parent().addClass("second-level");
+      if (Math.ceil(Math.log10(item.person_code + 1)) <= 2) {
+        $("#nib" + item.person_code).parent().addClass("first-level");
+      } else if (Math.ceil(Math.log10(item.person_code + 1)) <= 3) {
+        $("#nib" + item.person_code).parent().addClass("second-level");
       }
 
-      if (this.supplier_div_update == 0) this.supplier_div_update += 1;
+      if (this.person_div_update == 0) this.person_div_update += 1;
       return "";
     }
   }
@@ -888,11 +888,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _apis_Product__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../apis/Product */ "./resources/js/apis/Product.js");
-/* harmony import */ var _products_product_info_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../products/product-info.vue */ "./resources/js/components/main/products/product-info.vue");
-/* harmony import */ var _payment_methods__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./payment-methods */ "./resources/js/components/main/purchases/payment-methods.vue");
-/* harmony import */ var _AddUpdatePerson_vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./AddUpdatePerson.vue */ "./resources/js/components/main/purchases/AddUpdatePerson.vue");
-/* harmony import */ var _apis_Country__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../../apis/Country */ "./resources/js/apis/Country.js");
-/* harmony import */ var _apis_Account__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../../apis/Account */ "./resources/js/apis/Account.js");
+/* harmony import */ var _apis_Document__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../apis/Document */ "./resources/js/apis/Document.js");
+/* harmony import */ var _products_product_info_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../products/product-info.vue */ "./resources/js/components/main/products/product-info.vue");
+/* harmony import */ var _payment_methods__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./payment-methods */ "./resources/js/components/main/purchases/payment-methods.vue");
+/* harmony import */ var _AddUpdatePerson_vue__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./AddUpdatePerson.vue */ "./resources/js/components/main/purchases/AddUpdatePerson.vue");
+/* harmony import */ var _apis_Country__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../../../apis/Country */ "./resources/js/apis/Country.js");
+/* harmony import */ var _apis_Person__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../../../apis/Person */ "./resources/js/apis/Person.js");
+/* harmony import */ var _apis_Account__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../../../apis/Account */ "./resources/js/apis/Account.js");
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
@@ -1567,26 +1569,34 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 //
 //
 //
-var route = window.location.pathname.replace(/^\/([^\/]*).*$/, "$1");
- //import Document from "../../../apis/Document";
+//
+//
+//
+//
+//
 
 
 
 
- //import Person from "../../../apis/Person";
 
 
-var Person = null;
-var Document = null;
+
+
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   components: {
-    ProductInfo: _products_product_info_vue__WEBPACK_IMPORTED_MODULE_2__.default,
-    PaymentMethod: _payment_methods__WEBPACK_IMPORTED_MODULE_3__.default,
-    AddUpdatePerson: _AddUpdatePerson_vue__WEBPACK_IMPORTED_MODULE_4__.default
+    ProductInfo: _products_product_info_vue__WEBPACK_IMPORTED_MODULE_3__.default,
+    PaymentMethod: _payment_methods__WEBPACK_IMPORTED_MODULE_4__.default,
+    AddUpdatePerson: _AddUpdatePerson_vue__WEBPACK_IMPORTED_MODULE_5__.default
   },
   data: function data() {
     return {
+      route: window.location.pathname.replace(/^\/([^\/]*).*$/, "$1"),
       title: "فاتورة شراء جديدة",
+      //----
+      person_info: "معلومات المورد",
+      person_type: "suppliers",
+      persona: "المورد",
+      //----
       is_new_document: true,
       additional_expenses_from_accounts: [],
       additional_expenses_from_account_id: "",
@@ -1845,7 +1855,7 @@ var Document = null;
       var _this2 = this;
 
       this.cities = [];
-      _apis_Country__WEBPACK_IMPORTED_MODULE_5__.default.loadCities(country_id).then(function (response) {
+      _apis_Country__WEBPACK_IMPORTED_MODULE_6__.default.loadCities(country_id).then(function (response) {
         return _this2.cities = response.data.cities;
       });
     },
@@ -1860,7 +1870,7 @@ var Document = null;
       var params = {
         barcode: this.searched_barcode
       };
-      _apis_Product__WEBPACK_IMPORTED_MODULE_1__.default.purchaseBarcodeSearch(params).then(function (response) {
+      _apis_Product__WEBPACK_IMPORTED_MODULE_1__.default.purchaseBarcodeSearch(params, this.route).then(function (response) {
         if (response.data.products.length == 0) {
           _this3.is_exists = [ false || "الصنف غير موجود "];
           return;
@@ -1886,9 +1896,9 @@ var Document = null;
         selected_product.unit_price = selected_product.units[selected_product.main_bought_unit_id - 1].pivot.bought_price;
         selected_product.quantity = 1; //---------
 
-        selected_product["document_type_id"] = 1; // purchase
+        selected_product["document_type_id"] = 1; // document
 
-        selected_product["product_id"] = selected_product["id"]; // purchase
+        selected_product["product_id"] = selected_product["id"]; // document
 
         _this3.document.details.push(selected_product);
       });
@@ -2012,9 +2022,9 @@ var Document = null;
       // this.document.payment_methods = this.document.payment_methods.filter(
       //     (elem) => elem.account_id != "" && elem.credit != 0
       // );
-      if (this.is_new_document) Document.store(this.document).then(function (response) {
+      if (this.is_new_document) _apis_Document__WEBPACK_IMPORTED_MODULE_2__.default.store(this.document, this.route + "s").then(function (response) {
         return console.log(response.data);
-      });else Document.update(this.document).then(function (response) {
+      });else _apis_Document__WEBPACK_IMPORTED_MODULE_2__.default.update(this.document, this.route + "s").then(function (response) {
         return console.log(response.data);
       });
       console.log(this.document);
@@ -2053,8 +2063,8 @@ var Document = null;
         alert(1212);
         this.is_new_document = false;
         this.title = "تعديل فاتورة رقم " + params.id;
-        Document.get(params.id).then(function (response) {
-          _this5.document = response.data.purchase;
+        _apis_Document__WEBPACK_IMPORTED_MODULE_2__.default.get(params.id, this.route + "s").then(function (response) {
+          _this5.document = response.data.document;
           console.log(_this5.document);
           _this5.document.issue_date = _this5.document.issue_date.split(" ")[0];
           _this5.document.maturity_date = _this5.document.maturity_date.split(" ")[0];
@@ -2085,10 +2095,10 @@ var Document = null;
 
         if (status == "new") {
           alert(222);
-          Person.get().then(function (response) {
+          _apis_Person__WEBPACK_IMPORTED_MODULE_7__.default.get({}, this.route).then(function (response) {
             return _this5.people = response.data;
           });
-          _apis_Account__WEBPACK_IMPORTED_MODULE_6__.default.cashAndBanks().then(function (response) {
+          _apis_Account__WEBPACK_IMPORTED_MODULE_8__.default.cashAndBanks().then(function (response) {
             return _this5.additional_expenses_from_accounts = response.data.accounts;
           });
         } else {
@@ -2106,45 +2116,24 @@ var Document = null;
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
-              if (!(route == "nibras")) {
-                _context.next = 7;
-                break;
-              }
+              if (_this6.route == "invoice") {
+                _this6.person_type = "customers";
+                _this6.person_info = "معلومات العميل";
+                _this6.persona = "العميل";
+              } // if (route == "nibra")
+              //   Person = (await import("../../../apis/Person")).default;
 
-              _context.next = 3;
-              return Promise.resolve(/*! import() */).then(__webpack_require__.bind(__webpack_require__, /*! ../../../apis/Person */ "./resources/js/apis/Person.js"));
 
-            case 3:
-              Person = _context.sent["default"];
-              _context.next = 6;
-              return __webpack_require__.e(/*! import() */ "resources_js_apis_Purchase_js").then(__webpack_require__.bind(__webpack_require__, /*! ../../../apis/Purchase */ "./resources/js/apis/Purchase.js"));
-
-            case 6:
-              Document = _context.sent["default"];
-
-            case 7:
-              if (!(route == "nibra")) {
-                _context.next = 11;
-                break;
-              }
-
-              _context.next = 10;
-              return Promise.resolve(/*! import() */).then(__webpack_require__.bind(__webpack_require__, /*! ../../../apis/Person */ "./resources/js/apis/Person.js"));
-
-            case 10:
-              Person = _context.sent["default"];
-
-            case 11:
               if (_this6.$route.params.id) {
                 _this6.is_new_document = false;
                 _this6.title = "تعديل فاتورة رقم " + _this6.$route.params.id;
-                Document.get(_this6.$route.params.id).then(function (response) {
-                  _this6.document = response.data.purchase;
+                _apis_Document__WEBPACK_IMPORTED_MODULE_2__.default.get(_this6.$route.params.id, route + "s").then(function (response) {
+                  _this6.document = response.data.document;
                   console.log(_this6.document);
                   _this6.document.issue_date = _this6.document.issue_date.split(" ")[0];
                   _this6.document.maturity_date = _this6.document.maturity_date.split(" ")[0];
 
-                  _this6.document.purchase_details.forEach(function (elem) {
+                  _this6.document.document_details.forEach(function (elem) {
                     if (elem.expires_at) elem.expires_at = elem.expires_at.split(" ")[0];
                   });
 
@@ -2166,10 +2155,10 @@ var Document = null;
                   console.log(response.data.accounts.accounts);
                 });
               } else {
-                Person.get().then(function (response) {
+                _apis_Person__WEBPACK_IMPORTED_MODULE_7__.default.get({}, _this6.person_type).then(function (response) {
                   return _this6.people = response.data;
                 });
-                _apis_Account__WEBPACK_IMPORTED_MODULE_6__.default.cashAndBanks().then(function (response) {
+                _apis_Account__WEBPACK_IMPORTED_MODULE_8__.default.cashAndBanks().then(function (response) {
                   return _this6.additional_expenses_from_accounts = response.data.accounts;
                 });
               } // if (route == "nibras")
@@ -2178,7 +2167,7 @@ var Document = null;
               //this.createPage(this.$route, "new");
 
 
-            case 12:
+            case 2:
             case "end":
               return _context.stop();
           }
@@ -2216,6 +2205,44 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/apis/Document.js":
+/*!***************************************!*\
+  !*** ./resources/js/apis/Document.js ***!
+  \***************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _Api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Api */ "./resources/js/apis/Api.js");
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  store: function store(purchase, route) {
+    console.log("purchase", purchase);
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/" + route, purchase);
+  },
+  get: function get(id, route) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/" + route + "/" + id);
+  },
+  getAll: function getAll(params, route) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/" + route + "/all", {
+      params: params
+    });
+  },
+  update: function update(purchase, route) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("/" + route, purchase);
+  },
+  "delete": function _delete(params, route) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.delete("/" + route, {
+      params: params
+    });
+  }
+});
+
+/***/ }),
+
 /***/ "./resources/js/apis/Person.js":
 /*!*************************************!*\
   !*** ./resources/js/apis/Person.js ***!
@@ -2230,38 +2257,38 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Api */ "./resources/js/apis/Api.js");
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  store: function store(supplier) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/suppliers", supplier);
+  store: function store(supplier, route) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/" + route, supplier);
   },
-  update: function update(supplier) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("/suppliers", supplier);
+  update: function update(supplier, route) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("/" + route, supplier);
   },
-  postCreate: function postCreate(supplier) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/suppliers/create", supplier);
+  postCreate: function postCreate(supplier, route) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/" + route + "/create", supplier);
   },
-  getOne: function getOne(params) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/suppliers/getOne", {
+  getOne: function getOne(params, route) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/" + route + "/getOne", {
       params: params
     });
   },
-  get: function get(params) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/suppliers", {
+  get: function get(params, route) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/" + route, {
       params: params
     });
   },
-  getByProductID: function getByProductID(id) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/suppliers/product/" + id);
+  getByProductID: function getByProductID(id, route) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/" + route + "/product/" + id);
   },
-  search: function search(params) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/suppliers/search", {
+  search: function search(params, route) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/" + route + "/search", {
       params: params
     });
   },
-  barcodeSearch: function barcodeSearch(params) {
+  barcodeSearch: function barcodeSearch(params, route) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/router/" + params.barcode);
   },
-  "delete": function _delete(params) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.delete("/suppliers/", {
+  "delete": function _delete(params, route) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.delete("/" + route + "/", {
       params: params
     });
   }
@@ -2308,8 +2335,8 @@ __webpack_require__.r(__webpack_exports__);
       params: params
     });
   },
-  purchaseBarcodeSearch: function purchaseBarcodeSearch(params) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/extra/purchase/barcode/" + params.barcode);
+  purchaseBarcodeSearch: function purchaseBarcodeSearch(params, route) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/extra/" + route + "/barcode/" + params.barcode);
   },
   invoiceBarcodeSearch: function invoiceBarcodeSearch(params) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/extra/invoice/barcode/" + params.barcode + "/inventory_id/" + params.inventory_id);
@@ -2391,7 +2418,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.v-application--wrap > .container {\r\n  margin: 0;\n}\n.v-text-field.v-text-field--enclosed .v-text-field__details,\r\n.v-text-field.v-text-field--enclosed:not(.v-text-field--rounded)\r\n  > .v-input__control\r\n  > .v-input__slot {\r\n  padding: 0px;\n}\n.purchase-footer {\r\n  min-width: 0;\r\n  overflow: hidden;\n}\n.purchas-extra-expense :after,\r\n.purchas-extra-expense :before {\r\n  display: none;\n}\n.purchas-extra-expense .v-text-field__details {\r\n  display: none;\n}\n.text-red input {\r\n  color: red !important;\n}\n.purchase-info .v-text-field__prefix {\r\n  margin-right: 10px;\n}\r\n/* Chrome, Safari, Edge, Opera */\ninput::-webkit-outer-spin-button,\r\ninput::-webkit-inner-spin-button {\r\n  -webkit-appearance: none;\r\n  margin: 0;\n}\r\n\r\n/* Firefox */\ninput[type=\"number\"] {\r\n  -moz-appearance: textfield;\n}\r\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.v-application--wrap > .container {\r\n  margin: 0;\n}\n.v-text-field.v-text-field--enclosed .v-text-field__details,\r\n.v-text-field.v-text-field--enclosed:not(.v-text-field--rounded)\r\n  > .v-input__control\r\n  > .v-input__slot {\r\n  padding: 0px;\n}\n.document-footer {\r\n  min-width: 0;\r\n  overflow: hidden;\n}\n.purchas-extra-expense :after,\r\n.purchas-extra-expense :before {\r\n  display: none;\n}\n.purchas-extra-expense .v-text-field__details {\r\n  display: none;\n}\n.text-red input {\r\n  color: red !important;\n}\n.document-info .v-text-field__prefix {\r\n  margin-right: 10px;\n}\r\n/* Chrome, Safari, Edge, Opera */\ninput::-webkit-outer-spin-button,\r\ninput::-webkit-inner-spin-button {\r\n  -webkit-appearance: none;\r\n  margin: 0;\n}\r\n\r\n/* Firefox */\ninput[type=\"number\"] {\r\n  -moz-appearance: textfield;\n}\r\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -4414,11 +4441,11 @@ var render = function() {
                           _c("v-text-field", {
                             attrs: { label: "اسم المورد *", required: "" },
                             model: {
-                              value: _vm.supplier.name,
+                              value: _vm.person.name,
                               callback: function($$v) {
-                                _vm.$set(_vm.supplier, "name", $$v)
+                                _vm.$set(_vm.person, "name", $$v)
                               },
-                              expression: "supplier.name"
+                              expression: "person.name"
                             }
                           })
                         ],
@@ -4432,11 +4459,11 @@ var render = function() {
                           _c("v-text-field", {
                             attrs: { label: "اسم الشركة*", required: "" },
                             model: {
-                              value: _vm.supplier.company_name,
+                              value: _vm.person.company_name,
                               callback: function($$v) {
-                                _vm.$set(_vm.supplier, "company_name", $$v)
+                                _vm.$set(_vm.person, "company_name", $$v)
                               },
-                              expression: "supplier.company_name"
+                              expression: "person.company_name"
                             }
                           })
                         ],
@@ -4457,11 +4484,11 @@ var render = function() {
                             },
                             on: { change: _vm.loadCities },
                             model: {
-                              value: _vm.supplier.country_id,
+                              value: _vm.person.country_id,
                               callback: function($$v) {
-                                _vm.$set(_vm.supplier, "country_id", $$v)
+                                _vm.$set(_vm.person, "country_id", $$v)
                               },
-                              expression: "supplier.country_id"
+                              expression: "person.country_id"
                             }
                           })
                         ],
@@ -4481,11 +4508,11 @@ var render = function() {
                               autocomplete: "off"
                             },
                             model: {
-                              value: _vm.supplier.city_id,
+                              value: _vm.person.city_id,
                               callback: function($$v) {
-                                _vm.$set(_vm.supplier, "city_id", $$v)
+                                _vm.$set(_vm.person, "city_id", $$v)
                               },
-                              expression: "supplier.city_id"
+                              expression: "person.city_id"
                             }
                           })
                         ],
@@ -4503,11 +4530,11 @@ var render = function() {
                               required: ""
                             },
                             model: {
-                              value: _vm.supplier.address,
+                              value: _vm.person.address,
                               callback: function($$v) {
-                                _vm.$set(_vm.supplier, "address", $$v)
+                                _vm.$set(_vm.person, "address", $$v)
                               },
-                              expression: "supplier.address"
+                              expression: "person.address"
                             }
                           })
                         ],
@@ -4524,11 +4551,11 @@ var render = function() {
                               required: ""
                             },
                             model: {
-                              value: _vm.supplier.phone01,
+                              value: _vm.person.phone01,
                               callback: function($$v) {
-                                _vm.$set(_vm.supplier, "phone01", $$v)
+                                _vm.$set(_vm.person, "phone01", $$v)
                               },
-                              expression: "supplier.phone01"
+                              expression: "person.phone01"
                             }
                           })
                         ],
@@ -4545,11 +4572,11 @@ var render = function() {
                               required: ""
                             },
                             model: {
-                              value: _vm.supplier.phone02,
+                              value: _vm.person.phone02,
                               callback: function($$v) {
-                                _vm.$set(_vm.supplier, "phone02", $$v)
+                                _vm.$set(_vm.person, "phone02", $$v)
                               },
-                              expression: "supplier.phone02"
+                              expression: "person.phone02"
                             }
                           })
                         ],
@@ -4563,11 +4590,11 @@ var render = function() {
                           _c("v-text-field", {
                             attrs: { label: "البريد الالكتروني", required: "" },
                             model: {
-                              value: _vm.supplier.email,
+                              value: _vm.person.email,
                               callback: function($$v) {
-                                _vm.$set(_vm.supplier, "email", $$v)
+                                _vm.$set(_vm.person, "email", $$v)
                               },
-                              expression: "supplier.email"
+                              expression: "person.email"
                             }
                           })
                         ],
@@ -4581,11 +4608,11 @@ var render = function() {
                           _c("v-text-field", {
                             attrs: { label: "الموقع الالكتروني", required: "" },
                             model: {
-                              value: _vm.supplier.website,
+                              value: _vm.person.website,
                               callback: function($$v) {
-                                _vm.$set(_vm.supplier, "website", $$v)
+                                _vm.$set(_vm.person, "website", $$v)
                               },
-                              expression: "supplier.website"
+                              expression: "person.website"
                             }
                           })
                         ],
@@ -4599,11 +4626,11 @@ var render = function() {
                           _c("v-text-field", {
                             attrs: { label: "الرقم الضريبي", required: "" },
                             model: {
-                              value: _vm.supplier.tax_number,
+                              value: _vm.person.tax_number,
                               callback: function($$v) {
-                                _vm.$set(_vm.supplier, "tax_number", $$v)
+                                _vm.$set(_vm.person, "tax_number", $$v)
                               },
-                              expression: "supplier.tax_number"
+                              expression: "person.tax_number"
                             }
                           })
                         ],
@@ -5138,6 +5165,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "staticRenderFns": () => (/* binding */ staticRenderFns)
 /* harmony export */ });
 var render = function() {
+  var this$1 = this
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
@@ -5212,7 +5240,7 @@ var render = function() {
                   "router-link",
                   {
                     staticClass: "btn btn-info m-b-5 m-r-2",
-                    attrs: { to: "/purchase/1" }
+                    attrs: { to: "/document/1" }
                   },
                   [
                     _c("v-icon", { staticClass: "white--text" }, [
@@ -5243,7 +5271,7 @@ var render = function() {
                                   },
                                   [
                                     _c("v-text-field", {
-                                      staticClass: "purchase-info",
+                                      staticClass: "document-info",
                                       attrs: {
                                         outlined: "",
                                         autocomplete: "off",
@@ -5321,15 +5349,21 @@ var render = function() {
                                               attrs: {
                                                 items: _vm.people,
                                                 "item-text": function(item) {
-                                                  return (
-                                                    item.company_name +
-                                                    " : " +
-                                                    item.name
-                                                  )
+                                                  if (
+                                                    this$1.route == "purchase"
+                                                  ) {
+                                                    return (
+                                                      item.company_name +
+                                                      " : " +
+                                                      item.name
+                                                    )
+                                                  } else {
+                                                    return item.name
+                                                  }
                                                 },
                                                 "item-value": "id",
                                                 rules: _vm.vld_selected,
-                                                label: "المورد"
+                                                label: _vm.persona
                                               },
                                               model: {
                                                 value: _vm.document.person_id,
@@ -5671,7 +5705,9 @@ var render = function() {
                                   { staticStyle: { background: "lightgray" } },
                                   [
                                     _vm._v(
-                                      "\n                  معلومات المورد\n                "
+                                      "\n                  " +
+                                        _vm._s(_vm.person_info) +
+                                        "\n                "
                                     )
                                   ]
                                 ),
@@ -6454,7 +6490,7 @@ var render = function() {
                                     _vm._v(" "),
                                     _c(
                                       "div",
-                                      { staticClass: "purchase-footer" },
+                                      { staticClass: "document-footer" },
                                       [
                                         _c(
                                           "v-row",

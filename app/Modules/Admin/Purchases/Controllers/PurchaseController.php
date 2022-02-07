@@ -142,7 +142,7 @@ class PurchaseController extends Controller
         $purchase->details = $details;
 
         return [
-            'purchase' => $purchase,
+            'document' => $purchase,
             'people' => Person::where('company_id', '1')->where('is_supplier', '1')->get(),
             'accounts' => $this->cashAndBanks()
 
@@ -314,7 +314,7 @@ class PurchaseController extends Controller
     }
     private function storeLinkedData($request, $purchase)
     {
-        $supplier_account_id = Person::find($request->supplier_id)['supplier_account_id'];
+        $supplier_account_id = Person::find($request->person_id)['supplier_account_id'];
 
         $supplier_account = [
             "company_id" => 1,

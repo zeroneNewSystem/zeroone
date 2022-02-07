@@ -1,23 +1,22 @@
 import Api from "./Api";
 
 export default {
-
-    store(purchase) {
-        console.log('purchase', purchase)
-        return Api.post("/purchases", purchase);
+    store(purchase, route) {
+        console.log("purchase", purchase);
+        return Api.post("/" + route, purchase);
     },
-    get(id) {
-        return Api.get("/purchases/" + id);
-    },
-
-    getAll(params) {
-        return Api.get("/purchases/all", { params: params });
+    get(id, route) {
+        return Api.get("/" + route + "/" + id);
     },
 
-    update(purchase) {
-        return Api.put("/purchases", purchase);
+    getAll(params, route) {
+        return Api.get("/" + route + "/all", { params: params });
     },
-    delete(params) {
-        return Api.delete("/purchases", { params: params });
+
+    update(purchase, route) {
+        return Api.put("/" + route, purchase);
+    },
+    delete(params, route) {
+        return Api.delete("/" + route, { params: params });
     }
 };

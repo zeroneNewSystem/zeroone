@@ -20,13 +20,13 @@
             <v-col cols="12" lg="6">
               <v-text-field
                 label="اسم المورد *"
-                v-model="supplier.name"
+                v-model="person.name"
                 required
               ></v-text-field>
             </v-col>
             <v-col cols="12" lg="6">
               <v-text-field
-                v-model="supplier.company_name"
+                v-model="person.company_name"
                 label="اسم الشركة*"
                 required
               ></v-text-field>
@@ -34,7 +34,7 @@
 
             <v-col cols="12" lg="6">
               <v-autocomplete
-                v-model="supplier.country_id"
+                v-model="person.country_id"
                 :items="countries"
                 item-text="en_name"
                 item-value="id"
@@ -45,7 +45,7 @@
             </v-col>
             <v-col cols="12" lg="6">
               <v-autocomplete
-                v-model="supplier.city_id"
+                v-model="person.city_id"
                 :items="cities"
                 item-text="en_name"
                 item-value="id"
@@ -57,14 +57,14 @@
             <v-col cols="12">
               <v-textarea
                 rows="2"
-                v-model="supplier.address"
+                v-model="person.address"
                 label="العنوان"
                 required
               ></v-textarea>
             </v-col>
             <v-col cols="12" lg="6">
               <v-text-field
-                v-model="supplier.phone01"
+                v-model="person.phone01"
                 label="رقم الاتصال الأساسي"
                 required
               ></v-text-field>
@@ -72,28 +72,28 @@
 
             <v-col cols="12" lg="6">
               <v-text-field
-                v-model="supplier.phone02"
+                v-model="person.phone02"
                 label="رقم الاتصال الثانوي"
                 required
               ></v-text-field>
             </v-col>
             <v-col cols="12" lg="6">
               <v-text-field
-                v-model="supplier.email"
+                v-model="person.email"
                 label="البريد الالكتروني"
                 required
               ></v-text-field>
             </v-col>
             <v-col cols="12" lg="6">
               <v-text-field
-                v-model="supplier.website"
+                v-model="person.website"
                 label="الموقع الالكتروني"
                 required
               ></v-text-field>
             </v-col>
             <v-col cols="12" lg="6">
               <v-text-field
-                v-model="supplier.tax_number"
+                v-model="person.tax_number"
                 label="الرقم الضريبي"
                 required
               ></v-text-field>
@@ -124,13 +124,13 @@
 import Person from "../../../apis/Person";
 import Country from "../../../apis/Country";
 export default {
-  props: ["dialog", "supplier", "cities", "operation"],
+  props: ["dialog", "person", "cities", "operation"],
   data: () => ({
     isloading: false,
     title: "إضافة مورد جديد",
     countries: [],
 
-    supplier_div_update: 0,
+    person_div_update: 0,
   }),
 
   created() {
@@ -141,46 +141,46 @@ export default {
   computed: {},
   methods: {
     loadCities() {
-      this.$emit("changeCountry", this.supplier.country_id);
+      this.$emit("changeCountry", this.person.country_id);
     },
     closeDialog() {
-      this.$parent.$data.add_update_supplier_dialog = false;
+      this.$parent.$data.add_update_person_dialog = false;
     },
     savePerson() {
       console.log(this.operation);
       this.isloading = "blue";
       if (this.operation == "add") {
-        Person.store(this.supplier).then((response) => {
-          this.supplier["id"] = response.data;
-          this.$parent.$data.add_update_supplier_dialog = false;
+        Person.store(this.person).then((response) => {
+          this.person["id"] = response.data;
+          this.$parent.$data.add_update_person_dialog = false;
           this.isloading = false;
-          this.$emit("addUpdatePerson", this.supplier);
+          this.$emit("addUpdatePerson", this.person);
         });
         return;
       }
       if (this.operation == "update") {
-        Person.update(this.supplier).then((response) => {
-          this.$parent.$data.add_update_supplier_dialog = false;
+        Person.update(this.person).then((response) => {
+          this.$parent.$data.add_update_person_dialog = false;
           this.isloading = false;
-          this.$emit("addUpdatePerson", this.supplier);
+          this.$emit("addUpdatePerson", this.person);
         });
         return;
       }
     },
     onParentChange() {
-      let parent = this.$store.state.suppliers.find(
-        (elem) => elem.id == this.supplier.parent_id
+      let parent = this.$store.state.persons.find(
+        (elem) => elem.id == this.person.parent_id
       );
 
       console.log(parent.type_id);
-      let parent_type_code = this.$store.state.supplier_types.find(
+      let parent_type_code = this.$store.state.person_types.find(
         (elem) => elem.id == parent.type_id
       ).type_code;
       console.log(parent_type_code);
 
-      this.supplier.level = parseInt(parent.level + 1);
+      this.person.level = parseInt(parent.level + 1);
 
-      this.supplier_types = this.$store.state.supplier_types.filter((elem) => {
+      this.person_types = this.$store.state.person_types.filter((elem) => {
         let length = 2;
 
         if (parent.level >= 2) {
@@ -195,16 +195,16 @@ export default {
     },
 
     bgblue(item) {
-      if (Math.ceil(Math.log10(item.supplier_code + 1)) <= 2) {
-        $("#nib" + item.supplier_code)
+      if (Math.ceil(Math.log10(item.person_code + 1)) <= 2) {
+        $("#nib" + item.person_code)
           .parent()
           .addClass("first-level");
-      } else if (Math.ceil(Math.log10(item.supplier_code + 1)) <= 3) {
-        $("#nib" + item.supplier_code)
+      } else if (Math.ceil(Math.log10(item.person_code + 1)) <= 3) {
+        $("#nib" + item.person_code)
           .parent()
           .addClass("second-level");
       }
-      if (this.supplier_div_update == 0) this.supplier_div_update += 1;
+      if (this.person_div_update == 0) this.person_div_update += 1;
       return "";
     },
   },
