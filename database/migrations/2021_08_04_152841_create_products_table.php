@@ -59,7 +59,7 @@ class CreateProductsTable extends Migration
             $table->text('description')->nullable();
             $table->unsignedInteger ('inventory_id',)->default(0);
 
-            $table->string('image')->nullable();
+            $table->string('image')->default('no-image.png');
 
             $table->unsignedInteger ('distribution_policy_id',)->nullable();
 

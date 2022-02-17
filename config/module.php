@@ -18,9 +18,9 @@ return [
             'Accounts',
             'Products',
             'People',
-            'Purchases',
-            'PurchaseReturns',
-            'Invoices',
+            'Bills',
+            'BillReturns',
+            
             'Receipts',
             'Bonds',
             'StockTakes',

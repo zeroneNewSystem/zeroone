@@ -11,17 +11,17 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(["prefix" => "returns"], function () {
 
-    Route::get('/', 'PurchaseReturnController@index');
-    Route::get('/all', 'PurchaseReturnController@all');
-    Route::get('/create', 'PurchaseReturnController@create');
-    Route::get('/{id}', 'PurchaseReturnController@one');
+    Route::get('/', 'BillReturnController@index');
+    Route::get('/all', 'BillReturnController@all');
+    Route::get('/create', 'BillReturnController@create');
+    Route::get('/{id}', 'BillReturnController@one');
     
     
-    Route::post('/', 'PurchaseReturnController@store');
+    Route::post('/', 'BillReturnController@store');
     
-    Route::delete('/', 'PurchaseReturnController@destroy');
-    Route::delete('/sup_doc', 'PurchaseReturnController@destroySupDoc');
-    Route::put('/', 'PurchaseReturnController@update');
+    Route::delete('/', 'BillReturnController@destroy');
+    Route::delete('/sup_doc', 'BillReturnController@destroySupDoc');
+    Route::put('/', 'BillReturnController@update');
 
     
     

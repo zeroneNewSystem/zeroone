@@ -32,8 +32,8 @@
             <v-list-item-content>
               <v-list-item-title>Password</v-list-item-title>
               <v-list-item-subtitle
-                >Require password for purchase or use password to restrict
-                purchase</v-list-item-subtitle
+                >Require password for bill or use password to restrict
+                bill</v-list-item-subtitle
               >
             </v-list-item-content>
           </v-list-item>

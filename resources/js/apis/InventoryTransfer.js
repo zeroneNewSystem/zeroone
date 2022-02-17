@@ -21,8 +21,8 @@ export default {
         return Api.get("/inventory_transfers/search", { params: params });
     },
 
-    purchaseBarcodeSearch(params) {
-        return Api.get("/extra/purchase/barcode/" + params.barcode);
+    documentBarcodeSearch(params) {
+        return Api.get("/extra/document/barcode/" + params.barcode);
     },
     invoiceBarcodeSearch(params) {
         return Api.get("/extra/invoice/barcode/" + params.barcode);

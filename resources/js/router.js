@@ -194,36 +194,36 @@ const router = new VueRouter({
                     }
                 },
                 {
-                    path: "/purchase",
-                    name: "purchase",
+                    path: "/bill",
+                    name: "bill",
                     meta: { requiresAuth: true },
                     components: {
                         default: () =>
-                            import ("./components/main/purchases/purchase"),
+                            import ("./components/main/bills/bill"),
                         mainView: () =>
-                            import ("./components/main/purchases/purchase")
+                            import ("./components/main/bills/bill")
                     }
                 },
                 {
-                    path: "/purchases",
-                    name: "purchases",
+                    path: "/bills",
+                    name: "bills",
                     meta: { requiresAuth: true },
                     components: {
                         default: () =>
-                            import ("./components/main/purchases/purchases"),
+                            import ("./components/main/bills/bills"),
                         mainView: () =>
-                            import ("./components/main/purchases/purchases")
+                            import ("./components/main/bills/bills")
                     }
                 },
                 {
-                    path: "/purchase/:id",
-                    name: "purchase",
+                    path: "/bill/:id",
+                    name: "bill",
                     meta: { requiresAuth: true },
                     components: {
                         default: () =>
-                            import ("./components/main/purchases/purchase"),
+                            import ("./components/main/bills/bill"),
                         mainView: () =>
-                            import ("./components/main/purchases/purchase")
+                            import ("./components/main/bills/bill")
                     }
                 },
 
@@ -257,9 +257,9 @@ const router = new VueRouter({
                     meta: { requiresAuth: true },
                     components: {
                         default: () =>
-                            import ("./components/main/purchases/suppliers"),
+                            import ("./components/main/bills/suppliers"),
                         mainView: () =>
-                            import ("./components/main/purchases/suppliers")
+                            import ("./components/main/bills/suppliers")
                     }
                 },
                 {
@@ -268,9 +268,9 @@ const router = new VueRouter({
                     meta: { requiresAuth: true },
                     components: {
                         default: () =>
-                            import ("./components/main/purchases/supplier-info"),
+                            import ("./components/main/bills/supplier-info"),
                         mainView: () =>
-                            import ("./components/main/purchases/supplier-info")
+                            import ("./components/main/bills/supplier-info")
                     }
                 },
                 {
@@ -310,14 +310,14 @@ const router = new VueRouter({
                             )
                     }
                 }, {
-                    path: "/:document",
-                    name: "document",
+                    path: "/:bill",
+                    name: "bill",
                     meta: { requiresAuth: true },
                     components: {
                         default: () =>
-                            import ("./components/main/purchases/purchase"),
+                            import ("./components/main/bills/bill"),
                         mainView: () =>
-                            import ("./components/main/purchases/purchase")
+                            import ("./components/main/bills/bill")
                     }
                 },
             ]

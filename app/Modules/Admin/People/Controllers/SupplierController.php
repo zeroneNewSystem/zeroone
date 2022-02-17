@@ -7,7 +7,7 @@ use App\Models\Receipt;
 use App\Modules\Admin\Accounts\Models\Account;
 use App\Modules\Admin\people\Models\Person;
 use App\Modules\Admin\people\Models\Supplier;
-use App\Modules\Admin\Purchases\Models\Purchase;
+use App\Modules\Admin\Bills\Models\Bill;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -88,13 +88,13 @@ class SupplierController extends Controller
         // all transactions 
         $suppliers = $suppliers->leftJoin('transactions as trans', 'acc.id', '=', 'trans.account_id');
 
-        // all maturity purchase
+        // all maturity bill
         $suppliers = $suppliers->leftJoin(
-            'purchases as pur',
+            'bills as pur',
             function ($leftJoin) {
                 $leftJoin
-                    ->on('trans.document_id', '=', 'pur.id')
-                    ->where('trans.document_type_id', 1)
+                    ->on('trans.bill_id', '=', 'pur.id')
+                    ->where('trans.bill_type_id', 1)
                     ->where('pur.maturity_date', '<', date('Y-m-d'))
                     ->where('pur.payment_status_id', '!=', 5)
                     ->where('pur.payment_status_id', '!=', 5);
@@ -102,11 +102,11 @@ class SupplierController extends Controller
 
         );
         $suppliers = $suppliers->leftJoin(
-            'supplemental_documentations as supdoc',
+            'supplemental_billings as supdoc',
             function ($leftJoin) {
                 $leftJoin
-                    ->on('supdoc.document_id', '=', 'pur.id')
-                    ->where('supdoc.document_type_id', 1);
+                    ->on('supdoc.bill_id', '=', 'pur.id')
+                    ->where('supdoc.bill_type_id', 1);
             }
 
         );
@@ -154,6 +154,7 @@ class SupplierController extends Controller
     {
         $request['company_id'] = 1;
         $request['person_id'] = 1;
+        $request['is_supplier '] = 1;
 
         $account_line = Account::where('account_code', 'like', '%2101%')->orderBy('account_code', 'DESC')->get();
 
@@ -167,7 +168,9 @@ class SupplierController extends Controller
 
 
         $supplier = Person::create($request->all());
-        
+
+        $supplier_id = $supplier->id;
+
 
         $account_items =
             [
@@ -193,7 +196,7 @@ class SupplierController extends Controller
         $supplier = Person::find($supplier->id)->update(['supplier_account_id' => $account->id]);
 
 
-        return 1;
+        return  $supplier_id;
     }
 
     /**
@@ -207,8 +210,8 @@ class SupplierController extends Controller
     {
 
         if ($request->has('pur_itemsPerPage')) {
-            $purchases  =  Purchase::where('supplier_id', $request->id)->orderBy('id', 'DESC')->paginate($request->pur_itemsPerPage != -1 ? $request->pur_itemsPerPage : '', ['*'], 'pur_page');
-            return ['purchases' => $purchases];
+            $bills  =  Bill::where('supplier_id', $request->id)->orderBy('id', 'DESC')->paginate($request->pur_itemsPerPage != -1 ? $request->pur_itemsPerPage : '', ['*'], 'pur_page');
+            return ['bills' => $bills];
         }
 
         if ($request->has('receipt_itemsPerPage')) {
@@ -231,26 +234,26 @@ class SupplierController extends Controller
             $balance += $transaction->credit - $transaction->debit;
         }
 
-        $purchases  =  Purchase::where('supplier_id', $request->id)->get();
-        $purchases_count = $purchases->count();
+        $bills  =  Bill::where('supplier_id', $request->id)->get();
+        $bills_count = $bills->count();
         $total_amount = 0;
         $total_amount_with_maturity_date = 0;
         $paid_amount = 0;
         $paid_amount_with_maturity_date = 0;
 
-        foreach ($purchases as $purchase) {
-            $total_amount += $purchase->total_amount;
-            $supp_documents = DB::table('supplemental_documentations')->where('document_id', $purchase->id)->where('document_type_id', 1)->get();
-            if ($purchase->maturity_date <  date('Y-m-d') && $purchase->maturity_date != 5) {
-                $total_amount_with_maturity_date +=  $purchase->total_amount;
-                $paid_amount_with_maturity_date +=  $purchase->paid_amount;
-                foreach ($supp_documents as $supp_document) {
-                    $paid_amount_with_maturity_date += $supp_document->amount;
+        foreach ($bills as $bill) {
+            $total_amount += $bill->total_amount;
+            $supp_bills = DB::table('supplemental_billings')->where('bill_id', $bill->id)->where('bill_type_id', 1)->get();
+            if ($bill->maturity_date <  date('Y-m-d') && $bill->maturity_date != 5) {
+                $total_amount_with_maturity_date +=  $bill->total_amount;
+                $paid_amount_with_maturity_date +=  $bill->paid_amount;
+                foreach ($supp_bills as $supp_bill) {
+                    $paid_amount_with_maturity_date += $supp_bill->amount;
                 }
             }
-            $paid_amount += $purchase->paid_amount;
-            foreach ($supp_documents as $supp_document) {
-                $paid_amount += $supp_document->amount;
+            $paid_amount += $bill->paid_amount;
+            foreach ($supp_bills as $supp_bill) {
+                $paid_amount += $supp_bill->amount;
             }
         }
 
@@ -267,7 +270,7 @@ class SupplierController extends Controller
                 'total_amount' => $total_amount,
                 'arrears' => $arrears,
                 'supplier' => $supplier,
-                'purchases_count' => $purchases_count,
+                'bills_count' => $bills_count,
                 'balance' => $balance,
 
             ];

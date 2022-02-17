@@ -25,7 +25,7 @@ class PrdctUnitsProductFactory extends Factory
             'product_id'  => $this->faker->randomNumber(1,10),
             
             'prdct_unit_id'  => $this->faker->randomNumber(1,6),
-            'contains'  => $this->faker->randomNumber(1,100),
+            'contains'  => $this->faker->randomNumber(1,6),
             
             'bought_price'  => $this->faker->randomNumber(1,6),
             'sold_price'  => $this->faker->randomNumber(1,6),

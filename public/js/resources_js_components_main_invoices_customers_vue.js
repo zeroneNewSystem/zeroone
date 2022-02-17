@@ -157,7 +157,7 @@ __webpack_require__.r(__webpack_exports__);
   computed: {},
   methods: {
     loadCities: function loadCities() {
-      this.$emit("dialogFalse", this.customer.country_id);
+      this.$emit("changeCountry", this.customer.country_id);
     },
     closeDialog: function closeDialog() {
       this.$parent.$data.add_update_customer_dialog = false;

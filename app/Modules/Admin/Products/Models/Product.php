@@ -3,8 +3,8 @@
 namespace App\Modules\Admin\Products\Models;
 
 use App\Models\Tax;
-use App\Modules\Admin\Purchases\Models\Purchase;
-use App\Modules\Admin\Purchases\Models\PurchaseDetail;
+use App\Modules\Admin\Bills\Models\Bill;
+use App\Modules\Admin\Bills\Models\BillDetail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -19,13 +19,13 @@ class Product extends Model
     protected $guarded = ['id'];
     use HasFactory;
 
-    function purchases(){
-        return $this->hasMany(PurchaseDetail::class);
+    function bills(){
+        return $this->hasMany(BillDetail::class);
     }
 
     function sum(){
         
-        return $this->purchases()
+        return $this->bills()
             ->selectRaw('
         sum(sum_quantity_in_minor_unit) as sum_quantity_in_minor_unit,
         

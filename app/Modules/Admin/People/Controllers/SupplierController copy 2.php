@@ -72,21 +72,21 @@ class SupplierController extends Controller
         );
         $suppliers = $suppliers->leftJoin('transactions as trans', 'acc.id', '=', 'trans.account_id');
         $suppliers = $suppliers->leftJoin(
-            'purchases as pur',
+            'bills as pur',
             function ($leftJoin) {
                 $leftJoin
-                    ->on('trans.document_id', '=', 'pur.id')
-                    ->where('trans.document_type_id', 1)
+                    ->on('trans.bill_id', '=', 'pur.id')
+                    ->where('trans.bill_type_id', 1)
                     ->where('pur.maturity_date', '<', date('Y-m-d'));
             }
 
         );
         $suppliers = $suppliers->leftJoin(
-            'supplemental_documentations as supdoc',
+            'supplemental_billings as supdoc',
             function ($leftJoin) {
                 $leftJoin
-                    ->on('supdoc.document_id', '=', 'pur.id')
-                    ->where('supdoc.document_type_id', 1);
+                    ->on('supdoc.bill_id', '=', 'pur.id')
+                    ->where('supdoc.bill_type_id', 1);
             }
 
         );
@@ -153,7 +153,7 @@ class SupplierController extends Controller
         }
 
         $suppliers = $suppliers->leftJoin(
-            'purchases as pur',
+            'bills as pur',
             function ($leftJoin) {
                 $leftJoin
                     ->on('people.id', '=', 'pur.supplier_id')
@@ -162,11 +162,11 @@ class SupplierController extends Controller
 
         );
         $suppliers = $suppliers->leftJoin(
-            'supplemental_documentations as supdoc',
+            'supplemental_billings as supdoc',
             function ($leftJoin) {
                 $leftJoin
-                    ->on('supdoc.document_id', '=', 'pur.id')
-                    ->where('supdoc.document_type_id', 1);
+                    ->on('supdoc.bill_id', '=', 'pur.id')
+                    ->where('supdoc.bill_type_id', 1);
             }
 
         );
@@ -186,8 +186,8 @@ class SupplierController extends Controller
             function ($leftJoin) {
                 $leftJoin
                     ->on('acc.id', '=', 'trans.account_id')
-                    ->on('pur.id', '=', 'trans.document_id')
-                    ->where('trans.document_type_id', 1);
+                    ->on('pur.id', '=', 'trans.bill_id')
+                    ->where('trans.bill_type_id', 1);
             }
 
         );
@@ -265,7 +265,7 @@ class SupplierController extends Controller
 
         );
         $suppliers = $suppliers->leftJoin(
-            'purchases as pur',
+            'bills as pur',
             function ($leftJoin) {
                 $leftJoin
                     ->on('people.id', '=', 'pur.supplier_id')
@@ -274,11 +274,11 @@ class SupplierController extends Controller
 
         );
         $suppliers = $suppliers->leftJoin(
-            'supplemental_documentations as supdoc',
+            'supplemental_billings as supdoc',
             function ($leftJoin) {
                 $leftJoin
-                    ->on('supdoc.document_id', '=', 'pur.id')
-                    ->where('supdoc.document_type_id', 1);
+                    ->on('supdoc.bill_id', '=', 'pur.id')
+                    ->where('supdoc.bill_type_id', 1);
             }
 
         );

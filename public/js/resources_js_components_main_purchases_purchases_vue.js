@@ -1,9 +1,9 @@
 "use strict";
-(self["webpackChunk"] = self["webpackChunk"] || []).push([["resources_js_components_main_purchases_purchases_vue"],{
+(self["webpackChunk"] = self["webpackChunk"] || []).push([["resources_js_components_main_documents_documents_vue"],{
 
-/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/main/purchases/purchases.vue?vue&type=script&lang=js&":
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/main/documents/documents.vue?vue&type=script&lang=js&":
 /*!*******************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/main/purchases/purchases.vue?vue&type=script&lang=js& ***!
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/main/documents/documents.vue?vue&type=script&lang=js& ***!
   \*******************************************************************************************************************************************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -11,7 +11,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _apis_Purchase__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../apis/Purchase */ "./resources/js/apis/Purchase.js");
+/* harmony import */ var _apis_Document__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../apis/Document */ "./resources/js/apis/Document.js");
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
@@ -228,9 +228,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         date_from: "",
         date_to: ""
       },
-      purchases_total: 10,
+      documents_total: 10,
       options: {},
-      purchases: [],
+      documents: [],
       headers: [{
         text: "م",
         align: "center",
@@ -274,7 +274,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     };
   },
   methods: {
-    deletePurchase: function deletePurchase(purchase) {
+    deleteDocument: function deleteDocument(document) {
       var _this = this;
 
       var _this$options = this.options,
@@ -282,17 +282,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           sortDesc = _this$options.sortDesc,
           page = _this$options.page,
           itemsPerPage = _this$options.itemsPerPage;
-      _apis_Purchase__WEBPACK_IMPORTED_MODULE_0__.default.delete({
-        id: purchase.id,
+      _apis_Document__WEBPACK_IMPORTED_MODULE_0__.default.delete({
+        id: document.id,
         page: page,
         itemsPerPage: itemsPerPage,
         search: this.search
       }).then(function (response) {
-        _this.purchases = response.data.data;
-        _this.purchases_total = response.data.total;
+        _this.documents = response.data.data;
+        _this.documents_total = response.data.total;
       });
     },
-    getPurchases: function getPurchases() {
+    getDocuments: function getDocuments() {
       var _this2 = this;
 
       var _this$options2 = this.options,
@@ -300,25 +300,25 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           sortDesc = _this$options2.sortDesc,
           page = _this$options2.page,
           itemsPerPage = _this$options2.itemsPerPage;
-      _apis_Purchase__WEBPACK_IMPORTED_MODULE_0__.default.getAll({
+      _apis_Document__WEBPACK_IMPORTED_MODULE_0__.default.getAll({
         page: page,
         itemsPerPage: itemsPerPage,
         search: this.search
       }).then(function (response) {
-        _this2.purchases = response.data.data;
-        _this2.purchases_total = response.data.total;
+        _this2.documents = response.data.data;
+        _this2.documents_total = response.data.total;
       });
     },
     searchReset: function searchReset() {
       var _this3 = this;
 
-      _apis_Purchase__WEBPACK_IMPORTED_MODULE_0__.default.getAll({
+      _apis_Document__WEBPACK_IMPORTED_MODULE_0__.default.getAll({
         page: 1,
         itemsPerPage: 10,
         search: {}
       }).then(function (response) {
-        _this3.purchases = response.data.data;
-        _this3.purchases_total = response.data.total;
+        _this3.documents = response.data.data;
+        _this3.documents_total = response.data.total;
         _this3.search = {
           company_name: "",
           reference: "",
@@ -339,7 +339,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   watch: {
     params: {
       handler: function handler() {
-        this.getPurchases();
+        this.getDocuments();
       },
       deep: true
     }
@@ -348,9 +348,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /***/ }),
 
-/***/ "./resources/js/apis/Purchase.js":
+/***/ "./resources/js/apis/Document.js":
 /*!***************************************!*\
-  !*** ./resources/js/apis/Purchase.js ***!
+  !*** ./resources/js/apis/Document.js ***!
   \***************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -361,23 +361,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Api */ "./resources/js/apis/Api.js");
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  store: function store(purchase) {
-    console.log('purchase', purchase);
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/purchases", purchase);
+  store: function store(document) {
+    console.log('document', document);
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/documents", document);
   },
   get: function get(id) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/purchases/" + id);
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/documents/" + id);
   },
   getAll: function getAll(params) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/purchases/all", {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/documents/all", {
       params: params
     });
   },
-  update: function update(purchase) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("/purchases", purchase);
+  update: function update(document) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("/documents", document);
   },
   "delete": function _delete(params) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.delete("/purchases", {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.delete("/documents", {
       params: params
     });
   }
@@ -385,9 +385,9 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./resources/js/components/main/purchases/purchases.vue":
+/***/ "./resources/js/components/main/documents/documents.vue":
 /*!**************************************************************!*\
-  !*** ./resources/js/components/main/purchases/purchases.vue ***!
+  !*** ./resources/js/components/main/documents/documents.vue ***!
   \**************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -395,8 +395,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _purchases_vue_vue_type_template_id_367d5bca___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./purchases.vue?vue&type=template&id=367d5bca& */ "./resources/js/components/main/purchases/purchases.vue?vue&type=template&id=367d5bca&");
-/* harmony import */ var _purchases_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./purchases.vue?vue&type=script&lang=js& */ "./resources/js/components/main/purchases/purchases.vue?vue&type=script&lang=js&");
+/* harmony import */ var _documents_vue_vue_type_template_id_367d5bca___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./documents.vue?vue&type=template&id=367d5bca& */ "./resources/js/components/main/documents/documents.vue?vue&type=template&id=367d5bca&");
+/* harmony import */ var _documents_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./documents.vue?vue&type=script&lang=js& */ "./resources/js/components/main/documents/documents.vue?vue&type=script&lang=js&");
 /* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
@@ -406,9 +406,9 @@ __webpack_require__.r(__webpack_exports__);
 /* normalize component */
 ;
 var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__.default)(
-  _purchases_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__.default,
-  _purchases_vue_vue_type_template_id_367d5bca___WEBPACK_IMPORTED_MODULE_0__.render,
-  _purchases_vue_vue_type_template_id_367d5bca___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,
+  _documents_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__.default,
+  _documents_vue_vue_type_template_id_367d5bca___WEBPACK_IMPORTED_MODULE_0__.render,
+  _documents_vue_vue_type_template_id_367d5bca___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,
   false,
   null,
   null,
@@ -418,14 +418,14 @@ var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__
 
 /* hot reload */
 if (false) { var api; }
-component.options.__file = "resources/js/components/main/purchases/purchases.vue"
+component.options.__file = "resources/js/components/main/documents/documents.vue"
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (component.exports);
 
 /***/ }),
 
-/***/ "./resources/js/components/main/purchases/purchases.vue?vue&type=script&lang=js&":
+/***/ "./resources/js/components/main/documents/documents.vue?vue&type=script&lang=js&":
 /*!***************************************************************************************!*\
-  !*** ./resources/js/components/main/purchases/purchases.vue?vue&type=script&lang=js& ***!
+  !*** ./resources/js/components/main/documents/documents.vue?vue&type=script&lang=js& ***!
   \***************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -433,30 +433,30 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_0_rules_0_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_purchases_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!../../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./purchases.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/main/purchases/purchases.vue?vue&type=script&lang=js&");
- /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_babel_loader_lib_index_js_clonedRuleSet_5_0_rules_0_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_purchases_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__.default); 
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_0_rules_0_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_documents_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!../../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./documents.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/main/documents/documents.vue?vue&type=script&lang=js&");
+ /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_babel_loader_lib_index_js_clonedRuleSet_5_0_rules_0_use_0_node_modules_vue_loader_lib_index_js_vue_loader_options_documents_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__.default); 
 
 /***/ }),
 
-/***/ "./resources/js/components/main/purchases/purchases.vue?vue&type=template&id=367d5bca&":
+/***/ "./resources/js/components/main/documents/documents.vue?vue&type=template&id=367d5bca&":
 /*!*********************************************************************************************!*\
-  !*** ./resources/js/components/main/purchases/purchases.vue?vue&type=template&id=367d5bca& ***!
+  !*** ./resources/js/components/main/documents/documents.vue?vue&type=template&id=367d5bca& ***!
   \*********************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "render": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_purchases_vue_vue_type_template_id_367d5bca___WEBPACK_IMPORTED_MODULE_0__.render),
-/* harmony export */   "staticRenderFns": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_purchases_vue_vue_type_template_id_367d5bca___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
+/* harmony export */   "render": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_documents_vue_vue_type_template_id_367d5bca___WEBPACK_IMPORTED_MODULE_0__.render),
+/* harmony export */   "staticRenderFns": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_documents_vue_vue_type_template_id_367d5bca___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
 /* harmony export */ });
-/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_purchases_vue_vue_type_template_id_367d5bca___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./purchases.vue?vue&type=template&id=367d5bca& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/main/purchases/purchases.vue?vue&type=template&id=367d5bca&");
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_documents_vue_vue_type_template_id_367d5bca___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./documents.vue?vue&type=template&id=367d5bca& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/main/documents/documents.vue?vue&type=template&id=367d5bca&");
 
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/main/purchases/purchases.vue?vue&type=template&id=367d5bca&":
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/main/documents/documents.vue?vue&type=template&id=367d5bca&":
 /*!************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/main/purchases/purchases.vue?vue&type=template&id=367d5bca& ***!
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/main/documents/documents.vue?vue&type=template&id=367d5bca& ***!
   \************************************************************************************************************************************************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -476,9 +476,9 @@ var render = function() {
         staticClass: "elevation-1",
         attrs: {
           headers: _vm.headers,
-          items: _vm.purchases,
+          items: _vm.documents,
           options: _vm.options,
-          "server-items-length": _vm.purchases_total,
+          "server-items-length": _vm.documents_total,
           loading: _vm.loading
         },
         on: {
@@ -807,7 +807,7 @@ var render = function() {
                                   "v-btn",
                                   {
                                     attrs: { elevation: "", color: "primary" },
-                                    on: { click: _vm.getPurchases }
+                                    on: { click: _vm.getDocuments }
                                   },
                                   [_vm._v("البحث")]
                                 )
@@ -945,7 +945,7 @@ var render = function() {
               return [
                 _c(
                   "router-link",
-                  { attrs: { to: "purchase/" + item.id } },
+                  { attrs: { to: "document/" + item.id } },
                   [
                     _c("v-icon", { attrs: { small: "" } }, [
                       _vm._v("mdi-pencil")
@@ -956,7 +956,7 @@ var render = function() {
                 _vm._v(" "),
                 _c(
                   "router-link",
-                  { attrs: { to: "purchase/" + item.id } },
+                  { attrs: { to: "document/" + item.id } },
                   [
                     _c("v-icon", { attrs: { small: "" } }, [_vm._v("mdi-card")])
                   ],
@@ -970,7 +970,7 @@ var render = function() {
                     on: {
                       click: function($event) {
                         $event.stopPropagation()
-                        return _vm.deletePurchase(item, "update")
+                        return _vm.deleteDocument(item, "update")
                       }
                     }
                   },

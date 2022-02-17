@@ -19,10 +19,10 @@
                   {{ set.id }}
                 </v-col>
                 <v-col>
-                  {{ set.document_type_id }}
+                  {{ set.bill_type_id }}
                 </v-col>
                 <v-col>
-                  {{ set.document_id }}
+                  {{ set.bill_id }}
                 </v-col>
                 <v-col>
                   {{ set.expires_at && set.expires_at.split(" ")[0] }}
@@ -155,7 +155,7 @@
                     flat
                     hide-no-data
                     label="اسم الصنف"
-                    @change="addProductToPurchase"
+                    @change="addProductToBill"
                   ></v-autocomplete>
                 </v-col>
                 <v-col cols="12" sm="6" md="4">
@@ -213,11 +213,11 @@
               >
               </v-autocomplete>
             </template>
-            <template v-slot:item.document_id="{ item }">
-              {{ item.details[0].document_id }}
+            <template v-slot:item.bill_id="{ item }">
+              {{ item.details[0].bill_id }}
             </template>
-            <template v-slot:item.document_type_id="{ item }">
-              {{ item.details[0].document_type_id }}
+            <template v-slot:item.bill_type_id="{ item }">
+              {{ item.details[0].bill_type_id }}
             </template>
             <template v-slot:item.current_quantity="{ item }">
               <v-text-field
@@ -291,14 +291,14 @@ export default {
         {
           text: "نوع المستند",
           align: "center",
-          value: "document_type_id",
+          value: "bill_type_id",
 
           sortable: false,
         },
         {
           text: "رقم المستند",
           align: "center",
-          value: "document_id",
+          value: "bill_id",
 
           sortable: false,
         },
@@ -416,7 +416,7 @@ export default {
 
       window.removeEventListener("keydown", this.functionToAddProduct);
 
-      let input_barcode = document.getElementById("barcode");
+      let input_barcode = bill.getElementById("barcode");
       this.$nextTick(() => {
         input_barcode.focus();
       });
@@ -444,7 +444,7 @@ export default {
       // Mark first list item
       this.$nextTick(() => {
         listElm.firstElementChild.focus();
-        var selectedElm = document.activeElement,
+        var selectedElm = bill.activeElement,
           goToStart,
           // map actions to event's key
           action = {
@@ -618,12 +618,12 @@ export default {
         this.dialog = true;
 
         this.$nextTick().then(() => {
-          var listElm = document.querySelector("ul");
+          var listElm = bill.querySelector("ul");
 
           // Mark first list item
           this.$nextTick(() => {
             listElm.firstElementChild.focus();
-            var selectedElm = document.activeElement,
+            var selectedElm = bill.activeElement,
               goToStart,
               // map actions to event's key
               action = {
@@ -667,7 +667,7 @@ export default {
                 console.log("input_barcode");
                 console.log(input_barcode);
                 console.log("input_barcode");
-                let input_barcode = document.getElementById("barcode");
+                let input_barcode = bill.getElementById("barcode");
                 this.$nextTick(() => {
                   input_barcode.focus();
                 });
@@ -702,12 +702,12 @@ export default {
         //-----add
 
         //---------
-        //selected_product["document_type_id"] = 1; // purchase
-        //selected_product["product_id"] = selected_product["id"]; // purchase
+        //selected_product["bill_type_id"] = 1; // bill
+        //selected_product["product_id"] = selected_product["id"]; // bill
       });
     },
-    addProductToPurchase() {
-      console.log(this.purchase.details);
+    addProductToBill() {
+      console.log(this.bill.details);
       console.log("seles", this.selected_product);
       //set defaultid from main purchsedid
       this.selected_product.unit_id =
@@ -722,10 +722,10 @@ export default {
 
       this.selected_product.quantity = 1;
       console.log("nnj", this.selected_product.unit_id);
-      this.purchase.details.unshift(
+      this.bill.details.unshift(
         JSON.parse(JSON.stringify(this.selected_product))
       );
-      console.log("nib", this.purchase.details);
+      console.log("nib", this.bill.details);
       this.selected_product = [];
     },
   },

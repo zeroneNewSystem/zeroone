@@ -316,12 +316,12 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       stock_header: [{
         text: "نوع المستند",
         align: "center",
-        value: "document_type_id",
+        value: "bill_type_id",
         sortable: false
       }, {
         text: "رقم المستند",
         align: "center",
-        value: "document_id",
+        value: "bill_id",
         sortable: false
       }, {
         text: "اسم الصنف",
@@ -439,7 +439,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
       console.log("index");
       console.log("index");
       window.removeEventListener("keydown", this.functionToAddProduct);
-      var input_barcode = document.getElementById("barcode");
+      var input_barcode = bill.getElementById("barcode");
       this.$nextTick(function () {
         input_barcode.focus();
       });
@@ -460,7 +460,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
       this.$nextTick(function () {
         listElm.firstElementChild.focus();
-        var selectedElm = document.activeElement,
+        var selectedElm = bill.activeElement,
             goToStart,
             // map actions to event's key
         action = {
@@ -595,11 +595,11 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
         _this3.dialog = true;
 
         _this3.$nextTick().then(function () {
-          var listElm = document.querySelector("ul"); // Mark first list item
+          var listElm = bill.querySelector("ul"); // Mark first list item
 
           _this3.$nextTick(function () {
             listElm.firstElementChild.focus();
-            var selectedElm = document.activeElement,
+            var selectedElm = bill.activeElement,
                 goToStart,
                 // map actions to event's key
             action = {
@@ -627,7 +627,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
                 console.log("input_barcode");
                 console.log(input_barcode);
                 console.log("input_barcode");
-                var input_barcode = document.getElementById("barcode");
+                var input_barcode = bill.getElementById("barcode");
 
                 _this3.$nextTick(function () {
                   input_barcode.focus();
@@ -658,21 +658,21 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
         }); //-----add
         //---------
-        //selected_product["document_type_id"] = 1; // purchase
-        //selected_product["product_id"] = selected_product["id"]; // purchase
+        //selected_product["bill_type_id"] = 1; // bill
+        //selected_product["product_id"] = selected_product["id"]; // bill
 
       });
     },
-    addProductToPurchase: function addProductToPurchase() {
-      console.log(this.purchase.details);
+    addProductToBill: function addProductToBill() {
+      console.log(this.bill.details);
       console.log("seles", this.selected_product); //set defaultid from main purchsedid
 
       this.selected_product.unit_id = this.selected_product.units[this.selected_product.main_bought_unit_id - 1].pivot.id;
       this.selected_product.unit_price = this.selected_product.units[this.selected_product.main_bought_unit_id - 1].pivot.bought_price;
       this.selected_product.quantity = 1;
       console.log("nnj", this.selected_product.unit_id);
-      this.purchase.details.unshift(JSON.parse(JSON.stringify(this.selected_product)));
-      console.log("nib", this.purchase.details);
+      this.bill.details.unshift(JSON.parse(JSON.stringify(this.selected_product)));
+      console.log("nib", this.bill.details);
       this.selected_product = [];
     }
   },
@@ -745,7 +745,7 @@ __webpack_require__.r(__webpack_exports__);
       params: params
     });
   },
-  purchaseBarcodeSearch: function purchaseBarcodeSearch(params, route) {
+  billBarcodeSearch: function billBarcodeSearch(params, route) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/extra/" + route + "/barcode/" + params.barcode);
   },
   invoiceBarcodeSearch: function invoiceBarcodeSearch(params) {
@@ -798,8 +798,8 @@ __webpack_require__.r(__webpack_exports__);
       params: params
     });
   },
-  purchaseBarcodeSearch: function purchaseBarcodeSearch(params) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/extra/purchase/barcode/" + params.barcode);
+  documentBarcodeSearch: function documentBarcodeSearch(params) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/extra/document/barcode/" + params.barcode);
   },
   invoiceBarcodeSearch: function invoiceBarcodeSearch(params) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/extra/invoice/barcode/" + params.barcode);
@@ -1028,7 +1028,7 @@ var render = function() {
                             _c("v-col", [
                               _vm._v(
                                 "\n                " +
-                                  _vm._s(set.document_type_id) +
+                                  _vm._s(set.bill_type_id) +
                                   "\n              "
                               )
                             ]),
@@ -1036,7 +1036,7 @@ var render = function() {
                             _c("v-col", [
                               _vm._v(
                                 "\n                " +
-                                  _vm._s(set.document_id) +
+                                  _vm._s(set.bill_id) +
                                   "\n              "
                               )
                             ]),
@@ -1367,7 +1367,7 @@ var render = function() {
                                           ) {
                                             _vm.name_search = $event
                                           },
-                                          change: _vm.addProductToPurchase
+                                          change: _vm.addProductToBill
                                         },
                                         model: {
                                           value: _vm.selected_product,
@@ -1532,26 +1532,26 @@ var render = function() {
                           }
                         },
                         {
-                          key: "item.document_id",
+                          key: "item.bill_id",
                           fn: function(ref) {
                             var item = ref.item
                             return [
                               _vm._v(
                                 "\n            " +
-                                  _vm._s(item.details[0].document_id) +
+                                  _vm._s(item.details[0].bill_id) +
                                   "\n          "
                               )
                             ]
                           }
                         },
                         {
-                          key: "item.document_type_id",
+                          key: "item.bill_type_id",
                           fn: function(ref) {
                             var item = ref.item
                             return [
                               _vm._v(
                                 "\n            " +
-                                  _vm._s(item.details[0].document_type_id) +
+                                  _vm._s(item.details[0].bill_type_id) +
                                   "\n          "
                               )
                             ]

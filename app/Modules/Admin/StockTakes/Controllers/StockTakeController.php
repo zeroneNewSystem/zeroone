@@ -82,14 +82,14 @@ class StockTakeController extends Controller
 
         foreach ($stocktakes as &$stocktake) {
 
-            $supp_documents = DB::table('supplemental_documentations')
-                ->where('document_id', $stocktake->id)
-                ->where('document_type_id', 1)
+            $supp_bills = DB::table('supplemental_billings')
+                ->where('bill_id', $stocktake->id)
+                ->where('bill_type_id', 1)
                 ->get();
-            //return $supp_documents;
+            //return $supp_bills;
             $paid_amount += $stocktake->paid_amount;
-            foreach ($supp_documents as $supp_document) {
-                $paid_amount += $supp_document->amount;
+            foreach ($supp_bills as $supp_bill) {
+                $paid_amount += $supp_bill->amount;
             }
             $stocktake['remainder'] = $stocktake->total_amount  - $paid_amount;
             //---reset
@@ -102,8 +102,8 @@ class StockTakeController extends Controller
         $stocktake =  DB::table('stocktakes')->where('id', $id)->get()[0];
 
 
-        $methods = Transaction::where('document_id', $id)
-            ->where('document_type_id', 1)
+        $methods = Transaction::where('bill_id', $id)
+            ->where('bill_type_id', 1)
             ->where('debit', -1)
             ->get();
 
@@ -115,8 +115,8 @@ class StockTakeController extends Controller
 
 
         $stocktake_details =  DB::table('stocktake_details')
-            ->where('document_id', $id)
-            ->where('document_type_id', 1)
+            ->where('bill_id', $id)
+            ->where('bill_type_id', 1)
             ->leftjoin('products', 'stocktake_details.product_id', '=', 'products.id')
             ->get();
 
@@ -156,8 +156,8 @@ class StockTakeController extends Controller
         foreach ($stocktakes as &$stocktake) {
 
             $stocktake_details =  DB::table('stocktake_details')
-                ->where('document_id', 1)
-                ->where('document_type_id', 1)
+                ->where('bill_id', 1)
+                ->where('bill_type_id', 1)
                 ->leftjoin('products', 'stocktake_details.product_id', '=', 'products.id')
                 ->get();
 
@@ -273,8 +273,8 @@ class StockTakeController extends Controller
                     "account_id" => $request->expense_account_id,
                     "debit" =>  abs($difference_cost),
                     "credit" => 0,
-                    "document_id" => $stocktake->id,
-                    "document_type_id" => 3,
+                    "bill_id" => $stocktake->id,
+                    "bill_type_id" => 3,
                     "currency_code" => 1,
                     "currency_rate" => 1,
                     "description" => 'حساب مصروفات الكميات الناقصة',
@@ -288,8 +288,8 @@ class StockTakeController extends Controller
                     "account_id" => $inventory_account_id,
                     "debit" => 0,
                     "credit" => abs($difference_cost),
-                    "document_id" => $stocktake->id,
-                    "document_type_id" => 1,
+                    "bill_id" => $stocktake->id,
+                    "bill_type_id" => 1,
                     "currency_code" => 1,
                     "currency_rate" => 1,
                     "description" => 'نقص في المخزون',
@@ -302,8 +302,8 @@ class StockTakeController extends Controller
                     "account_id" => $request->revenue_account_id,
                     "debit" => 0,
                     "credit" => $difference_cost ,
-                    "document_id" => $stocktake->id,
-                    "document_type_id" => 3,
+                    "bill_id" => $stocktake->id,
+                    "bill_type_id" => 3,
                     "currency_code" => 1,
                     "currency_rate" => 1,
                     "description" => 'حساب إيرادات الكميات الزائدة',
@@ -317,8 +317,8 @@ class StockTakeController extends Controller
                     "account_id" => $inventory_account_id,
                     "debit" => $difference_cost,
                     "credit" => 0,
-                    "document_id" => $stocktake->id,
-                    "document_type_id" => 1,
+                    "bill_id" => $stocktake->id,
+                    "bill_type_id" => 1,
                     "currency_code" => 1,
                     "currency_rate" => 1,
                     "description" => 'زيادة في المخزون',
@@ -363,13 +363,13 @@ class StockTakeController extends Controller
 
         // delete all transactions 
 
-        Transaction::where('document_type_id', 1)
-            ->where('document_id', $request->id)
+        Transaction::where('bill_type_id', 1)
+            ->where('bill_id', $request->id)
             ->delete();
 
         //delete all stocktake details
-        StockTakeDetail::where('document_type_id', 1)
-            ->where('document_id', $request->id)
+        StockTakeDetail::where('bill_type_id', 1)
+            ->where('bill_id', $request->id)
             ->delete();
 
         $stocktake = StockTake::find($request->id);
@@ -385,8 +385,8 @@ class StockTakeController extends Controller
             "account_id" => $supplier_account_id,
             "debit" =>  0,
             "credit" => $request['total_amount'] - $request['additional_expenses'],
-            "document_id" => $stocktake->id,
-            "document_type_id" => 1,
+            "bill_id" => $stocktake->id,
+            "bill_type_id" => 1,
             "currency_code" => 1,
             "currency_rate" => 1,
             "description" => 'حساب المورد',
@@ -398,8 +398,8 @@ class StockTakeController extends Controller
             "account_id" => $supplier_account_id,
             "debit" =>  $request['paid_amount'],
             "credit" => 0,
-            "document_id" => $stocktake->id,
-            "document_type_id" => 1,
+            "bill_id" => $stocktake->id,
+            "bill_type_id" => 1,
             "currency_code" => 1,
             "currency_rate" => 1,
             "description" => 'مدفوعة للمورد',
@@ -416,8 +416,8 @@ class StockTakeController extends Controller
             "account_id" => $additional_expenses_from_account_id, //5103
             "debit" =>  0,
             "credit" => $request['additional_expenses'],
-            "document_id" => $stocktake->id,
-            "document_type_id" => 1,
+            "bill_id" => $stocktake->id,
+            "bill_type_id" => 1,
             "currency_code" => 1,
             "currency_rate" => 1,
             "description" => 'مصاريف إضافية',
@@ -428,8 +428,8 @@ class StockTakeController extends Controller
             "account_id" => 63, //5103
             "debit" =>  $request['additional_expenses'],
             "credit" => 0,
-            "document_id" => $stocktake->id,
-            "document_type_id" => 1,
+            "bill_id" => $stocktake->id,
+            "bill_type_id" => 1,
             "currency_code" => 1,
             "currency_rate" => 1,
             "description" => 'مصاريف إضافية',
@@ -448,8 +448,8 @@ class StockTakeController extends Controller
                     "account_id" => $payment_method['account_id'],
                     "debit" =>  -1,
                     "credit" => $payment_method['credit'],
-                    "document_id" => $stocktake->id,
-                    "document_type_id" => 1,
+                    "bill_id" => $stocktake->id,
+                    "bill_type_id" => 1,
                     "currency_code" => 1,
                     "currency_rate" => 1,
                     "description" => 'مدفوعة للمورد',
@@ -476,8 +476,8 @@ class StockTakeController extends Controller
                 "account_id" => $inventory_account_id,
                 "debit" =>  $stocktake_detail['total'],
                 "credit" => 0,
-                "document_id" => $stocktake->id,
-                "document_type_id" => 1,
+                "bill_id" => $stocktake->id,
+                "bill_type_id" => 1,
                 "currency_code" => 1,
                 "currency_rate" => 1,
                 "description" => 'some description',

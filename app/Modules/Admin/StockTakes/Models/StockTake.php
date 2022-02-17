@@ -13,7 +13,7 @@ class StockTake extends Model
     protected $guarded = ['id'];
     use HasFactory;
     public function stock_details(){
-        return $this->hasMany(StockDetail::class,'document_id'); 
+        return $this->hasMany(StockDetail::class,'bill_id'); 
     }
     public function person()
     {

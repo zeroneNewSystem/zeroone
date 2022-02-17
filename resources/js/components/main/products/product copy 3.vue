@@ -846,7 +846,7 @@ export default {
   },
 
   computed: {
-    indexOfPurchaseMainUnit() {
+    indexOfBillMainUnit() {
       return this.product.prdct_units.indexOf(
         this.product.prdct_units.find((elem) => {
           return elem.main_bought_unit_id == "main_bought_unit_id";
@@ -906,7 +906,7 @@ export default {
       this.product.image = "no-image.png";
 
       this.product.image_name = "no-image.png";
-      document.getElementById("image-upload").value = null;
+      bill.getElementById("image-upload").value = null;
     },
     saveImage() {
       Api.post("/save-image", {
@@ -969,7 +969,7 @@ export default {
         });
         item.main_sold_unit_id = "main_sold_unit_id";
       }
-      if (type == "purchase") {
+      if (type == "bill") {
         this.product.prdct_units.forEach((element) => {
           console.log(element);
           element.main_bought_unit_id = "";
@@ -1008,14 +1008,14 @@ export default {
       if (type == "barcode") this.product.barcode = this.generate(12);
     },
     printDiv() {
-      var printContents = document.getElementById("printableArea").innerHTML;
-      var originalContents = document.body.innerHTML;
+      var printContents = bill.getElementById("printableArea").innerHTML;
+      var originalContents = bill.body.innerHTML;
 
-      document.body.innerHTML = printContents;
+      bill.body.innerHTML = printContents;
 
       window.print();
 
-      document.body.innerHTML = originalContents;
+      bill.body.innerHTML = originalContents;
     },
     printing() {
       JsBarcode("#barcode", this.product.barcode, {

@@ -18,10 +18,9 @@ class DatabaseSeeder extends Seeder
         // \App\Models\User::factory(10)->create();
 
 
-        \App\Modules\Admin\Products\Models\Product::factory(10)->create();
-        \App\Modules\Admin\Products\Models\Product::factory(10)->create();
-        \App\Modules\Admin\Products\Models\PrdctGroupsProduct::factory(20)->create();
-        \App\Modules\Admin\Products\Models\PrdctUnitsProduct::factory(20)->create();
+        //\App\Modules\Admin\Products\Models\Product::factory(10)->create();
+        //\App\Modules\Admin\Products\Models\PrdctGroupsProduct::factory(10)->create();
+        //\App\Modules\Admin\Products\Models\PrdctUnitsProduct::factory(10)->create();
 
         User::factory(1)->create();
 
@@ -32,8 +31,7 @@ class DatabaseSeeder extends Seeder
                 PrdctUnitSeeder::class,
                 PrdctFormSeeder::class,
                 PrdctGroupSeeder::class,
-
-
+                ProductSeeder::class,
                 DistributionPolicySeeder::class,
                 TaxSeeder::class,
                 PrdctTypeSeeder::class,

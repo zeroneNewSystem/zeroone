@@ -27,7 +27,7 @@ export default {
         return Api.get("/products/search", { params: params });
     },
 
-    purchaseBarcodeSearch(params, route) {
+    billBarcodeSearch(params, route) {
         return Api.get("/extra/" + route + "/barcode/" + params.barcode);
     },
     invoiceBarcodeSearch(params) {

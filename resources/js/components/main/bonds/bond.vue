@@ -22,7 +22,7 @@
               outlined
               :rules="vld_selected"
               prefix=" العميل | "
-              @change="getPurchases"
+              @change="getBills"
             >
             </v-autocomplete>
           </v-col>
@@ -157,7 +157,7 @@
         hide-default-footer
         style="width: 100%"
         :headers="headers"
-        :items="purchases"
+        :items="bills"
         class="elevation-1"
       >
         <template v-slot:top> </template>
@@ -176,7 +176,7 @@
 
 
 <script>
-import Purchase from "../../../apis/Purchase";
+import Bill from "../../../apis/Bill";
 import Bond from "../../../apis/Bond";
 import Customer from "../../../apis/Customer";
 export default {
@@ -199,7 +199,7 @@ export default {
       customers: [],
       customer: "",
       bonds: [],
-      purchases: [],
+      bills: [],
       headers: [
         {
           text: "م",
@@ -236,11 +236,11 @@ export default {
   },
   
   methods: {
-    getPurchases() {
-      Purchase.getAll({
+    getBills() {
+      Bill.getAll({
         customer_id: this.bond.person_id,
         status_id: 0,
-      }).then((response) => (this.purchases = response.data));
+      }).then((response) => (this.bills = response.data));
     },
     customerInfo() {
       return (
@@ -251,7 +251,7 @@ export default {
     checkExicting() {},
     submit() {
       /* remove zero amount or not account methods */
-      // this.purchase.payment_methods = this.purchase.payment_methods.filter(
+      // this.bill.payment_methods = this.bill.payment_methods.filter(
       //   (elem) => elem.account_id != "" && elem.credit != 0
       // );
 

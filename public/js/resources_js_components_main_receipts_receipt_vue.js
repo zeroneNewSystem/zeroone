@@ -11,7 +11,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _apis_Purchase__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../apis/Purchase */ "./resources/js/apis/Purchase.js");
+/* harmony import */ var _apis_Bill__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../apis/Bill */ "./resources/js/apis/Bill.js");
 /* harmony import */ var _apis_Receipt__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../apis/Receipt */ "./resources/js/apis/Receipt.js");
 /* harmony import */ var _apis_Supplier__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../apis/Supplier */ "./resources/js/apis/Supplier.js");
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -229,7 +229,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       suppliers: [],
       supplier: "",
       receipts: [],
-      purchases: [],
+      bills: [],
       headers: [{
         text: "م",
         align: "center",
@@ -266,14 +266,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }), _ref;
   },
   methods: {
-    getPurchases: function getPurchases() {
+    getBills: function getBills() {
       var _this = this;
 
-      _apis_Purchase__WEBPACK_IMPORTED_MODULE_0__.default.getAll({
+      _apis_Bill__WEBPACK_IMPORTED_MODULE_0__.default.getAll({
         supplier_id: this.receipt.person_id,
         status_id: 0
       }).then(function (response) {
-        return _this.purchases = response.data;
+        return _this.bills = response.data;
       });
     },
     supplierInfo: function supplierInfo() {
@@ -286,7 +286,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     checkExicting: function checkExicting() {},
     submit: function submit() {
       /* remove zero amount or not account methods */
-      // this.purchase.payment_methods = this.purchase.payment_methods.filter(
+      // this.bill.payment_methods = this.bill.payment_methods.filter(
       //   (elem) => elem.account_id != "" && elem.credit != 0
       // );
       _apis_Receipt__WEBPACK_IMPORTED_MODULE_1__.default.store(this.receipt).then(function (response) {
@@ -306,10 +306,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /***/ }),
 
-/***/ "./resources/js/apis/Purchase.js":
-/*!***************************************!*\
-  !*** ./resources/js/apis/Purchase.js ***!
-  \***************************************/
+/***/ "./resources/js/apis/Bill.js":
+/*!***********************************!*\
+  !*** ./resources/js/apis/Bill.js ***!
+  \***********************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 __webpack_require__.r(__webpack_exports__);
@@ -319,23 +319,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Api */ "./resources/js/apis/Api.js");
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  store: function store(purchase) {
-    console.log('purchase', purchase);
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/purchases", purchase);
+  store: function store(bill, route) {
+    console.log("bill", bill);
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/" + route, bill);
   },
-  get: function get(id) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/purchases/" + id);
+  get: function get(id, route) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/" + route + "/" + id);
   },
-  getAll: function getAll(params) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/purchases/all", {
+  getAll: function getAll(params, route) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/" + route + "/all", {
       params: params
     });
   },
-  update: function update(purchase) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("/purchases", purchase);
+  update: function update(bill, route) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("/" + route, bill);
   },
-  "delete": function _delete(params) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.delete("/purchases", {
+  "delete": function _delete(params, route) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.delete("/" + route, {
       params: params
     });
   }
@@ -651,7 +651,7 @@ var render = function() {
                           rules: _vm.vld_selected,
                           prefix: " المورد | "
                         },
-                        on: { change: _vm.getPurchases },
+                        on: { change: _vm.getBills },
                         model: {
                           value: _vm.receipt.person_id,
                           callback: function($$v) {
@@ -1070,7 +1070,7 @@ var render = function() {
             attrs: {
               "hide-default-footer": "",
               headers: _vm.headers,
-              items: _vm.purchases
+              items: _vm.bills
             },
             scopedSlots: _vm._u([
               {

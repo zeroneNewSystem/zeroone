@@ -810,14 +810,14 @@ export default {
       if (type == "barcode") this.product.barcode = this.generate(12);
     },
     printDiv() {
-      var printContents = document.getElementById("printableArea").innerHTML;
-      var originalContents = document.body.innerHTML;
+      var printContents = bill.getElementById("printableArea").innerHTML;
+      var originalContents = bill.body.innerHTML;
 
-      document.body.innerHTML = printContents;
+      bill.body.innerHTML = printContents;
 
       window.print();
 
-      document.body.innerHTML = originalContents;
+      bill.body.innerHTML = originalContents;
     },
     printing() {
       JsBarcode("#barcode", this.product.barcode, {

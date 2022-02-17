@@ -690,7 +690,7 @@ __webpack_require__.r(__webpack_exports__);
       params: params
     });
   },
-  purchaseBarcodeSearch: function purchaseBarcodeSearch(params, route) {
+  billBarcodeSearch: function billBarcodeSearch(params, route) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/extra/" + route + "/barcode/" + params.barcode);
   },
   invoiceBarcodeSearch: function invoiceBarcodeSearch(params) {

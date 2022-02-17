@@ -57,14 +57,14 @@ class InvoiceController extends Controller
             
         //$invoices = $invoices->get();
         foreach ($invoices as &$invoice) {
-            $supp_documents = DB::table('supplemental_documentations')
+            $supp_bills = DB::table('supplemental_billings')
                 ->where('document_id', $invoice->id)
                 ->where('document_type_id', 1)
                 ->get();
-            //return $supp_documents;
+            //return $supp_bills;
             $paid_amount += $invoice->paid_amount;
-            foreach ($supp_documents as $supp_document) {
-                $paid_amount += $supp_document->amount;
+            foreach ($supp_bills as $supp_bill) {
+                $paid_amount += $supp_bill->amount;
             }
             $invoice['remainder'] = $invoice->total_amount  - $paid_amount;
             //---reset
@@ -241,7 +241,7 @@ class InvoiceController extends Controller
     }
     private function storeInvoiceInfo($request, $invoice)
     {
-        $customer_account_id = Person::find($request->customer_id)['customer_account_id'];
+        $customer_account_id = Person::find($request->person_id)['customer_account_id'];
         $customer_account = [
             "company_id" => 1,
             "account_id" => $customer_account_id,

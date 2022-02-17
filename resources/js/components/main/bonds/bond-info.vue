@@ -159,7 +159,7 @@
           </template>
           <template v-slot:item.used_for="{ item }"> فاتورة شراء </template>
           <template v-slot:item.bond_reference="{ item }">
-            {{ item.document_id }}
+            {{ item.bill_id }}
           </template>
           <template v-slot:item.actions="{ item }">
             <v-btn icon @click.stop="deleteBond(item)">

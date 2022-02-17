@@ -748,9 +748,7 @@ var render = function() {
                       var item = ref.item
                       return [
                         _vm._v(
-                          "\n          " +
-                            _vm._s(item.document_id) +
-                            "\n        "
+                          "\n          " + _vm._s(item.bill_id) + "\n        "
                         )
                       ]
                     }

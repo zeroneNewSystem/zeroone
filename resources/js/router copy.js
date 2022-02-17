@@ -103,26 +103,26 @@ const router = new VueRouter({
                     }
                 },
                 {
-                    path: "/purchase/:type",
-                    name: "purchase_type",
+                    path: "/bill/:type",
+                    name: "bill_type",
                     meta: { requiresAuth: true },
                     components: {
                         default: () =>
-                            import ("./components/main/purchases/purchase"),
+                            import ("./components/main/bills/bill"),
                         mainView: () =>
-                            import ("./components/main/purchases/purchase")
+                            import ("./components/main/bills/bill")
                     }
                 },
 
                 {
-                    path: "/purchase/:type/:id",
-                    name: "purchase_type_id",
+                    path: "/bill/:type/:id",
+                    name: "bill_type_id",
                     meta: { requiresAuth: true },
                     components: {
                         default: () =>
-                            import ("./components/main/purchases/purchase"),
+                            import ("./components/main/bills/bill"),
                         mainView: () =>
-                            import ("./components/main/purchases/purchase")
+                            import ("./components/main/bills/bill")
                     }
                 },
 
@@ -132,9 +132,9 @@ const router = new VueRouter({
                     meta: { requiresAuth: true },
                     components: {
                         default: () =>
-                            import ("./components/main/purchases/suppliers"),
+                            import ("./components/main/bills/suppliers"),
                         mainView: () =>
-                            import ("./components/main/purchases/suppliers")
+                            import ("./components/main/bills/suppliers")
                     }
                 }
             ]

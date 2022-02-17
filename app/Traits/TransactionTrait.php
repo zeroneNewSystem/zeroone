@@ -9,8 +9,8 @@ trait TranstactionTrait
     /* amount = - debit + credit
          $account_id,
         $amount,
-        $document_id,
-        $document_type_id,
+        $bill_id,
+        $bill_type_id,
         $currency_code,
         $currency_rate
         */
@@ -23,8 +23,8 @@ trait TranstactionTrait
                 "account_id" => "",
                 "debit" => "",
                 "credit" => "",
-                "document_id" => "",
-                "document_type_id" => "",
+                "bill_id" => "",
+                "bill_type_id" => "",
                 "currency_code" => "",
                 "currency_rate" => "",
                 "description" => ""

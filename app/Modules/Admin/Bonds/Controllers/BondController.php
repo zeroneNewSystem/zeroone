@@ -4,16 +4,16 @@
 namespace App\Modules\Admin\Bonds\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\SupplementalDocumentation;
+use App\Models\SupplementalBilling;
 use App\Modules\Admin\Accounts\Models\Transaction;
 use App\Modules\Admin\people\Models\Person;
 use App\Modules\Admin\people\Models\Customer;
 use App\Modules\Admin\Products\Models\Inventory;
-use App\Modules\Admin\Purchases\Models\Purchase;
+use App\Modules\Admin\Bills\Models\Bill;
 use App\Modules\Admin\Bonds\Models\Bond;
 use App\Modules\Admin\Bonds\Models\BondDetail;
 use App\Traits\AccountTrait;
-use App\Traits\PurchaseTrait;
+use App\Traits\BillTrait;
 use App\Traits\TranstactionTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -22,7 +22,7 @@ class BondController extends Controller
 {
 
     use AccountTrait;
-    use PurchaseTrait;
+    use BillTrait;
 
     /**
      * Display a listing of the resource.
@@ -36,8 +36,8 @@ class BondController extends Controller
         $bond =  DB::table('bonds')->where('id', $id)->get()[0];
 
 
-        $methods = Transaction::where('document_id', $id)
-            ->where('document_type_id', 1)
+        $methods = Transaction::where('bill_id', $id)
+            ->where('bill_type_id', 1)
             ->where('credit', -1)
             ->get();
 
@@ -49,8 +49,8 @@ class BondController extends Controller
 
 
         $bond_details =  DB::table('bond_details')
-            ->where('document_id', $id)
-            ->where('document_type_id', 1)
+            ->where('bill_id', $id)
+            ->where('bill_type_id', 1)
             ->leftjoin('products', 'bond_details.product_id', '=', 'products.id')
             ->get();
 
@@ -90,8 +90,8 @@ class BondController extends Controller
         foreach ($bonds as &$bond) {
 
             $bond_details =  DB::table('bond_details')
-                ->where('document_id', 1)
-                ->where('document_type_id', 1)
+                ->where('bill_id', 1)
+                ->where('bill_type_id', 1)
                 ->leftjoin('products', 'bond_details.product_id', '=', 'products.id')
                 ->get();
 
@@ -179,8 +179,8 @@ class BondController extends Controller
                 "account_id" => $customer_account_id,
                 "debit" => $request['type_id'] == 1 ?  $request['amount'] : 0,
                 "credit" => $request['type_id'] == 2 ?  $request['amount'] : 0,
-                "document_id" => $bond->id,
-                "document_type_id" => 2,
+                "bill_id" => $bond->id,
+                "bill_type_id" => 2,
                 "currency_code" => 1,
                 "currency_rate" => 1,
                 "description" => $request['type_id'] == 1 ? 'صرف للعميل' : 'قبض من العميل'
@@ -196,22 +196,22 @@ class BondController extends Controller
                 "account_id" => $request['account_id'], //5103
                 "debit" =>  $request['amount'],
                 "credit" => 0,
-                "document_id" => $bond->id,
-                "document_type_id" => 2,
+                "bill_id" => $bond->id,
+                "bill_type_id" => 2,
                 "currency_code" => 1,
                 "currency_rate" => 1,
                 "description" => 'دفعة للعميل',
             ];
             $this->addTransactionEntry($payment_to_customer);
             $request['customer_id'] = $request->person_id;
-            $unpaid_purchases = $this->allUnPaidPurchase($request);
+            $unpaid_bills = $this->allUnPaidBill($request);
 
 
             $remainder = $request['amount'];
 
             $used = false;
 
-            foreach ($unpaid_purchases as $unpaid_purchase) {
+            foreach ($unpaid_bills as $unpaid_bill) {
 
                 if ($remainder == 0) {
 
@@ -220,33 +220,33 @@ class BondController extends Controller
                     break;
                 }
 
-                if ($remainder >= $unpaid_purchase['remainder']) {
+                if ($remainder >= $unpaid_bill['remainder']) {
                     $used = true;
-                    /* create sup-doc for unpaid_purchases*/
+                    /* create sup-doc for unpaid_bills*/
                     $sup_doc_model = [
                         'company_id' => 1,
-                        "document_id" => $unpaid_purchase['id'],
-                        "document_type_id" => 1,
-                        'amount' => $unpaid_purchase['remainder'],
-                        "confirmation_document_id" => $bond->id,
-                        "confirmation_document_type_id" => 2,
+                        "bill_id" => $unpaid_bill['id'],
+                        "bill_type_id" => 1,
+                        'amount' => $unpaid_bill['remainder'],
+                        "confirmation_bill_id" => $bond->id,
+                        "confirmation_bill_type_id" => 2,
                     ];
-                    SupplementalDocumentation::create($sup_doc_model);
-                    $remainder = $remainder - $unpaid_purchase['remainder'];
-                    /* make purchase paid*/
-                    Purchase::find($unpaid_purchase['id'])->update(['status_id' => 3]);
+                    SupplementalBilling::create($sup_doc_model);
+                    $remainder = $remainder - $unpaid_bill['remainder'];
+                    /* make bill paid*/
+                    Bill::find($unpaid_bill['id'])->update(['status_id' => 3]);
                     continue;
                 }
                 $sup_doc_model = [
                     'company_id' => 1,
-                    "document_id" => $unpaid_purchase['id'],
-                    "document_type_id" => 1,
+                    "bill_id" => $unpaid_bill['id'],
+                    "bill_type_id" => 1,
                     'amount' => $remainder,
-                    "confirmation_document_id" => $bond->id,
-                    "confirmation_document_type_id" => 2,
+                    "confirmation_bill_id" => $bond->id,
+                    "confirmation_bill_type_id" => 2,
                 ];
-                SupplementalDocumentation::create($sup_doc_model);
-                Purchase::find($unpaid_purchase['id'])->update(['status_id' => 4]);
+                SupplementalBilling::create($sup_doc_model);
+                Bill::find($unpaid_bill['id'])->update(['status_id' => 4]);
                 Bond::find($bond->id)->update(['status_id' => 3]);
                 break;
                 /*---------------*/
@@ -285,8 +285,8 @@ class BondController extends Controller
 
         $bond = $bond[0];
 
-        $sup_doc = SupplementalDocumentation::where('confirmation_document_id', $id)->where('confirmation_document_type_id', 2)
-            ->leftJoin('purchases', 'purchases.id', 'document_id')->select('supplemental_documentations.*', 'supplemental_documentations.id as sup_doc_id', 'purchases.*');
+        $sup_doc = SupplementalBilling::where('confirmation_bill_id', $id)->where('confirmation_bill_type_id', 2)
+            ->leftJoin('bills', 'bills.id', 'bill_id')->select('supplemental_billings.*', 'supplemental_billings.id as sup_doc_id', 'bills.*');
         $bond['spentAmount'] = $sup_doc->sum('amount');
         $bond['uses_of_bond'] = $sup_doc->get();
         return $bond;
@@ -331,7 +331,7 @@ class BondController extends Controller
 
         foreach ($bonds as &$bond) {
 
-            $bond->spentAmount = SupplementalDocumentation::where('confirmation_document_id', $bond->id)->where('confirmation_document_type_id', 2)->sum('amount');
+            $bond->spentAmount = SupplementalBilling::where('confirmation_bill_id', $bond->id)->where('confirmation_bill_type_id', 2)->sum('amount');
         }
 
         return $bonds;
@@ -368,16 +368,16 @@ class BondController extends Controller
     public function destroy(Request $request)
     {
         Bond::where('id', $request->bond_id)->delete();
-        SupplementalDocumentation::where('confirmation_document_id', $request->bond_id)->where('confirmation_document_type_id', 2)->delete();
+        SupplementalBilling::where('confirmation_bill_id', $request->bond_id)->where('confirmation_bill_type_id', 2)->delete();
         return $this->all($request);
     }
     public function destroySupDoc(Request $request)
     {
-        SupplementalDocumentation::where('id', $request->id)->delete();
+        SupplementalBilling::where('id', $request->id)->delete();
 
         // change status of bond
 
-        $sup_doc = SupplementalDocumentation::where('confirmation_document_id', $request->bond_id)->where('confirmation_document_type_id', 2)->get();
+        $sup_doc = SupplementalBilling::where('confirmation_bill_id', $request->bond_id)->where('confirmation_bill_type_id', 2)->get();
 
 
         if (count($sup_doc))

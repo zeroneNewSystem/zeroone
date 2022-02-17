@@ -25,7 +25,7 @@ class Route
         // функция str_replace здесь нужна, для экранирования всех прямых слешей
         // так как они используются в качестве маркеров регулярного выражения
         $pattern = '/^' . str_replace('/', '\/', $pattern) . '$/';
-        
+
         self::$routes[$pattern] = $callback;
     }
 
@@ -34,7 +34,7 @@ class Route
     // соответствие адресам, хранящимся в массиве $routes
     public static function execute($url)
     {
-        
+
         foreach (self::$routes as $pattern => $callback) {
             if (preg_match($pattern, $url, $params)) // сравнение идет через регулярное выражение
             {
@@ -49,53 +49,58 @@ class Route
 }
 
 // extratct router
-Route::route('/api/extra/invoice/barcode/(\d+)/inventory_id/(\d+)', function ($barcode, $inventory_id) {
+//Route::route('/api/extra/invoice/barcode/(\d+)/inventory_id/(\d+)', function ($barcode, $inventory_id) {
+Route::route('/api/extra/invoice/barcode/(\d+)', function ($barcode) {
+
 
     $database = new Connection();
     $db = $database->open();
-    $sth = $db->prepare("SELECT * FROM products WHERE barcode =:barcode AND inventory_id = :inventory_id");
+    $sth = $db->prepare("SELECT * FROM products WHERE barcode =:barcode");
     $sth->execute([
         'barcode' => $barcode,
-        'inventory_id' => $inventory_id
+        //'inventory_id' => $inventory_id
     ]);
-    
+
     $products = $sth->fetchAll(\PDO::FETCH_ASSOC);
     $product['details'] = [];
-    
+
     foreach ($products as &$product) {
-        $sql_string = "SELECT * FROM details WHERE product_id = " . $product['id'];
-    
+        $product['main_unit_id'] = $product['main_sold_unit_id'];
+        $sql_string = "SELECT * FROM bill_details WHERE product_id =:product_id AND type_id = 1";
+
+        //product_id = " . $product['id'];
+
         $sth = $db->prepare($sql_string); //and quantity in minamal units is bigeer than 0
-    
-        $sth->execute();
+
+        $sth->execute(['product_id' => $product['id']]);
         $details = $sth->fetchAll(\PDO::FETCH_ASSOC);
         //----INVENTORY METHOD FROM SETTINGS 
-    
+
         $product['details'] = $details;
-        
+
         // if  inventory_method == FIFO
-        
-    
+
+
         // if  inventory_method == WAC
-    
+
         // if  inventory_method == GAAP
         // if  inventory_method == use Last Cost
-    
-    
+
+
         unset($product['created_at']);
         unset($product['deleted_at']);
         unset($product['updated_at']);
-    
+
         $sth = $db->prepare("SELECT * FROM prdct_units_products WHERE product_id = " . $product['id']);
         $sth->execute();
-    
-    
+
+
         $pivots = $sth->fetchAll(\PDO::FETCH_ASSOC);
-    
-    
+
+
         $units = [];
-    
-    
+
+
         foreach ($pivots as &$pivot) {
             $sth = $db->prepare("SELECT * FROM prdct_units WHERE id = " . $pivot['prdct_unit_id']);
             $sth->execute();
@@ -103,17 +108,17 @@ Route::route('/api/extra/invoice/barcode/(\d+)/inventory_id/(\d+)', function ($b
             $unit['pivot'] = $pivot;
             $units[] = $unit;
         }
-    
-    
+
+
         $product['units'] = $units;
     }
-    
-    
-    
-    
+
+
+
+
     $database->close();
     echo json_encode(['products' => $products], JSON_NUMERIC_CHECK);
-    });
+});
 
 Route::route('/api/extra/purchase/barcode/(\d+)', function ($barcode) {
     $database = new Connection();
@@ -122,8 +127,22 @@ Route::route('/api/extra/purchase/barcode/(\d+)', function ($barcode) {
     $sth->execute(['barcode' => $barcode]);
 
     $products = $sth->fetchAll(\PDO::FETCH_ASSOC);
-
+    $product['details'] = [];
     foreach ($products as &$product) {
+        $product['main_unit_id'] = $product['main_bought_unit_id'];
+
+        $sql_string = "SELECT * FROM bill_details WHERE product_id =:product_id AND type_id = 1";
+
+        //product_id = " . $product['id'];
+
+        $sth = $db->prepare($sql_string); //and quantity in minamal units is bigeer than 0
+
+        $sth->execute(['product_id' => $product['id']]);
+        $details = $sth->fetchAll(\PDO::FETCH_ASSOC);
+        //----INVENTORY METHOD FROM SETTINGS 
+
+        $product['details'] = $details;
+
 
         unset($product['created_at']);
         unset($product['deleted_at']);
@@ -182,9 +201,9 @@ Route::route('/api/extra/stock_take/barcode/(\d+)/inventory_id/(\d+)', function 
         //----INVENTORY METHOD FROM SETTINGS 
 
         $product['details'] = $details;
-        
+
         // if  inventory_method == FIFO
-        
+
 
         // if  inventory_method == WAC
 
@@ -308,8 +327,8 @@ Route::route('/api/extra/cities/(\d+)', function ($country_id) {
 
 Route::route('/api/extra/product/exists/ar_name/(.+)', function ($ar_name) {
 
-    
-    
+
+
     $database = new Connection();
     $db = $database->open();
     $sth = $db->prepare("SELECT * FROM products WHERE ar_name =:ar_name");
@@ -322,7 +341,7 @@ Route::route('/api/extra/product/exists/ar_name/(.+)', function ($ar_name) {
     echo json_encode(['products' => $products], JSON_NUMERIC_CHECK);
 });
 Route::route('/api/extra/product/exists/en_name/(.+)', function ($en_name) {
-    
+
 
     $database = new Connection();
     $db = $database->open();

@@ -818,17 +818,17 @@ export default {
           return;
         }
 
-        this.sets = this.selected_item.invoice_details;
+        
 
         this.dialog = true;
 
         this.$nextTick().then(() => {
-          var listElm = document.querySelector("ul");
+          var listElm = bill.querySelector("ul");
 
           // Mark first list item
           this.$nextTick(() => {
             listElm.firstElementChild.focus();
-            var selectedElm = document.activeElement,
+            var selectedElm = bill.activeElement,
               goToStart,
               // map actions to event's key
               action = {
@@ -869,7 +869,7 @@ export default {
                 console.log("input_barcode");
                 console.log(input_barcode);
                 console.log("input_barcode");
-                let input_barcode = document.getElementById("barcode");
+                let input_barcode = bill.getElementById("barcode");
                 this.$nextTick(() => {
                   input_barcode.focus();
                 });
@@ -903,7 +903,7 @@ export default {
         //-----add
 
         //---------
-        //selected_product["document_type_id"] = 1; // invoice
+        //selected_product["bill_type_id"] = 1; // invoice
         //selected_product["product_id"] = selected_product["id"]; // invoice
       });
     },
@@ -958,8 +958,8 @@ export default {
       );
       console.log("selected_product");
       console.log(selected_product);
-      selected_product["document_type_id"] = 2; // purchase
-      selected_product["product_id"] = selected_product["id"]; // purchase
+      selected_product["bill_type_id"] = 2; // bill
+      selected_product["product_id"] = selected_product["id"]; // bill
 
       this.invoice.invoice_details.push(selected_product);
       return;

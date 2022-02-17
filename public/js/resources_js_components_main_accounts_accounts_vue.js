@@ -2269,7 +2269,7 @@ var render = function() {
                       _vm._v(" "),
                       _c("v-list-item-subtitle", [
                         _vm._v(
-                          "Require password for purchase or use password to restrict\n            purchase"
+                          "Require password for bill or use password to restrict\n            bill"
                         )
                       ])
                     ],

@@ -1055,15 +1055,14 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
           return;
         }
 
-        _this3.sets = _this3.selected_item.invoice_details;
         _this3.dialog = true;
 
         _this3.$nextTick().then(function () {
-          var listElm = document.querySelector("ul"); // Mark first list item
+          var listElm = bill.querySelector("ul"); // Mark first list item
 
           _this3.$nextTick(function () {
             listElm.firstElementChild.focus();
-            var selectedElm = document.activeElement,
+            var selectedElm = bill.activeElement,
                 goToStart,
                 // map actions to event's key
             action = {
@@ -1091,7 +1090,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
                 console.log("input_barcode");
                 console.log(input_barcode);
                 console.log("input_barcode");
-                var input_barcode = document.getElementById("barcode");
+                var input_barcode = bill.getElementById("barcode");
 
                 _this3.$nextTick(function () {
                   input_barcode.focus();
@@ -1121,7 +1120,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
         }); //-----add
         //---------
-        //selected_product["document_type_id"] = 1; // invoice
+        //selected_product["bill_type_id"] = 1; // invoice
         //selected_product["product_id"] = selected_product["id"]; // invoice
 
       });
@@ -1156,9 +1155,9 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       selected_product.actual_quantity_in_minor_unit = parseInt(selected_product.actual_quantity * selected_product.units[selected_product.main_sold_unit_id - 1].pivot.contains);
       console.log("selected_product");
       console.log(selected_product);
-      selected_product["document_type_id"] = 2; // purchase
+      selected_product["bill_type_id"] = 2; // bill
 
-      selected_product["product_id"] = selected_product["id"]; // purchase
+      selected_product["product_id"] = selected_product["id"]; // bill
 
       this.invoice.invoice_details.push(selected_product);
       return;
@@ -2107,7 +2106,7 @@ __webpack_require__.r(__webpack_exports__);
       params: params
     });
   },
-  purchaseBarcodeSearch: function purchaseBarcodeSearch(params, route) {
+  billBarcodeSearch: function billBarcodeSearch(params, route) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/extra/" + route + "/barcode/" + params.barcode);
   },
   invoiceBarcodeSearch: function invoiceBarcodeSearch(params) {
