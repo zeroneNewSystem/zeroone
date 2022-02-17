@@ -7136,4 +7136,60 @@ var render = function() {
                     "v-row",
                     [
                       _c("v-col", { attrs: { cols: "6", sm: "6", md: "4" } }, [
-                        _c("div", { staticStyle: { display: "fle
+                        _c("div", { staticStyle: { display: "flex" } }),
+                        _vm._v(" "),
+                        _c(
+                          "div",
+                          {
+                            staticStyle: { "font-size": "14px", float: "left" }
+                          },
+                          [
+                            _vm._v(
+                              "\n              " +
+                                _vm._s(_vm.product) +
+                                "\n            "
+                            )
+                          ]
+                        )
+                      ])
+                    ],
+                    1
+                  )
+                ],
+                1
+              )
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "v-card-actions",
+            [
+              _c("v-spacer"),
+              _vm._v(" "),
+              _c(
+                "v-btn",
+                {
+                  attrs: { color: "blue darken-1", text: "" },
+                  on: { click: _vm.close }
+                },
+                [_vm._v("الغاء")]
+              )
+            ],
+            1
+          )
+        ],
+        1
+      )
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ })
+
+}]);
