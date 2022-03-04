@@ -12,13 +12,13 @@ class Bill extends Model
     protected $table = "bills";
     protected $guarded = ['id'];
     use HasFactory;
-    public function details(){
+    public function bill_details(){
         
-        return $this->hasMany(BillDetail::class,'bill_id'); 
+        return $this->hasMany(BillDetail::class,'document_id'); 
     }   
     public function person()
     {
-        return $this->belongsTo(Person::class,'supplier_id', 'id');
+        return $this->belongsTo(Person::class,'person_id', 'id');
     }
     
     

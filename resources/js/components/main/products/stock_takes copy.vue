@@ -586,7 +586,7 @@ selected_product.actual_quantity = selected_product.current_quantity
       });
     },
     addProductToBill() {
-      console.log(this.bill.details);
+      console.log(this.bill.bill_details);
       console.log("seles", this.selected_product);
       //set defaultid from main purchsedid
       this.selected_product.unit_id =
@@ -601,10 +601,10 @@ selected_product.actual_quantity = selected_product.current_quantity
 
       this.selected_product.quantity = 1;
       console.log("nnj", this.selected_product.unit_id);
-      this.bill.details.unshift(
+      this.bill.bill_details.unshift(
         JSON.parse(JSON.stringify(this.selected_product))
       );
-      console.log("nib", this.bill.details);
+      console.log("nib", this.bill.bill_details);
       this.selected_product = [];
     },
   },

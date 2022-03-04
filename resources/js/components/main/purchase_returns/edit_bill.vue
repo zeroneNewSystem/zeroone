@@ -177,7 +177,7 @@
             <v-data-table
               disable-pagination
               :headers="header"
-              :items="bill.details"
+              :items="bill.bill_details"
               class="elevation-1"
               :hide-default-footer="true"
               :item-key="toString(Math.floor(Math.random(1, 100) * 100))"
@@ -878,7 +878,7 @@ export default {
         selected_product["bill_type_id"] = 1; // bill
         selected_product["product_id"] = selected_product["id"]; // bill
 
-        this.bill.details.unshift(selected_product);
+        this.bill.bill_details.unshift(selected_product);
       });
     },
     remaining_amount() {
@@ -906,7 +906,7 @@ export default {
       item.unit_price = unit.pivot.bought_price;
     },
     total_vat() {
-      this.bill.total_vat = this.bill.details.reduce(
+      this.bill.total_vat = this.bill.bill_details.reduce(
         (a, b) => +a + +b.tax_value,
         0
       );
@@ -921,7 +921,7 @@ export default {
     },
 
     total_without_products_vat() {
-      return this.bill.details.reduce(
+      return this.bill.bill_details.reduce(
         (a, b) => +a + +b.total_befor_tax,
         0
       );
@@ -961,8 +961,8 @@ export default {
       return item.quantity_in_minor_unit;
     },
     deleteItem(item) {
-      this.bill.details.splice(
-        this.bill.details.indexOf(item),
+      this.bill.bill_details.splice(
+        this.bill.bill_details.indexOf(item),
         1
       );
     },
@@ -987,7 +987,7 @@ export default {
     },
 
     addProductToBill() {
-      console.log(this.bill.details);
+      console.log(this.bill.bill_details);
       console.log("seles", this.selected_product);
       //set defaultid from main purchsedid
       this.selected_product.unit_id =
@@ -1002,10 +1002,10 @@ export default {
 
       this.selected_product.quantity = 1;
       console.log("nnj", this.selected_product.unit_id);
-      this.bill.details.unshift(
+      this.bill.bill_details.unshift(
         JSON.parse(JSON.stringify(this.selected_product))
       );
-      console.log("nib", this.bill.details);
+      console.log("nib", this.bill.bill_details);
       this.selected_product = [];
     },
     checkExicting() {},

@@ -25,7 +25,6 @@ const router = new VueRouter({
                     }
                 },
 
-
                 {
                     path: "/settings",
                     name: "settings",
@@ -245,9 +244,20 @@ const router = new VueRouter({
                     meta: { requiresAuth: true },
                     components: {
                         default: () =>
-                            import ("./components/main/invoices/invoice"),
+                            import ("./components/main/bills/bill"),
                         mainView: () =>
-                            import ("./components/main/invoices/invoice")
+                            import ("./components/main/bills/bill")
+                    }
+                },
+                {
+                    path: "/purchase/:id",
+                    name: "purchase",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import ("./components/main/bills/bill"),
+                        mainView: () =>
+                            import ("./components/main/bills/bill")
                     }
                 },
 
@@ -309,7 +319,8 @@ const router = new VueRouter({
                                 "./components/main/products/inventory_transfers"
                             )
                     }
-                }, {
+                },
+                {
                     path: "/:bill",
                     name: "bill",
                     meta: { requiresAuth: true },
@@ -320,6 +331,7 @@ const router = new VueRouter({
                             import ("./components/main/bills/bill")
                     }
                 },
+
             ]
         },
 

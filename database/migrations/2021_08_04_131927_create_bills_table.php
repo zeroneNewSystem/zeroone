@@ -22,7 +22,7 @@ class CreateBillsTable extends Migration
             $table->unsignedInteger('currency_id')->default('1');
             $table->double('currency_rates')->default('1');
             $table->text('description')->nullable();
-            $table->unsignedInteger('supplier_id',)->default('1');
+            $table->unsignedInteger('person_id',)->default('1');
             
             $table->boolean('only_cash')->default('1');
             

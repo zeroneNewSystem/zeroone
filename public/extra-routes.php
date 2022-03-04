@@ -49,8 +49,9 @@ class Route
 }
 
 // extratct router
-//Route::route('/api/extra/invoice/barcode/(\d+)/inventory_id/(\d+)', function ($barcode, $inventory_id) {
-Route::route('/api/extra/invoice/barcode/(\d+)', function ($barcode) {
+//Route::route('/api/extra/invoice/barcode/(.+)/inventory_id/(.+)', function ($barcode, $inventory_id) {
+Route::route('/api/extra/invoice/barcode/(.+)', function ($barcode) {
+
 
 
     $database = new Connection();
@@ -62,21 +63,21 @@ Route::route('/api/extra/invoice/barcode/(\d+)', function ($barcode) {
     ]);
 
     $products = $sth->fetchAll(\PDO::FETCH_ASSOC);
-    $product['details'] = [];
+    $product['bill_details'] = [];
 
     foreach ($products as &$product) {
         $product['main_unit_id'] = $product['main_sold_unit_id'];
-        $sql_string = "SELECT * FROM bill_details WHERE product_id =:product_id AND type_id = 1";
+        $sql_string = "SELECT * FROM bill_details WHERE product_id =:product_id AND type_id = 1 AND sum_quantity_in_minor_unit != -1 ";
 
         //product_id = " . $product['id'];
 
         $sth = $db->prepare($sql_string); //and quantity in minamal units is bigeer than 0
 
         $sth->execute(['product_id' => $product['id']]);
-        $details = $sth->fetchAll(\PDO::FETCH_ASSOC);
+        $bill_details = $sth->fetchAll(\PDO::FETCH_ASSOC);
         //----INVENTORY METHOD FROM SETTINGS 
 
-        $product['details'] = $details;
+        $product['bill_details'] = $bill_details;
 
         // if  inventory_method == FIFO
 
@@ -120,14 +121,14 @@ Route::route('/api/extra/invoice/barcode/(\d+)', function ($barcode) {
     echo json_encode(['products' => $products], JSON_NUMERIC_CHECK);
 });
 
-Route::route('/api/extra/purchase/barcode/(\d+)', function ($barcode) {
+Route::route('/api/extra/purchase/barcode/(.+)', function ($barcode) {
     $database = new Connection();
     $db = $database->open();
     $sth = $db->prepare("SELECT * FROM products WHERE barcode =:barcode");
     $sth->execute(['barcode' => $barcode]);
 
     $products = $sth->fetchAll(\PDO::FETCH_ASSOC);
-    $product['details'] = [];
+    $product['bill_details'] = [];
     foreach ($products as &$product) {
         $product['main_unit_id'] = $product['main_bought_unit_id'];
 
@@ -138,10 +139,10 @@ Route::route('/api/extra/purchase/barcode/(\d+)', function ($barcode) {
         $sth = $db->prepare($sql_string); //and quantity in minamal units is bigeer than 0
 
         $sth->execute(['product_id' => $product['id']]);
-        $details = $sth->fetchAll(\PDO::FETCH_ASSOC);
+        $bill_details = $sth->fetchAll(\PDO::FETCH_ASSOC);
         //----INVENTORY METHOD FROM SETTINGS 
 
-        $product['details'] = $details;
+        $product['bill_details'] = $bill_details;
 
 
         unset($product['created_at']);
@@ -178,7 +179,7 @@ Route::route('/api/extra/purchase/barcode/(\d+)', function ($barcode) {
 });
 
 
-Route::route('/api/extra/stock_take/barcode/(\d+)/inventory_id/(\d+)', function ($barcode, $inventory_id) {
+Route::route('/api/extra/stock_take/barcode/(.+)/inventory_id/(.+)', function ($barcode, $inventory_id) {
 
     $database = new Connection();
     $db = $database->open();
@@ -189,18 +190,18 @@ Route::route('/api/extra/stock_take/barcode/(\d+)/inventory_id/(\d+)', function 
     ]);
 
     $products = $sth->fetchAll(\PDO::FETCH_ASSOC);
-    $product['details'] = [];
+    $product['bill_details'] = [];
 
     foreach ($products as &$product) {
-        $sql_string = "SELECT * FROM details WHERE product_id = " . $product['id'];
+        $sql_string = "SELECT * FROM bill_details WHERE product_id = " . $product['id'];
 
         $sth = $db->prepare($sql_string); //and quantity in minamal units is bigeer than 0
 
         $sth->execute();
-        $details = $sth->fetchAll(\PDO::FETCH_ASSOC);
+        $bill_details = $sth->fetchAll(\PDO::FETCH_ASSOC);
         //----INVENTORY METHOD FROM SETTINGS 
 
-        $product['details'] = $details;
+        $product['bill_details'] = $bill_details;
 
         // if  inventory_method == FIFO
 
@@ -244,7 +245,7 @@ Route::route('/api/extra/stock_take/barcode/(\d+)/inventory_id/(\d+)', function 
     echo json_encode(['products' => $products], JSON_NUMERIC_CHECK);
 });
 
-Route::route('/api/extra/stock_take/barcode/(\d+)', function ($barcode) {
+Route::route('/api/extra/stock_take/barcode/(.+)', function ($barcode) {
 
     $database = new Connection();
     $db = $database->open();
@@ -255,12 +256,12 @@ Route::route('/api/extra/stock_take/barcode/(\d+)', function ($barcode) {
 
     foreach ($products as &$product) {
 
-        $sth = $db->prepare("SELECT * FROM details WHERE product_id = " . $product['id']);
+        $sth = $db->prepare("SELECT * FROM bill_details WHERE product_id = " . $product['id']);
         $sth->execute();
-        $details = $sth->fetchAll(\PDO::FETCH_ASSOC);
+        $bill_details = $sth->fetchAll(\PDO::FETCH_ASSOC);
         //----INVENTORY METHOD FROM SETTINGS 
 
-        $product['details'] = $details;
+        $product['bill_details'] = $bill_details;
 
 
 
@@ -311,7 +312,7 @@ Route::route('/api/extra/stock_take/barcode/(\d+)', function ($barcode) {
     $database->close();
     echo json_encode(['products' => $products], JSON_NUMERIC_CHECK);
 });
-Route::route('/api/extra/cities/(\d+)', function ($country_id) {
+Route::route('/api/extra/cities/(.+)', function ($country_id) {
     $database = new Connection();
     $db = $database->open();
     $sth = $db->prepare("SELECT * FROM cities WHERE country_id =:country_id");
@@ -354,7 +355,7 @@ Route::route('/api/extra/product/exists/en_name/(.+)', function ($en_name) {
     $database->close();
     echo json_encode(['products' => $products], JSON_NUMERIC_CHECK);
 });
-Route::route('/api/extra/product/exists/barcode/(\d+)', function ($barcode) {
+Route::route('/api/extra/product/exists/barcode/(.+)', function ($barcode) {
     $database = new Connection();
     $db = $database->open();
     $sth = $db->prepare("SELECT * FROM products WHERE barcode =:barcode");

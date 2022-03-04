@@ -17,8 +17,8 @@ class CreateBillDetailsTable extends Migration
             $table->id();
             $table->unsignedInteger('company_id');
 
-            $table->integer('bill_id',);
-            $table->integer('bill_type_id',);
+            $table->integer('document_id',);
+            $table->integer('document_type_id',);
             $table->integer('type_id')->default(1);// مشتريات أو مبيعات أو مردودات مشتريات أو مردودات مبيعات
             $table->integer('product_id',);
             $table->datetime('expires_at')->nullable();

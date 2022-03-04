@@ -190,7 +190,7 @@
               <v-data-table
                 disable-pagination
                 :headers="header"
-                :items="bill.details"
+                :items="bill.bill_details"
                 class="elevation-1"
                 :hide-default-footer="true"
                 :item-key="toString(Math.floor(Math.random(1, 100) * 100))"
@@ -919,19 +919,19 @@ export default {
 
       for (
         let index = 0;
-        index < this.bill.details.length;
+        index < this.bill.bill_details.length;
         index++
       ) {
         if (
-          this.bill.details[index].barcode == item.barcode &&
-          this.bill.details[index].expires_at == item.expires_at
+          this.bill.bill_details[index].barcode == item.barcode &&
+          this.bill.bill_details[index].expires_at == item.expires_at
         ) {
           if (firstIndex == -1) firstIndex = index;
           occurrences++;
           if (occurrences == 2) {
-            this.bill.details[firstIndex].quantity +=
-              this.bill.details[index].quantity;
-            this.bill.details.splice(index, 1);
+            this.bill.bill_details[firstIndex].quantity +=
+              this.bill.bill_details[index].quantity;
+            this.bill.bill_details.splice(index, 1);
             return;
           }
         }
@@ -1010,11 +1010,11 @@ export default {
         //CHECK IF PRODUCT HAS EXPIRATION DATE --> ADD QUANTITY
 
         if (!selected_product.has_expiration_date) {
-          let index = this.bill.details.findIndex(
+          let index = this.bill.bill_details.findIndex(
             (elem) => elem.barcode == selected_product.barcode
           );
           if (index != -1) {
-            this.bill.details[index].quantity++;
+            this.bill.bill_details[index].quantity++;
             return;
           }
         }
@@ -1039,7 +1039,7 @@ export default {
         selected_product["bill_type_id"] = 1; // bill
         selected_product["product_id"] = selected_product["id"]; // bill
 
-        this.bill.details.push(selected_product);
+        this.bill.bill_details.push(selected_product);
       });
     },
     remaining_amount() {
@@ -1084,7 +1084,7 @@ export default {
       item.unit_price = unit.pivot.bought_price;
     },
     total_vat() {
-      this.bill.total_vat = this.bill.details.reduce(
+      this.bill.total_vat = this.bill.bill_details.reduce(
         (a, b) => +a + +b.tax_value,
         0
       );
@@ -1098,7 +1098,7 @@ export default {
     },
 
     total_without_products_vat() {
-      return this.bill.details.reduce(
+      return this.bill.bill_details.reduce(
         (a, b) => +a + +b.total_befor_tax,
         0
       );
@@ -1137,8 +1137,8 @@ export default {
       return item.quantity_in_minor_unit;
     },
     deleteItem(item) {
-      this.bill.details.splice(
-        this.bill.details.indexOf(item),
+      this.bill.bill_details.splice(
+        this.bill.bill_details.indexOf(item),
         1
       );
     },
@@ -1163,7 +1163,7 @@ export default {
     },
 
     addProductToBill() {
-      console.log(this.bill.details);
+      console.log(this.bill.bill_details);
       console.log("seles", this.selected_product);
       //set defaultid from main purchsedid
       this.selected_product.unit_id =
@@ -1178,10 +1178,10 @@ export default {
 
       this.selected_product.quantity = 1;
       console.log("nnj", this.selected_product.unit_id);
-      this.bill.details.push(
+      this.bill.bill_details.push(
         JSON.parse(JSON.stringify(this.selected_product))
       );
-      console.log("nib", this.bill.details);
+      console.log("nib", this.bill.bill_details);
       this.selected_product = [];
     },
     checkExicting() {},
@@ -1231,7 +1231,7 @@ export default {
           this.bill.issue_date = this.bill.issue_date.split(" ")[0];
           this.bill.maturity_date =
             this.bill.maturity_date.split(" ")[0];
-          this.bill.details.forEach((elem) => {
+          this.bill.bill_details.forEach((elem) => {
             if (elem.expires_at)
               elem.expires_at = elem.expires_at.split(" ")[0];
           });

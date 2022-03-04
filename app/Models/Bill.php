@@ -10,7 +10,7 @@ class Bill extends Model
     
     protected $guarded = ['id'];
     use HasFactory;
-    public function details(){
+    public function bill_details(){
         
         return $this->hasMany(PurchaseDetail::class,'bill_id'); 
     }   

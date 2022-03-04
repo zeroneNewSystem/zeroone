@@ -13,10 +13,10 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class SettingController extends Controller
 {
-    
 
 
-    
+
+
     public function showSettingsByType(Request $request, $type)
     {
         return response()->json(['settings' => $this->showSettings($type)], 200);
@@ -40,20 +40,35 @@ class SettingController extends Controller
 
 
     /**
-     * Display a listing of the resource.
+     * Dirnsplay a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        app('valuestore')->put('EUR', 20);
-        app('valuestore')->put('products_grouped', true);
 
-        return app('settings')['EUR'];
+        Setting::setCompanyID(1);
+
+        $setting = Setting::getAllSettings();
+        $setting = Setting::has('nib');
+        $setting = setting(['fff', 'ooo']);
+
+        Setting::set('nib', 'ljkjskj');
+        $setting = setting('ar_key');
+
+
+        return $setting;
+
+        return 1;
+        // app('valuestore')->put('EUR', 20);
+        // app('valuestore')->put('products_grouped', true);
+
+        // return app('settings')['EUR'];
     }
 
     public function export()
-    {}
+    {
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -72,7 +87,8 @@ class SettingController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {}
+    {
+    }
 
     /**
      * Display the specified resource.
@@ -104,7 +120,8 @@ class SettingController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request)
-    {}
+    {
+    }
 
     /**
      * Remove the specified resource from storage.
@@ -113,7 +130,8 @@ class SettingController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
-    {}
+    {
+    }
     /**
      * Remove the specified resource from storage.
      *
@@ -121,5 +139,6 @@ class SettingController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function archive($id)
-    {}
+    {
+    }
 }

@@ -15,12 +15,13 @@ class CreateSettingsTable extends Migration
     {
         Schema::create('settings', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('company_id');
+            $table->unsignedInteger('company_id')->default(1);
             
-            $table->string('ar_name');
-            $table->string('en_name')->nullable();
+            $table->string('ar_key');
+            $table->string('en_key')->nullable();
             
             $table->text('value')->nullable();
+            $table->char('type', 20)->default('string');
                        
             $table->timestamps();
             $table->index('company_id');

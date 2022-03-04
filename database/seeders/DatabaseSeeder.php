@@ -41,6 +41,7 @@ class DatabaseSeeder extends Seeder
                 PersonSeeder::class,
 
                 ReceiptStatusSeeder::class,
+                SettingSeeder::class,
 
             ]
         );

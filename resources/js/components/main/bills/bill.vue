@@ -1,6 +1,70 @@
 <template>
   <v-form ref="form">
     <div>
+      <v-dialog v-model="no_product_dialog" max-width="290">
+        <v-card>
+          <v-card-title> الصنف غير موجود </v-card-title>
+
+          <v-card-text>
+            الصنف لم يتم شراؤه من قبل أو أن المخزون قد نفد
+          </v-card-text>
+
+          <v-card-actions>
+            <v-spacer></v-spacer>
+
+            <v-btn
+              color="green darken-1"
+              text
+              @click="no_product_dialog = false"
+            >
+              اغلق
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <v-dialog v-model="dialog" max-width="600px" persistent>
+        <v-card>
+          <p style="margin: 0 10px; font-size: 14px; padding: 10px">
+            قم باختيار الصنف المناسب واضغط موافق
+          </p>
+
+          <v-card-text>
+            <ul>
+              <div
+                v-for="set in sets"
+                tabIndex="-1"
+                :key="set.id + 'd'"
+                @blur="selected_elem_fromSet = set.id"
+              >
+                <v-row>
+                  <v-col>
+                    {{ set.id }}
+                  </v-col>
+                  <v-col>
+                    {{ selected_item.ar_name }}
+                  </v-col>
+                  <v-col>
+                    {{ set.sum_quantity_in_minor_unit }}
+                  </v-col>
+                  <v-col>
+                    {{ set.expires_at && set.expires_at.split(" ")[0] }}
+                  </v-col>
+                </v-row>
+              </div>
+            </ul>
+          </v-card-text>
+
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="green darken-1" text @click="dialog = false">
+              Disagree
+            </v-btn>
+            <v-btn color="green darken-1" text @click="agreeToAdd">
+              Agree
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
       <add-update-person
         :route="route"
         :dialog="add_update_person_dialog"
@@ -123,6 +187,7 @@
                   </v-col>
                   <v-col cols="12" class="pa-0">
                     <v-text-field
+                      type="number"
                       label="الدفع بعد "
                       v-model="bill.payment_condition_id"
                       suffix="يوم"
@@ -196,7 +261,7 @@
               <v-data-table
                 disable-pagination
                 :headers="header"
-                :items="bill.details"
+                :items="bill.bill_details"
                 class="elevation-1"
                 :hide-default-footer="true"
                 :item-key="toString(Math.floor(Math.random(1, 100) * 100))"
@@ -222,6 +287,8 @@
                     </v-col>
                     <v-col cols="12" sm="6" md="4">
                       <v-text-field
+                      type="barcode"
+                      id="barcode"
                         autocomplete="off"
                         v-model="searched_barcode"
                         label="الباركود"
@@ -252,8 +319,10 @@
                   >
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field
-                        :disabled="route != 'purchase' || !item.has_expiration_date"
-                        v-model="item.expires_at"
+                        :disabled="
+                          route != 'purchase' || !item.has_expiration_date
+                        "
+                        v-model="item.expires_at.split(' ')[0]"
                         flat
                         outlined
                         autocomplete="off"
@@ -678,6 +747,12 @@ export default {
   },
   data() {
     return {
+      no_product_dialog: false,
+      agree: false,
+      functionToAddProduct: "",
+      someVariableUnderYourControl: 1,
+      sets: [],
+      dialog: false,
       route: window.location.pathname.replace(/^\/([^\/]*).*$/, "$1"),
       title: "فاتورة جديدة",
       //----
@@ -796,7 +871,7 @@ export default {
 
       payment_conditions: [],
       new_bill: {
-        type_id:"",
+        type_id: "",
         only_cash: true,
         payment_condition_id: 0,
         payment_methods: [
@@ -826,7 +901,7 @@ export default {
 
         patch_number: Math.floor(Math.random() * (99999 - 10000 + 1) + 10000),
 
-        details: [],
+        bill_details: [],
         reference: "",
         description: "",
         person_id: "",
@@ -842,7 +917,7 @@ export default {
           .substr(0, 10),
       },
       bill: {
-        type_id:1,
+        type_id: 1,
         only_cash: true,
 
         payment_condition_id: 0,
@@ -874,7 +949,7 @@ export default {
 
         patch_number: Math.floor(Math.random() * (99999 - 10000 + 1) + 10000),
 
-        details: [],
+        bill_details: [],
         reference: "",
         description: "",
         person_id: "",
@@ -929,43 +1004,118 @@ export default {
     next();
   },
   methods: {
-     showThisProduct(selected_product) {
+    agreeToAdd() {
+      // this.agree = true;
+
+      this.index_of_selected_product = this.sets.findIndex(
+        (elem) => elem.id == this.selected_elem_fromSet
+      );
+
+      console.log(this.index_of_selected_product);
+
+      let selected_item = JSON.parse(JSON.stringify(this.selected_item));
+
+      console.log(selected_item);
+      selected_item["bill_details"][0] =
+        selected_item["bill_details"][this.index_of_selected_product];
+
+      this.showThisProduct(selected_item);
+      console.log("index");
+
+      console.log("index");
+
+      window.removeEventListener("keydown", this.functionToAddProduct);
+
+      let input_barcode =document.getElementById("barcode");
+      this.$nextTick(() => {
+        input_barcode.focus();
+      });
+
+      this.dialog = false;
+      this.agree = false;
+      return;
+
+      //e.preventDefault();
+
+      console.log(selectedElm);
+      selectedElm = selectedElm[action[e.key] + "ElementSibling"];
+
+      // loop if top/bottom edges reached or "home"/"end" keys clicked
+      if (!selectedElm || e.key == "Home" || e.key == "End") {
+        goToStart = action[e.key] == "next" || e.key == "Home";
+        selectedElm =
+          listElm.children[goToStart ? 0 : listElm.children.length - 1];
+      }
+
+      selectedElm.focus();
+
+      return;
+
+      // Mark first list item
+      this.$nextTick(() => {
+        listElm.firstElementChild.focus();
+        var selectedElm =document.activeElement,
+          goToStart,
+          // map actions to event's key
+          action = {
+            ArrowUp: "previous",
+            Up: "previous",
+            ArrowDown: "next",
+            Down: "next",
+          };
+
+        this.functionToAddProduct = (e) => {};
+        window.addEventListener("keydown", this.functionToAddProduct);
+      });
+
+      // Event listener
+    },
+    showThisProduct(selected_product) {
+      console.log('selected_product')
+      console.log(selected_product)
+      //this.dialog = true;
+      if (this.route !="purchase")
       if (
-        this.invoice.invoice_details.findIndex(
-          (elem) => elem.id == selected_product.id
-        ) >= 0
+        this.bill.bill_details.findIndex((elem) => elem.id == selected_product.id && elem.expires_at.split(" ")[0] == selected_product["bill_details"][0].expires_at.split(" ")[0]) >=
+        0
       )
         return;
 
-      selected_product.invoiced_unit_id =
-        selected_product.units[
-          selected_product.main_sold_unit_id - 1
-        ].pivot.id;
+      selected_product["document_type_id"] = this.bill.type_id;
+      selected_product.unit_id =
+        selected_product.units[selected_product.main_unit_id - 1].pivot.id;
 
-      selected_product.expires_at = selected_product.details[0].expires_at;
       selected_product.unit_price =
         selected_product.units[
-          selected_product.main_sold_unit_id - 1
+          selected_product.main_unit_id - 1
         ].pivot.bought_price;
 
-      selected_product.invoiced_quantity = 1;
-      selected_product.current_quantity =
-        selected_product.details[0].quantity_in_minor_unit /
-        selected_product.units[selected_product.main_sold_unit_id - 1].pivot
-          .contains;
+      selected_product.quantity = 1;
 
-      selected_product.actual_quantity = selected_product.current_quantity;
-      selected_product.actual_quantity_in_minor_unit = parseInt(
-        selected_product.actual_quantity *
-          selected_product.units[selected_product.main_sold_unit_id - 1].pivot
-            .contains
-      );
-      console.log("selected_product");
-      console.log(selected_product);
-      selected_product["bill_type_id"] = 2; // bill
       selected_product["product_id"] = selected_product["id"]; // bill
 
-      this.invoice.invoice_details.push(selected_product);
+      if (this.route == "purchase") {
+        selected_product.expires_at = new Date(
+          Date.now() - new Date().getTimezoneOffset() * 60000
+        )
+          .toISOString()
+          .substr(0, 10);
+      } else {
+        selected_product.expires_at = selected_product.bill_details[0].expires_at;
+        selected_product.current_quantity =
+          selected_product.bill_details[0].quantity_in_minor_unit /
+          selected_product.units[selected_product.main_unit_id - 1].pivot
+            .contains;
+
+        selected_product.actual_quantity = selected_product.current_quantity;
+        selected_product.actual_quantity_in_minor_unit = parseInt(
+          selected_product.actual_quantity *
+            selected_product.units[selected_product.main_unit_id - 1].pivot
+              .contains
+        );
+      }
+
+      this.bill.bill_details.push(selected_product);
       return;
     },
     close_person_dialog() {
@@ -975,17 +1125,17 @@ export default {
       let occurrences = 0;
       let firstIndex = -1;
 
-      for (let index = 0; index < this.bill.details.length; index++) {
+      for (let index = 0; index < this.bill.bill_details.length; index++) {
         if (
-          this.bill.details[index].barcode == item.barcode &&
-          this.bill.details[index].expires_at == item.expires_at
+          this.bill.bill_details[index].barcode == item.barcode &&
+          this.bill.bill_details[index].expires_at == item.expires_at
         ) {
           if (firstIndex == -1) firstIndex = index;
           occurrences++;
           if (occurrences == 2) {
-            this.bill.details[firstIndex].quantity +=
-              this.bill.details[index].quantity;
-            this.bill.details.splice(index, 1);
+            this.bill.bill_details[firstIndex].quantity +=
+              this.bill.bill_details[index].quantity;
+            this.bill.bill_details.splice(index, 1);
             return;
           }
         }
@@ -1049,7 +1199,6 @@ export default {
       this.passed_person = {};
     },
     searchAndAddToBill() {
-
       let params = { barcode: this.searched_barcode };
       Product.billBarcodeSearch(params, this.route).then((response) => {
         if (response.data.products.length == 0) {
@@ -1057,16 +1206,131 @@ export default {
           return;
         }
         this.is_exists = [true];
-        let selected_product = response.data.products[0];
+
+        //let selected_product = response.data.products[0];
+
+        this.selected_item = JSON.parse(
+          JSON.stringify(response.data.products[0])
+        );
+        if (this.route == "purchase") {
+          this.showThisProduct(this.selected_item);
+          return;
+        }
+        //-----processing  for invoice
+        if (this.selected_item.bill_details.length == 0) {
+          this.no_product_dialog = true;
+          return;
+        }
+        if (this.selected_item.bill_details.length == 1) {
+          this.showThisProduct(this.selected_item);
+          return
+        }
+        let products_grouped = false;
+        if (products_grouped) {
+          this.selected_item.bill_details[0].quantity_in_minor_unit =
+            this.selected_item.quantity_in_minor_unit;
+
+          // this.selected_item.bill_details[0].quantity_in_minor_unit =
+          //   this.selected_item.bill_details.reduce(
+          //     (a, b) => +a + +b.quantity_in_minor_unit,
+          //     0
+          //   );
+          console.log("this.selected_item");
+          console.log(this.selected_item);
+          this.showThisProduct(this.selected_item);
+          return;
+        }
+
+        this.sets = this.selected_item.bill_details;
+        this.dialog = true;
+        this.$nextTick().then(() => {
+          var listElm = document.querySelector("ul");
+
+          // Mark first list item
+          this.$nextTick(() => {
+            listElm.firstElementChild.focus();
+            var selectedElm = document.activeElement,
+              goToStart,
+              // map actions to event's key
+              action = {
+                ArrowUp: "previous",
+                Up: "previous",
+                ArrowDown: "next",
+                Down: "next",
+              };
+
+            this.functionToAddProduct = (e) => {
+              if (e.key === "Enter" && this.dialog) {
+                var parent = selectedElm.parentNode;
+                console.log(parent);
+                console.log(selectedElm);
+
+                this.index_of_selected_product = Array.prototype.indexOf.call(
+                  listElm.children,
+                  selectedElm
+                );
+
+                let selected_item = JSON.parse(
+                  JSON.stringify(this.selected_item)
+                );
+
+                console.log(selected_item);
+                selected_item["bill_details"][0] =
+                  selected_item["bill_details"][this.index_of_selected_product];
+
+                this.showThisProduct(selected_item);
+                console.log("index");
+
+                console.log("index");
+
+                window.removeEventListener(
+                  "keydown",
+                  this.functionToAddProduct
+                );
+
+                console.log("input_barcode");
+                console.log(input_barcode);
+                console.log("input_barcode");
+                let input_barcode = document.getElementById("barcode");
+                this.$nextTick(() => {
+                  input_barcode.focus();
+                });
+
+                console.log("selectedElm");
+                console.log(selectedElm);
+                console.log("selectedElm");
+                this.dialog = false;
+                this.agree = false;
+                return;
+              }
+              //e.preventDefault();
+
+              console.log(selectedElm);
+              selectedElm = selectedElm[action[e.key] + "ElementSibling"];
+
+              // loop if top/bottom edges reached or "home"/"end" keys clicked
+              if (!selectedElm || e.key == "Home" || e.key == "End") {
+                goToStart = action[e.key] == "next" || e.key == "Home";
+                selectedElm =
+                  listElm.children[goToStart ? 0 : listElm.children.length - 1];
+              }
+
+              selectedElm.focus();
+            };
+            window.addEventListener("keydown", this.functionToAddProduct);
+          });
+
+          // Event listener
+        });
 
         //CHECK IF PRODUCT HAS EXPIRATION DATE --> ADD QUANTITY
 
         if (!selected_product.has_expiration_date) {
-          let index = this.bill.details.findIndex(
+          let index = this.bill.bill_details.findIndex(
             (elem) => elem.barcode == selected_product.barcode
           );
           if (index != -1) {
-            this.bill.details[index].quantity++;
+            this.bill.bill_details[index].quantity++;
             return;
           }
         }
@@ -1076,9 +1340,7 @@ export default {
         //-----add
 
         selected_product.unit_id =
-          selected_product.units[
-            selected_product.main_unit_id - 1
-          ].pivot.id;
+          selected_product.units[selected_product.main_unit_id - 1].pivot.id;
 
         selected_product.unit_price =
           selected_product.units[
@@ -1088,10 +1350,10 @@ export default {
         selected_product.quantity = 1;
 
         //---------
-        selected_product["bill_type_id"] = 1; // bill
+        selected_product["document_type_id"] = 1; // bill
         selected_product["product_id"] = selected_product["id"]; // bill
 
-        this.bill.details.push(selected_product);
+        this.bill.bill_details.push(selected_product);
       });
     },
     remaining_amount() {
@@ -1134,7 +1396,7 @@ export default {
       item.unit_price = unit.pivot.bought_price;
     },
     total_vat() {
-      this.bill.total_vat = this.bill.details.reduce(
+      this.bill.total_vat = this.bill.bill_details.reduce(
         (a, b) => +a + +b.tax_value,
         0
       );
@@ -1148,7 +1410,7 @@ export default {
     },
 
     total_without_products_vat() {
-      return this.bill.details.reduce((a, b) => +a + +b.total_befor_tax, 0);
+      return this.bill.bill_details.reduce((a, b) => +a + +b.total_befor_tax, 0);
     },
 
     total(item) {
@@ -1178,7 +1440,7 @@ export default {
       return item.quantity_in_minor_unit;
     },
     deleteItem(item) {
-      this.bill.details.splice(this.bill.details.indexOf(item), 1);
+      this.bill.bill_details.splice(this.bill.bill_details.indexOf(item), 1);
     },
     getProducts(val, type) {
       if (val.length > 2) {
@@ -1201,7 +1463,7 @@ export default {
     },
 
     addProductToBill() {
-      console.log(this.bill.details);
+      console.log(this.bill.bill_details);
       console.log("seles", this.selected_product);
       //set defaultid from main purchsedid
       this.selected_product.unit_id =
@@ -1216,8 +1478,8 @@ export default {
 
       this.selected_product.quantity = 1;
       console.log("nnj", this.selected_product.unit_id);
-      this.bill.details.push(JSON.parse(JSON.stringify(this.selected_product)));
-      console.log("nib", this.bill.details);
+      this.bill.bill_details.push(JSON.parse(JSON.stringify(this.selected_product)));
+      console.log("nib", this.bill.bill_details);
       this.selected_product = [];
     },
     checkExicting() {},
@@ -1265,7 +1527,7 @@ export default {
           console.log(this.bill);
           this.bill.issue_date = this.bill.issue_date.split(" ")[0];
           this.bill.maturity_date = this.bill.maturity_date.split(" ")[0];
-          this.bill.details.forEach((elem) => {
+          this.bill.bill_details.forEach((elem) => {
             if (elem.expires_at)
               elem.expires_at = elem.expires_at.split(" ")[0];
           });
@@ -1313,19 +1575,33 @@ export default {
     },
   },
   async created() {
+    
+    console.log(this.$route)
+    console.log(this.route)
+    console.log('patho');
+    console.log(this.route.split('/'));
+    
     if (this.route == "invoice") {
       this.person_type = "customers";
       this.person_info = "معلومات العميل";
       this.persona = "العميل";
-      this.bill.type_id = 1
-      this.new_bill.type_id = 1
+      this.bill.type_id = 2;
+      this.new_bill.type_id = 2;
     }
     if (this.route == "purchase") {
+      console.log('sss');
       this.person_type = "suppliers";
       this.person_info = "معلومات المورد";
       this.persona = "المورد";
-      this.bill.type_id = 1
-      this.new_bill.type_id = 1
+      this.bill.type_id = 1;
+      this.new_bill.type_id = 1;
+    }
+    if (this.route == "invoice_return") {
+      this.person_type = "customers";
+      this.person_info = "معلومات العميل";
+      this.persona = "العميل";
+      this.bill.type_id = 3;
+      this.new_bill.type_id = 3;
     }
     // if (route == "nibra")
     //   Person = (await import("../../../apis/Person")).default;
@@ -1333,7 +1609,7 @@ export default {
     if (this.$route.params.id) {
       this.is_new_bill = false;
       this.title = "تعديل فاتورة رقم " + this.$route.params.id;
-      Bill.get(this.$route.params.id, route + "s").then((response) => {
+      Bill.get(this.$route.params.id, this.route + "s", this.bill.type_id).then((response) => {
         this.bill = response.data.bill;
         console.log(this.bill);
         this.bill.issue_date = this.bill.issue_date.split(" ")[0];
@@ -1419,8 +1695,35 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 
-/* Firefox */
-input[type="number"] {
-  -moz-appearance: textfield;
+.v-application ol,
+.v-application ul {
+  padding-left: 0;
+}
+ul {
+  list-style: none;
+  border: 1px solid silver;
+  max-height: 170px;
+  padding: 0;
+  margin: 0;
+  scroll-behavior: smooth; /* nice smooth movement */
+  overflow: hidden; /* set to hidden by OP's request */
+}
+
+ul > div {
+  padding: 0.5em;
+  margin: 0;
+}
+ul > div:focus {
+  background: #e91e63;
+  outline: none;
+}
+
+.theme--light.v-subheader {
+  background: rgb(255, 231, 243);
+  justify-content: center;
+}
+.first-level {
+  background: rgb(103, 133, 196);
+  justify-content: center;
 }
 </style>

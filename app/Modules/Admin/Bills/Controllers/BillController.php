@@ -97,50 +97,37 @@ class BillController extends Controller
         }
         return $bills;
     }
-    public function index($id)
+    public function index(Request $request, $id)
     {
-        $bill =  DB::table('bills')->where('id', $id)->get()[0];
+        $document_type_id = $request->document_type_id;
 
+        $bill =  DB::table('bills')->where('id', $id)->where('type_id', $document_type_id)->get()[0];
 
         $methods = Transaction::where('document_id', $id)
-            ->where('document_type_id', 1)
+            ->where('document_type_id', $document_type_id)
             ->where('debit', -1)
             ->get();
 
         $bill->payment_methods = $methods;
 
-
-
-
-
-
-        $details =  DB::table('details')
+        $bill_details =  DB::table('bill_details')
             ->where('document_id', $id)
-            ->where('document_type_id', 1)
-            ->leftjoin('products', 'details.product_id', '=', 'products.id')
+            ->where('document_type_id', $document_type_id)
+            ->leftjoin('products', 'bill_details.product_id', '=', 'products.id')
             ->get();
 
-
-
-        // return      $details;
-
-
         $units = [];
-        foreach ($details as &$detail) {
-            $pivots = DB::table('prdct_units_products')->where('product_id', $detail->id)->get();
+        foreach ($bill_details as &$bill_detail) {
+            $pivots = DB::table('prdct_units_products')->where('product_id', $bill_detail->id)->get();
             foreach ($pivots as &$pivot) {
                 $unit = DB::table('prdct_units')->where('id', $pivot->prdct_unit_id)->get();
-                //return $unit[0];
                 $unit[0]->pivot = $pivot;
                 $units[] = $unit[0];
             }
-
-
-            $detail->units = $units;
+            $bill_detail->units = $units;
         }
 
-
-        $bill->details = $details;
+        $bill->bill_details = $bill_details;
 
         return [
             'bill' => $bill,
@@ -155,17 +142,17 @@ class BillController extends Controller
         $bills =  DB::table('bills')->get();
         foreach ($bills as &$bill) {
 
-            $details =  DB::table('details')
+            $bill_details =  DB::table('bill_details')
                 ->where('document_id', 1)
                 ->where('document_type_id', 1)
-                ->leftjoin('products', 'details.product_id', '=', 'products.id')
+                ->leftjoin('products', 'bill_details.product_id', '=', 'products.id')
                 ->get();
 
 
 
             $units = [];
-            foreach ($details as &$detail) {
-                $pivots = DB::table('prdct_units_products')->where('product_id', $detail->id)->get();
+            foreach ($bill_details as &$bill_detail) {
+                $pivots = DB::table('prdct_units_products')->where('product_id', $bill_detail->id)->get();
                 foreach ($pivots as &$pivot) {
                     $unit = DB::table('prdct_units')->where('id', $pivot->prdct_unit_id)->get();
                     //return $unit[0];
@@ -174,11 +161,11 @@ class BillController extends Controller
                 }
 
 
-                $detail->units = $units;
+                $bill_detail->units = $units;
             }
 
 
-            $bill->details = $details;
+            $bill->bill_details = $bill_details;
         }
         return $bills;
     }
@@ -187,7 +174,7 @@ class BillController extends Controller
 
 
         $bills = Bill::where('ar_name', 'LIKE', '%' . $request->search . '%')
-            ->with('details')
+            ->with('bill_details')
 
             ->orderBy('id', 'DESC')
             // ->orWhere('en_name', 'LIKE', '%' . $request->search . '%')
@@ -316,15 +303,18 @@ class BillController extends Controller
     }
     private function storeLinkedData($request, $bill)
     {
+
+
+
         $debit = $credit = 0;
-        $purchase = true;
+        $inventory_increase = true;
 
         if ($bill['type_id'] == 1 || $bill['type_id'] == 3) {
             $credit = $request['total_amount'];
             $person_account_id = Person::find($request->person_id)['supplier_account_id'];
         } else if ($bill['type_id'] == 2 || $bill['type_id'] == 4) {
             $debit = $request['total_amount'];
-            $purchase = false;
+            $inventory_increase = false;
             $person_account_id = Person::find($request->person_id)['customer_account_id'];
         }
 
@@ -346,56 +336,56 @@ class BillController extends Controller
                 $person_account = [
                     "company_id" => 1,
                     "account_id" => $person_account_id,
-                    "debit" =>  $purchase ? $request['paid_amount'] : 0,
-                    "credit" => !$purchase ? $request['paid_amount'] : 0,
+                    "debit" =>  $inventory_increase ? $request['paid_amount'] : 0,
+                    "credit" => !$inventory_increase ? $request['paid_amount'] : 0,
                     "document_id" => $bill->id,
                     "document_type_id" => $bill->type_id,
                     "currency_code" => 1,
                     "currency_rate" => 1,
-                    "description" => $purchase ? 'مدفوعة من العميل' : 'مدفوعة للمورد',
+                    "description" => $inventory_increase ? 'مدفوعة من العميل' : 'مدفوعة للمورد',
                 ];
                 $this->addTransactionEntry($person_account);
                 $cash = [
                     "company_id" => 1,
                     "account_id" => 4,
-                    "debit" =>  $purchase ? 0 : $request['paid_amount'],
-                    "credit" => !$purchase ? 0 : $request['paid_amount'],
+                    "debit" =>  $inventory_increase ? 0 : $request['paid_amount'],
+                    "credit" => !$inventory_increase ? 0 : $request['paid_amount'],
                     "document_id" => $bill->id,
                     "document_type_id" => $bill->type_id,
                     "currency_code" => 1,
                     "currency_rate" => 1,
-                    "description" => $purchase ? 'مدفوع من العميل للصندوق' : 'مدفوعة للمورد من الصندوق',
+                    "description" => $inventory_increase ? 'مدفوع من العميل للصندوق' : 'مدفوعة للمورد من الصندوق',
                 ];
                 $this->addTransactionEntry($cash);
             } else {
                 $payment_methods = $request->payment_methods;
                 $sum = 0;
                 foreach ($payment_methods as $payment_method) {
-                    
+
                     if ($payment_method['account_id'] && $payment_method['amount'] > 0) {
 
                         $person_account = [
                             "company_id" => 1,
                             "account_id" => $payment_method['account_id'],
-                            "debit" => $purchase ? -1 : $payment_method['amount'],
-                            "credit" => !$purchase ? -1 : $payment_method['amount'],
+                            "debit" => $inventory_increase ? -1 : $payment_method['amount'],
+                            "credit" => !$inventory_increase ? -1 : $payment_method['amount'],
                             "document_id" => $bill->id,
                             "document_type_id" => $bill->type_id,
                             "currency_code" => 1,
                             "currency_rate" => 1,
-                            "description" => $purchase ? 'مدفوعة للمورد ' : 'مدفوعة من العميل',
+                            "description" => $inventory_increase ? 'مدفوعة للمورد ' : 'مدفوعة من العميل',
                         ];
                         $this->addTransactionEntry($person_account);
                         $person_account = [
                             "company_id" => 1,
                             "account_id" => $person_account_id,
-                            "debit" => !$purchase ? -1 : $payment_method['amount'],
-                            "credit" => $purchase ? -1 : $payment_method['amount'],
+                            "debit" => !$inventory_increase ? -1 : $payment_method['amount'],
+                            "credit" => $inventory_increase ? -1 : $payment_method['amount'],
                             "document_id" => $bill->id,
                             "document_type_id" => $bill->type_id,
                             "currency_code" => 1,
                             "currency_rate" => 1,
-                            "description" => $purchase ? 'مدفوعة للمورد ' : 'مدفوعة من العميل',
+                            "description" => $inventory_increase ? 'مدفوعة للمورد ' : 'مدفوعة من العميل',
                         ];
                         $this->addTransactionEntry($person_account);
                     }
@@ -409,8 +399,8 @@ class BillController extends Controller
             $additional_expenses = [
                 "company_id" => 1,
                 "account_id" => $additional_expenses_from_account_id, //5103
-                "debit" =>  $purchase ? 0 : $request['additional_expenses'],
-                "credit" => !$purchase ? 0 : $request['additional_expenses'],
+                "debit" =>  $inventory_increase ? 0 : $request['additional_expenses'],
+                "credit" => !$inventory_increase ? 0 : $request['additional_expenses'],
                 "document_id" => $bill->id,
                 "document_type_id" => $bill->type_id,
                 "currency_code" => 1,
@@ -421,8 +411,8 @@ class BillController extends Controller
             $additional_expenses = [
                 "company_id" => 1,
                 "account_id" => 63, //5103
-                "debit" =>  $purchase ? 0 : $request['additional_expenses'],
-                "credit" => !$purchase ? 0 : $request['additional_expenses'],
+                "debit" =>  $inventory_increase ? 0 : $request['additional_expenses'],
+                "credit" => !$inventory_increase ? 0 : $request['additional_expenses'],
                 "document_id" => $bill->id,
                 "document_type_id" => $bill->type_id,
                 "currency_code" => 1,
@@ -434,9 +424,12 @@ class BillController extends Controller
 
 
 
-        foreach ($request->details as $detail) {
+        foreach ($request->bill_details as $bill_detail) {
+
             //transaction  inventory-
-            Product::find($detail['id'])->increment('quantity_in_minor_unit', $detail['quantity_in_minor_unit']);
+            $inventory_increase ?
+                Product::find($bill_detail['id'])->increment('quantity_in_minor_unit', $bill_detail['quantity_in_minor_unit']) :
+                Product::find($bill_detail['id'])->decrement('quantity_in_minor_unit', $bill_detail['quantity_in_minor_unit']);
 
 
 
@@ -445,13 +438,13 @@ class BillController extends Controller
             //$account_id = (BillDetail::where()->get())['account_id'];
 
 
-            $inventory_account_id = Inventory::find($detail['inventory_id'])['account_id'];
+            $inventory_account_id = Inventory::find($bill_detail['inventory_id'])['account_id'];
 
             $entry = [
                 "company_id" => 1,
                 "account_id" => $inventory_account_id,
-                "debit" =>  $purchase ? $detail['total'] : 0,
-                "credit" => !$purchase ? $detail['total'] : 0,
+                "debit" =>  $inventory_increase ? $bill_detail['total'] : 0,
+                "credit" => !$inventory_increase ? $bill_detail['total'] : 0,
                 "document_id" => $bill->id,
                 "document_type_id" => $bill->type_id,
                 "currency_code" => 1,
@@ -463,61 +456,69 @@ class BillController extends Controller
 
 
             $old_detail = BillDetail::where([
-                'product_id' => $detail['product_id'],
-                'expires_at' => $detail['expires_at'],
+                'product_id' => $bill_detail['product_id'],
+                'expires_at' => $bill_detail['expires_at'],
             ])->where('sum_quantity_in_minor_unit', '!=', -1);
 
             if (!$old_detail->exists()) {
-                $detail['sum_quantity_in_minor_unit'] = $detail['quantity_in_minor_unit'];
+                $bill_detail['sum_quantity_in_minor_unit'] = $bill_detail['quantity_in_minor_unit'];
             } else {
-
-                $old_detail->increment(
-                    'sum_quantity_in_minor_unit',
-                    $detail['quantity_in_minor_unit']
-                );
+                $inventory_increase ?
+                    $old_detail->increment(
+                        'sum_quantity_in_minor_unit',
+                        $bill_detail['quantity_in_minor_unit']
+                    ) :
+                    $old_detail->decrement(
+                        'sum_quantity_in_minor_unit',
+                        $bill_detail['quantity_in_minor_unit']
+                    );
             }
 
-            $bill->details()->create($detail);
+            $bill->bill_details()->create($bill_detail);
         }
     }
     private function deleteLinkedData($request)
     {
+
+
+
+        
         Transaction::where('document_type_id', 1)
             ->where('document_id', $request->id)
             ->delete();
 
         // delete bill 
 
-        $details = BillDetail::where('document_type_id', 1)
+        $bill_details = BillDetail::where('document_type_id', $request->type_id)
             ->where('document_id', $request->id)->get();
-        foreach ($details as $detail) {
-            if ($detail['sum_quantity_in_minor_unit'] == -1) {
+        foreach ($bill_details as $bill_detail) {
+            if ($bill_detail['sum_quantity_in_minor_unit'] == -1) {
 
-                BillDetail::where('product_id', $detail['product_id'])
+                BillDetail::where('product_id', $bill_detail['product_id'])
                     ->where('sum_quantity_in_minor_unit', '!=', -1)
-                    ->where('expires_at', $detail['expires_at'])
+                    ->where('expires_at', $bill_detail['expires_at'])
                     ->decrement(
                         'sum_quantity_in_minor_unit',
-                        $detail['quantity_in_minor_unit']
+                        $bill_detail['quantity_in_minor_unit']
                     );
 
                 //and decrement quantity from product..... and then continue      
 
 
             } else {
-                $sum =  $detail['sum_quantity_in_minor_unit'] - $detail['quantity_in_minor_unit'];
+                $sum =  $bill_detail['sum_quantity_in_minor_unit'] - $bill_detail['quantity_in_minor_unit'];
                 $products = BillDetail::where([
-                    'product_id' => $detail['product_id'],
-                    'expires_at' => $detail['expires_at'],
+                    'product_id' => $bill_detail['product_id'],
+                    'expires_at' => $bill_detail['expires_at'],
                     'sum_quantity_in_minor_unit' => -1,
                 ]);
                 if ($products->exists())
                     $products->first()->update(['sum_quantity_in_minor_unit' => $sum]);
             }
 
-            $detail->delete();
+            $bill_detail->delete();
 
-            Product::find($detail['product_id'])->decrement('quantity_in_minor_unit', $detail['quantity_in_minor_unit']);
+            Product::find($bill_detail['product_id'])->decrement('quantity_in_minor_unit', $bill_detail['quantity_in_minor_unit']);
         }
     }
 }

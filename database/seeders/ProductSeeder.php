@@ -65,7 +65,7 @@ class ProductSeeder extends Seeder
                 'product_id'  => 1,
 
                 'prdct_unit_id'  => 1,
-                'contains'  => 10,
+                'contains'  => 1,
 
                 'bought_price'  => 20,
                 'sold_price'  => 33,

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Modules\Admin\Settings\Models\Setting;
 use Illuminate\Database\Seeder;
 
 class SettingSeeder extends Seeder
@@ -14,14 +15,29 @@ class SettingSeeder extends Seeder
     public function run()
     {
         $items = [
-            ['company_id' => 1, 'ar_name' => 'حساب المبيعات', 'en_name' => 'product', 'value' => 53],
-            ['company_id' => 1, 'ar_name' => 'حساب  مردودات المبيعات', 'en_name' => 'product', 'value' => 54],
-            ['company_id' => 1, 'ar_name' => 'حساب تكلفة المبيعات', 'en_name' => 'product', 'value' => 60],
-            ['company_id' => 1, 'ar_name' => 'حساب  مردودات المشتريات', 'en_name' => 'product', 'value' => 61],
+            [
+
+                'company_id' => 1,
+                'ar_key' => 'ar_key',
+                'en_key' => 'en_key',
+                'value' => 'value',
+                'type' => 'string',
+
+            ],
+            [
+
+                'company_id' => 1,
+                'ar_key' => 'nib',
+                'en_key' => 'ras',
+                'value' => 'ali',
+                'type' => 'string',
+
+            ],
+
 
 
         ];
 
-        Tax::insert($items);
+        Setting::insert($items);
     }
 }

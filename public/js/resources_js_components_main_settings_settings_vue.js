@@ -11,13 +11,76 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+/* harmony import */ var _apis_Setting__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../apis/Setting */ "./resources/js/apis/Setting.js");
 //
 //
 //
 //
-//
-//
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({});
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  data: function data() {
+    return {};
+  },
+  created: function created() {
+    _apis_Setting__WEBPACK_IMPORTED_MODULE_0__.default.get().then(function (response) {
+      console.log(response);
+    });
+  }
+});
+
+/***/ }),
+
+/***/ "./resources/js/apis/Setting.js":
+/*!**************************************!*\
+  !*** ./resources/js/apis/Setting.js ***!
+  \**************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _Api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Api */ "./resources/js/apis/Api.js");
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  isExist: function isExist(product) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/extra/product/exists/" + product.type + "/" + product.what_to_search);
+  },
+  create: function create() {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/settings/create");
+  },
+  store: function store(product) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/settings", product);
+  },
+  update: function update(product) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("/settings", product);
+  },
+  postCreate: function postCreate(product) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/settings/create", product);
+  },
+  get: function get() {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/settings");
+  },
+  search: function search(params) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/settings/search", {
+      params: params
+    });
+  },
+  billBarcodeSearch: function billBarcodeSearch(params, route) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/extra/" + route + "/barcode/" + params.barcode);
+  },
+  invoiceBarcodeSearch: function invoiceBarcodeSearch(params) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/extra/invoice/barcode/" + params.barcode + "/inventory_id/" + params.inventory_id);
+  },
+  stockTakeBarcodeSearch: function stockTakeBarcodeSearch(params) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/extra/stock_take/barcode/" + params.barcode + "/inventory_id/" + params.inventory_id);
+  },
+  "delete": function _delete(params) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.delete("/settings/", {
+      params: params
+    });
+  }
+});
 
 /***/ }),
 
@@ -105,7 +168,7 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", [_vm._v("\n  simple\n")])
+  return _c("div", [_vm._v("simple")])
 }
 var staticRenderFns = []
 render._withStripped = true

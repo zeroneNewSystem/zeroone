@@ -138,8 +138,8 @@ class CustomerController extends Controller
             'invoices as pur',
             function ($leftJoin) {
                 $leftJoin
-                    ->on('trans.bill_id', '=', 'pur.id')
-                    ->where('trans.bill_type_id', 1)
+                    ->on('trans.document_id', '=', 'pur.id')
+                    ->where('trans.document_type_id', 1)
                     ->where('pur.maturity_date', '<', date('Y-m-d'))
                     ->where('pur.payment_status_id', '!=', 5)
                     ->where('pur.payment_status_id', '!=', 5);
@@ -150,8 +150,8 @@ class CustomerController extends Controller
             'supplemental_billings as supdoc',
             function ($leftJoin) {
                 $leftJoin
-                    ->on('supdoc.bill_id', '=', 'pur.id')
-                    ->where('supdoc.bill_type_id', 1);
+                    ->on('supdoc.document_id', '=', 'pur.id')
+                    ->where('supdoc.document_type_id', 1);
             }
 
         );
@@ -281,7 +281,7 @@ class CustomerController extends Controller
 
         foreach ($invoices as $invoice) {
             $total_amount += $invoice->total_amount;
-            $supp_bills = DB::table('supplemental_billings')->where('bill_id', $invoice->id)->where('bill_type_id', 1)->get();
+            $supp_bills = DB::table('supplemental_billings')->where('document_id', $invoice->id)->where('document_type_id', 1)->get();
             if ($invoice->maturity_date <  date('Y-m-d') && $invoice->maturity_date != 5) {
                 $total_amount_with_maturity_date +=  $invoice->total_amount;
                 $paid_amount_with_maturity_date +=  $invoice->paid_amount;

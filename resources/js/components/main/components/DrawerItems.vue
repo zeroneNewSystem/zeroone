@@ -105,12 +105,12 @@ export default {
           },
           {
             name: "فواتير المشتريات",
-            link: "/bills",
+            link: "/purchases",
             icon: "",
           },
           {
             name: "فاتورة شراء",
-            link: "/bill",
+            link: "/purchase",
             icon: "",
           },
           {

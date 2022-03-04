@@ -2,6 +2,16 @@ a {
     text-decoration: none;
 }
 
+input[type="number"] {
+    -moz-appearance: textfield;
+    direction: ltr !important
+}
+
+input[type="barcode"] {
+    -moz-appearance: textfield;
+    direction: ltr !important
+}
+
 #app {
     font-family: flat-jooza, Hacen-Algeria-Bd, Roboto, sans-serif;
     /* this was it */

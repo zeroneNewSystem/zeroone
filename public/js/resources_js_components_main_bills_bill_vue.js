@@ -937,6 +937,75 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -953,6 +1022,12 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
   },
   data: function data() {
     return {
+      no_product_dialog: false,
+      agree: false,
+      functionToAddProduct: "",
+      someVariableUnderYourControl: 1,
+      sets: [],
+      dialog: false,
       route: window.location.pathname.replace(/^\/([^\/]*).*$/, "$1"),
       title: "فاتورة جديدة",
       //----
@@ -1083,7 +1158,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         total_vat: 0,
         total_amount: 0,
         patch_number: Math.floor(Math.random() * (99999 - 10000 + 1) + 10000),
-        details: [],
+        bill_details: [],
         reference: "",
         description: "",
         person_id: "",
@@ -1115,7 +1190,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         total_vat: 0,
         total_amount: 0,
         patch_number: Math.floor(Math.random() * (99999 - 10000 + 1) + 10000),
-        details: [],
+        bill_details: [],
         reference: "",
         description: "",
         person_id: "",
@@ -1162,24 +1237,80 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
     next();
   },
   methods: {
-    showThisProduct: function showThisProduct(selected_product) {
-      if (this.invoice.invoice_details.findIndex(function (elem) {
-        return elem.id == selected_product.id;
-      }) >= 0) return;
-      selected_product.invoiced_unit_id = selected_product.units[selected_product.main_sold_unit_id - 1].pivot.id;
-      selected_product.expires_at = selected_product.details[0].expires_at;
-      selected_product.unit_price = selected_product.units[selected_product.main_sold_unit_id - 1].pivot.bought_price;
-      selected_product.invoiced_quantity = 1;
-      selected_product.current_quantity = selected_product.details[0].quantity_in_minor_unit / selected_product.units[selected_product.main_sold_unit_id - 1].pivot.contains;
-      selected_product.actual_quantity = selected_product.current_quantity;
-      selected_product.actual_quantity_in_minor_unit = parseInt(selected_product.actual_quantity * selected_product.units[selected_product.main_sold_unit_id - 1].pivot.contains);
-      console.log("selected_product");
-      console.log(selected_product);
-      selected_product["bill_type_id"] = 2; // bill
+    agreeToAdd: function agreeToAdd() {
+      var _this = this;
 
+      // this.agree = true;
+      this.index_of_selected_product = this.sets.findIndex(function (elem) {
+        return elem.id == _this.selected_elem_fromSet;
+      });
+      console.log(this.index_of_selected_product);
+      var selected_item = JSON.parse(JSON.stringify(this.selected_item));
+      console.log(selected_item);
+      selected_item["bill_details"][0] = selected_item["bill_details"][this.index_of_selected_product];
+      this.showThisProduct(selected_item);
+      console.log("index");
+      console.log("index");
+      window.removeEventListener("keydown", this.functionToAddProduct);
+      var input_barcode = document.getElementById("barcode");
+      this.$nextTick(function () {
+        input_barcode.focus();
+      });
+      this.dialog = false;
+      this.agree = false;
+      return; //e.preventDefault();
+
+      console.log(selectedElm);
+      selectedElm = selectedElm[action[e.key] + "ElementSibling"]; // loop if top/bottom edges reached or "home"/"end" keys clicked
+
+      if (!selectedElm || e.key == "Home" || e.key == "End") {
+        goToStart = action[e.key] == "next" || e.key == "Home";
+        selectedElm = listElm.children[goToStart ? 0 : listElm.children.length - 1];
+      }
+
+      selectedElm.focus();
+      return; // Mark first list item
+
+      this.$nextTick(function () {
+        listElm.firstElementChild.focus();
+        var selectedElm = document.activeElement,
+            goToStart,
+            // map actions to event's key
+        action = {
+          ArrowUp: "previous",
+          Up: "previous",
+          ArrowDown: "next",
+          Down: "next"
+        };
+
+        _this.functionToAddProduct = function (e) {};
+
+        window.addEventListener("keydown", _this.functionToAddProduct);
+      }); // Event listener
+    },
+    showThisProduct: function showThisProduct(selected_product) {
+      console.log('selected_product');
+      console.log(selected_product); //this.dialog = true;
+
+      if (this.route != "purchase") if (this.bill.bill_details.findIndex(function (elem) {
+        return elem.id == selected_product.id && elem.expires_at.split(" ")[0] == selected_product["bill_details"][0].expires_at.split(" ")[0];
+      }) >= 0) return;
+      selected_product["document_type_id"] = this.bill.type_id;
+      selected_product.unit_id = selected_product.units[selected_product.main_unit_id - 1].pivot.id;
+      selected_product.unit_price = selected_product.units[selected_product.main_unit_id - 1].pivot.bought_price;
+      selected_product.quantity = 1;
       selected_product["product_id"] = selected_product["id"]; // bill
 
-      this.invoice.invoice_details.push(selected_product);
+      if (this.route == "purchase") {
+        selected_product.expires_at = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10);
+      } else {
+        selected_product.expires_at = selected_product.bill_details[0].expires_at;
+        selected_product.current_quantity = selected_product.bill_details[0].quantity_in_minor_unit / selected_product.units[selected_product.main_unit_id - 1].pivot.contains;
+        selected_product.actual_quantity = selected_product.current_quantity;
+        selected_product.actual_quantity_in_minor_unit = parseInt(selected_product.actual_quantity * selected_product.units[selected_product.main_unit_id - 1].pivot.contains);
+      }
+
+      this.bill.bill_details.push(selected_product);
       return;
     },
     close_person_dialog: function close_person_dialog() {
@@ -1189,14 +1320,14 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       var occurrences = 0;
       var firstIndex = -1;
 
-      for (var index = 0; index < this.bill.details.length; index++) {
-        if (this.bill.details[index].barcode == item.barcode && this.bill.details[index].expires_at == item.expires_at) {
+      for (var index = 0; index < this.bill.bill_details.length; index++) {
+        if (this.bill.bill_details[index].barcode == item.barcode && this.bill.bill_details[index].expires_at == item.expires_at) {
           if (firstIndex == -1) firstIndex = index;
           occurrences++;
 
           if (occurrences == 2) {
-            this.bill.details[firstIndex].quantity += this.bill.details[index].quantity;
-            this.bill.details.splice(index, 1);
+            this.bill.bill_details[firstIndex].quantity += this.bill.bill_details[index].quantity;
+            this.bill.bill_details.splice(index, 1);
             return;
           }
         }
@@ -1216,10 +1347,10 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       this.bill.maturity_date = this.addays(this.bill.issue_date, this.bill.payment_condition_id).toISOString().substr(0, 10);
     },
     personInfo: function personInfo() {
-      var _this = this;
+      var _this2 = this;
 
       return this.people.find(function (elem) {
-        return elem.id == _this.bill.person_id;
+        return elem.id == _this2.bill.person_id;
       });
     },
     changeDateFormat: function changeDateFormat() {
@@ -1242,11 +1373,11 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       this.bill.person_id = person.id;
     },
     loadCities: function loadCities(country_id) {
-      var _this2 = this;
+      var _this3 = this;
 
       this.cities = [];
       _apis_Country__WEBPACK_IMPORTED_MODULE_6__.default.loadCities(country_id).then(function (response) {
-        return _this2.cities = response.data.cities;
+        return _this3.cities = response.data.cities;
       });
     },
     addPerson: function addPerson() {
@@ -1255,27 +1386,131 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       this.passed_person = {};
     },
     searchAndAddToBill: function searchAndAddToBill() {
-      var _this3 = this;
+      var _this4 = this;
 
       var params = {
         barcode: this.searched_barcode
       };
       _apis_Product__WEBPACK_IMPORTED_MODULE_1__.default.billBarcodeSearch(params, this.route).then(function (response) {
         if (response.data.products.length == 0) {
-          _this3.is_exists = [ false || "الصنف غير موجود "];
+          _this4.is_exists = [ false || "الصنف غير موجود "];
           return;
         }
 
-        _this3.is_exists = [true];
-        var selected_product = response.data.products[0]; //CHECK IF PRODUCT HAS EXPIRATION DATE --> ADD QUANTITY
+        _this4.is_exists = [true]; //let selected_product = response.data.products[0];
+
+        _this4.selected_item = JSON.parse(JSON.stringify(response.data.products[0]));
+
+        if (_this4.route == "purchase") {
+          _this4.showThisProduct(_this4.selected_item);
+
+          return;
+        } //-----processing  for invoice
+
+
+        if (_this4.selected_item.bill_details.length == 0) {
+          _this4.no_product_dialog = true;
+          return;
+        }
+
+        if (_this4.selected_item.bill_details.length == 1) {
+          _this4.showThisProduct(_this4.selected_item);
+
+          return;
+        }
+
+        var products_grouped = false;
+
+        if (products_grouped) {
+          _this4.selected_item.bill_details[0].quantity_in_minor_unit = _this4.selected_item.quantity_in_minor_unit; // this.selected_item.bill_details[0].quantity_in_minor_unit =
+          //   this.selected_item.bill_details.reduce(
+          //     (a, b) => +a + +b.quantity_in_minor_unit,
+          //     0
+          //   );
+
+          console.log("this.selected_item");
+          console.log(_this4.selected_item);
+
+          _this4.showThisProduct(_this4.selected_item);
+
+          return;
+        }
+
+        _this4.sets = _this4.selected_item.bill_details;
+        _this4.dialog = true;
+
+        _this4.$nextTick().then(function () {
+          var listElm = document.querySelector("ul"); // Mark first list item
+
+          _this4.$nextTick(function () {
+            listElm.firstElementChild.focus();
+            var selectedElm = document.activeElement,
+                goToStart,
+                // map actions to event's key
+            action = {
+              ArrowUp: "previous",
+              Up: "previous",
+              ArrowDown: "next",
+              Down: "next"
+            };
+
+            _this4.functionToAddProduct = function (e) {
+              if (e.key === "Enter" && _this4.dialog) {
+                var parent = selectedElm.parentNode;
+                console.log(parent);
+                console.log(selectedElm);
+                _this4.index_of_selected_product = Array.prototype.indexOf.call(listElm.children, selectedElm);
+                var selected_item = JSON.parse(JSON.stringify(_this4.selected_item));
+                console.log(selected_item);
+                selected_item["bill_details"][0] = selected_item["bill_details"][_this4.index_of_selected_product];
+
+                _this4.showThisProduct(selected_item);
+
+                console.log("index");
+                console.log("index");
+                window.removeEventListener("keydown", _this4.functionToAddProduct);
+                console.log("input_barcode");
+                console.log(input_barcode);
+                console.log("input_barcode");
+                var input_barcode = document.getElementById("barcode");
+
+                _this4.$nextTick(function () {
+                  input_barcode.focus();
+                });
+
+                console.log("selectedElm");
+                console.log(selectedElm);
+                console.log("selectedElm");
+                _this4.dialog = false;
+                _this4.agree = false;
+                return;
+              } //e.preventDefault();
+
+
+              console.log(selectedElm);
+              selectedElm = selectedElm[action[e.key] + "ElementSibling"]; // loop if top/bottom edges reached or "home"/"end" keys clicked
+
+              if (!selectedElm || e.key == "Home" || e.key == "End") {
+                goToStart = action[e.key] == "next" || e.key == "Home";
+                selectedElm = listElm.children[goToStart ? 0 : listElm.children.length - 1];
+              }
+
+              selectedElm.focus();
+            };
+
+            window.addEventListener("keydown", _this4.functionToAddProduct);
+          }); // Event listener
+
+        }); //CHECK IF PRODUCT HAS EXPIRATION DATE --> ADD QUANTITY
+
 
         if (!selected_product.has_expiration_date) {
-          var index = _this3.bill.details.findIndex(function (elem) {
+          var index = _this4.bill.bill_details.findIndex(function (elem) {
             return elem.barcode == selected_product.barcode;
           });
 
           if (index != -1) {
-            _this3.bill.details[index].quantity++;
+            _this4.bill.bill_details[index].quantity++;
             return;
           }
         } //this.found_products = response.data.products;
@@ -1286,11 +1521,11 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         selected_product.unit_price = selected_product.units[selected_product.main_unit_id - 1].pivot.bought_price;
         selected_product.quantity = 1; //---------
 
-        selected_product["bill_type_id"] = 1; // bill
+        selected_product["document_type_id"] = 1; // bill
 
         selected_product["product_id"] = selected_product["id"]; // bill
 
-        _this3.bill.details.push(selected_product);
+        _this4.bill.bill_details.push(selected_product);
       });
     },
     remaining_amount: function remaining_amount() {
@@ -1329,7 +1564,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       item.unit_price = unit.pivot.bought_price;
     },
     total_vat: function total_vat() {
-      this.bill.total_vat = this.bill.details.reduce(function (a, b) {
+      this.bill.total_vat = this.bill.bill_details.reduce(function (a, b) {
         return +a + +b.tax_value;
       }, 0);
       return this.bill.total_vat;
@@ -1339,7 +1574,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       return this.bill.total_amount;
     },
     total_without_products_vat: function total_without_products_vat() {
-      return this.bill.details.reduce(function (a, b) {
+      return this.bill.bill_details.reduce(function (a, b) {
         return +a + +b.total_befor_tax;
       }, 0);
     },
@@ -1368,10 +1603,10 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       return item.quantity_in_minor_unit;
     },
     deleteItem: function deleteItem(item) {
-      this.bill.details.splice(this.bill.details.indexOf(item), 1);
+      this.bill.bill_details.splice(this.bill.bill_details.indexOf(item), 1);
     },
     getProducts: function getProducts(val, type) {
-      var _this4 = this;
+      var _this5 = this;
 
       if (val.length > 2) {
         this.loading = true;
@@ -1383,25 +1618,25 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         }; // Simulated ajax query ajax
 
         _apis_Product__WEBPACK_IMPORTED_MODULE_1__.default.search(params).then(function (response) {
-          _this4.loading = false;
+          _this5.loading = false;
           console.log("hi", response.data);
 
           if (response.data.length !== 0) {
-            _this4.found_products = JSON.parse(JSON.stringify(response.data.products));
+            _this5.found_products = JSON.parse(JSON.stringify(response.data.products));
           }
         });
       }
     },
     addProductToBill: function addProductToBill() {
-      console.log(this.bill.details);
+      console.log(this.bill.bill_details);
       console.log("seles", this.selected_product); //set defaultid from main purchsedid
 
       this.selected_product.unit_id = this.selected_product.units[this.selected_product.main_unit_id - 1].pivot.id;
       this.selected_product.unit_price = this.selected_product.units[this.selected_product.main_unit_id - 1].pivot.bought_price;
       this.selected_product.quantity = 1;
       console.log("nnj", this.selected_product.unit_id);
-      this.bill.details.push(JSON.parse(JSON.stringify(this.selected_product)));
-      console.log("nib", this.bill.details);
+      this.bill.bill_details.push(JSON.parse(JSON.stringify(this.selected_product)));
+      console.log("nib", this.bill.bill_details);
       this.selected_product = [];
     },
     checkExicting: function checkExicting() {},
@@ -1444,7 +1679,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       return "".concat(year, "-").concat(month.padStart(2, "0"), "-").concat(day.padStart(2, "0"));
     },
     createPage: function createPage(to, status) {
-      var _this5 = this;
+      var _this6 = this;
 
       var params = to.params;
       console.log();
@@ -1454,16 +1689,16 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         this.is_new_bill = false;
         this.title = "تعديل فاتورة رقم " + params.id;
         _apis_Bill__WEBPACK_IMPORTED_MODULE_2__.default.get(params.id, this.route + "s").then(function (response) {
-          _this5.bill = response.data.bill;
-          console.log(_this5.bill);
-          _this5.bill.issue_date = _this5.bill.issue_date.split(" ")[0];
-          _this5.bill.maturity_date = _this5.bill.maturity_date.split(" ")[0];
+          _this6.bill = response.data.bill;
+          console.log(_this6.bill);
+          _this6.bill.issue_date = _this6.bill.issue_date.split(" ")[0];
+          _this6.bill.maturity_date = _this6.bill.maturity_date.split(" ")[0];
 
-          _this5.bill.details.forEach(function (elem) {
+          _this6.bill.bill_details.forEach(function (elem) {
             if (elem.expires_at) elem.expires_at = elem.expires_at.split(" ")[0];
           });
 
-          if (_this5.bill.payment_methods.length == 0) _this5.bill.payment_methods = [{
+          if (_this6.bill.payment_methods.length == 0) _this6.bill.payment_methods = [{
             account_id: "",
             amount: 0,
             description: ""
@@ -1476,8 +1711,8 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
             amount: 0,
             description: ""
           }];
-          _this5.people = response.data.people;
-          _this5.additional_expenses_from_accounts = response.data.accounts.accounts;
+          _this6.people = response.data.people;
+          _this6.additional_expenses_from_accounts = response.data.accounts.accounts;
           console.log(response.data.accounts.accounts);
         });
       } else {
@@ -1486,10 +1721,10 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         if (status == "new") {
           alert(222);
           _apis_Person__WEBPACK_IMPORTED_MODULE_7__.default.get({}, this.route).then(function (response) {
-            return _this5.people = response.data;
+            return _this6.people = response.data;
           });
           _apis_Account__WEBPACK_IMPORTED_MODULE_8__.default.cashAndBanks().then(function (response) {
-            return _this5.additional_expenses_from_accounts = response.data.accounts;
+            return _this6.additional_expenses_from_accounts = response.data.accounts;
           });
         } else {
           this.bill = JSON.parse(JSON.stringify(this.new_bill));
@@ -1499,45 +1734,59 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
     }
   },
   created: function created() {
-    var _this6 = this;
+    var _this7 = this;
 
     return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee() {
       return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
-              if (_this6.route == "invoice") {
-                _this6.person_type = "customers";
-                _this6.person_info = "معلومات العميل";
-                _this6.persona = "العميل";
-                _this6.bill.type_id = 1;
-                _this6.new_bill.type_id = 1;
+              console.log(_this7.$route);
+              console.log(_this7.route);
+              console.log('patho');
+              console.log(_this7.route.split('/'));
+
+              if (_this7.route == "invoice") {
+                _this7.person_type = "customers";
+                _this7.person_info = "معلومات العميل";
+                _this7.persona = "العميل";
+                _this7.bill.type_id = 2;
+                _this7.new_bill.type_id = 2;
               }
 
-              if (_this6.route == "purchase") {
-                _this6.person_type = "suppliers";
-                _this6.person_info = "معلومات المورد";
-                _this6.persona = "المورد";
-                _this6.bill.type_id = 1;
-                _this6.new_bill.type_id = 1;
+              if (_this7.route == "purchase") {
+                console.log('sss');
+                _this7.person_type = "suppliers";
+                _this7.person_info = "معلومات المورد";
+                _this7.persona = "المورد";
+                _this7.bill.type_id = 1;
+                _this7.new_bill.type_id = 1;
+              }
+
+              if (_this7.route == "invoice_return") {
+                _this7.person_type = "customers";
+                _this7.person_info = "معلومات العميل";
+                _this7.persona = "العميل";
+                _this7.bill.type_id = 3;
+                _this7.new_bill.type_id = 3;
               } // if (route == "nibra")
               //   Person = (await import("../../../apis/Person")).default;
 
 
-              if (_this6.$route.params.id) {
-                _this6.is_new_bill = false;
-                _this6.title = "تعديل فاتورة رقم " + _this6.$route.params.id;
-                _apis_Bill__WEBPACK_IMPORTED_MODULE_2__.default.get(_this6.$route.params.id, route + "s").then(function (response) {
-                  _this6.bill = response.data.bill;
-                  console.log(_this6.bill);
-                  _this6.bill.issue_date = _this6.bill.issue_date.split(" ")[0];
-                  _this6.bill.maturity_date = _this6.bill.maturity_date.split(" ")[0];
+              if (_this7.$route.params.id) {
+                _this7.is_new_bill = false;
+                _this7.title = "تعديل فاتورة رقم " + _this7.$route.params.id;
+                _apis_Bill__WEBPACK_IMPORTED_MODULE_2__.default.get(_this7.$route.params.id, _this7.route + "s", _this7.bill.type_id).then(function (response) {
+                  _this7.bill = response.data.bill;
+                  console.log(_this7.bill);
+                  _this7.bill.issue_date = _this7.bill.issue_date.split(" ")[0];
+                  _this7.bill.maturity_date = _this7.bill.maturity_date.split(" ")[0];
 
-                  _this6.bill.bill_details.forEach(function (elem) {
+                  _this7.bill.bill_details.forEach(function (elem) {
                     if (elem.expires_at) elem.expires_at = elem.expires_at.split(" ")[0];
                   });
 
-                  if (_this6.bill.payment_methods.length == 0) _this6.bill.payment_methods = [{
+                  if (_this7.bill.payment_methods.length == 0) _this7.bill.payment_methods = [{
                     account_id: "",
                     debit: 0,
                     description: ""
@@ -1550,16 +1799,16 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
                     debit: 0,
                     description: ""
                   }];
-                  _this6.people = response.data.people;
-                  _this6.additional_expenses_from_accounts = response.data.accounts.accounts;
+                  _this7.people = response.data.people;
+                  _this7.additional_expenses_from_accounts = response.data.accounts.accounts;
                   console.log(response.data.accounts.accounts);
                 });
               } else {
-                _apis_Person__WEBPACK_IMPORTED_MODULE_7__.default.get({}, _this6.person_type).then(function (response) {
-                  return _this6.people = response.data;
+                _apis_Person__WEBPACK_IMPORTED_MODULE_7__.default.get({}, _this7.person_type).then(function (response) {
+                  return _this7.people = response.data;
                 });
                 _apis_Account__WEBPACK_IMPORTED_MODULE_8__.default.cashAndBanks().then(function (response) {
-                  return _this6.additional_expenses_from_accounts = response.data.accounts;
+                  return _this7.additional_expenses_from_accounts = response.data.accounts;
                 });
               } // if (route == "nibras")
               //   Person = (await import("../../../apis/Person")).default;
@@ -1567,7 +1816,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
               //this.createPage(this.$route, "new");
 
 
-            case 3:
+            case 8:
             case "end":
               return _context.stop();
           }
@@ -2233,8 +2482,12 @@ __webpack_require__.r(__webpack_exports__);
     console.log("bill", bill);
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/" + route, bill);
   },
-  get: function get(id, route) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/" + route + "/" + id);
+  get: function get(id, route, document_type_id) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/" + route + "/" + id, {
+      params: {
+        document_type_id: document_type_id
+      }
+    });
   },
   getAll: function getAll(params, route) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/" + route + "/all", {
@@ -2430,7 +2683,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.v-application--wrap > .container {\r\n  margin: 0;\n}\n.v-text-field.v-text-field--enclosed .v-text-field__details,\r\n.v-text-field.v-text-field--enclosed:not(.v-text-field--rounded)\r\n  > .v-input__control\r\n  > .v-input__slot {\r\n  padding: 0px;\n}\n.bill-footer {\r\n  min-width: 0;\r\n  overflow: hidden;\n}\n.purchas-extra-expense :after,\r\n.purchas-extra-expense :before {\r\n  display: none;\n}\n.purchas-extra-expense .v-text-field__details {\r\n  display: none;\n}\n.text-red input {\r\n  color: red !important;\n}\n.bill-info .v-text-field__prefix {\r\n  margin-right: 10px;\n}\r\n/* Chrome, Safari, Edge, Opera */\ninput::-webkit-outer-spin-button,\r\ninput::-webkit-inner-spin-button {\r\n  -webkit-appearance: none;\r\n  margin: 0;\n}\r\n\r\n/* Firefox */\ninput[type=\"number\"] {\r\n  -moz-appearance: textfield;\n}\r\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.v-application--wrap > .container {\r\n  margin: 0;\n}\n.v-text-field.v-text-field--enclosed .v-text-field__details,\r\n.v-text-field.v-text-field--enclosed:not(.v-text-field--rounded)\r\n  > .v-input__control\r\n  > .v-input__slot {\r\n  padding: 0px;\n}\n.bill-footer {\r\n  min-width: 0;\r\n  overflow: hidden;\n}\n.purchas-extra-expense :after,\r\n.purchas-extra-expense :before {\r\n  display: none;\n}\n.purchas-extra-expense .v-text-field__details {\r\n  display: none;\n}\n.text-red input {\r\n  color: red !important;\n}\n.bill-info .v-text-field__prefix {\r\n  margin-right: 10px;\n}\r\n/* Chrome, Safari, Edge, Opera */\ninput::-webkit-outer-spin-button,\r\ninput::-webkit-inner-spin-button {\r\n  -webkit-appearance: none;\r\n  margin: 0;\n}\n.v-application ol,\r\n.v-application ul {\r\n  padding-left: 0;\n}\nul {\r\n  list-style: none;\r\n  border: 1px solid silver;\r\n  max-height: 170px;\r\n  padding: 0;\r\n  margin: 0;\r\n  scroll-behavior: smooth; /* nice smooth movement */\r\n  overflow: hidden; /* set to hidden by OP's request */\n}\nul > div {\r\n  padding: 0.5em;\r\n  margin: 0;\n}\nul > div:focus {\r\n  background: #e91e63;\r\n  outline: none;\n}\n.theme--light.v-subheader {\r\n  background: rgb(255, 231, 243);\r\n  justify-content: center;\n}\n.first-level {\r\n  background: rgb(103, 133, 196);\r\n  justify-content: center;\n}\r\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -4045,6 +4298,189 @@ var render = function() {
     _c(
       "div",
       [
+        _c(
+          "v-dialog",
+          {
+            attrs: { "max-width": "290" },
+            model: {
+              value: _vm.no_product_dialog,
+              callback: function($$v) {
+                _vm.no_product_dialog = $$v
+              },
+              expression: "no_product_dialog"
+            }
+          },
+          [
+            _c(
+              "v-card",
+              [
+                _c("v-card-title", [_vm._v(" الصنف غير موجود ")]),
+                _vm._v(" "),
+                _c("v-card-text", [
+                  _vm._v(
+                    "\n          الصنف لم يتم شراؤه من قبل أو أن المخزون قد نفد\n        "
+                  )
+                ]),
+                _vm._v(" "),
+                _c(
+                  "v-card-actions",
+                  [
+                    _c("v-spacer"),
+                    _vm._v(" "),
+                    _c(
+                      "v-btn",
+                      {
+                        attrs: { color: "green darken-1", text: "" },
+                        on: {
+                          click: function($event) {
+                            _vm.no_product_dialog = false
+                          }
+                        }
+                      },
+                      [_vm._v("\n            اغلق\n          ")]
+                    )
+                  ],
+                  1
+                )
+              ],
+              1
+            )
+          ],
+          1
+        ),
+        _vm._v(" "),
+        _c(
+          "v-dialog",
+          {
+            attrs: { "max-width": "600px", persistent: "" },
+            model: {
+              value: _vm.dialog,
+              callback: function($$v) {
+                _vm.dialog = $$v
+              },
+              expression: "dialog"
+            }
+          },
+          [
+            _c(
+              "v-card",
+              [
+                _c(
+                  "p",
+                  {
+                    staticStyle: {
+                      margin: "0 10px",
+                      "font-size": "14px",
+                      padding: "10px"
+                    }
+                  },
+                  [
+                    _vm._v(
+                      "\n          قم باختيار الصنف المناسب واضغط موافق\n        "
+                    )
+                  ]
+                ),
+                _vm._v(" "),
+                _c("v-card-text", [
+                  _c(
+                    "ul",
+                    _vm._l(_vm.sets, function(set) {
+                      return _c(
+                        "div",
+                        {
+                          key: set.id + "d",
+                          attrs: { tabIndex: "-1" },
+                          on: {
+                            blur: function($event) {
+                              _vm.selected_elem_fromSet = set.id
+                            }
+                          }
+                        },
+                        [
+                          _c(
+                            "v-row",
+                            [
+                              _c("v-col", [
+                                _vm._v(
+                                  "\n                  " +
+                                    _vm._s(set.id) +
+                                    "\n                "
+                                )
+                              ]),
+                              _vm._v(" "),
+                              _c("v-col", [
+                                _vm._v(
+                                  "\n                  " +
+                                    _vm._s(_vm.selected_item.ar_name) +
+                                    "\n                "
+                                )
+                              ]),
+                              _vm._v(" "),
+                              _c("v-col", [
+                                _vm._v(
+                                  "\n                  " +
+                                    _vm._s(set.sum_quantity_in_minor_unit) +
+                                    "\n                "
+                                )
+                              ]),
+                              _vm._v(" "),
+                              _c("v-col", [
+                                _vm._v(
+                                  "\n                  " +
+                                    _vm._s(
+                                      set.expires_at &&
+                                        set.expires_at.split(" ")[0]
+                                    ) +
+                                    "\n                "
+                                )
+                              ])
+                            ],
+                            1
+                          )
+                        ],
+                        1
+                      )
+                    }),
+                    0
+                  )
+                ]),
+                _vm._v(" "),
+                _c(
+                  "v-card-actions",
+                  [
+                    _c("v-spacer"),
+                    _vm._v(" "),
+                    _c(
+                      "v-btn",
+                      {
+                        attrs: { color: "green darken-1", text: "" },
+                        on: {
+                          click: function($event) {
+                            _vm.dialog = false
+                          }
+                        }
+                      },
+                      [_vm._v("\n            Disagree\n          ")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "v-btn",
+                      {
+                        attrs: { color: "green darken-1", text: "" },
+                        on: { click: _vm.agreeToAdd }
+                      },
+                      [_vm._v("\n            Agree\n          ")]
+                    )
+                  ],
+                  1
+                )
+              ],
+              1
+            )
+          ],
+          1
+        ),
+        _vm._v(" "),
         _c("add-update-person", {
           attrs: {
             route: _vm.route,
@@ -4408,6 +4844,7 @@ var render = function() {
                                   [
                                     _c("v-text-field", {
                                       attrs: {
+                                        type: "number",
                                         label: "الدفع بعد ",
                                         suffix: "يوم"
                                       },
@@ -4712,7 +5149,7 @@ var render = function() {
                             attrs: {
                               "disable-pagination": "",
                               headers: _vm.header,
-                              items: _vm.bill.details,
+                              items: _vm.bill.bill_details,
                               "hide-default-footer": true,
                               "item-key": _vm.toString(
                                 Math.floor(Math.random(1, 100) * 100)
@@ -4794,6 +5231,8 @@ var render = function() {
                                           [
                                             _c("v-text-field", {
                                               attrs: {
+                                                type: "barcode",
+                                                id: "barcode",
                                                 autocomplete: "off",
                                                 label: "الباركود",
                                                 rules: _vm.is_exists
@@ -4941,19 +5380,22 @@ var render = function() {
                                                             }
                                                           },
                                                           model: {
-                                                            value:
-                                                              item.expires_at,
+                                                            value: item.expires_at.split(
+                                                              " "
+                                                            )[0],
                                                             callback: function(
                                                               $$v
                                                             ) {
                                                               _vm.$set(
-                                                                item,
-                                                                "expires_at",
+                                                                item.expires_at.split(
+                                                                  " "
+                                                                ),
+                                                                0,
                                                                 $$v
                                                               )
                                                             },
                                                             expression:
-                                                              "item.expires_at"
+                                                              "item.expires_at.split(' ')[0]"
                                                           }
                                                         },
                                                         "v-text-field",

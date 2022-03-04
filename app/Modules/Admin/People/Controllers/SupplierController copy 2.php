@@ -75,8 +75,8 @@ class SupplierController extends Controller
             'bills as pur',
             function ($leftJoin) {
                 $leftJoin
-                    ->on('trans.bill_id', '=', 'pur.id')
-                    ->where('trans.bill_type_id', 1)
+                    ->on('trans.document_id', '=', 'pur.id')
+                    ->where('trans.document_type_id', 1)
                     ->where('pur.maturity_date', '<', date('Y-m-d'));
             }
 
@@ -186,8 +186,8 @@ class SupplierController extends Controller
             function ($leftJoin) {
                 $leftJoin
                     ->on('acc.id', '=', 'trans.account_id')
-                    ->on('pur.id', '=', 'trans.bill_id')
-                    ->where('trans.bill_type_id', 1);
+                    ->on('pur.id', '=', 'trans.document_id')
+                    ->where('trans.document_type_id', 1);
             }
 
         );

@@ -9,6 +9,11 @@ use Illuminate\Support\Facades\Route;
  * Time: 17:50
  */
 
+
+
+
+Route::get('/{id}', 'BillController@index');
+
 Route::group(["prefix" => "purchases"], function () {
 
     Route::get('/', 'BillController@index');

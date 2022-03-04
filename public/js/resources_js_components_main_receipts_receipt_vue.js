@@ -323,8 +323,12 @@ __webpack_require__.r(__webpack_exports__);
     console.log("bill", bill);
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/" + route, bill);
   },
-  get: function get(id, route) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/" + route + "/" + id);
+  get: function get(id, route, document_type_id) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/" + route + "/" + id, {
+      params: {
+        document_type_id: document_type_id
+      }
+    });
   },
   getAll: function getAll(params, route) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/" + route + "/all", {
