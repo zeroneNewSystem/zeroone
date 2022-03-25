@@ -237,7 +237,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         sortable: false,
         value: "id"
       }, {
-        text: "رقم المرجع",
+        text: "رقم الفاتورة",
         align: "center",
         value: "reference"
       }, {
@@ -319,27 +319,32 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Api */ "./resources/js/apis/Api.js");
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  store: function store(bill, route) {
+  store: function store(bill) {
     console.log("bill", bill);
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/" + route, bill);
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/bills", bill);
   },
-  get: function get(id, route, document_type_id) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/" + route + "/" + id, {
+  get: function get(id, document_type_id) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/bills" + "/" + id, {
       params: {
         document_type_id: document_type_id
       }
     });
   },
-  getAll: function getAll(params, route) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/" + route + "/all", {
+  getAll: function getAll(params) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/bills" + "/all", {
       params: params
     });
   },
-  update: function update(bill, route) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("/" + route, bill);
+  update: function update(bill) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("/bills", bill);
   },
-  "delete": function _delete(params, route) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.delete("/" + route, {
+  "delete": function _delete(params) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.delete("/bills", {
+      params: params
+    });
+  },
+  getNewReference: function getNewReference(params) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/bills/new", {
       params: params
     });
   }
@@ -612,7 +617,7 @@ var render = function() {
                         attrs: {
                           outlined: "",
                           autocomplete: "off",
-                          prefix: " رقم المرجع | "
+                          prefix: " رقم الفاتورة | "
                         },
                         on: {
                           blur: function($event) {

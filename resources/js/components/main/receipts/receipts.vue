@@ -32,7 +32,7 @@
           <v-col cols="12" lg="2">
             <v-text-field
               v-model="search.receipt_reference"
-              label="رقم المرجع"
+              label="رقم الفاتورة"
               class="mx-4"
             ></v-text-field>
           </v-col>

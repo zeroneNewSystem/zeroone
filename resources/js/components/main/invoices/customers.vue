@@ -161,7 +161,7 @@ export default {
       options: {},
       status: "salam",
 
-      title: "إدارة العميلين",
+      title: "إدارة العملاء",
       //---
       customers_total: 20,
       loading: true,

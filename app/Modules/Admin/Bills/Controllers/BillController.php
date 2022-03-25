@@ -5,6 +5,7 @@ namespace App\Modules\Admin\Bills\Controllers;
 
 use App\Http\Controllers\Controller;
 
+
 use App\Modules\Admin\Accounts\Models\Transaction;
 use App\Modules\Admin\people\Models\Person;
 use App\Modules\Admin\people\Models\Supplier;
@@ -16,6 +17,8 @@ use App\Traits\AccountTrait;
 use App\Traits\TranstactionTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Symfony\Component\Mime\Message;
 
 class BillController extends Controller
 {
@@ -31,10 +34,11 @@ class BillController extends Controller
     public function all(Request $request)
     {
 
+
         $search  = json_decode($request->search, true);
 
 
-        $bills = Bill::where('bills.company_id', 1);
+        $bills = Bill::where('bills.company_id', 1)->where('bills.type_id', $search['type_id']);
         $bills = $bills->leftJoin('people', 'people.id', 'bills.company_id')
             ->select('bills.*', 'people.company_name');
 
@@ -101,15 +105,19 @@ class BillController extends Controller
     {
         $document_type_id = $request->document_type_id;
 
-        $bill =  DB::table('bills')->where('id', $id)->where('type_id', $document_type_id)->get()[0];
+        $bill =  DB::table('bills')->where('id', $id)->where('type_id', $document_type_id)->first();
 
+        if (!$bill) return [];
         $methods = Transaction::where('document_id', $id)
             ->where('document_type_id', $document_type_id)
             ->where('debit', -1)
             ->get();
 
-        $bill->payment_methods = $methods;
+        foreach ($methods as &$method) {
+            $method['amount'] = $method['credit'] + $method['debit'] + 1;
+        }
 
+        $bill->payment_methods = $methods;
         $bill_details =  DB::table('bill_details')
             ->where('document_id', $id)
             ->where('document_type_id', $document_type_id)
@@ -137,6 +145,9 @@ class BillController extends Controller
         ];
     }
 
+    public function new(Request $request)
+    {
+    }
     public function index2(Request $request)
     {
         $bills =  DB::table('bills')->get();
@@ -207,14 +218,57 @@ class BillController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+    public function validation($document)
+    {
+        $message = [];
+        $valid = true;
+        $counter = 0;
+        foreach ($document->bill_details as $bill_detail) {
+            // check detail in database
+            $old_detail = BillDetail::where([
+                'product_id' => $bill_detail['product_id'],
+                'expires_at' => $bill_detail['expires_at'],
+            ])->where('sum_quantity_in_minor_unit', '>=', $bill_detail['quantity_in_minor_unit']);
+
+            if (!$old_detail->exists()) {
+                $message[] = $counter;
+                $valid = false;
+            }
+            $counter++;
+        }
+
+        return ['valid' => $valid, 'message' => $message];
+    }
     public function store(Request $request)
     {
+        $message = $this->validation($request);
+        if (!$message['valid'])
+
+            return $message;
+
+        /* validation */
+        /* $rules = [
+            "description" => "required",
+            "paid_amount" => "min:6"
+
+        ];
+
+        $validator =  Validator::make(
+            $request->all(),
+            $rules
+        );
+        if ($validator->fails()){
+            return $validator->errors();
+        }
+*/
+
+
 
 
         $request['company_id'] = 1;
         $bill = Bill::create($request->all());
         $this->storeLinkedData($request, $bill);
-        return $bill;
+        return ['valid' => true];
     }
 
     /**
@@ -301,21 +355,28 @@ class BillController extends Controller
         $account_id = Transaction::create($entry);
         return true;
     }
-    private function storeLinkedData($request, $bill)
+    private function storeLinkedData($document, $bill)
     {
+
+        /*
+        1 - purchase
+        2 - invoice
+        3 - purchase return 
+        4 - invoice  return 
+        */
 
 
 
         $debit = $credit = 0;
         $inventory_increase = true;
 
-        if ($bill['type_id'] == 1 || $bill['type_id'] == 3) {
-            $credit = $request['total_amount'];
-            $person_account_id = Person::find($request->person_id)['supplier_account_id'];
-        } else if ($bill['type_id'] == 2 || $bill['type_id'] == 4) {
-            $debit = $request['total_amount'];
+        if ($bill['type_id'] == 1 || $bill['type_id'] == 4) {
+            $credit = $document['total_amount'];
+            $person_account_id = Person::find($document->person_id)['supplier_account_id'];
+        } else if ($bill['type_id'] == 2 || $bill['type_id'] == 3) {
+            $debit = $document['total_amount'];
             $inventory_increase = false;
-            $person_account_id = Person::find($request->person_id)['customer_account_id'];
+            $person_account_id = Person::find($document->person_id)['customer_account_id'];
         }
 
         $person_account = [
@@ -331,13 +392,13 @@ class BillController extends Controller
         ];
         $this->addTransactionEntry($person_account);
 
-        if ($request['paid_amount'] != 0) {
-            if ($request['only_cash']) {
+        if ($document['paid_amount'] != 0) {
+            if ($document['only_cash']) {
                 $person_account = [
                     "company_id" => 1,
                     "account_id" => $person_account_id,
-                    "debit" =>  $inventory_increase ? $request['paid_amount'] : 0,
-                    "credit" => !$inventory_increase ? $request['paid_amount'] : 0,
+                    "debit" =>  $inventory_increase ? $document['paid_amount'] : 0,
+                    "credit" => !$inventory_increase ? $document['paid_amount'] : 0,
                     "document_id" => $bill->id,
                     "document_type_id" => $bill->type_id,
                     "currency_code" => 1,
@@ -348,8 +409,8 @@ class BillController extends Controller
                 $cash = [
                     "company_id" => 1,
                     "account_id" => 4,
-                    "debit" =>  $inventory_increase ? 0 : $request['paid_amount'],
-                    "credit" => !$inventory_increase ? 0 : $request['paid_amount'],
+                    "debit" =>  $inventory_increase ? 0 : $document['paid_amount'],
+                    "credit" => !$inventory_increase ? 0 : $document['paid_amount'],
                     "document_id" => $bill->id,
                     "document_type_id" => $bill->type_id,
                     "currency_code" => 1,
@@ -358,7 +419,7 @@ class BillController extends Controller
                 ];
                 $this->addTransactionEntry($cash);
             } else {
-                $payment_methods = $request->payment_methods;
+                $payment_methods = $document->payment_methods;
                 $sum = 0;
                 foreach ($payment_methods as $payment_method) {
 
@@ -394,13 +455,13 @@ class BillController extends Controller
         }
 
 
-        if ($request['additional_expenses'] > 0) {
-            $additional_expenses_from_account_id = $request['additional_expenses_from_account_id'];
+        if ($document['additional_expenses'] > 0) {
+            $additional_expenses_from_account_id = $document['additional_expenses_from_account_id'];
             $additional_expenses = [
                 "company_id" => 1,
                 "account_id" => $additional_expenses_from_account_id, //5103
-                "debit" =>  $inventory_increase ? 0 : $request['additional_expenses'],
-                "credit" => !$inventory_increase ? 0 : $request['additional_expenses'],
+                "debit" =>  $inventory_increase ? 0 : $document['additional_expenses'],
+                "credit" => !$inventory_increase ? 0 : $document['additional_expenses'],
                 "document_id" => $bill->id,
                 "document_type_id" => $bill->type_id,
                 "currency_code" => 1,
@@ -411,8 +472,8 @@ class BillController extends Controller
             $additional_expenses = [
                 "company_id" => 1,
                 "account_id" => 63, //5103
-                "debit" =>  $inventory_increase ? 0 : $request['additional_expenses'],
-                "credit" => !$inventory_increase ? 0 : $request['additional_expenses'],
+                "debit" =>  $inventory_increase ? 0 : $document['additional_expenses'],
+                "credit" => !$inventory_increase ? 0 : $document['additional_expenses'],
                 "document_id" => $bill->id,
                 "document_type_id" => $bill->type_id,
                 "currency_code" => 1,
@@ -424,7 +485,10 @@ class BillController extends Controller
 
 
 
-        foreach ($request->bill_details as $bill_detail) {
+        foreach ($document->bill_details as $bill_detail) {
+
+            $bill_detail['document_type_id'] = $document->type_id;
+
 
             //transaction  inventory-
             $inventory_increase ?
@@ -477,20 +541,20 @@ class BillController extends Controller
             $bill->bill_details()->create($bill_detail);
         }
     }
-    private function deleteLinkedData($request)
+    private function deleteLinkedData($document)
     {
 
 
 
-        
+
         Transaction::where('document_type_id', 1)
-            ->where('document_id', $request->id)
+            ->where('document_id', $document->id)
             ->delete();
 
         // delete bill 
 
-        $bill_details = BillDetail::where('document_type_id', $request->type_id)
-            ->where('document_id', $request->id)->get();
+        $bill_details = BillDetail::where('document_type_id', $document->type_id)
+            ->where('document_id', $document->id)->get();
         foreach ($bill_details as $bill_detail) {
             if ($bill_detail['sum_quantity_in_minor_unit'] == -1) {
 

@@ -39,7 +39,7 @@
                       outlined
                       autocomplete="off"
                       v-model="bill.bill_reference"
-                      prefix=" رقم المرجع | "
+                      prefix=" رقم الفاتورة | "
                       :rules="required.concat(isunique)"
                       @blur="checkExicting()"
                     ></v-text-field>

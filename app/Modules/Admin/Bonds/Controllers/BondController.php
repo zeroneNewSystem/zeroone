@@ -33,7 +33,7 @@ class BondController extends Controller
 
     public function index($id)
     {
-        $bond =  DB::table('bonds')->where('id', $id)->get()[0];
+        $bond =  DB::table('bonds')->where('id', $id)->first();
 
 
         $methods = Transaction::where('bill_id', $id)

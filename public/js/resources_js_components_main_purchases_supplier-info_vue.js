@@ -277,7 +277,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         sortable: false,
         value: "id"
       }, {
-        text: "رقم المرجع",
+        text: "رقم الفاتورة",
         align: "center",
         value: "reference"
       }, {
@@ -309,7 +309,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         sortable: false,
         value: "id"
       }, {
-        text: "رقم المرجع",
+        text: "رقم الفاتورة",
         align: "center",
         value: "receipt_reference"
       }, {

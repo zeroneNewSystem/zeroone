@@ -63,6 +63,7 @@
             </template>
             <template v-slot:item.amount="{ item }">
               <v-text-field
+              type="number"
                 :disabled="item.account_id == 0"
                 autocomplete="off"
                 :rules="vld_numbering"

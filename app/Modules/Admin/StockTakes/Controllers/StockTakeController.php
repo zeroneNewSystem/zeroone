@@ -99,7 +99,7 @@ class StockTakeController extends Controller
     }
     public function index($id)
     {
-        $stocktake =  DB::table('stocktakes')->where('id', $id)->get()[0];
+        $stocktake =  DB::table('stocktakes')->where('id', $id)->first();
 
 
         $methods = Transaction::where('bill_id', $id)

@@ -31,7 +31,7 @@
           <v-col cols="12" lg="2">
             <v-text-field
               v-model="search.reference"
-              label="رقم المرجع"
+              label="رقم الفاتورة"
               class="mx-4"
             ></v-text-field>
           </v-col>
@@ -115,9 +115,7 @@
           <v-col cols="12" lg="3">
             <v-row>
               <v-col>
-                <v-btn elevation color="primary" @click="getBills"
-                  >البحث</v-btn
-                >
+                <v-btn elevation color="primary" @click="getBills">البحث</v-btn>
               </v-col>
               <v-col>
                 <v-btn elevation color="primary" @click.stop="searchReset"
@@ -150,10 +148,10 @@
         {{ item.maturity_date.split(" ")[0] }}
       </template>
       <template v-slot:item.actions="{ item }">
-        <router-link :to="'bill/' + item.id"
+        <router-link :to="route.slice(0, -1) + '/' + item.id"
           ><v-icon small>mdi-pencil</v-icon></router-link
         >
-        <router-link :to="'bill/' + item.id"
+        <router-link :to="route.slice(0, -1) + '/' + item.id"
           ><v-icon small>mdi-card</v-icon></router-link
         >
 
@@ -171,6 +169,8 @@ import Bill from "../../../apis/Bill";
 export default {
   data() {
     return {
+      type_id: 1,
+      route: window.location.pathname.replace(/^\/([^\/]*).*$/, "$1"),
       loading: false,
       menu1: false,
       menu2: false,
@@ -227,7 +227,7 @@ export default {
     deleteBill(bill) {
       const { sortBy, sortDesc, page, itemsPerPage } = this.options;
       Bill.delete({
-        id: bill.id,  
+        id: bill.id,
         page,
         itemsPerPage,
         search: this.search,
@@ -238,25 +238,44 @@ export default {
     },
     getBills() {
       const { sortBy, sortDesc, page, itemsPerPage } = this.options;
-      Bill.getAll({
-        page,
-        itemsPerPage,
-        search: this.search,
-      }).then((response) => {
+      console.log("sssss");
+      console.log(this.search);
+      this.search.type_id = this.type_id;
+      Bill.getAll(
+        {
+          page,
+          itemsPerPage,
+          search: this.search,
+        },
+        this.route
+      ).then((response) => {
         this.bills = response.data.data;
         this.bills_total = response.data.total;
       });
     },
     searchReset() {
-      Bill.getAll({
-        page: 1,
-        itemsPerPage: 10,
-        search: {},
-      }).then((response) => {
+      Bill.getAll(
+        {
+          page: 1,
+          itemsPerPage: 10,
+          search: {
+            company_name: "",
+            reference: "",
+            minimum: "",
+            maximum: "",
+            status_id: "",
+            date_from: "",
+            date_to: "",
+            type_id: 1,
+          },
+        },
+        this.route
+      ).then((response) => {
         this.bills = response.data.data;
         this.bills_total = response.data.total;
 
         this.search = {
+          type_id: this.type_id,
           company_name: "",
           reference: "",
           minimum: "",
@@ -276,9 +295,18 @@ export default {
       };
     },
   },
+  created() {
+    if (this.$route.name == "purchases") {
+      this.type_id = 1;
+    }
+    if (this.$route.name == "invoices") {
+      this.type_id = 2;
+    }
+  },
   watch: {
     params: {
       handler() {
+        console.log("mmm");
         this.getBills();
       },
       deep: true,

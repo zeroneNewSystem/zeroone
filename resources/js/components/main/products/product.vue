@@ -15,7 +15,7 @@
         centered
         transition="scale-transition"
         vertical
-        >{{ snakebarText }}</v-snackbar
+        >{{ snackbarText }}</v-snackbar
       >
 
       <v-container>
@@ -826,7 +826,7 @@ export default {
       menu2: false,
       //suucccmessage
       snackbar: false,
-      snakebarText: "تم إضافة الصنف بنجاح",
+      snackbarText: "تم إضافة الصنف بنجاح",
       snackbarTimeout: 2000,
       //-ssuucccmessage
       dialog: false,
@@ -1319,7 +1319,7 @@ export default {
         if (this.new_product) {
           Product.store(this.product).then((response) => {
             console.log("response.data", response.data);
-            this.snakebarText = "تم إضافة الصنف بنجاح";
+            this.snackbarText = "تم إضافة الصنف بنجاح";
 
             this.snackbar = true;
             this.loading = false;
@@ -1331,7 +1331,7 @@ export default {
         }
         Product.update(this.product).then((response) => {
           console.log("response.data", response.data);
-          this.snakebarText = "تم تعديل الصنف بنجاح";
+          this.snackbarText = "تم تعديل الصنف بنجاح";
           this.snackbar = true;
         });
       }

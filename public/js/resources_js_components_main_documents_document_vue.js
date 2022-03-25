@@ -4073,7 +4073,7 @@ var render = function() {
                                       attrs: {
                                         outlined: "",
                                         autocomplete: "off",
-                                        prefix: " رقم المرجع | ",
+                                        prefix: " رقم الفاتورة | ",
                                         rules: _vm.required.concat(_vm.isunique)
                                       },
                                       on: {

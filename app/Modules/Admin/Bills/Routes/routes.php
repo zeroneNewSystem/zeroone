@@ -12,9 +12,30 @@ use Illuminate\Support\Facades\Route;
 
 
 
-Route::get('/{id}', 'BillController@index');
 
-Route::group(["prefix" => "purchases"], function () {
+ 
+Route::group(["prefix" => "bills"], function () {
+
+    Route::get('/', 'BillController@index');
+    Route::get('/all', 'BillController@all');
+    Route::get('/new', 'BillController@new');
+
+
+    Route::get('/{id}', 'BillController@index');
+
+
+    Route::get('/create', 'BillController@create');
+    Route::post('/', 'BillController@store');
+    
+    Route::delete('/', 'BillController@destroy');
+    Route::put('/', 'BillController@update');
+
+    
+    
+    
+});
+
+Route::group(["prefix" => "purchase_returns"], function () {
 
     Route::get('/', 'BillController@index');
     Route::get('/all', 'BillController@all');
@@ -32,7 +53,7 @@ Route::group(["prefix" => "purchases"], function () {
     
 });
 
-Route::group(["prefix" => "invoices"], function () {
+Route::group(["prefix" => "purchase_returns"], function () {
 
     Route::get('/', 'BillController@index');
     Route::get('/all', 'BillController@all');

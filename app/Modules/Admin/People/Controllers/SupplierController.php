@@ -154,7 +154,7 @@ class SupplierController extends Controller
     {
         $request['company_id'] = 1;
         $request['person_id'] = 1;
-        $request['is_supplier '] = 1;
+        $request['is_supplier'] = 1;
 
         $account_line = Account::where('account_code', 'like', '%2101%')->orderBy('account_code', 'DESC')->get();
 

@@ -74,7 +74,7 @@ class InvoiceController extends Controller
     }
     public function index($id)
     {
-        $invoice =  DB::table('invoices')->where('id', $id)->get()[0];
+        $invoice =  DB::table('invoices')->where('id', $id)->first();
         $methods = Transaction::where('document_id', $id)
             ->where('document_type_id', 2)
             ->where('credit', -1)

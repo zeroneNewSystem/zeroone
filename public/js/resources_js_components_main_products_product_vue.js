@@ -835,7 +835,7 @@ __webpack_require__.r(__webpack_exports__);
       menu2: false,
       //suucccmessage
       snackbar: false,
-      snakebarText: "تم إضافة الصنف بنجاح",
+      snackbarText: "تم إضافة الصنف بنجاح",
       snackbarTimeout: 2000,
       //-ssuucccmessage
       dialog: false,
@@ -1287,7 +1287,7 @@ __webpack_require__.r(__webpack_exports__);
         if (this.new_product) {
           _apis_Product__WEBPACK_IMPORTED_MODULE_1__.default.store(this.product).then(function (response) {
             console.log("response.data", response.data);
-            _this8.snakebarText = "تم إضافة الصنف بنجاح";
+            _this8.snackbarText = "تم إضافة الصنف بنجاح";
             _this8.snackbar = true;
             _this8.loading = false;
 
@@ -1300,7 +1300,7 @@ __webpack_require__.r(__webpack_exports__);
 
         _apis_Product__WEBPACK_IMPORTED_MODULE_1__.default.update(this.product).then(function (response) {
           console.log("response.data", response.data);
-          _this8.snakebarText = "تم تعديل الصنف بنجاح";
+          _this8.snackbarText = "تم تعديل الصنف بنجاح";
           _this8.snackbar = true;
         });
       } //return;
@@ -1581,7 +1581,7 @@ var render = function() {
                 expression: "snackbar"
               }
             },
-            [_vm._v(_vm._s(_vm.snakebarText))]
+            [_vm._v(_vm._s(_vm.snackbarText))]
           ),
           _vm._v(" "),
           _c(

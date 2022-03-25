@@ -184,12 +184,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
+      type_id: 1,
+      route: window.location.pathname.replace(/^\/([^\/]*).*$/, "$1"),
       loading: false,
       menu1: false,
       menu2: false,
@@ -300,11 +300,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           sortDesc = _this$options2.sortDesc,
           page = _this$options2.page,
           itemsPerPage = _this$options2.itemsPerPage;
+      console.log("sssss");
+      console.log(this.search);
+      this.search.type_id = this.type_id;
       _apis_Bill__WEBPACK_IMPORTED_MODULE_0__.default.getAll({
         page: page,
         itemsPerPage: itemsPerPage,
         search: this.search
-      }).then(function (response) {
+      }, this.route).then(function (response) {
         _this2.bills = response.data.data;
         _this2.bills_total = response.data.total;
       });
@@ -315,11 +318,21 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       _apis_Bill__WEBPACK_IMPORTED_MODULE_0__.default.getAll({
         page: 1,
         itemsPerPage: 10,
-        search: {}
-      }).then(function (response) {
+        search: {
+          company_name: "",
+          reference: "",
+          minimum: "",
+          maximum: "",
+          status_id: "",
+          date_from: "",
+          date_to: "",
+          type_id: 1
+        }
+      }, this.route).then(function (response) {
         _this3.bills = response.data.data;
         _this3.bills_total = response.data.total;
         _this3.search = {
+          type_id: _this3.type_id,
           company_name: "",
           reference: "",
           minimum: "",
@@ -336,9 +349,19 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       return _objectSpread({}, this.options);
     }
   },
+  created: function created() {
+    if (this.$route.name == "purchases") {
+      this.type_id = 1;
+    }
+
+    if (this.$route.name == "invoices") {
+      this.type_id = 2;
+    }
+  },
   watch: {
     params: {
       handler: function handler() {
+        console.log("mmm");
         this.getBills();
       },
       deep: true
@@ -361,27 +384,32 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Api */ "./resources/js/apis/Api.js");
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  store: function store(bill, route) {
+  store: function store(bill) {
     console.log("bill", bill);
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/" + route, bill);
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/bills", bill);
   },
-  get: function get(id, route, document_type_id) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/" + route + "/" + id, {
+  get: function get(id, document_type_id) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/bills" + "/" + id, {
       params: {
         document_type_id: document_type_id
       }
     });
   },
-  getAll: function getAll(params, route) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/" + route + "/all", {
+  getAll: function getAll(params) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/bills" + "/all", {
       params: params
     });
   },
-  update: function update(bill, route) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("/" + route, bill);
+  update: function update(bill) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("/bills", bill);
   },
-  "delete": function _delete(params, route) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.delete("/" + route, {
+  "delete": function _delete(params) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.delete("/bills", {
+      params: params
+    });
+  },
+  getNewReference: function getNewReference(params) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/bills/new", {
       params: params
     });
   }
@@ -551,7 +579,7 @@ var render = function() {
                       [
                         _c("v-text-field", {
                           staticClass: "mx-4",
-                          attrs: { label: "رقم المرجع" },
+                          attrs: { label: "رقم الفاتورة" },
                           model: {
                             value: _vm.search.reference,
                             callback: function($$v) {
@@ -949,7 +977,7 @@ var render = function() {
               return [
                 _c(
                   "router-link",
-                  { attrs: { to: "bill/" + item.id } },
+                  { attrs: { to: _vm.route.slice(0, -1) + "/" + item.id } },
                   [
                     _c("v-icon", { attrs: { small: "" } }, [
                       _vm._v("mdi-pencil")
@@ -960,7 +988,7 @@ var render = function() {
                 _vm._v(" "),
                 _c(
                   "router-link",
-                  { attrs: { to: "bill/" + item.id } },
+                  { attrs: { to: _vm.route.slice(0, -1) + "/" + item.id } },
                   [
                     _c("v-icon", { attrs: { small: "" } }, [_vm._v("mdi-card")])
                   ],

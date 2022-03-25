@@ -101,7 +101,7 @@ class BillReturnController extends Controller
     }
     public function index($id)
     {
-        $billreturn =  DB::table('returns')->where('id', $id)->get()[0];
+        $billreturn =  DB::table('returns')->where('id', $id)->first();
 
 
         $methods = Transaction::where('bill_id', $id)

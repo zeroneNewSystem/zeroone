@@ -1,6 +1,16 @@
 <template>
   <v-form ref="form">
     <div>
+      <v-snackbar
+        v-model="snackbar"
+        :timeout="snackbarTimeout"
+        color="#e91e63"
+        centered
+        transition="scale-transition"
+        vertical
+        >{{ snackbarText }}</v-snackbar
+      >
+
       <v-dialog v-model="no_product_dialog" max-width="290">
         <v-card>
           <v-card-title> الصنف غير موجود </v-card-title>
@@ -65,6 +75,7 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+
       <add-update-person
         :route="route"
         :dialog="add_update_person_dialog"
@@ -87,9 +98,37 @@
       </product-info>
       <v-card max-width="100%">
         <v-card-title>
-          <v-row class="justify-space-between" justify="center" align="center">
-            <v-col cols="12"> {{ title }} </v-col>
-          </v-row>
+          <v-toolbar flat color="white">
+            <v-toolbar-title>{{
+              !$route.params.id
+                ? title[bill.type_id][0]
+                : title[bill.type_id][1]
+            }}</v-toolbar-title>
+            <v-divider class="mx-4" inset vertical></v-divider>
+            <v-radio-group v-model="return_source">
+              <v-row v-if="return_bill">
+                <v-col cols="1" class="pa-0 mt-7">
+                  <v-radio value="1"></v-radio>
+                </v-col>
+                <v-col cols="7" class="pa-0 mt-6">
+                  <v-text-field
+                    class="bill-info"
+                    placeholder="رقم الفاتورة"
+                    outlined
+                    @click="return_source = '1'"
+                    autocomplete="off"
+                    v-model="bill_number_to_search"
+                    prefix=" برقم فاتورة الشراء | "
+                    :rules="bill_exists"
+                    @keydown.enter="getBillByHittingBillNumber()"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="4" class="pa-0 pr-1 mt-7">
+                  <v-radio value="2" label="اختيار حر للمنتجات"></v-radio>
+                </v-col>
+              </v-row>
+            </v-radio-group>
+          </v-toolbar>
         </v-card-title>
         <v-card-text>
           <router-link class="btn btn-info m-b-5 m-r-2" to="/bill/1">
@@ -105,7 +144,7 @@
                       outlined
                       autocomplete="off"
                       v-model="bill.reference"
-                      prefix=" رقم المرجع | "
+                      prefix=" رقم الفاتورة | "
                       :rules="required.concat(isunique)"
                       @blur="checkExicting()"
                     ></v-text-field>
@@ -131,7 +170,7 @@
                   </v-col>
                   <v-col cols="12" class="pa-0">
                     <v-row>
-                      <v-col cols="10">
+                      <v-col :cols="cols">
                         <v-autocomplete
                           v-model="bill.person_id"
                           :items="people"
@@ -146,9 +185,13 @@
                           :rules="vld_selected"
                           :label="persona"
                         >
+                          <!--        <template v-slot:append-item>
+          <div v-intersect="endIntersect" />
+        </template>
+      -->
                         </v-autocomplete>
                       </v-col>
-                      <v-col cols="2">
+                      <v-col cols="2" v-if="main_bill">
                         <v-btn elevation="0" dark @click="addPerson">
                           <v-icon> mdi-plus </v-icon>
                         </v-btn>
@@ -266,8 +309,13 @@
                 :hide-default-footer="true"
                 :item-key="toString(Math.floor(Math.random(1, 100) * 100))"
               >
-                <template slot="no-data"> يرجى اختيار الأصناف </template>
-                <template v-slot:top>
+                <template slot="no-data">
+                  <div style="color: red">قم باختيار الأصناف</div>
+                </template>
+                <template
+                  v-slot:top
+                  v-if="!return_bill || return_source != '1'"
+                >
                   <v-toolbar flat color="white">
                     <v-toolbar-title>قائمة الأصناف</v-toolbar-title>
                     <v-divider class="mx-4" inset vertical></v-divider>
@@ -287,8 +335,8 @@
                     </v-col>
                     <v-col cols="12" sm="6" md="4">
                       <v-text-field
-                      type="barcode"
-                      id="barcode"
+                        type="barcode"
+                        id="barcode"
                         autocomplete="off"
                         v-model="searched_barcode"
                         label="الباركود"
@@ -309,7 +357,7 @@
                 </template>
                 <template v-slot:item.expires_at="{ item }">
                   <v-menu
-                    :disabled="route != 'purchase' || !item.has_expiration_date"
+                    :disabled="act != 'input' || !item.has_expiration_date"
                     ref="maturity_date"
                     v-model="item.expires_at_is_down"
                     :close-on-content-click="false"
@@ -319,19 +367,18 @@
                   >
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field
-                        :disabled="
-                          route != 'purchase' || !item.has_expiration_date
-                        "
+                        @click="expires_date(item)"
+                        :disabled="act != 'input' || !item.has_expiration_date"
                         v-model="item.expires_at.split(' ')[0]"
                         flat
                         outlined
                         autocomplete="off"
                         hide-no-data
-                        hide-details
+                        :hide-details="item.expires_at_message"
                         v-bind="attrs"
                         v-on="on"
                         @keydown.enter="item.expires_at_is_down = false"
-                        @change="logo(item)"
+                        :rules="item.expires_at_valid"
                       ></v-text-field>
                     </template>
                     <v-date-picker
@@ -353,17 +400,7 @@
                     hide-details
                   ></v-text-field>
                 </template>
-                <template v-slot:item.sold_price="{ item }">
-                  <v-text-field
-                    v-model="item.sold_price"
-                    flat
-                    type="number"
-                    outlined
-                    autocomplete="off"
-                    hide-no-data
-                    hide-details
-                  ></v-text-field>
-                </template>
+
                 <template v-slot:item.bought_tax="{ item }">
                   <v-text-field
                     type="number"
@@ -444,11 +481,13 @@
                   <v-text-field
                     type="number"
                     hide-no-data
-                    hide-details
                     autocomplete="off"
                     single-line
                     outlined
                     v-model="item.quantity"
+                    :hide-details="item.hide_quantity_valid_message"
+                    :rules="item.quantity_valid"
+                    @click="quantity_clicked(item)"
                   ></v-text-field>
                 </template>
                 <template v-slot:item.quantity_in_minor_unit="{ item }">
@@ -543,66 +582,7 @@
                             <div v-html="total_vat().toFixed(2)"></div>
                           </v-col>
                         </v-row>
-                        <v-row justify="start">
-                          <v-col
-                            cols="12"
-                            lg="5"
-                            style="text-align: end; color: red"
-                          >
-                            <div style="margin-top: 10px">مصاريف إضافية:</div>
-                          </v-col>
-                          <v-col cols="12" lg="5" style="text-align: start">
-                            <div>
-                              <v-text-field
-                                flat
-                                outlined
-                                no-data
-                                no-data-text
-                                non-linear
-                                v-model="bill.additional_expenses"
-                              >
-                              </v-text-field>
-                            </div>
-                          </v-col>
-                        </v-row>
-                        <v-row justify="start">
-                          <v-col
-                            cols="12"
-                            lg="5"
-                            style="
-                              text-align: end;
-                              border-bottom: 1px solid lightgray;
-                              color: red;
-                            "
-                          >
-                            <div style="margin-top: 10px">من حساب:</div>
-                          </v-col>
-                          <v-col
-                            cols="12"
-                            lg="5"
-                            style="
-                              text-align: start;
-                              border-bottom: 1px solid lightgray;
-                            "
-                          >
-                            <div>
-                              <v-autocomplete
-                                flat
-                                outlined
-                                no-data
-                                no-data-text
-                                non-linear
-                                v-model="
-                                  bill.additional_expenses_from_account_id
-                                "
-                                :items="additional_expenses_from_accounts"
-                                item-text="ar_name"
-                                item-value="id"
-                              >
-                              </v-autocomplete>
-                            </div>
-                          </v-col>
-                        </v-row>
+
                         <v-row justify="start">
                           <v-col
                             cols="12"
@@ -747,6 +727,18 @@ export default {
   },
   data() {
     return {
+      return_source: "1",
+
+      act: "input",
+      bill_number_to_search: "",
+      return_bill: false,
+      cols: 10,
+      main_bill: true,
+      //-------------
+      snackbar: false,
+      snackbarText: "تأكد من تعبئة الحقول",
+      snackbarTimeout: 2000,
+      //-------------
       no_product_dialog: false,
       agree: false,
       functionToAddProduct: "",
@@ -754,7 +746,14 @@ export default {
       sets: [],
       dialog: false,
       route: window.location.pathname.replace(/^\/([^\/]*).*$/, "$1"),
-      title: "فاتورة جديدة",
+      title: [
+        [,],
+        ["فاتورة مشتريات جديدة", "تعديل فاتورة مشتريات"],
+        ["فاتورة مبيعات جديدة", "تعديل فاتورة مبيعات"],
+        ["مرودوات مشتريات جديدة", "تعديل مرودوات مشتريات"],
+        ["مرودوات مبيعات جديدة", "تعديل مرودوات مبيعات"],
+      ],
+
       //----
       person_info: "معلومات المورد",
       person_type: "suppliers",
@@ -983,6 +982,10 @@ export default {
       required: [(value) => !!value || "الحقل مطلوب."],
       isunique: [],
       is_exists: [],
+      bill_exists: [],
+      expires_at_valid: [
+        (v) => (v.has_expiration_date && v != "*******") || "قم بتغيير التاريخ",
+      ],
       is_valid_date: [],
       vld_numbering: [(v) => /^-?\d+\.?\d*$/.test(v) || "أدخل قيمة عددية"],
     };
@@ -1004,6 +1007,71 @@ export default {
     next();
   },
   methods: {
+    quantity_clicked(item) {
+      item.hide_quantity_valid_message = true;
+      item.quantity_valid = [true];
+    },
+    endIntersect(entries, observer, isIntersecting) {},
+    getBillByHittingBillNumber() {
+      //this.title = "تعديل فاتورة رقم " + this.$route.params.id;
+      Bill.get(
+        this.bill_number_to_search,
+        this.bill.type_id - 2 // بحسب الترتيب
+        /*
+        1 - purchase
+        2 - invoice
+        3 - purchase return 
+        4 - invoice  return 
+        */
+      ).then((response) => {
+        if (Array.isArray(response.data)) {
+          this.bill_exists = [false || "الفاتورة غير موجود "];
+
+          return 0;
+        }
+        this.bill_exists = [true];
+        this.bill = response.data.bill;
+        if (this.route == "purchase_return") this.bill.type_id = 3; //purcase return
+        if (this.route == "invoice_return") this.bill.type_id = 4; //purcase return
+        console.log(this.bill);
+        this.bill.issue_date = this.bill.issue_date.split(" ")[0];
+        this.bill.maturity_date = this.bill.maturity_date.split(" ")[0];
+        this.bill.bill_details.forEach((elem) => {
+          if (elem.expires_at) elem.expires_at = elem.expires_at.split(" ")[0];
+        });
+
+        if (this.bill.payment_methods.length != 0) {
+        } else
+          this.bill.payment_methods = [
+            {
+              account_id: "",
+              amount: 0,
+              description: "",
+            },
+            {
+              account_id: "",
+              amount: 0,
+              description: "",
+            },
+            {
+              account_id: "",
+              amount: 0,
+              description: "",
+            },
+          ];
+
+        this.people = response.data.people;
+        this.additional_expenses_from_accounts =
+          response.data.accounts.accounts;
+        console.log(response.data.accounts.accounts);
+      });
+    },
+    expires_date(item) {
+      item.expires_at_message = true;
+      item.expires_at_valid = [true];
+      if (item.expires_at == "*******")
+        item.expires_at = new Date().toISOString().substr(0, 10);
+    },
     agreeToAdd() {
       // this.agree = true;
 
@@ -1026,7 +1094,7 @@ export default {
 
       window.removeEventListener("keydown", this.functionToAddProduct);
 
-      let input_barcode =document.getElementById("barcode");
+      let input_barcode = document.getElementById("barcode");
       this.$nextTick(() => {
         input_barcode.focus();
       });
@@ -1054,7 +1122,7 @@ export default {
       // Mark first list item
       this.$nextTick(() => {
         listElm.firstElementChild.focus();
-        var selectedElm =document.activeElement,
+        var selectedElm = document.activeElement,
           goToStart,
           // map actions to event's key
           action = {
@@ -1071,15 +1139,13 @@ export default {
       // Event listener
     },
     showThisProduct(selected_product) {
-      console.log('selected_product')
-      console.log(selected_product)
+      selected_product.expires_at_message = true;
+      selected_product.hide_quantity_valid_message = true;
+      selected_product.quantity_valid = [true];
+
+      console.log("selected_product");
+      console.log(selected_product);
       //this.dialog = true;
-      if (this.route !="purchase")
-      if (
-        this.bill.bill_details.findIndex((elem) => elem.id == selected_product.id && elem.expires_at.split(" ")[0] == selected_product["bill_details"][0].expires_at.split(" ")[0]) >=
-        0
-      )
-        return;
 
       selected_product["document_type_id"] = this.bill.type_id;
       selected_product.unit_id =
@@ -1094,14 +1160,12 @@ export default {
 
       selected_product["product_id"] = selected_product["id"]; // bill
 
-      if (this.route == "purchase") {
-        selected_product.expires_at = new Date(
-          Date.now() - new Date().getTimezoneOffset() * 60000
-        )
-          .toISOString()
-          .substr(0, 10);
+      if (this.act == "input") {
+        selected_product.expires_at = "*******";
+        selected_product.expires_at_valid = [false || "قم بتغيير التاريخ"];
       } else {
-        selected_product.expires_at = selected_product.bill_details[0].expires_at;
+        selected_product.expires_at =
+          selected_product.bill_details[0].expires_at;
         selected_product.current_quantity =
           selected_product.bill_details[0].quantity_in_minor_unit /
           selected_product.units[selected_product.main_unit_id - 1].pivot
@@ -1122,6 +1186,7 @@ export default {
       this.add_update_person_dialog = false;
     },
     logo(item) {
+      console.log(item.expires_at);
       let occurrences = 0;
       let firstIndex = -1;
 
@@ -1200,7 +1265,12 @@ export default {
     },
     searchAndAddToBill() {
       let params = { barcode: this.searched_barcode };
-      Product.billBarcodeSearch(params, this.route).then((response) => {
+
+      let extra_route = this.act;
+
+      //if (this.route)
+
+      Product.billBarcodeSearch(params, extra_route).then((response) => {
         if (response.data.products.length == 0) {
           this.is_exists = [false || "الصنف غير موجود "];
           return;
@@ -1212,7 +1282,8 @@ export default {
         this.selected_item = JSON.parse(
           JSON.stringify(response.data.products[0])
         );
-        if (this.route == "purchase") {
+        if (this.act == "input") {
+          this.selected_item.expires_at = "*******";
           this.showThisProduct(this.selected_item);
           return;
         }
@@ -1223,7 +1294,7 @@ export default {
         }
         if (this.selected_item.bill_details.length == 1) {
           this.showThisProduct(this.selected_item);
-          return
+          return;
         }
         let products_grouped = false;
         if (products_grouped) {
@@ -1325,35 +1396,35 @@ export default {
 
         //CHECK IF PRODUCT HAS EXPIRATION DATE --> ADD QUANTITY
 
-        if (!selected_product.has_expiration_date) {
-          let index = this.bill.bill_details.findIndex(
-            (elem) => elem.barcode == selected_product.barcode
-          );
-          if (index != -1) {
-            this.bill.bill_details[index].quantity++;
-            return;
-          }
-        }
+        // if (!selected_product.has_expiration_date) {
+        //   let index = this.bill.bill_details.findIndex(
+        //     (elem) => elem.barcode == selected_product.barcode
+        //   );
+        //   if (index != -1) {
+        //     this.bill.bill_details[index].quantity++;
+        //     return;
+        //   }
+        // }
 
-        //this.found_products = response.data.products;
+        // //this.found_products = response.data.products;
 
-        //-----add
+        // //-----add
 
-        selected_product.unit_id =
-          selected_product.units[selected_product.main_unit_id - 1].pivot.id;
+        // selected_product.unit_id =
+        //   selected_product.units[selected_product.main_unit_id - 1].pivot.id;
 
-        selected_product.unit_price =
-          selected_product.units[
-            selected_product.main_unit_id - 1
-          ].pivot.bought_price;
+        // selected_product.unit_price =
+        //   selected_product.units[
+        //     selected_product.main_unit_id - 1
+        //   ].pivot.bought_price;
 
-        selected_product.quantity = 1;
+        // selected_product.quantity = 1;
 
-        //---------
-        selected_product["document_type_id"] = 1; // bill
-        selected_product["product_id"] = selected_product["id"]; // bill
+        // //---------
+        // selected_product["document_type_id"] = 1; // bill
+        // selected_product["product_id"] = selected_product["id"]; // bill
 
-        this.bill.bill_details.push(selected_product);
+        // this.bill.bill_details.push(selected_product);
       });
     },
     remaining_amount() {
@@ -1391,6 +1462,9 @@ export default {
       this.product_info_product = item;
     },
     product_unit_change(item) {
+      item.hide_quantity_valid_message = true;
+      item.quantity_valid = [true];
+
       let unit = item.units.find((elem) => elem.pivot.id == item.unit_id);
 
       item.unit_price = unit.pivot.bought_price;
@@ -1410,7 +1484,10 @@ export default {
     },
 
     total_without_products_vat() {
-      return this.bill.bill_details.reduce((a, b) => +a + +b.total_befor_tax, 0);
+      return this.bill.bill_details.reduce(
+        (a, b) => +a + +b.total_befor_tax,
+        0
+      );
     },
 
     total(item) {
@@ -1463,40 +1540,62 @@ export default {
     },
 
     addProductToBill() {
-      console.log(this.bill.bill_details);
-      console.log("seles", this.selected_product);
-      //set defaultid from main purchsedid
-      this.selected_product.unit_id =
-        this.selected_product.units[
-          this.selected_product.main_unit_id - 1
-        ].pivot.id;
-
-      this.selected_product.unit_price =
-        this.selected_product.units[
-          this.selected_product.main_unit_id - 1
-        ].pivot.bought_price;
-
-      this.selected_product.quantity = 1;
-      console.log("nnj", this.selected_product.unit_id);
-      this.bill.bill_details.push(JSON.parse(JSON.stringify(this.selected_product)));
-      console.log("nib", this.bill.bill_details);
-      this.selected_product = [];
+      console.log("this.selected_product");
+      console.log(this.selected_product);
+      console.log("this.selected_product");
+      this.selected_product.main_unit_id =
+        this.selected_product.main_bought_unit_id;
+      this.showThisProduct(this.selected_product);
     },
     checkExicting() {},
     submit() {
+      console.log(this.is_new_bill);
+      this.bill.bill_details.forEach((item) => {
+        if (item.expires_at == "*******") {
+          item.expires_at_message = false;
+        }
+      });
+
+      if (!this.$refs.form.validate()) {
+        console.log("this.bill.bill_details");
+        console.log(this.bill.bill_details);
+        console.log(this.$refs.form.rules);
+        return;
+      }
+
+      // this.expires_at_message = false;
       //this.$router.go(0); reload page if needed
+
       /* remove zero amount or not account methods */
       // this.bill.payment_methods = this.bill.payment_methods.filter(
       //     (elem) => elem.account_id != "" && elem.credit != 0
       // );
+
+      if (this.bill.bill_details.length == 0) {
+        this.snackbar = true;
+        return;
+      }
       if (this.is_new_bill)
-        Bill.store(this.bill, this.route + "s").then((response) =>
-          console.log(response.data)
-        );
+        Bill.store(this.bill).then((response) => {
+          if (!response.data.valid) {
+            response.data.message.forEach((element) => {
+              this.bill.bill_details[
+                element
+              ].hide_quantity_valid_message = false;
+
+              this.bill.bill_details[element].quantity_valid = [
+                false || "غير متوفرة",
+              ];
+            });
+            return 
+          }
+          
+          this.snackbar = true;
+          this.snackbarText = "تم حفظ الفاتورة"
+
+        });
       else
-        Bill.update(this.bill, this.route + "s").then((response) =>
-          console.log(response.data)
-        );
+        Bill.update(this.bill).then((response) => console.log(response.data));
 
       console.log(this.bill);
     },
@@ -1519,10 +1618,9 @@ export default {
       console.log();
 
       if (Object.keys(params).length != 0) {
-        alert(1212);
         this.is_new_bill = false;
-        this.title = "تعديل فاتورة رقم " + params.id;
-        Bill.get(params.id, this.route + "s").then((response) => {
+        //this.title = "تعديل فاتورة رقم " + params.id;
+        Bill.get(params.id).then((response) => {
           this.bill = response.data.bill;
           console.log(this.bill);
           this.bill.issue_date = this.bill.issue_date.split(" ")[0];
@@ -1575,13 +1673,13 @@ export default {
     },
   },
   async created() {
-    
-    console.log(this.$route)
-    console.log(this.route)
-    console.log('patho');
-    console.log(this.route.split('/'));
-    
+    console.log(this.$route);
+    console.log(this.route);
+    console.log("patho");
+    console.log(this.route.split("/"));
+
     if (this.route == "invoice") {
+      this.act = "output";
       this.person_type = "customers";
       this.person_info = "معلومات العميل";
       this.persona = "العميل";
@@ -1589,7 +1687,8 @@ export default {
       this.new_bill.type_id = 2;
     }
     if (this.route == "purchase") {
-      console.log('sss');
+      this.act = "input";
+      console.log("sss");
       this.person_type = "suppliers";
       this.person_info = "معلومات المورد";
       this.persona = "المورد";
@@ -1597,9 +1696,22 @@ export default {
       this.new_bill.type_id = 1;
     }
     if (this.route == "invoice_return") {
+      this.act = "input";
+      this.return_bill = true;
       this.person_type = "customers";
       this.person_info = "معلومات العميل";
       this.persona = "العميل";
+      this.bill.type_id = 4;
+      this.new_bill.type_id = 4;
+    }
+    if (this.route == "purchase_return") {
+      this.act = "output";
+      this.return_bill = true;
+      this.cols = 12;
+      this.main_bill = false;
+      this.person_type = "customers";
+      this.person_info = "معلومات المورد";
+      this.persona = "المورد";
       this.bill.type_id = 3;
       this.new_bill.type_id = 3;
     }
@@ -1608,8 +1720,8 @@ export default {
 
     if (this.$route.params.id) {
       this.is_new_bill = false;
-      this.title = "تعديل فاتورة رقم " + this.$route.params.id;
-      Bill.get(this.$route.params.id, this.route + "s", this.bill.type_id).then((response) => {
+      //this.title = "تعديل فاتورة رقم " + this.$route.params.id;
+      Bill.get(this.$route.params.id, this.bill.type_id).then((response) => {
         this.bill = response.data.bill;
         console.log(this.bill);
         this.bill.issue_date = this.bill.issue_date.split(" ")[0];
@@ -1618,24 +1730,26 @@ export default {
           if (elem.expires_at) elem.expires_at = elem.expires_at.split(" ")[0];
         });
 
-        if (this.bill.payment_methods.length == 0)
+        if (this.bill.payment_methods.length != 0) {
+        } else
           this.bill.payment_methods = [
             {
               account_id: "",
-              debit: 0,
+              amount: 0,
               description: "",
             },
             {
               account_id: "",
-              debit: 0,
+              amount: 0,
               description: "",
             },
             {
               account_id: "",
-              debit: 0,
+              amount: 0,
               description: "",
             },
           ];
+
         this.people = response.data.people;
         this.additional_expenses_from_accounts =
           response.data.accounts.accounts;
@@ -1644,6 +1758,9 @@ export default {
     } else {
       Person.get({}, this.person_type).then(
         (response) => (this.people = response.data)
+      );
+      Bill.getNewReference({ document_type_id: this.bill.type_id }).then(
+        (response) => (this.bill.reference = response.data)
       );
       Account.cashAndBanks().then(
         (response) =>

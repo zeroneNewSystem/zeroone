@@ -237,7 +237,7 @@ export default {
           sortable: false,
           value: "id",
         },
-        { text: "رقم المرجع", align: "center", value: "reference" },
+        { text: "رقم الفاتورة", align: "center", value: "reference" },
         {
           text: "جهة الاتصال",
           align: "center",
@@ -257,7 +257,7 @@ export default {
           sortable: false,
           value: "id",
         },
-        { text: "رقم المرجع", align: "center", value: "receipt_reference" },
+        { text: "رقم الفاتورة", align: "center", value: "receipt_reference" },
         {
           text: "تاريخ الاصدار",
           align: "center",

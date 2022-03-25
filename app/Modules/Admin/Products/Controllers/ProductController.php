@@ -44,7 +44,11 @@ class ProductController extends Controller
             $products = Product::where('ar_name', 'LIKE', '%' . $request->name . '%')
                 ->with('groups')
                 ->with('units')
-                ->orderBy('id', 'DESC')->get()
+                ->orderBy('id', 'DESC')->get(
+                    //['main_bought_unit_id as main_unit_id', 'ar_name']
+                    
+                    
+                    )
                 // ->orWhere('en_name', 'LIKE', '%' . $request->search . '%')
                 // ->orWhere('barcode', 'LIKE', '%' . $request->search . '%')
             ;

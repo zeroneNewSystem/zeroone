@@ -50,7 +50,7 @@ class Route
 
 // extratct router
 //Route::route('/api/extra/invoice/barcode/(.+)/inventory_id/(.+)', function ($barcode, $inventory_id) {
-Route::route('/api/extra/invoice/barcode/(.+)', function ($barcode) {
+Route::route('/api/extra/output/barcode/(.+)', function ($barcode) {
 
 
 
@@ -121,7 +121,7 @@ Route::route('/api/extra/invoice/barcode/(.+)', function ($barcode) {
     echo json_encode(['products' => $products], JSON_NUMERIC_CHECK);
 });
 
-Route::route('/api/extra/purchase/barcode/(.+)', function ($barcode) {
+Route::route('/api/extra/input/barcode/(.+)', function ($barcode) {
     $database = new Connection();
     $db = $database->open();
     $sth = $db->prepare("SELECT * FROM products WHERE barcode =:barcode");

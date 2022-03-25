@@ -45,7 +45,7 @@
             cols="12"
             lg="6"
           >
-            رقم المرجع
+            رقم الفاتورة
           </v-col>
           <v-col
             style="text-align: start; font-size: 14px"

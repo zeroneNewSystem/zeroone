@@ -9,7 +9,7 @@
               outlined
               autocomplete="off"
               v-model="bond.bond_reference"
-              prefix=" رقم المرجع | "
+              prefix=" رقم الفاتورة | "
               @blur="checkExicting()"
             ></v-text-field>
           </v-col>
@@ -208,7 +208,7 @@ export default {
           sortable: false,
           value: "id",
         },
-        { text: "رقم المرجع", align: "center", value: "reference" },
+        { text: "رقم الفاتورة", align: "center", value: "reference" },
         {
           text: "تاريخ الاصدار",
           align: "center",

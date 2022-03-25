@@ -17,11 +17,11 @@ class CreateSupplementalBillingsTable extends Migration
             $table->id();
             $table->unsignedInteger('company_id');
            
-            $table->unsignedInteger('bill_id',);
-            $table->unsignedInteger('bill_type_id',);
+            $table->unsignedInteger('document_id',);
+            $table->unsignedInteger('document_type_id',);
             $table->double('amount')->default(0);
-            $table->unsignedInteger('confirmation_bill_id',);
-            $table->unsignedInteger('confirmation_bill_type_id',);
+            $table->unsignedInteger('confirmation_document_id',);
+            $table->unsignedInteger('confirmation_document_type_id',);
 
             $table->timestamps();
             $table->index('company_id');

@@ -33,7 +33,7 @@ class ReceiptController extends Controller
 
     public function index($id)
     {
-        $receipt =  DB::table('receipts')->where('id', $id)->get()[0];
+        $receipt =  DB::table('receipts')->where('id', $id)->first();
 
 
         $methods = Transaction::where('bill_id', $id)

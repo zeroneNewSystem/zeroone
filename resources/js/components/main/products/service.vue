@@ -15,7 +15,7 @@
         centered
         transition="scale-transition"
         vertical
-        >{{ snakebarText }}</v-snackbar
+        >{{ snackbarText }}</v-snackbar
       >
 
       <v-container>
@@ -841,7 +841,7 @@ export default {
       menu2: false,
       //suucccmessage
       snackbar: false,
-      snakebarText: "تم إضافة الخدمة بنجاح",
+      snackbarText: "تم إضافة الخدمة بنجاح",
       snackbarTimeout: 2000,
       //-ssuucccmessage
       dialog: false,

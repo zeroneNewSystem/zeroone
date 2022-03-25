@@ -429,7 +429,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       },
       options: {},
       status: "salam",
-      title: "إدارة العميلين",
+      title: "إدارة العملاء",
       //---
       customers_total: 20
     }, _defineProperty(_ref, "loading", true), _defineProperty(_ref, "headers", [{

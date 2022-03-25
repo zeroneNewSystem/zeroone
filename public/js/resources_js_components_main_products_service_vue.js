@@ -853,7 +853,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       menu2: false,
       //suucccmessage
       snackbar: false,
-      snakebarText: "تم إضافة الخدمة بنجاح",
+      snackbarText: "تم إضافة الخدمة بنجاح",
       snackbarTimeout: 2000,
       //-ssuucccmessage
       dialog: false,
@@ -1457,7 +1457,7 @@ var render = function() {
                 expression: "snackbar"
               }
             },
-            [_vm._v(_vm._s(_vm.snakebarText))]
+            [_vm._v(_vm._s(_vm.snackbarText))]
           ),
           _vm._v(" "),
           _c("v-container", [

@@ -510,7 +510,7 @@ var render = function() {
                       [
                         _c("v-text-field", {
                           staticClass: "mx-4",
-                          attrs: { label: "رقم المرجع" },
+                          attrs: { label: "رقم الفاتورة" },
                           model: {
                             value: _vm.search.reference,
                             callback: function($$v) {

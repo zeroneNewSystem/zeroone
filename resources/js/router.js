@@ -204,8 +204,8 @@ const router = new VueRouter({
                     }
                 },
                 {
-                    path: "/bills",
-                    name: "bills",
+                    path: "/purchases",
+                    name: "purchases",
                     meta: { requiresAuth: true },
                     components: {
                         default: () =>
@@ -232,9 +232,9 @@ const router = new VueRouter({
                     meta: { requiresAuth: true },
                     components: {
                         default: () =>
-                            import ("./components/main/invoices/invoices"),
+                            import ("./components/main/bills/bills"),
                         mainView: () =>
-                            import ("./components/main/invoices/invoices")
+                            import ("./components/main/bills/bills"),
                     }
                 },
 

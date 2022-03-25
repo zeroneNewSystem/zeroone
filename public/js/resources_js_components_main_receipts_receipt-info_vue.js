@@ -488,7 +488,7 @@ var render = function() {
                       },
                       attrs: { cols: "12", lg: "6" }
                     },
-                    [_vm._v("\n          رقم المرجع\n        ")]
+                    [_vm._v("\n          رقم الفاتورة\n        ")]
                   ),
                   _vm._v(" "),
                   _c(
