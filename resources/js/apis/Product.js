@@ -30,6 +30,9 @@ export default {
     billBarcodeSearch(params, route) {
         return Api.get("/extra/" + route + "/barcode/" + params.barcode);
     },
+    billNameSearch(params, route) {
+        return Api.get("/extra/" + route + "/name/" + params.name);
+    },
     invoiceBarcodeSearch(params) {
 
         return Api.get(

@@ -241,10 +241,13 @@ class BillController extends Controller
     }
     public function store(Request $request)
     {
-        $message = $this->validation($request);
-        if (!$message['valid'])
 
-            return $message;
+        if (!$request->is_input) {
+            $message = $this->validation($request);
+            if (!$message['valid'])
+                return $message;
+        }
+
 
         /* validation */
         /* $rules = [

@@ -120,6 +120,74 @@ Route::route('/api/extra/output/barcode/(.+)', function ($barcode) {
     $database->close();
     echo json_encode(['products' => $products], JSON_NUMERIC_CHECK);
 });
+Route::route('/api/extra/output/name/(.+)', function ($ar_name) {
+
+
+
+    $database = new Connection();
+    $db = $database->open();
+    $sth = $db->prepare("SELECT * FROM products WHERE ar_name like  :ar_name");
+    $sth->execute(['ar_name' => '%' . $ar_name . '%']);
+
+
+    $products = $sth->fetchAll(\PDO::FETCH_ASSOC);
+    $product['bill_details'] = [];
+
+    foreach ($products as &$product) {
+        $product['main_unit_id'] = $product['main_sold_unit_id'];
+        $sql_string = "SELECT * FROM bill_details WHERE product_id =:product_id AND type_id = 1 AND sum_quantity_in_minor_unit != -1 ";
+
+        //product_id = " . $product['id'];
+
+        $sth = $db->prepare($sql_string); //and quantity in minamal units is bigeer than 0
+
+        $sth->execute(['product_id' => $product['id']]);
+        $bill_details = $sth->fetchAll(\PDO::FETCH_ASSOC);
+        //----INVENTORY METHOD FROM SETTINGS 
+
+        $product['bill_details'] = $bill_details;
+
+        // if  inventory_method == FIFO
+
+
+        // if  inventory_method == WAC
+
+        // if  inventory_method == GAAP
+        // if  inventory_method == use Last Cost
+
+
+        unset($product['created_at']);
+        unset($product['deleted_at']);
+        unset($product['updated_at']);
+
+        $sth = $db->prepare("SELECT * FROM prdct_units_products WHERE product_id = " . $product['id']);
+        $sth->execute();
+
+
+        $pivots = $sth->fetchAll(\PDO::FETCH_ASSOC);
+
+
+        $units = [];
+
+
+        foreach ($pivots as &$pivot) {
+            $sth = $db->prepare("SELECT * FROM prdct_units WHERE id = " . $pivot['prdct_unit_id']);
+            $sth->execute();
+            $unit = $sth->fetch(\PDO::FETCH_ASSOC);
+            $unit['pivot'] = $pivot;
+            $units[] = $unit;
+        }
+
+
+        $product['units'] = $units;
+    }
+
+
+
+
+    $database->close();
+    echo json_encode(['products' => $products], JSON_NUMERIC_CHECK);
+});
 
 Route::route('/api/extra/input/barcode/(.+)', function ($barcode) {
     $database = new Connection();
@@ -178,6 +246,64 @@ Route::route('/api/extra/input/barcode/(.+)', function ($barcode) {
     echo json_encode(['products' => $products], JSON_NUMERIC_CHECK);
 });
 
+Route::route('/api/extra/input/name/(.+)', function ($ar_name) {
+    $database = new Connection();
+    $db = $database->open();
+
+    $sth = $db->prepare("SELECT * FROM products WHERE ar_name like  :ar_name");
+    $sth->execute(['ar_name' => '%' . $ar_name . '%']);
+
+    $products = $sth->fetchAll(\PDO::FETCH_ASSOC);
+
+    $product['bill_details'] = [];
+    foreach ($products as &$product) {
+        $product['main_unit_id'] = $product['main_bought_unit_id'];
+
+        $sql_string = "SELECT * FROM bill_details WHERE product_id =:product_id AND type_id = 1";
+
+        //product_id = " . $product['id'];
+
+        $sth = $db->prepare($sql_string); //and quantity in minamal units is bigeer than 0
+
+        $sth->execute(['product_id' => $product['id']]);
+        $bill_details = $sth->fetchAll(\PDO::FETCH_ASSOC);
+        //----INVENTORY METHOD FROM SETTINGS 
+
+        $product['bill_details'] = $bill_details;
+
+
+        unset($product['created_at']);
+        unset($product['deleted_at']);
+        unset($product['updated_at']);
+
+        $sth = $db->prepare("SELECT * FROM prdct_units_products WHERE product_id = " . $product['id']);
+        $sth->execute();
+
+
+        $pivots = $sth->fetchAll(\PDO::FETCH_ASSOC);
+
+
+        $units = [];
+
+
+        foreach ($pivots as &$pivot) {
+            $sth = $db->prepare("SELECT * FROM prdct_units WHERE id = " . $pivot['prdct_unit_id']);
+            $sth->execute();
+            $unit = $sth->fetch(\PDO::FETCH_ASSOC);
+            $unit['pivot'] = $pivot;
+            $units[] = $unit;
+        }
+
+
+        $product['units'] = $units;
+    }
+
+
+
+
+    $database->close();
+    echo json_encode(['products' => $products], JSON_NUMERIC_CHECK);
+});
 
 Route::route('/api/extra/stock_take/barcode/(.+)/inventory_id/(.+)', function ($barcode, $inventory_id) {
 

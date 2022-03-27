@@ -986,6 +986,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 //
 //
 //
+//
 
 
 
@@ -1126,6 +1127,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       }],
       payment_conditions: [],
       new_bill: {
+        is_input: 1,
         type_id: "",
         only_cash: true,
         payment_condition_id: 0,
@@ -1157,6 +1159,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         maturity_date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10)
       },
       bill: {
+        is_input: 1,
         type_id: 1,
         only_cash: true,
         payment_condition_id: 0,
@@ -1228,10 +1231,14 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
     }
   },
   beforeRouteUpdate: function beforeRouteUpdate(to, from, next) {
-    alert(1);
+    // alert(1);
     next();
   },
   methods: {
+    disagree: function disagree() {
+      this.dialog = false;
+      this.selected_product = "";
+    },
     quantity_clicked: function quantity_clicked(item) {
       item.hide_quantity_valid_message = true;
       item.quantity_valid = [true];
@@ -1301,10 +1308,10 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         return elem.id == _this2.selected_elem_fromSet;
       });
       console.log(this.index_of_selected_product);
-      var selected_item = JSON.parse(JSON.stringify(this.selected_item));
-      console.log(selected_item);
-      selected_item["bill_details"][0] = selected_item["bill_details"][this.index_of_selected_product];
-      this.showThisProduct(selected_item);
+      var selected_product = JSON.parse(JSON.stringify(this.selected_product));
+      console.log(selected_product);
+      selected_product["bill_details"][0] = selected_product["bill_details"][this.index_of_selected_product];
+      this.showThisProduct(selected_product);
       console.log("index");
       console.log("index");
       window.removeEventListener("keydown", this.functionToAddProduct);
@@ -1345,6 +1352,15 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       }); // Event listener
     },
     showThisProduct: function showThisProduct(selected_product) {
+      this.selected_product = "";
+      this.searched_barcode = "";
+      var gg;
+      if (this.route != "purchase") if ((gg = this.bill.bill_details.findIndex(function (elem) {
+        return elem.id == selected_product.id && elem.expires_at.split(" ")[0] == selected_product["bill_details"][0].expires_at.split(" ")[0];
+      })) >= 0) {
+        this.bill.bill_details[gg].quantity++;
+        return;
+      }
       selected_product.expires_at_message = true;
       selected_product.hide_quantity_valid_message = true;
       selected_product.quantity_valid = [true];
@@ -1373,7 +1389,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
     close_person_dialog: function close_person_dialog() {
       this.add_update_person_dialog = false;
     },
-    logo: function logo(item) {
+    changeExpirationDate: function changeExpirationDate(item) {
       console.log(item.expires_at);
       var occurrences = 0;
       var firstIndex = -1;
@@ -1443,112 +1459,93 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       this.operation = "add";
       this.passed_person = {};
     },
-    searchAndAddToBill: function searchAndAddToBill() {
+    addProductToBill: function addProductToBill(name) {
       var _this5 = this;
 
-      var params = {
-        barcode: this.searched_barcode
-      };
-      var extra_route = this.act; //if (this.route)
-
-      _apis_Product__WEBPACK_IMPORTED_MODULE_1__.default.billBarcodeSearch(params, extra_route).then(function (response) {
-        if (response.data.products.length == 0) {
-          _this5.is_exists = [ false || "الصنف غير موجود "];
-          return;
-        }
-
-        _this5.is_exists = [true]; //let selected_product = response.data.products[0];
-
-        _this5.selected_item = JSON.parse(JSON.stringify(response.data.products[0]));
-
-        if (_this5.act == "input") {
-          _this5.selected_item.expires_at = "*******";
-
-          _this5.showThisProduct(_this5.selected_item);
-
-          return;
-        } //-----processing  for invoice
+      //-----processing  for output document
+      if (this.act == "input") {
+        this.selected_product.expires_at = "*******";
+        this.showThisProduct(this.selected_product);
+        return;
+      } //-----processing  for output document
 
 
-        if (_this5.selected_item.bill_details.length == 0) {
-          _this5.no_product_dialog = true;
-          return;
-        }
+      if (this.selected_product.bill_details.length == 0) {
+        this.no_product_dialog = true;
+        return;
+      }
 
-        if (_this5.selected_item.bill_details.length == 1) {
-          _this5.showThisProduct(_this5.selected_item);
+      if (this.selected_product.bill_details.length == 1) {
+        this.showThisProduct(this.selected_product);
+        return;
+      }
 
-          return;
-        }
+      var products_grouped = false;
 
-        var products_grouped = false;
+      if (products_grouped) {
+        this.selected_product.bill_details[0].quantity_in_minor_unit = this.selected_product.quantity_in_minor_unit; // this.selected_product.bill_details[0].quantity_in_minor_unit =
+        //   this.selected_product.bill_details.reduce(
+        //     (a, b) => +a + +b.quantity_in_minor_unit,
+        //     0
+        //   );
 
-        if (products_grouped) {
-          _this5.selected_item.bill_details[0].quantity_in_minor_unit = _this5.selected_item.quantity_in_minor_unit; // this.selected_item.bill_details[0].quantity_in_minor_unit =
-          //   this.selected_item.bill_details.reduce(
-          //     (a, b) => +a + +b.quantity_in_minor_unit,
-          //     0
-          //   );
+        console.log("this.selected_product");
+        console.log(this.selected_product);
+        this.showThisProduct(this.selected_product);
+        return;
+      }
 
-          console.log("this.selected_item");
-          console.log(_this5.selected_item);
+      var first = false;
+      if (name) first = true;
+      this.sets = this.selected_product.bill_details;
+      this.dialog = true;
+      this.$nextTick().then(function () {
+        var listElm = document.querySelector("ul"); // Mark first list item
 
-          _this5.showThisProduct(_this5.selected_item);
+        _this5.$nextTick(function () {
+          listElm.firstElementChild.focus();
+          var selectedElm = document.activeElement,
+              goToStart,
+              // map actions to event's key
+          action = {
+            ArrowUp: "previous",
+            Up: "previous",
+            ArrowDown: "next",
+            Down: "next"
+          };
 
-          return;
-        }
+          _this5.functionToAddProduct = function (e) {
+            if (e.key === "Enter" && _this5.dialog && !first) {
+              var parent = selectedElm.parentNode;
+              console.log(parent);
+              console.log(selectedElm);
+              _this5.index_of_selected_product = Array.prototype.indexOf.call(listElm.children, selectedElm);
+              var selected_product = JSON.parse(JSON.stringify(_this5.selected_product));
+              console.log(selected_product);
+              selected_product["bill_details"][0] = selected_product["bill_details"][_this5.index_of_selected_product];
 
-        _this5.sets = _this5.selected_item.bill_details;
-        _this5.dialog = true;
+              _this5.showThisProduct(selected_product);
 
-        _this5.$nextTick().then(function () {
-          var listElm = document.querySelector("ul"); // Mark first list item
+              console.log("index");
+              console.log("index");
+              window.removeEventListener("keydown", _this5.functionToAddProduct);
+              console.log("input_barcode");
+              console.log(input_barcode);
+              console.log("input_barcode");
+              var input_barcode = document.getElementById("barcode"); // this.$nextTick(() => {
+              //   input_barcode.focus();
+              // });
 
-          _this5.$nextTick(function () {
-            listElm.firstElementChild.focus();
-            var selectedElm = document.activeElement,
-                goToStart,
-                // map actions to event's key
-            action = {
-              ArrowUp: "previous",
-              Up: "previous",
-              ArrowDown: "next",
-              Down: "next"
-            };
-
-            _this5.functionToAddProduct = function (e) {
-              if (e.key === "Enter" && _this5.dialog) {
-                var parent = selectedElm.parentNode;
-                console.log(parent);
-                console.log(selectedElm);
-                _this5.index_of_selected_product = Array.prototype.indexOf.call(listElm.children, selectedElm);
-                var selected_item = JSON.parse(JSON.stringify(_this5.selected_item));
-                console.log(selected_item);
-                selected_item["bill_details"][0] = selected_item["bill_details"][_this5.index_of_selected_product];
-
-                _this5.showThisProduct(selected_item);
-
-                console.log("index");
-                console.log("index");
-                window.removeEventListener("keydown", _this5.functionToAddProduct);
-                console.log("input_barcode");
-                console.log(input_barcode);
-                console.log("input_barcode");
-                var input_barcode = document.getElementById("barcode");
-
-                _this5.$nextTick(function () {
-                  input_barcode.focus();
-                });
-
-                console.log("selectedElm");
-                console.log(selectedElm);
-                console.log("selectedElm");
-                _this5.dialog = false;
-                _this5.agree = false;
-                return;
-              } //e.preventDefault();
+              console.log("selectedElm");
+              console.log(selectedElm);
+              console.log("selectedElm");
+              _this5.dialog = false;
+              _this5.agree = false;
+              return;
+            } //e.preventDefault();
 
 
+            if (e.key !== "Enter") {
               console.log(selectedElm);
               selectedElm = selectedElm[action[e.key] + "ElementSibling"]; // loop if top/bottom edges reached or "home"/"end" keys clicked
 
@@ -1558,35 +1555,54 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
               }
 
               selectedElm.focus();
-            };
+              first = false;
+            }
+          };
 
-            window.addEventListener("keydown", _this5.functionToAddProduct);
-          }); // Event listener
+          window.addEventListener("keydown", _this5.functionToAddProduct);
+        }); // Event listener
 
-        }); //CHECK IF PRODUCT HAS EXPIRATION DATE --> ADD QUANTITY
-        // if (!selected_product.has_expiration_date) {
-        //   let index = this.bill.bill_details.findIndex(
-        //     (elem) => elem.barcode == selected_product.barcode
-        //   );
-        //   if (index != -1) {
-        //     this.bill.bill_details[index].quantity++;
-        //     return;
-        //   }
-        // }
-        // //this.found_products = response.data.products;
-        // //-----add
-        // selected_product.unit_id =
-        //   selected_product.units[selected_product.main_unit_id - 1].pivot.id;
-        // selected_product.unit_price =
-        //   selected_product.units[
-        //     selected_product.main_unit_id - 1
-        //   ].pivot.bought_price;
-        // selected_product.quantity = 1;
-        // //---------
-        // selected_product["document_type_id"] = 1; // bill
-        // selected_product["product_id"] = selected_product["id"]; // bill
-        // this.bill.bill_details.push(selected_product);
+      }); //CHECK IF PRODUCT HAS EXPIRATION DATE --> ADD QUANTITY
+      // if (!selected_product.has_expiration_date) {
+      //   let index = this.bill.bill_details.findIndex(
+      //     (elem) => elem.barcode == selected_product.barcode
+      //   );
+      //   if (index != -1) {
+      //     this.bill.bill_details[index].quantity++;
+      //     return;
+      //   }
+      // }
+      // //this.found_products = response.data.products;
+      // //-----add
+      // selected_product.unit_id =
+      //   selected_product.units[selected_product.main_unit_id - 1].pivot.id;
+      // selected_product.unit_price =
+      //   selected_product.units[
+      //     selected_product.main_unit_id - 1
+      //   ].pivot.bought_price;
+      // selected_product.quantity = 1;
+      // //---------
+      // selected_product["document_type_id"] = 1; // bill
+      // selected_product["product_id"] = selected_product["id"]; // bill
+      // this.bill.bill_details.push(selected_product);
+    },
+    searchProductByBarcode: function searchProductByBarcode() {
+      var _this6 = this;
 
+      var params = {
+        barcode: this.searched_barcode
+      };
+      var extra_route = this.act;
+      _apis_Product__WEBPACK_IMPORTED_MODULE_1__.default.billBarcodeSearch(params, extra_route).then(function (response) {
+        if (response.data.products.length == 0) {
+          _this6.is_exists = [ false || "الصنف غير موجود "];
+          return;
+        }
+
+        _this6.is_exists = [true];
+        _this6.selected_product = JSON.parse(JSON.stringify(response.data.products[0]));
+
+        _this6.addProductToBill();
       });
     },
     remaining_amount: function remaining_amount() {
@@ -1669,37 +1685,38 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       this.bill.bill_details.splice(this.bill.bill_details.indexOf(item), 1);
     },
     getProducts: function getProducts(val, type) {
-      var _this6 = this;
+      var _this7 = this;
 
       if (val.length > 2) {
         this.loading = true;
-        var params = "";
-        if (type == "barcode") params = {
-          barcode: val
-        };else params = {
+        var params = {
           name: val
-        }; // Simulated ajax query ajax
-
-        _apis_Product__WEBPACK_IMPORTED_MODULE_1__.default.search(params).then(function (response) {
-          _this6.loading = false;
-          console.log("hi", response.data);
-
-          if (response.data.length !== 0) {
-            _this6.found_products = JSON.parse(JSON.stringify(response.data.products));
+        };
+        var extra_route = this.act;
+        _apis_Product__WEBPACK_IMPORTED_MODULE_1__.default.billNameSearch(params, extra_route).then(function (response) {
+          if (response.data.products.length == 0) {
+            _this7.is_exists = [ false || "الصنف غير موجود "];
+            return;
           }
+
+          _this7.loading = false;
+          console.log("hi", response.data);
+          _this7.found_products = JSON.parse(JSON.stringify(response.data.products));
+          _this7.is_exists = [true];
         });
       }
     },
-    addProductToBill: function addProductToBill() {
-      console.log("this.selected_product");
-      console.log(this.selected_product);
-      console.log("this.selected_product");
-      this.selected_product.main_unit_id = this.selected_product.main_bought_unit_id;
-      this.showThisProduct(this.selected_product);
-    },
+    // addProductToBill() {
+    //   console.log("this.selected_product");
+    //   console.log(this.selected_product);
+    //   console.log("this.selected_product");
+    //   this.selected_product.main_unit_id =
+    //     this.selected_product.main_bought_unit_id;
+    //   this.showThisProduct(this.selected_product);
+    // },
     checkExicting: function checkExicting() {},
     submit: function submit() {
-      var _this7 = this;
+      var _this8 = this;
 
       console.log(this.is_new_bill);
       this.bill.bill_details.forEach(function (item) {
@@ -1730,14 +1747,14 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       if (this.is_new_bill) _apis_Bill__WEBPACK_IMPORTED_MODULE_2__.default.store(this.bill).then(function (response) {
         if (!response.data.valid) {
           response.data.message.forEach(function (element) {
-            _this7.bill.bill_details[element].hide_quantity_valid_message = false;
-            _this7.bill.bill_details[element].quantity_valid = [ false || "غير متوفرة"];
+            _this8.bill.bill_details[element].hide_quantity_valid_message = false;
+            _this8.bill.bill_details[element].quantity_valid = [ false || "غير متوفرة"];
           });
           return;
         }
 
-        _this7.snackbar = true;
-        _this7.snackbarText = "تم حفظ الفاتورة";
+        _this8.snackbar = true;
+        _this8.snackbarText = "تم حفظ الفاتورة";
       });else _apis_Bill__WEBPACK_IMPORTED_MODULE_2__.default.update(this.bill).then(function (response) {
         return console.log(response.data);
       });
@@ -1768,25 +1785,73 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
       return "".concat(year, "-").concat(month.padStart(2, "0"), "-").concat(day.padStart(2, "0"));
     },
     createPage: function createPage(to, status) {
-      var _this8 = this;
+      var _this9 = this;
 
-      var params = to.params;
-      console.log();
+      this.route = to.fullPath.replace(/^\/([^\/]*).*$/, "$1");
+      console.log("patho");
+      console.log(this.route.split("/"));
 
-      if (Object.keys(params).length != 0) {
-        this.is_new_bill = false; //this.title = "تعديل فاتورة رقم " + params.id;
+      if (this.route == "invoice") {
+        this.act = "output";
+        this.person_type = "customers";
+        this.person_info = "معلومات العميل";
+        this.persona = "العميل";
+        this.bill.type_id = 2;
+        this.bill.is_input = 0;
+        this.new_bill.type_id = 2;
+      }
 
-        _apis_Bill__WEBPACK_IMPORTED_MODULE_2__.default.get(params.id).then(function (response) {
-          _this8.bill = response.data.bill;
-          console.log(_this8.bill);
-          _this8.bill.issue_date = _this8.bill.issue_date.split(" ")[0];
-          _this8.bill.maturity_date = _this8.bill.maturity_date.split(" ")[0];
+      if (this.route == "purchase") {
+        this.act = "input";
+        console.log("sss");
+        this.person_type = "suppliers";
+        this.person_info = "معلومات المورد";
+        this.persona = "المورد";
+        this.bill.type_id = 1;
+        this.bill.is_input = 1;
+        this.new_bill.type_id = 1;
+      }
 
-          _this8.bill.bill_details.forEach(function (elem) {
+      if (this.route == "invoice_return") {
+        this.act = "input";
+        this.return_bill = true;
+        this.person_type = "customers";
+        this.person_info = "معلومات العميل";
+        this.persona = "العميل";
+        this.bill.is_input = 1;
+        this.bill.type_id = 4;
+        this.new_bill.type_id = 4;
+      }
+
+      if (this.route == "purchase_return") {
+        this.act = "output";
+        this.return_bill = true;
+        this.cols = 12;
+        this.main_bill = false;
+        this.person_type = "customers";
+        this.person_info = "معلومات المورد";
+        this.persona = "المورد";
+        this.bill.type_id = 3;
+        this.bill.is_input = 0;
+        this.new_bill.type_id = 3;
+      } // if (route == "nibra")
+      //   Person = (await import("../../../apis/Person")).default;
+
+
+      if (this.$route.params.id) {
+        this.is_new_bill = false; //this.title = "تعديل فاتورة رقم " + this.$route.params.id;
+
+        _apis_Bill__WEBPACK_IMPORTED_MODULE_2__.default.get(this.$route.params.id, this.bill.type_id).then(function (response) {
+          _this9.bill = response.data.bill;
+          console.log(_this9.bill);
+          _this9.bill.issue_date = _this9.bill.issue_date.split(" ")[0];
+          _this9.bill.maturity_date = _this9.bill.maturity_date.split(" ")[0];
+
+          _this9.bill.bill_details.forEach(function (elem) {
             if (elem.expires_at) elem.expires_at = elem.expires_at.split(" ")[0];
           });
 
-          if (_this8.bill.payment_methods.length == 0) _this8.bill.payment_methods = [{
+          if (_this9.bill.payment_methods.length != 0) {} else _this9.bill.payment_methods = [{
             account_id: "",
             amount: 0,
             description: ""
@@ -1799,134 +1864,39 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
             amount: 0,
             description: ""
           }];
-          _this8.people = response.data.people;
-          _this8.additional_expenses_from_accounts = response.data.accounts.accounts;
+
+          _this9.people = response.data.people;
+          _this9.additional_expenses_from_accounts = response.data.accounts.accounts;
           console.log(response.data.accounts.accounts);
         });
       } else {
-        alert(1212);
+        _apis_Person__WEBPACK_IMPORTED_MODULE_7__.default.get({}, this.person_type).then(function (response) {
+          return _this9.people = response.data;
+        }); // Bill.getNewReference({ document_type_id: this.bill.type_id }).then(
+        //   (response) => (this.bill.reference = response.data)
+        // );
+      } // if (route == "nibras")
+      //   Person = (await import("../../../apis/Person")).default;
+      // console.log(this.$route);
+      //this.createPage(this.$route, "new");
 
-        if (status == "new") {
-          alert(222);
-          _apis_Person__WEBPACK_IMPORTED_MODULE_7__.default.get({}, this.route).then(function (response) {
-            return _this8.people = response.data;
-          });
-          _apis_Account__WEBPACK_IMPORTED_MODULE_8__.default.cashAndBanks().then(function (response) {
-            return _this8.additional_expenses_from_accounts = response.data.accounts;
-          });
-        } else {
-          this.bill = JSON.parse(JSON.stringify(this.new_bill));
-          this.$refs.form.reset();
-        }
-      }
     }
   },
   created: function created() {
-    var _this9 = this;
+    var _this10 = this;
 
     return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee() {
       return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
-              console.log(_this9.$route);
-              console.log(_this9.route);
-              console.log("patho");
-              console.log(_this9.route.split("/"));
+              _apis_Account__WEBPACK_IMPORTED_MODULE_8__.default.cashAndBanks().then(function (response) {
+                return _this10.additional_expenses_from_accounts = response.data.accounts;
+              });
 
-              if (_this9.route == "invoice") {
-                _this9.act = "output";
-                _this9.person_type = "customers";
-                _this9.person_info = "معلومات العميل";
-                _this9.persona = "العميل";
-                _this9.bill.type_id = 2;
-                _this9.new_bill.type_id = 2;
-              }
+              _this10.createPage(_this10.$route, "new");
 
-              if (_this9.route == "purchase") {
-                _this9.act = "input";
-                console.log("sss");
-                _this9.person_type = "suppliers";
-                _this9.person_info = "معلومات المورد";
-                _this9.persona = "المورد";
-                _this9.bill.type_id = 1;
-                _this9.new_bill.type_id = 1;
-              }
-
-              if (_this9.route == "invoice_return") {
-                _this9.act = "input";
-                _this9.return_bill = true;
-                _this9.person_type = "customers";
-                _this9.person_info = "معلومات العميل";
-                _this9.persona = "العميل";
-                _this9.bill.type_id = 4;
-                _this9.new_bill.type_id = 4;
-              }
-
-              if (_this9.route == "purchase_return") {
-                _this9.act = "output";
-                _this9.return_bill = true;
-                _this9.cols = 12;
-                _this9.main_bill = false;
-                _this9.person_type = "customers";
-                _this9.person_info = "معلومات المورد";
-                _this9.persona = "المورد";
-                _this9.bill.type_id = 3;
-                _this9.new_bill.type_id = 3;
-              } // if (route == "nibra")
-              //   Person = (await import("../../../apis/Person")).default;
-
-
-              if (_this9.$route.params.id) {
-                _this9.is_new_bill = false; //this.title = "تعديل فاتورة رقم " + this.$route.params.id;
-
-                _apis_Bill__WEBPACK_IMPORTED_MODULE_2__.default.get(_this9.$route.params.id, _this9.bill.type_id).then(function (response) {
-                  _this9.bill = response.data.bill;
-                  console.log(_this9.bill);
-                  _this9.bill.issue_date = _this9.bill.issue_date.split(" ")[0];
-                  _this9.bill.maturity_date = _this9.bill.maturity_date.split(" ")[0];
-
-                  _this9.bill.bill_details.forEach(function (elem) {
-                    if (elem.expires_at) elem.expires_at = elem.expires_at.split(" ")[0];
-                  });
-
-                  if (_this9.bill.payment_methods.length != 0) {} else _this9.bill.payment_methods = [{
-                    account_id: "",
-                    amount: 0,
-                    description: ""
-                  }, {
-                    account_id: "",
-                    amount: 0,
-                    description: ""
-                  }, {
-                    account_id: "",
-                    amount: 0,
-                    description: ""
-                  }];
-
-                  _this9.people = response.data.people;
-                  _this9.additional_expenses_from_accounts = response.data.accounts.accounts;
-                  console.log(response.data.accounts.accounts);
-                });
-              } else {
-                _apis_Person__WEBPACK_IMPORTED_MODULE_7__.default.get({}, _this9.person_type).then(function (response) {
-                  return _this9.people = response.data;
-                });
-                _apis_Bill__WEBPACK_IMPORTED_MODULE_2__.default.getNewReference({
-                  document_type_id: _this9.bill.type_id
-                }).then(function (response) {
-                  return _this9.bill.reference = response.data;
-                });
-                _apis_Account__WEBPACK_IMPORTED_MODULE_8__.default.cashAndBanks().then(function (response) {
-                  return _this9.additional_expenses_from_accounts = response.data.accounts;
-                });
-              } // if (route == "nibras")
-              //   Person = (await import("../../../apis/Person")).default;
-              // console.log(this.$route);
-              //this.createPage(this.$route, "new");
-
-
-            case 9:
+            case 2:
             case "end":
               return _context.stop();
           }
@@ -2742,6 +2712,9 @@ __webpack_require__.r(__webpack_exports__);
   },
   billBarcodeSearch: function billBarcodeSearch(params, route) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/extra/" + route + "/barcode/" + params.barcode);
+  },
+  billNameSearch: function billNameSearch(params, route) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/extra/" + route + "/name/" + params.name);
   },
   invoiceBarcodeSearch: function invoiceBarcodeSearch(params) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/extra/invoice/barcode/" + params.barcode + "/inventory_id/" + params.inventory_id);
@@ -4548,7 +4521,7 @@ var render = function() {
                               _c("v-col", [
                                 _vm._v(
                                   "\n                  " +
-                                    _vm._s(_vm.selected_item.ar_name) +
+                                    _vm._s(_vm.selected_product.ar_name) +
                                     "\n                "
                                 )
                               ]),
@@ -4591,11 +4564,7 @@ var render = function() {
                       "v-btn",
                       {
                         attrs: { color: "green darken-1", text: "" },
-                        on: {
-                          click: function($event) {
-                            _vm.dialog = false
-                          }
-                        }
+                        on: { click: _vm.disagree }
                       },
                       [_vm._v("\n            Disagree\n          ")]
                     ),
@@ -5461,8 +5430,11 @@ var render = function() {
                                                       ) {
                                                         _vm.name_search = $event
                                                       },
-                                                      change:
-                                                        _vm.addProductToBill
+                                                      change: function($event) {
+                                                        return _vm.addProductToBill(
+                                                          true
+                                                        )
+                                                      }
                                                     },
                                                     model: {
                                                       value:
@@ -5514,9 +5486,8 @@ var render = function() {
                                                         ) {
                                                           return null
                                                         }
-                                                        return _vm.searchAndAddToBill.apply(
-                                                          null,
-                                                          arguments
+                                                        return _vm.searchProductByBarcode(
+                                                          "barcode"
                                                         )
                                                       }
                                                     },
@@ -5588,11 +5559,6 @@ var render = function() {
                                             transition: "scale-transition",
                                             "offset-y": ""
                                           },
-                                          on: {
-                                            change: function($event) {
-                                              return _vm.logo(item)
-                                            }
-                                          },
                                           scopedSlots: _vm._u(
                                             [
                                               {
@@ -5648,6 +5614,13 @@ var render = function() {
                                                                   return null
                                                                 }
                                                                 item.expires_at_is_down = false
+                                                              },
+                                                              change: function(
+                                                                $event
+                                                              ) {
+                                                                return _vm.changeExpirationDate(
+                                                                  item
+                                                                )
                                                               }
                                                             },
                                                             model: {
@@ -5705,7 +5678,9 @@ var render = function() {
                                                 item.expires_at_is_down = false
                                               },
                                               change: function($event) {
-                                                return _vm.logo(item)
+                                                return _vm.changeExpirationDate(
+                                                  item
+                                                )
                                               }
                                             },
                                             model: {

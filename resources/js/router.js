@@ -234,7 +234,7 @@ const router = new VueRouter({
                         default: () =>
                             import ("./components/main/bills/bills"),
                         mainView: () =>
-                            import ("./components/main/bills/bills"),
+                            import ("./components/main/bills/bills")
                     }
                 },
 
@@ -267,9 +267,9 @@ const router = new VueRouter({
                     meta: { requiresAuth: true },
                     components: {
                         default: () =>
-                            import ("./components/main/bills/suppliers"),
+                            import ("./components/main/bills/people"),
                         mainView: () =>
-                            import ("./components/main/bills/suppliers")
+                            import ("./components/main/bills/people")
                     }
                 },
                 {
@@ -278,9 +278,9 @@ const router = new VueRouter({
                     meta: { requiresAuth: true },
                     components: {
                         default: () =>
-                            import ("./components/main/bills/supplier-info"),
+                            import ("./components/main/bills/person-info"),
                         mainView: () =>
-                            import ("./components/main/bills/supplier-info")
+                            import ("./components/main/bills/person-info")
                     }
                 },
                 {
@@ -289,9 +289,9 @@ const router = new VueRouter({
                     meta: { requiresAuth: true },
                     components: {
                         default: () =>
-                            import ("./components/main/invoices/customers"),
+                            import ("./components/main/bills/people"),
                         mainView: () =>
-                            import ("./components/main/invoices/customers")
+                            import ("./components/main/bills/people")
                     }
                 },
                 {
@@ -330,8 +330,7 @@ const router = new VueRouter({
                         mainView: () =>
                             import ("./components/main/bills/bill")
                     }
-                },
-
+                }
             ]
         },
 

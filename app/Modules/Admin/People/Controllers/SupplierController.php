@@ -27,6 +27,18 @@ class SupplierController extends Controller
 
     public function index(Request $request)
     {
+
+        /*
+        أعطني كل المستخدمين 
+        خرج كل دفعاتهم من ترانزاكشن
+        خرج كل الفواتير المستحقة (التي انتهى تاريخها) من واقع الترانزاكشن من أجل نعرف كم سدد في كل فاتورة
+        خرج السندات اللاحقة كم دفع وكم سحب للفاتورة المخصصة 
+
+
+
+        */
+
+
         /*$List = Schema::getColumnListing('people');
         
         foreach ($List as &$item)
@@ -35,97 +47,115 @@ class SupplierController extends Controller
         return $List;*/
 
 
+        /* 
+        request->type_id
+        1- supplier
+        2- customer
+        3 - user
+        */
+
+
+        $person = 'supplier';
+        if ($request->type_id == 2) $person = 'customer';
+        if ($request->type_id == 3) $person = 'user';
+
+
+
 
         $search  = json_decode($request->search, true);
 
-        if (!$search)
-            return Person::where('company_id', '1')->where('is_supplier', '1')->get();
+        if (!$search) {
 
-        $suppliers = DB::table('people')
+            return Person::where('company_id', '1')->where('is_' . $person, '1')->get();
+        }
+
+        $people = DB::table('people')
             ->select(
                 'people.*',
                 'acc.id as acc_id',
                 'trans.id as trans_id',
-                'pur.id as pur_id',
+                'bills.id as bill_id',
                 'supdoc.id as supdoc_id',
-
                 'trans.debit',
                 'trans.credit',
-                'pur.maturity_date',
+                'bills.maturity_date',
+                'bills.total_amount as bill_total_amount',
+                'bills.paid_amount as bill_paid_amount',
                 'supdoc.amount',
             )
 
+            ->where('people.company_id', '1')->where('is_' . $person, '1');
 
-            ->where('people.company_id', '1')->where('is_supplier', '1');
+
 
         if ($search['company_name'])
-            $suppliers = $suppliers->where('company_name', 'like', '%' . $search['company_name'] . '%');
+            $people = $people->where('company_name', 'like', '%' . $search['company_name'] . '%');
 
         if ($search['name'])
-            $suppliers = $suppliers->where('name', 'like', '%' . $search['name'] . '%');
+            $people = $people->where('name', 'like', '%' . $search['name'] . '%');
 
-        if ($search['is_supplier_active'] !== "")
-            $suppliers = $suppliers->where('is_supplier_active', $search['is_supplier_active']);
+        if ($search['is_person_active'] !== "")
+
+            $people = $people->where('is_' . $person . '_active', $search['is_person_active']);
 
 
 
         if ($search['phone']) {
 
-            $suppliers = $suppliers->where('phone01', $search['phone'])->orWhere('phone02', $search['phone']);
+            $people = $people->where('phone01', $search['phone'])->orWhere('phone02', $search['phone']);
         }
 
 
-        //$suppliers = $suppliers->leftJoin('accounts as acc', 'people.id', '=', 'acc.accountable_id');
-        $suppliers = $suppliers->leftJoin(
+        //$people = $people->leftJoin('accounts as acc', 'people.id', '=', 'acc.accountable_id');
+        $people = $people->leftJoin(
             'accounts as acc',
-            function ($leftJoin) {
+            function ($leftJoin) use ($person) {
                 $leftJoin
                     ->on('people.id', '=', 'acc.accountable_id')
-                    ->where('acc.accountable_type', 'supplier');
+                    ->where('acc.accountable_type',  $person);
             }
 
         );
         // all transactions 
-        $suppliers = $suppliers->leftJoin('transactions as trans', 'acc.id', '=', 'trans.account_id');
+        $people = $people->leftJoin('transactions as trans', 'acc.id', '=', 'trans.account_id');
 
-        // all maturity bill
-        $suppliers = $suppliers->leftJoin(
-            'bills as pur',
+        // all maturity bills
+        $people = $people->leftJoin(
+            'bills',
             function ($leftJoin) {
                 $leftJoin
-                    ->on('trans.document_id', '=', 'pur.id')
+                    ->on('trans.document_id', '=', 'bills.id')
                     ->where('trans.document_type_id', 1)
-                    ->where('pur.maturity_date', '<', date('Y-m-d'))
-                    ->where('pur.payment_status_id', '!=', 5)
-                    ->where('pur.payment_status_id', '!=', 5);
+                    ->where('bills.maturity_date', '<', date('Y-m-d'))
+                    ->where('bills.payment_status_id', '!=', 5);
             }
 
         );
-        $suppliers = $suppliers->leftJoin(
+        $people = $people->leftJoin(
             'supplemental_billings as supdoc',
             function ($leftJoin) {
                 $leftJoin
-                    ->on('supdoc.bill_id', '=', 'pur.id')
-                    ->where('supdoc.bill_type_id', 1);
+                    ->on('supdoc.document_id', '=', 'bills.id')
+                    ->where('supdoc.document_type_id', 1);
             }
 
         );
 
-        $suppliers = $suppliers->orderBy('people.id', 'DESC')->paginate($request->itemsPerPage != -1 ? $request->itemsPerPage : '');
+        $people = $people->orderBy('people.id', 'DESC')->paginate($request->itemsPerPage != -1 ? $request->itemsPerPage : '');
 
         // $name = 'محمد';
 
-        // $suppliers = Person::with('person')->whereHas('person', function (Builder $query) use ($name) {
+        // $people = Person::with('person')->whereHas('person', function (Builder $query) use ($name) {
         //     $query->where('ar_name', $name);
         // })->get();
 
-        // return $suppliers;
+        // return $people;
 
 
 
 
 
-        return response()->json(['suppliers' => $suppliers], 200);
+        return response()->json(['people' => $people], 200);
 
         //return Person::where('company_id','1')->where('is_supplier','1')->get();    
 
@@ -241,17 +271,17 @@ class SupplierController extends Controller
         $paid_amount = 0;
         $paid_amount_with_maturity_date = 0;
 
-        foreach ($bills as $bill) {
-            $total_amount += $bill->total_amount;
-            $supp_bills = DB::table('supplemental_billings')->where('bill_id', $bill->id)->where('bill_type_id', 1)->get();
-            if ($bill->maturity_date <  date('Y-m-d') && $bill->maturity_date != 5) {
-                $total_amount_with_maturity_date +=  $bill->total_amount;
-                $paid_amount_with_maturity_date +=  $bill->paid_amount;
+        foreach ($bills as $bills) {
+            $total_amount += $bills->total_amount;
+            $supp_bills = DB::table('supplemental_billings')->where('bill_id', $bills->id)->where('bill_type_id', 1)->get();
+            if ($bills->maturity_date <  date('Y-m-d') && $bills->maturity_date != 5) {
+                $total_amount_with_maturity_date +=  $bills->total_amount;
+                $paid_amount_with_maturity_date +=  $bills->paid_amount;
                 foreach ($supp_bills as $supp_bill) {
                     $paid_amount_with_maturity_date += $supp_bill->amount;
                 }
             }
-            $paid_amount += $bill->paid_amount;
+            $paid_amount += $bills->paid_amount;
             foreach ($supp_bills as $supp_bill) {
                 $paid_amount += $supp_bill->amount;
             }

@@ -909,7 +909,7 @@ export default {
     },
   },
   beforeRouteUpdate(to, from, next) {
-    alert(1);
+  //  alert(1);
     next();
   },
   methods: {

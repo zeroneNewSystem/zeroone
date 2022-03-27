@@ -19,6 +19,7 @@ class CreateBillsTable extends Migration
 
             $table->string('reference')->nullable();
             $table->unsignedInteger('type_id')->default('1');
+            $table->unsignedInteger('is_input')->default('1');
             $table->unsignedInteger('currency_id')->default('1');
             $table->double('currency_rates')->default('1');
             $table->text('description')->nullable();

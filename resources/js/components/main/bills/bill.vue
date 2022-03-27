@@ -51,7 +51,7 @@
                     {{ set.id }}
                   </v-col>
                   <v-col>
-                    {{ selected_item.ar_name }}
+                    {{ selected_product.ar_name }}
                   </v-col>
                   <v-col>
                     {{ set.sum_quantity_in_minor_unit }}
@@ -66,7 +66,7 @@
 
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="green darken-1" text @click="dialog = false">
+            <v-btn color="green darken-1" text @click="disagree">
               Disagree
             </v-btn>
             <v-btn color="green darken-1" text @click="agreeToAdd">
@@ -330,9 +330,10 @@
                         flat
                         hide-no-data
                         label="اسم الصنف"
-                        @change="addProductToBill"
+                        @change="addProductToBill(true)"
                       ></v-autocomplete>
                     </v-col>
+
                     <v-col cols="12" sm="6" md="4">
                       <v-text-field
                         type="barcode"
@@ -340,7 +341,7 @@
                         autocomplete="off"
                         v-model="searched_barcode"
                         label="الباركود"
-                        @keydown.enter="searchAndAddToBill"
+                        @keydown.enter="searchProductByBarcode('barcode')"
                         :rules="is_exists"
                       ></v-text-field>
                     </v-col>
@@ -363,7 +364,6 @@
                     :close-on-content-click="false"
                     transition="scale-transition"
                     offset-y
-                    @change="logo(item)"
                   >
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field
@@ -379,13 +379,14 @@
                         v-on="on"
                         @keydown.enter="item.expires_at_is_down = false"
                         :rules="item.expires_at_valid"
+                        @change="changeExpirationDate(item)"
                       ></v-text-field>
                     </template>
                     <v-date-picker
                       v-model="item.expires_at"
                       no-title
                       @input="item.expires_at_is_down = false"
-                      @change="logo(item)"
+                      @change="changeExpirationDate(item)"
                     ></v-date-picker>
                   </v-menu>
                 </template>
@@ -870,6 +871,7 @@ export default {
 
       payment_conditions: [],
       new_bill: {
+        is_input: 1,
         type_id: "",
         only_cash: true,
         payment_condition_id: 0,
@@ -916,6 +918,7 @@ export default {
           .substr(0, 10),
       },
       bill: {
+        is_input: 1,
         type_id: 1,
         only_cash: true,
 
@@ -996,6 +999,7 @@ export default {
         val !== this.selected_product.ar_name &&
         this.getProducts(val, "name");
     },
+
     $route(to, from) {
       console.log("from");
       console.log(to);
@@ -1003,10 +1007,14 @@ export default {
     },
   },
   beforeRouteUpdate(to, from, next) {
-    alert(1);
+    // alert(1);
     next();
   },
   methods: {
+    disagree() {
+      this.dialog = false;
+      this.selected_product = "";
+    },
     quantity_clicked(item) {
       item.hide_quantity_valid_message = true;
       item.quantity_valid = [true];
@@ -1081,13 +1089,13 @@ export default {
 
       console.log(this.index_of_selected_product);
 
-      let selected_item = JSON.parse(JSON.stringify(this.selected_item));
+      let selected_product = JSON.parse(JSON.stringify(this.selected_product));
 
-      console.log(selected_item);
-      selected_item["bill_details"][0] =
-        selected_item["bill_details"][this.index_of_selected_product];
+      console.log(selected_product);
+      selected_product["bill_details"][0] =
+        selected_product["bill_details"][this.index_of_selected_product];
 
-      this.showThisProduct(selected_item);
+      this.showThisProduct(selected_product);
       console.log("index");
 
       console.log("index");
@@ -1139,6 +1147,23 @@ export default {
       // Event listener
     },
     showThisProduct(selected_product) {
+      this.selected_product = "";
+      this.searched_barcode = "";
+      let gg;
+      if (this.route != "purchase")
+        if (
+          (gg = this.bill.bill_details.findIndex(
+            (elem) =>
+              elem.id == selected_product.id &&
+              elem.expires_at.split(" ")[0] ==
+                selected_product["bill_details"][0].expires_at.split(" ")[0]
+          )) >= 0
+        ) {
+          this.bill.bill_details[gg].quantity++;
+
+          return;
+        }
+
       selected_product.expires_at_message = true;
       selected_product.hide_quantity_valid_message = true;
       selected_product.quantity_valid = [true];
@@ -1185,7 +1210,7 @@ export default {
     close_person_dialog() {
       this.add_update_person_dialog = false;
     },
-    logo(item) {
+    changeExpirationDate(item) {
       console.log(item.expires_at);
       let occurrences = 0;
       let firstIndex = -1;
@@ -1263,119 +1288,105 @@ export default {
       this.operation = "add";
       this.passed_person = {};
     },
-    searchAndAddToBill() {
-      let params = { barcode: this.searched_barcode };
 
-      let extra_route = this.act;
+    addProductToBill(name) {
+      //-----processing  for output document
+      if (this.act == "input") {
+        this.selected_product.expires_at = "*******";
+        this.showThisProduct(this.selected_product);
+        return;
+      }
+      //-----processing  for output document
+      if (this.selected_product.bill_details.length == 0) {
+        this.no_product_dialog = true;
+        return;
+      }
+      if (this.selected_product.bill_details.length == 1) {
+        this.showThisProduct(this.selected_product);
+        return;
+      }
+      let products_grouped = false;
+      if (products_grouped) {
+        this.selected_product.bill_details[0].quantity_in_minor_unit =
+          this.selected_product.quantity_in_minor_unit;
 
-      //if (this.route)
+        // this.selected_product.bill_details[0].quantity_in_minor_unit =
+        //   this.selected_product.bill_details.reduce(
+        //     (a, b) => +a + +b.quantity_in_minor_unit,
+        //     0
+        //   );
+        console.log("this.selected_product");
+        console.log(this.selected_product);
+        this.showThisProduct(this.selected_product);
+        return;
+      }
+      let first = false;
+      if (name) first = true;
 
-      Product.billBarcodeSearch(params, extra_route).then((response) => {
-        if (response.data.products.length == 0) {
-          this.is_exists = [false || "الصنف غير موجود "];
-          return;
-        }
-        this.is_exists = [true];
+      this.sets = this.selected_product.bill_details;
+      this.dialog = true;
+      this.$nextTick().then(() => {
+        var listElm = document.querySelector("ul");
 
-        //let selected_product = response.data.products[0];
+        // Mark first list item
+        this.$nextTick(() => {
+          listElm.firstElementChild.focus();
+          var selectedElm = document.activeElement,
+            goToStart,
+            // map actions to event's key
+            action = {
+              ArrowUp: "previous",
+              Up: "previous",
+              ArrowDown: "next",
+              Down: "next",
+            };
 
-        this.selected_item = JSON.parse(
-          JSON.stringify(response.data.products[0])
-        );
-        if (this.act == "input") {
-          this.selected_item.expires_at = "*******";
-          this.showThisProduct(this.selected_item);
-          return;
-        }
-        //-----processing  for invoice
-        if (this.selected_item.bill_details.length == 0) {
-          this.no_product_dialog = true;
-          return;
-        }
-        if (this.selected_item.bill_details.length == 1) {
-          this.showThisProduct(this.selected_item);
-          return;
-        }
-        let products_grouped = false;
-        if (products_grouped) {
-          this.selected_item.bill_details[0].quantity_in_minor_unit =
-            this.selected_item.quantity_in_minor_unit;
+          this.functionToAddProduct = (e) => {
+            if (e.key === "Enter" && this.dialog && !first) {
+              var parent = selectedElm.parentNode;
+              console.log(parent);
+              console.log(selectedElm);
 
-          // this.selected_item.bill_details[0].quantity_in_minor_unit =
-          //   this.selected_item.bill_details.reduce(
-          //     (a, b) => +a + +b.quantity_in_minor_unit,
-          //     0
-          //   );
-          console.log("this.selected_item");
-          console.log(this.selected_item);
-          this.showThisProduct(this.selected_item);
-          return;
-        }
+              this.index_of_selected_product = Array.prototype.indexOf.call(
+                listElm.children,
+                selectedElm
+              );
 
-        this.sets = this.selected_item.bill_details;
-        this.dialog = true;
-        this.$nextTick().then(() => {
-          var listElm = document.querySelector("ul");
+              let selected_product = JSON.parse(
+                JSON.stringify(this.selected_product)
+              );
 
-          // Mark first list item
-          this.$nextTick(() => {
-            listElm.firstElementChild.focus();
-            var selectedElm = document.activeElement,
-              goToStart,
-              // map actions to event's key
-              action = {
-                ArrowUp: "previous",
-                Up: "previous",
-                ArrowDown: "next",
-                Down: "next",
-              };
+              console.log(selected_product);
+              selected_product["bill_details"][0] =
+                selected_product["bill_details"][
+                  this.index_of_selected_product
+                ];
 
-            this.functionToAddProduct = (e) => {
-              if (e.key === "Enter" && this.dialog) {
-                var parent = selectedElm.parentNode;
-                console.log(parent);
-                console.log(selectedElm);
+              this.showThisProduct(selected_product);
+              console.log("index");
 
-                this.index_of_selected_product = Array.prototype.indexOf.call(
-                  listElm.children,
-                  selectedElm
-                );
+              console.log("index");
 
-                let selected_item = JSON.parse(
-                  JSON.stringify(this.selected_item)
-                );
+              window.removeEventListener("keydown", this.functionToAddProduct);
 
-                console.log(selected_item);
-                selected_item["bill_details"][0] =
-                  selected_item["bill_details"][this.index_of_selected_product];
+              console.log("input_barcode");
+              console.log(input_barcode);
+              console.log("input_barcode");
+              let input_barcode = document.getElementById("barcode");
+              // this.$nextTick(() => {
+              //   input_barcode.focus();
+              // });
 
-                this.showThisProduct(selected_item);
-                console.log("index");
+              console.log("selectedElm");
+              console.log(selectedElm);
+              console.log("selectedElm");
+              this.dialog = false;
+              this.agree = false;
+              return;
+            }
+            //e.preventDefault();
 
-                console.log("index");
-
-                window.removeEventListener(
-                  "keydown",
-                  this.functionToAddProduct
-                );
-
-                console.log("input_barcode");
-                console.log(input_barcode);
-                console.log("input_barcode");
-                let input_barcode = document.getElementById("barcode");
-                this.$nextTick(() => {
-                  input_barcode.focus();
-                });
-
-                console.log("selectedElm");
-                console.log(selectedElm);
-                console.log("selectedElm");
-                this.dialog = false;
-                this.agree = false;
-                return;
-              }
-              //e.preventDefault();
-
+            if (e.key !== "Enter") {
               console.log(selectedElm);
               selectedElm = selectedElm[action[e.key] + "ElementSibling"];
 
@@ -1387,46 +1398,65 @@ export default {
               }
 
               selectedElm.focus();
-            };
-            window.addEventListener("keydown", this.functionToAddProduct);
-          });
+              first = false;
+            }
+          };
 
-          // Event listener
+          window.addEventListener("keydown", this.functionToAddProduct);
         });
 
-        //CHECK IF PRODUCT HAS EXPIRATION DATE --> ADD QUANTITY
+        // Event listener
+      });
 
-        // if (!selected_product.has_expiration_date) {
-        //   let index = this.bill.bill_details.findIndex(
-        //     (elem) => elem.barcode == selected_product.barcode
-        //   );
-        //   if (index != -1) {
-        //     this.bill.bill_details[index].quantity++;
-        //     return;
-        //   }
-        // }
+      //CHECK IF PRODUCT HAS EXPIRATION DATE --> ADD QUANTITY
 
-        // //this.found_products = response.data.products;
+      // if (!selected_product.has_expiration_date) {
+      //   let index = this.bill.bill_details.findIndex(
+      //     (elem) => elem.barcode == selected_product.barcode
+      //   );
+      //   if (index != -1) {
+      //     this.bill.bill_details[index].quantity++;
+      //     return;
+      //   }
+      // }
 
-        // //-----add
+      // //this.found_products = response.data.products;
 
-        // selected_product.unit_id =
-        //   selected_product.units[selected_product.main_unit_id - 1].pivot.id;
+      // //-----add
 
-        // selected_product.unit_price =
-        //   selected_product.units[
-        //     selected_product.main_unit_id - 1
-        //   ].pivot.bought_price;
+      // selected_product.unit_id =
+      //   selected_product.units[selected_product.main_unit_id - 1].pivot.id;
 
-        // selected_product.quantity = 1;
+      // selected_product.unit_price =
+      //   selected_product.units[
+      //     selected_product.main_unit_id - 1
+      //   ].pivot.bought_price;
 
-        // //---------
-        // selected_product["document_type_id"] = 1; // bill
-        // selected_product["product_id"] = selected_product["id"]; // bill
+      // selected_product.quantity = 1;
 
-        // this.bill.bill_details.push(selected_product);
+      // //---------
+      // selected_product["document_type_id"] = 1; // bill
+      // selected_product["product_id"] = selected_product["id"]; // bill
+
+      // this.bill.bill_details.push(selected_product);
+    },
+    searchProductByBarcode() {
+      let params = { barcode: this.searched_barcode };
+      let extra_route = this.act;
+      Product.billBarcodeSearch(params, extra_route).then((response) => {
+        if (response.data.products.length == 0) {
+          this.is_exists = [false || "الصنف غير موجود "];
+          return;
+        }
+        this.is_exists = [true];
+        this.selected_product = JSON.parse(
+          JSON.stringify(response.data.products[0])
+        );
+
+        this.addProductToBill();
       });
     },
+
     remaining_amount() {
       return (this.bill.remaining_amount =
         this.bill.total_amount - this.bill.paid_amount);
@@ -1522,31 +1552,34 @@ export default {
     getProducts(val, type) {
       if (val.length > 2) {
         this.loading = true;
-        let params = "";
-        if (type == "barcode") params = { barcode: val };
-        else params = { name: val };
+        let params = { name: val };
+        let extra_route = this.act;
+        Product.billNameSearch(params, extra_route).then((response) => {
+          if (response.data.products.length == 0) {
+            this.is_exists = [false || "الصنف غير موجود "];
+            return;
+          }
 
-        // Simulated ajax query ajax
-        Product.search(params).then((response) => {
           this.loading = false;
           console.log("hi", response.data);
-          if (response.data.length !== 0) {
-            this.found_products = JSON.parse(
-              JSON.stringify(response.data.products)
-            );
-          }
+
+          this.found_products = JSON.parse(
+            JSON.stringify(response.data.products)
+          );
+
+          this.is_exists = [true];
         });
       }
     },
 
-    addProductToBill() {
-      console.log("this.selected_product");
-      console.log(this.selected_product);
-      console.log("this.selected_product");
-      this.selected_product.main_unit_id =
-        this.selected_product.main_bought_unit_id;
-      this.showThisProduct(this.selected_product);
-    },
+    // addProductToBill() {
+    //   console.log("this.selected_product");
+    //   console.log(this.selected_product);
+    //   console.log("this.selected_product");
+    //   this.selected_product.main_unit_id =
+    //     this.selected_product.main_bought_unit_id;
+    //   this.showThisProduct(this.selected_product);
+    // },
     checkExicting() {},
     submit() {
       console.log(this.is_new_bill);
@@ -1587,12 +1620,11 @@ export default {
                 false || "غير متوفرة",
               ];
             });
-            return 
+            return;
           }
-          
-          this.snackbar = true;
-          this.snackbarText = "تم حفظ الفاتورة"
 
+          this.snackbar = true;
+          this.snackbarText = "تم حفظ الفاتورة";
         });
       else
         Bill.update(this.bill).then((response) => console.log(response.data));
@@ -1614,13 +1646,58 @@ export default {
       return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
     },
     createPage(to, status) {
-      let params = to.params;
-      console.log();
+      this.route = to.fullPath.replace(/^\/([^\/]*).*$/, "$1");
+      console.log("patho");
+      console.log(this.route.split("/"));
 
-      if (Object.keys(params).length != 0) {
+      if (this.route == "invoice") {
+        this.act = "output";
+        this.person_type = "customers";
+        this.person_info = "معلومات العميل";
+        this.persona = "العميل";
+        this.bill.type_id = 2;
+        this.bill.is_input = 0;
+        this.new_bill.type_id = 2;
+      }
+      if (this.route == "purchase") {
+        this.act = "input";
+        console.log("sss");
+        this.person_type = "suppliers";
+        this.person_info = "معلومات المورد";
+        this.persona = "المورد";
+        this.bill.type_id = 1;
+        this.bill.is_input = 1;
+        this.new_bill.type_id = 1;
+      }
+      if (this.route == "invoice_return") {
+        this.act = "input";
+        this.return_bill = true;
+        this.person_type = "customers";
+        this.person_info = "معلومات العميل";
+        this.persona = "العميل";
+        this.bill.is_input = 1;
+        this.bill.type_id = 4;
+        this.new_bill.type_id = 4;
+      }
+      if (this.route == "purchase_return") {
+        this.act = "output";
+        this.return_bill = true;
+        this.cols = 12;
+        this.main_bill = false;
+        this.person_type = "customers";
+        this.person_info = "معلومات المورد";
+        this.persona = "المورد";
+        this.bill.type_id = 3;
+        this.bill.is_input = 0;
+        this.new_bill.type_id = 3;
+      }
+      // if (route == "nibra")
+      //   Person = (await import("../../../apis/Person")).default;
+
+      if (this.$route.params.id) {
         this.is_new_bill = false;
-        //this.title = "تعديل فاتورة رقم " + params.id;
-        Bill.get(params.id).then((response) => {
+        //this.title = "تعديل فاتورة رقم " + this.$route.params.id;
+        Bill.get(this.$route.params.id, this.bill.type_id).then((response) => {
           this.bill = response.data.bill;
           console.log(this.bill);
           this.bill.issue_date = this.bill.issue_date.split(" ")[0];
@@ -1630,7 +1707,8 @@ export default {
               elem.expires_at = elem.expires_at.split(" ")[0];
           });
 
-          if (this.bill.payment_methods.length == 0)
+          if (this.bill.payment_methods.length != 0) {
+          } else
             this.bill.payment_methods = [
               {
                 account_id: "",
@@ -1648,131 +1726,34 @@ export default {
                 description: "",
               },
             ];
+
           this.people = response.data.people;
           this.additional_expenses_from_accounts =
             response.data.accounts.accounts;
           console.log(response.data.accounts.accounts);
         });
       } else {
-        alert(1212);
-        if (status == "new") {
-          alert(222);
-          Person.get({}, this.route).then(
-            (response) => (this.people = response.data)
-          );
-          Account.cashAndBanks().then(
-            (response) =>
-              (this.additional_expenses_from_accounts = response.data.accounts)
-          );
-        } else {
-          this.bill = JSON.parse(JSON.stringify(this.new_bill));
-
-          this.$refs.form.reset();
-        }
+        Person.get({}, this.person_type).then(
+          (response) => (this.people = response.data)
+        );
+        // Bill.getNewReference({ document_type_id: this.bill.type_id }).then(
+        //   (response) => (this.bill.reference = response.data)
+        // );
       }
+
+      // if (route == "nibras")
+      //   Person = (await import("../../../apis/Person")).default;
+
+      // console.log(this.$route);
+      //this.createPage(this.$route, "new");
     },
   },
   async created() {
-    console.log(this.$route);
-    console.log(this.route);
-    console.log("patho");
-    console.log(this.route.split("/"));
-
-    if (this.route == "invoice") {
-      this.act = "output";
-      this.person_type = "customers";
-      this.person_info = "معلومات العميل";
-      this.persona = "العميل";
-      this.bill.type_id = 2;
-      this.new_bill.type_id = 2;
-    }
-    if (this.route == "purchase") {
-      this.act = "input";
-      console.log("sss");
-      this.person_type = "suppliers";
-      this.person_info = "معلومات المورد";
-      this.persona = "المورد";
-      this.bill.type_id = 1;
-      this.new_bill.type_id = 1;
-    }
-    if (this.route == "invoice_return") {
-      this.act = "input";
-      this.return_bill = true;
-      this.person_type = "customers";
-      this.person_info = "معلومات العميل";
-      this.persona = "العميل";
-      this.bill.type_id = 4;
-      this.new_bill.type_id = 4;
-    }
-    if (this.route == "purchase_return") {
-      this.act = "output";
-      this.return_bill = true;
-      this.cols = 12;
-      this.main_bill = false;
-      this.person_type = "customers";
-      this.person_info = "معلومات المورد";
-      this.persona = "المورد";
-      this.bill.type_id = 3;
-      this.new_bill.type_id = 3;
-    }
-    // if (route == "nibra")
-    //   Person = (await import("../../../apis/Person")).default;
-
-    if (this.$route.params.id) {
-      this.is_new_bill = false;
-      //this.title = "تعديل فاتورة رقم " + this.$route.params.id;
-      Bill.get(this.$route.params.id, this.bill.type_id).then((response) => {
-        this.bill = response.data.bill;
-        console.log(this.bill);
-        this.bill.issue_date = this.bill.issue_date.split(" ")[0];
-        this.bill.maturity_date = this.bill.maturity_date.split(" ")[0];
-        this.bill.bill_details.forEach((elem) => {
-          if (elem.expires_at) elem.expires_at = elem.expires_at.split(" ")[0];
-        });
-
-        if (this.bill.payment_methods.length != 0) {
-        } else
-          this.bill.payment_methods = [
-            {
-              account_id: "",
-              amount: 0,
-              description: "",
-            },
-            {
-              account_id: "",
-              amount: 0,
-              description: "",
-            },
-            {
-              account_id: "",
-              amount: 0,
-              description: "",
-            },
-          ];
-
-        this.people = response.data.people;
-        this.additional_expenses_from_accounts =
-          response.data.accounts.accounts;
-        console.log(response.data.accounts.accounts);
-      });
-    } else {
-      Person.get({}, this.person_type).then(
-        (response) => (this.people = response.data)
-      );
-      Bill.getNewReference({ document_type_id: this.bill.type_id }).then(
-        (response) => (this.bill.reference = response.data)
-      );
-      Account.cashAndBanks().then(
-        (response) =>
-          (this.additional_expenses_from_accounts = response.data.accounts)
-      );
-    }
-
-    // if (route == "nibras")
-    //   Person = (await import("../../../apis/Person")).default;
-
-    // console.log(this.$route);
-    //this.createPage(this.$route, "new");
+    Account.cashAndBanks().then(
+      (response) =>
+        (this.additional_expenses_from_accounts = response.data.accounts)
+    );
+    this.createPage(this.$route, "new");
   },
 };
 </script>

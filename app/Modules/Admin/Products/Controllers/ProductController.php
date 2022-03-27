@@ -39,26 +39,23 @@ class ProductController extends Controller
 
 
         if ($request->has('name'))
-
-
             $products = Product::where('ar_name', 'LIKE', '%' . $request->name . '%')
                 ->with('groups')
                 ->with('units')
                 ->orderBy('id', 'DESC')->get(
                     //['main_bought_unit_id as main_unit_id', 'ar_name']
-                    
-                    
-                    )
+
+
+                )
                 // ->orWhere('en_name', 'LIKE', '%' . $request->search . '%')
                 // ->orWhere('barcode', 'LIKE', '%' . $request->search . '%')
             ;
 
+            
 
         return response()->json([
-            'products' => $products, 'types' => PrdctType::all(),
-            'prdct_forms' => PrdctForm::all(),
-            'prdct_types' => PrdctType::all(),
-            'prdct_taxes' => Tax::all()
+            'products' => $products,
+
         ]);
 
         //
