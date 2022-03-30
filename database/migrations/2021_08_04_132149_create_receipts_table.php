@@ -24,6 +24,7 @@ class CreateReceiptsTable extends Migration
             $table->unsignedinteger('person_id',);
             $table->unsignedinteger('account_id',);
             $table->unsignedinteger('type_id',);
+            $table->unsignedinteger('payment_type_id',); // صرف أم استلام
             $table->unsignedinteger('status_id',)->default(1);
             $table->datetime('date');
             $table->double('amount',);

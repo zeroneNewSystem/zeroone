@@ -13,7 +13,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _apis_Bill__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../apis/Bill */ "./resources/js/apis/Bill.js");
 /* harmony import */ var _apis_Receipt__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../apis/Receipt */ "./resources/js/apis/Receipt.js");
-/* harmony import */ var _apis_Supplier__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../apis/Supplier */ "./resources/js/apis/Supplier.js");
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 //
@@ -193,7 +192,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -201,6 +211,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     var _ref;
 
     return _ref = {
+      title: 'سند مورد جديد',
+      //----
+      person_info: "معلومات المورد",
+      person_type: "suppliers",
+      persona: "المورد",
+      //----
+      route: "",
       from_accounts: [],
       types: [{
         id: 1,
@@ -226,7 +243,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       vld_numbering: [function (v) {
         return /^-?\d+\.?\d*$/.test(v) || "أدخل قيمة عددية";
       }],
-      suppliers: [],
+      people: [],
       supplier: "",
       receipts: [],
       bills: [],
@@ -244,7 +261,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         text: "تاريخ الاصدار",
         align: "center",
         sortable: false,
-        value: "date"
+        value: "issue_date"
+      }, {
+        text: "تاريخ الاستحقاق",
+        align: "center",
+        sortable: false,
+        value: "maturity_date"
       }, {
         text: "قيمة الفاتورة",
         align: "center",
@@ -261,6 +283,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       person_id: "",
       account_id: "",
       type_id: "",
+      payment_type_id: "",
       description: "",
       amount: ""
     }), _ref;
@@ -271,15 +294,26 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       _apis_Bill__WEBPACK_IMPORTED_MODULE_0__.default.getAll({
         supplier_id: this.receipt.person_id,
-        status_id: 0
+        status_id: 0,
+        search: {
+          company_name: "",
+          reference: "",
+          minimum: "",
+          maximum: "",
+          status_id: "",
+          date_from: "",
+          date_to: "",
+          payment_type_id: 1,
+          type_id: this.receipt.type_id
+        }
       }).then(function (response) {
-        return _this.bills = response.data;
+        return _this.bills = response.data.data;
       });
     },
-    supplierInfo: function supplierInfo() {
+    personInfo: function personInfo() {
       var _this2 = this;
 
-      return this.suppliers && this.suppliers.find(function (elem) {
+      return this.people && this.people.find(function (elem) {
         return elem.id == _this2.receipt.person_id;
       });
     },
@@ -292,15 +326,44 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       _apis_Receipt__WEBPACK_IMPORTED_MODULE_1__.default.store(this.receipt).then(function (response) {
         return console.log(response.data);
       });
+    },
+    createPage: function createPage(to, status) {
+      var _this3 = this;
+
+      this.route = to.fullPath.substr(this.$route.fullPath.lastIndexOf("/") + 1);
+
+      if (this.route == "supplier") {
+        this.title = "سند مورد جديد";
+        this.person_type = "supplier";
+        this.person_info = "معلومات المورد";
+        this.persona = "المورد";
+        this.receipt.type_id = 1;
+      }
+
+      if (this.route == "customer") {
+        this.title = "سند عميل جديد";
+        this.person_type = "customers";
+        this.person_info = "معلومات العميل";
+        this.persona = "العميل";
+        this.receipt.type_id = 2;
+      }
+
+      _apis_Receipt__WEBPACK_IMPORTED_MODULE_1__.default.create({
+        type_id: this.receipt.type_id
+      }).then(function (response) {
+        _this3.people = response.data.people;
+        _this3.from_accounts = response.data.accounts.accounts;
+      });
+    }
+  },
+  watch: {
+    $route: function $route(to, from) {
+      this.createPage(to, "old");
     }
   },
   created: function created() {
-    var _this3 = this;
-
-    _apis_Receipt__WEBPACK_IMPORTED_MODULE_1__.default.create().then(function (response) {
-      _this3.suppliers = response.data.suppliers;
-      _this3.from_accounts = response.data.accounts.accounts;
-    });
+    this.route = this.$route.fullPath.substr(this.$route.fullPath.lastIndexOf("/") + 1);
+    this.createPage(this.$route, "new");
   }
 });
 
@@ -372,8 +435,10 @@ __webpack_require__.r(__webpack_exports__);
   getOne: function getOne(id) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/receipts/" + id);
   },
-  create: function create() {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/receipts/create");
+  create: function create(params) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/receipts/create", {
+      params: params
+    });
   },
   update: function update(receipt) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("/receipts", receipt);
@@ -390,58 +455,6 @@ __webpack_require__.r(__webpack_exports__);
   },
   getAll: function getAll(params) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/receipts/all", {
-      params: params
-    });
-  }
-});
-
-/***/ }),
-
-/***/ "./resources/js/apis/Supplier.js":
-/*!***************************************!*\
-  !*** ./resources/js/apis/Supplier.js ***!
-  \***************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var _Api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Api */ "./resources/js/apis/Api.js");
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  store: function store(supplier) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/suppliers", supplier);
-  },
-  update: function update(supplier) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("/suppliers", supplier);
-  },
-  postCreate: function postCreate(supplier) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/suppliers/create", supplier);
-  },
-  getOne: function getOne(params) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/suppliers/getOne", {
-      params: params
-    });
-  },
-  get: function get(params) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/suppliers", {
-      params: params
-    });
-  },
-  getByProductID: function getByProductID(id) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/suppliers/product/" + id);
-  },
-  search: function search(params) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/suppliers/search", {
-      params: params
-    });
-  },
-  barcodeSearch: function barcodeSearch(params) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/router/" + params.barcode);
-  },
-  "delete": function _delete(params) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.delete("/suppliers/", {
       params: params
     });
   }
@@ -608,6 +621,32 @@ var render = function() {
         [
           _c(
             "v-col",
+            [
+              _c(
+                "v-toolbar",
+                { attrs: { flat: "", color: "white" } },
+                [
+                  _c("v-toolbar-title", [_vm._v("    " + _vm._s(_vm.title))]),
+                  _vm._v(" "),
+                  _c("v-divider", {
+                    staticClass: "mx-4",
+                    attrs: { inset: "", vertical: "" }
+                  })
+                ],
+                1
+              )
+            ],
+            1
+          )
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c(
+        "v-row",
+        [
+          _c(
+            "v-col",
             { attrs: { cols: "12", lg: "6" } },
             [
               _c(
@@ -625,7 +664,7 @@ var render = function() {
                         attrs: {
                           outlined: "",
                           autocomplete: "off",
-                          prefix: " رقم الفاتورة | "
+                          prefix: " رقم السند | "
                         },
                         on: {
                           blur: function($event) {
@@ -653,12 +692,12 @@ var render = function() {
                     [
                       _c("v-autocomplete", {
                         attrs: {
-                          items: _vm.suppliers,
+                          items: _vm.people,
                           "item-text": "name",
                           "item-value": "id",
                           outlined: "",
                           rules: _vm.vld_selected,
-                          prefix: " المورد | "
+                          prefix: _vm.persona + "|"
                         },
                         on: { change: _vm.getBills },
                         model: {
@@ -686,7 +725,7 @@ var render = function() {
                           outlined: "",
                           "no-data": "",
                           "no-data-text": "",
-                          prefix: " من حساب | ",
+                          prefix: " الحساب | ",
                           "non-linear": "",
                           items: _vm.from_accounts,
                           "item-text": "ar_name",
@@ -727,11 +766,11 @@ var render = function() {
                           }
                         },
                         model: {
-                          value: _vm.receipt.type_id,
+                          value: _vm.receipt.payment_type_id,
                           callback: function($$v) {
-                            _vm.$set(_vm.receipt, "type_id", $$v)
+                            _vm.$set(_vm.receipt, "payment_type_id", $$v)
                           },
-                          expression: "receipt.type_id"
+                          expression: "receipt.payment_type_id"
                         }
                       })
                     ],
@@ -922,7 +961,13 @@ var render = function() {
                       _c(
                         "v-card-title",
                         { staticStyle: { background: "lightgray" } },
-                        [_vm._v("\n            معلومات المورد\n          ")]
+                        [
+                          _vm._v(
+                            "\n            " +
+                              _vm._s(_vm.person_info) +
+                              "\n          "
+                          )
+                        ]
                       ),
                       _vm._v(" "),
                       _c(
@@ -939,8 +984,7 @@ var render = function() {
                                 _vm._v(
                                   "\n                " +
                                     _vm._s(
-                                      _vm.supplierInfo() &&
-                                        _vm.supplierInfo().name
+                                      _vm.personInfo() && _vm.personInfo().name
                                     ) +
                                     "\n              "
                                 )
@@ -954,8 +998,8 @@ var render = function() {
                                 _vm._v(
                                   "\n                " +
                                     _vm._s(
-                                      _vm.supplierInfo() &&
-                                        _vm.supplierInfo().phone01
+                                      _vm.personInfo() &&
+                                        _vm.personInfo().phone01
                                     ) +
                                     " "
                                 )
@@ -968,8 +1012,7 @@ var render = function() {
                                 _vm._v(
                                   "\n                " +
                                     _vm._s(
-                                      _vm.supplierInfo() &&
-                                        _vm.supplierInfo().email
+                                      _vm.personInfo() && _vm.personInfo().email
                                     ) +
                                     " "
                                 )
@@ -982,8 +1025,8 @@ var render = function() {
                                 _vm._v(
                                   "\n                " +
                                     _vm._s(
-                                      _vm.supplierInfo() &&
-                                        _vm.supplierInfo().tax_number
+                                      _vm.personInfo() &&
+                                        _vm.personInfo().tax_number
                                     ) +
                                     "\n              "
                                 )
@@ -1090,13 +1133,30 @@ var render = function() {
                 proxy: true
               },
               {
-                key: "item.date",
+                key: "item.issue_date",
                 fn: function(ref) {
                   var item = ref.item
                   return [
                     _vm._v(
                       "\n        " +
-                        _vm._s(item.date && item.date.split(" ")[0]) +
+                        _vm._s(
+                          item.issue_date && item.issue_date.split(" ")[0]
+                        ) +
+                        "\n      "
+                    )
+                  ]
+                }
+              },
+              {
+                key: "item.maturity_date",
+                fn: function(ref) {
+                  var item = ref.item
+                  return [
+                    _vm._v(
+                      "\n        " +
+                        _vm._s(
+                          item.maturity_date && item.maturity_date.split(" ")[0]
+                        ) +
                         "\n      "
                     )
                   ]

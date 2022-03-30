@@ -126,7 +126,18 @@ const router = new VueRouter({
                     }
                 },
                 {
-                    path: "/receipt",
+                    path: "/receipt/customer",
+                    name: "receipt",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import ("./components/main/receipts/receipt"),
+                        mainView: () =>
+                            import ("./components/main/receipts/receipt")
+                    }
+                },
+                {
+                    path: "/receipt/supplier",
                     name: "receipt",
                     meta: { requiresAuth: true },
                     components: {

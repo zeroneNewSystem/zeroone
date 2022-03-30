@@ -182,6 +182,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
+      title: "سندات  الموردين",
+      loading: false,
       menu1: false,
       menu2: false,
       types: [{
@@ -210,7 +212,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         date_to: ""
       },
       receipts_total: 10,
-      options: "",
+      options: {},
       receipts: [],
       headers: [{
         text: "م",
@@ -273,7 +275,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           page = _this$options.page,
           itemsPerPage = _this$options.itemsPerPage;
       _apis_Receipt__WEBPACK_IMPORTED_MODULE_0__.default.delete({
-        receipt_id: receipt.id,
+        id: receipt.id,
         page: page,
         itemsPerPage: itemsPerPage,
         search: this.search
@@ -338,8 +340,10 @@ __webpack_require__.r(__webpack_exports__);
   getOne: function getOne(id) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/receipts/" + id);
   },
-  create: function create() {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/receipts/create");
+  create: function create(params) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/receipts/create", {
+      params: params
+    });
   },
   update: function update(receipt) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("/receipts", receipt);

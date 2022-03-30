@@ -9,8 +9,8 @@ export default {
     getOne(id) {
         return Api.get("/receipts/" + id);
     },
-    create() {
-        return Api.get("/receipts/create");
+    create(params) {
+        return Api.get("/receipts/create", { params: params });
     },
     update(receipt) {
         return Api.put("/receipts", receipt);

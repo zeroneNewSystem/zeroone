@@ -162,7 +162,10 @@
 import Receipt from "../../../apis/Receipt";
 export default {
   data() {
+    
     return {
+      title: "سندات  الموردين",
+      loading:false,
       menu1: false,
       menu2: false,
       types: [
@@ -184,7 +187,7 @@ export default {
         date_to: "",
       },
       receipts_total: 10,
-      options: "",
+      options: {},
       receipts: [],
       headers: [
         {
@@ -219,7 +222,7 @@ export default {
     deleteReceipt(receipt) {
       const { sortBy, sortDesc, page, itemsPerPage } = this.options;
       Receipt.delete({
-        receipt_id: receipt.id,
+        id: receipt.id,
         page,
         itemsPerPage,
         search: this.search,

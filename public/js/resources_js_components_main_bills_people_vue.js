@@ -459,6 +459,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           var data = response.data.people.data;
           var helper = [];
           var elper = [];
+          var lper = [];
           var arrears01 = [];
           var arrears02 = []; //let balance = [];
 
@@ -483,23 +484,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
               } //الغاء التكرار
 
 
-              if (element.bill_id && element.supdoc_id) {
+              if (element.supdoc_id) {
                 if (!elper.find(function (elem) {
-                  return (// element.id +
-                    //   " " +
-                    element.bill_id + " " + element.trans_id == //elem.id + " " +
-                    elem.bill_id + " " + elem.trans_id
-                  );
+                  return element.bill_id == elem.bill_id;
                 })) {
                   console.log("nibsoc");
                   elper.push(element);
                 } else {
                   elper[elper.findIndex(function (elem) {
-                    return (// element.id +
-                      //   " " +
-                      element.bill_id + " " + element.trans_id == //elem.id + " " +
-                      elem.bill_id + " " + elem.trans_id
-                    );
+                    return element.bill_id == elem.bill_id;
                   })].amount += element.amount;
                 }
 
@@ -513,6 +506,33 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             console.log("arrears01", arrears01);
             console.log("arrears02", arrears02);
             elper.forEach(function (element) {
+              if (!element.trans_id) {
+                lper.push(element);
+                return;
+              }
+
+              if (!element.bill_id) {
+                lper.push(element);
+                return;
+              }
+
+              if (!lper.find(function (elem) {
+                return element.bill_id == elem.bill_id;
+              })) {
+                lper.push(element);
+                return;
+              }
+
+              var index = lper.findIndex(function (elem) {
+                return elem.bill_id == element.bill_id;
+              });
+              if (element.debit != -1) lper[index].debit += element.debit;
+              lper[index].credit += element.credit;
+            });
+            console.log("lper");
+            console.log(lper);
+            console.log("lper");
+            lper.forEach(function (element) {
               if (!element.trans_id) {
                 helper.push(element);
                 return;

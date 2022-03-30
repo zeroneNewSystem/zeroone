@@ -37,6 +37,7 @@ class BillController extends Controller
 
         $search  = json_decode($request->search, true);
 
+        
 
         $bills = Bill::where('bills.company_id', 1)->where('bills.type_id', $search['type_id']);
         $bills = $bills->leftJoin('people', 'people.id', 'bills.company_id')

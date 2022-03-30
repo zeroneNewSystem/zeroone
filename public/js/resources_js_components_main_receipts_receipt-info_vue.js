@@ -275,8 +275,10 @@ __webpack_require__.r(__webpack_exports__);
   getOne: function getOne(id) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/receipts/" + id);
   },
-  create: function create() {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/receipts/create");
+  create: function create(params) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/receipts/create", {
+      params: params
+    });
   },
   update: function update(receipt) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("/receipts", receipt);

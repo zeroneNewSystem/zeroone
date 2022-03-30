@@ -36,8 +36,8 @@ class ReceiptController extends Controller
         $receipt =  DB::table('receipts')->where('id', $id)->first();
 
 
-        $methods = Transaction::where('bill_id', $id)
-            ->where('bill_type_id', 1)
+        $methods = Transaction::where('document_id', $id)
+            ->where('document_type_id', 1)
             ->where('debit', -1)
             ->get();
 
@@ -49,8 +49,8 @@ class ReceiptController extends Controller
 
 
         $receipt_details =  DB::table('receipt_details')
-            ->where('bill_id', $id)
-            ->where('bill_type_id', 1)
+            ->where('document_id', $id)
+            ->where('document_type_id', 1)
             ->leftjoin('products', 'receipt_details.product_id', '=', 'products.id')
             ->get();
 
@@ -90,8 +90,8 @@ class ReceiptController extends Controller
         foreach ($receipts as &$receipt) {
 
             $receipt_details =  DB::table('receipt_details')
-                ->where('bill_id', 1)
-                ->where('bill_type_id', 1)
+                ->where('document_id', 1)
+                ->where('document_type_id', 1)
                 ->leftjoin('products', 'receipt_details.product_id', '=', 'products.id')
                 ->get();
 
@@ -143,11 +143,17 @@ class ReceiptController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
 
+        if ($request->type_id == 1) {
+            $people = Person::where('company_id', '1')->where('is_supplier', '1')->get();
+        }
+        if ($request->type_id == 2) {
+            $people = Person::where('company_id', '1')->where('is_supplier', '1')->get();
+        }
         return [
-            'suppliers' => Person::where('company_id', '1')->where('is_supplier', '1')->get(),
+            'people' => $people,
             'accounts' => $this->cashAndBanks()
         ];
     }
@@ -161,7 +167,16 @@ class ReceiptController extends Controller
     public function store(Request $request)
     {
 
+        //confirmation_document_id = هذا السند 
+
         if ($request['amount'] > 0) {
+
+            
+
+
+
+
+
 
 
             $request['company_id'] = 1;
@@ -177,13 +192,13 @@ class ReceiptController extends Controller
             $supplier_account = [
                 "company_id" => 1,
                 "account_id" => $supplier_account_id,
-                "debit" => $request['type_id'] == 1 ?  $request['amount'] : 0,
-                "credit" => $request['type_id'] == 2 ?  $request['amount'] : 0,
-                "bill_id" => $receipt->id,
-                "bill_type_id" => 2,
+                "debit" => $request['payment_type_id'] == 1 ?  $request['amount'] : 0,
+                "credit" => $request['payment_type_id'] == 2 ?  $request['amount'] : 0,
+                "document_id" => $receipt->id,
+                "document_type_id" => 5,
                 "currency_code" => 1,
                 "currency_rate" => 1,
-                "description" => $request['type_id'] == 1 ? 'صرف للمورد' : 'قبض من المورد'
+                "description" => $request['payment_type_id'] == 1 ? 'صرف ' : 'قبض '
             ];
             $this->addTransactionEntry($supplier_account);
 
@@ -194,63 +209,64 @@ class ReceiptController extends Controller
             $payment_to_supplier = [
                 "company_id" => 1,
                 "account_id" => $request['account_id'], //5103
-                "debit" =>  0,
-                "credit" => $request['amount'],
-                "bill_id" => $receipt->id,
-                "bill_type_id" => 2,
+                "debit" => $request['payment_type_id'] == 2 ?  $request['amount'] : 0,
+                "credit" => $request['payment_type_id'] == 1 ?  $request['amount'] : 0,
+                "document_id" => $receipt->id,
+                "document_type_id" => 5,
                 "currency_code" => 1,
                 "currency_rate" => 1,
-                "description" => 'دفعة للمورد',
+                "description" => $request['payment_type_id'] == 1 ? 'صرف ' : 'قبض '
             ];
             $this->addTransactionEntry($payment_to_supplier);
-            $request['supplier_id'] = $request->person_id;
+            $request['person_id'] = $request->person_id;
             $unpaid_bills = $this->allUnPaidBill($request);
 
 
             $remainder = $request['amount'];
+            if ($request['payment_type_id'] == 1) {
+                if ($request['allocate_dynamically']) {
+                    foreach ($unpaid_bills as $unpaid_bill) {
+                        if ($remainder >= $unpaid_bill['remainder']) {
+                            /* create sup-doc for unpaid_bills*/
+                            $sup_doc_model = [
+                                'company_id' => 1,
+                                "document_id" => $unpaid_bill['id'],
+                                "document_type_id" => 1,
+                                'amount' => $unpaid_bill['remainder'],
+                                "confirmation_document_id" => $receipt->id,
+                                "confirmation_document_type_id" => 5,
+                            ];
+                            SupplementalBilling::create($sup_doc_model);
+                            $remainder = $remainder - $unpaid_bill['remainder'];
+                            /* make bill paid*/
+                            Bill::find($unpaid_bill['id'])->update(['status_id' => 3]); //مدفوعة كاملة
+                            if ($remainder == 0) {
+                                Receipt::find($receipt->id)->update(['status_id' => 2]); // السند انصرف كاملا
+                                break;
+                            }
 
-            $used = false;
-
-            foreach ($unpaid_bills as $unpaid_bill) {
-
-                if ($remainder == 0) {
-
-                    if ($used)
-                        Receipt::find($receipt->id)->update(['status_id' => 2]);
-                    break;
+                            continue;
+                        }
+                        $sup_doc_model = [
+                            'company_id' => 1,
+                            "document_id" => $unpaid_bill['id'],
+                            "document_type_id" => 1,
+                            'amount' => $remainder,
+                            "confirmation_document_id" => $receipt->id,
+                            "confirmation_document_type_id" => 5,
+                        ];
+                        SupplementalBilling::create($sup_doc_model);
+                        Bill::find($unpaid_bill['id'])->update(['status_id' => 2]); // مدفوعة الفاتورة جزئيا
+                        Receipt::find($receipt->id)->update(['status_id' => 3]); // السند انصرف جزئيا
+                        break;
+                        /*---------------*/
+                    }
                 }
-
-                if ($remainder >= $unpaid_bill['remainder']) {
-                    $used = true;
-                    /* create sup-doc for unpaid_bills*/
-                    $sup_doc_model = [
-                        'company_id' => 1,
-                        "bill_id" => $unpaid_bill['id'],
-                        "bill_type_id" => 1,
-                        'amount' => $unpaid_bill['remainder'],
-                        "confirmation_bill_id" => $receipt->id,
-                        "confirmation_bill_type_id" => 2,
-                    ];
-                    SupplementalBilling::create($sup_doc_model);
-                    $remainder = $remainder - $unpaid_bill['remainder'];
-                    /* make bill paid*/
-                    Bill::find($unpaid_bill['id'])->update(['status_id' => 3]);
-                    continue;
-                }
-                $sup_doc_model = [
-                    'company_id' => 1,
-                    "bill_id" => $unpaid_bill['id'],
-                    "bill_type_id" => 1,
-                    'amount' => $remainder,
-                    "confirmation_bill_id" => $receipt->id,
-                    "confirmation_bill_type_id" => 2,
-                ];
-                SupplementalBilling::create($sup_doc_model);
-                Bill::find($unpaid_bill['id'])->update(['status_id' => 4]);
-                Receipt::find($receipt->id)->update(['status_id' => 3]);
-                break;
-                /*---------------*/
             }
+
+
+
+
 
 
 
@@ -285,8 +301,8 @@ class ReceiptController extends Controller
 
         $receipt = $receipt[0];
 
-        $sup_doc = SupplementalBilling::where('confirmation_bill_id', $id)->where('confirmation_bill_type_id', 2)
-            ->leftJoin('bills', 'bills.id', 'bill_id')->select('supplemental_billings.*', 'supplemental_billings.id as sup_doc_id', 'bills.*');
+        $sup_doc = SupplementalBilling::where('confirmation_document_id', $id)->where('confirmation_document_type_id', 5)
+            ->leftJoin('bills', 'bills.id', 'document_id')->select('supplemental_billings.*', 'supplemental_billings.id as sup_doc_id', 'bills.*');
         $receipt['spentAmount'] = $sup_doc->sum('amount');
         $receipt['uses_of_receipt'] = $sup_doc->get();
         return $receipt;
@@ -312,8 +328,8 @@ class ReceiptController extends Controller
 
         if ($search && $search['receipt_reference'])
             $receipts = $receipts->where('receipt_reference', 'like', '%' . $search['receipt_reference'] . '%');
-        if ($search && $search['type_id'])
-            $receipts = $receipts->where('receipts.type_id', 'like', '%' . $search['type_id'] . '%');
+        if ($search && $search['payment_type_id'])
+            $receipts = $receipts->where('receipts.payment_type_id', 'like', '%' . $search['payment_type_id'] . '%');
         if ($search && $search['date_from'])
             $receipts = $receipts->where('date', '>', $search['date_from']);
         if ($search && $search['date_to'])
@@ -330,8 +346,7 @@ class ReceiptController extends Controller
 
 
         foreach ($receipts as &$receipt) {
-
-            $receipt->spentAmount = SupplementalBilling::where('confirmation_bill_id', $receipt->id)->where('confirmation_bill_type_id', 2)->sum('amount');
+            $receipt->spentAmount = SupplementalBilling::where('confirmation_document_id', $receipt->id)->where('confirmation_document_type_id', 5)->sum('amount');
         }
 
         return $receipts;
@@ -367,17 +382,64 @@ class ReceiptController extends Controller
      */
     public function destroy(Request $request)
     {
+        Receipt::where('id', $request->id)->delete();
+
+
+
+        //delete transactions for receipt
+
+        Transaction::where('document_type_id', 5)
+            ->where('document_id', $request->id)
+            ->delete();
+
+
+
+        $sup_docs = SupplementalBilling::where('confirmation_document_id', $request->id)->where('confirmation_document_type_id', 5)->get();
+
+
+        foreach ($sup_docs as $sup_doc) {
+            /*
+            نمر عى لفواتير إذا كان السند غطى الباقي معناته حف السند يخلي الفاتورة غير مدفوعة
+            وفي الحالات الاخرى يخليها مدفوعة جزئيا
+            
+            
+            */
+            $bill = Bill::find($sup_doc->document_id);
+            if ($bill->remainder ==  $sup_doc->amount) {
+                $bill->status_id = 1;
+                continue;
+            }
+            $bill->status_id = 2;
+        }
+
+
+
+
+
+
+        SupplementalBilling::where('confirmation_document_id', $request->id)->where('confirmation_document_type_id', 5)->delete();
+        return $this->all($request);
+    }
+    public function destroyo(Request $request)
+    {
         Receipt::where('id', $request->receipt_id)->delete();
-        SupplementalBilling::where('confirmation_bill_id', $request->receipt_id)->where('confirmation_bill_type_id', 2)->delete();
+        SupplementalBilling::where('confirmation_document_id', $request->receipt_id)->where('confirmation_document_type_id', 5)->delete();
         return $this->all($request);
     }
     public function destroySupDoc(Request $request)
     {
+
+
+        Transaction::where('document_type_id', 5)
+            ->where('document_id', $request->id)
+            ->delete();
+
         SupplementalBilling::where('id', $request->id)->delete();
 
         // change status of receipt
 
-        $sup_doc = SupplementalBilling::where('confirmation_bill_id', $request->receipt_id)->where('confirmation_bill_type_id', 2)->get();
+        $sup_doc = SupplementalBilling::where('confirmation_document_id', $request->receipt_id)->where('confirmation_document_type_id', 5)->get();
+
 
 
         if (count($sup_doc))
@@ -385,7 +447,11 @@ class ReceiptController extends Controller
         else
             Receipt::find($request->receipt_id)->update(['status_id' => 1]);
 
-        
+
+
+
+
+
         return $this->one($request->receipt_id);
     }
     private function addTransactionEntry($entry)

@@ -16,7 +16,7 @@ trait BillTrait
 
         
 
-        $bills = Bill::where('supplier_id', $request->supplier_id)->where('company_id', 1);
+        $bills = Bill::where('person_id', $request->person_id)->where('company_id', 1)->where('type_id', $request->type_id);
         if ($request->has('status_id')) {
             if ($request->status_id == 0)
                 $bills = $bills->where('status_id', 1)->orwhere('status_id', 1);
@@ -31,8 +31,8 @@ trait BillTrait
         foreach ($bills as &$bill) {
 
             $supp_bills = DB::table('supplemental_billings')
-                ->where('bill_id', $bill->id)
-                ->where('bill_type_id', 1)
+                ->where('document_id', $bill->id)
+                ->where('document_type_id', 1)
                 ->get();
             //return $supp_bills;
             $paid_amount += $bill->paid_amount;

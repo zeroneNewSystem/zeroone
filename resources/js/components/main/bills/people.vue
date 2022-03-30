@@ -96,7 +96,7 @@
       <template v-slot:item.name="{ item }">
         {{ item.name }}
       </template>
-      
+
       <template v-slot:item.balance="{ item }">
         {{ (item.credit - item.debit).toFixed(2) }}
       </template>
@@ -202,6 +202,7 @@ export default {
           let data = response.data.people.data;
           let helper = [];
           let elper = [];
+          let lper = [];
           let arrears01 = [];
           let arrears02 = [];
           //let balance = [];
@@ -226,34 +227,18 @@ export default {
               }
 
               //الغاء التكرار
-              if (element.bill_id && element.supdoc_id) {
-                if (
-                  !elper.find(
-                    (elem) =>
-                      // element.id +
-                      //   " " +
-                      element.bill_id + " " + element.trans_id ==
-                      //elem.id + " " +
-                      elem.bill_id + " " + elem.trans_id
-                  )
-                ) {
+              if (element.supdoc_id) {
+                if (!elper.find((elem) => element.bill_id == elem.bill_id)) {
                   console.log("nibsoc");
                   elper.push(element);
                 } else {
                   elper[
-                    elper.findIndex(
-                      (elem) =>
-                        // element.id +
-                        //   " " +
-                        element.bill_id + " " + element.trans_id ==
-                        //elem.id + " " +
-                        elem.bill_id + " " + elem.trans_id
-                    )
+                    elper.findIndex((elem) => element.bill_id == elem.bill_id)
                   ].amount += element.amount;
                 }
-
                 return;
               }
+
               elper.push(element);
             });
 
@@ -262,8 +247,31 @@ export default {
 
             console.log("arrears01", arrears01);
             console.log("arrears02", arrears02);
-
             elper.forEach((element) => {
+              if (!element.trans_id) {
+                lper.push(element);
+                return;
+              }
+              if (!element.bill_id) {
+                lper.push(element);
+                return;
+              }
+              if (!lper.find((elem) => element.bill_id == elem.bill_id)) {
+                lper.push(element);
+                return;
+              }
+              let index = lper.findIndex(
+                (elem) => elem.bill_id == element.bill_id
+              );
+              if (element.debit != -1) lper[index].debit += element.debit;
+              lper[index].credit += element.credit;
+            });
+
+            console.log("lper");
+            console.log(lper);
+            console.log("lper");
+
+            lper.forEach((element) => {
               if (!element.trans_id) {
                 helper.push(element);
                 return;
@@ -273,13 +281,16 @@ export default {
                 return;
               }
               let index = helper.findIndex((elem) => elem.id == element.id);
+              
               if (element.debit != -1) helper[index].debit += element.debit;
               helper[index].credit += element.credit;
+
               helper[index].bill_total_amount += element.bill_total_amount;
               helper[index].bill_paid_amount += element.bill_paid_amount;
-              helper[index].arrears = helper[index].bill_total_amount - helper[index].bill_paid_amount -  element.amount
-
-              
+              helper[index].arrears =
+                helper[index].bill_total_amount -
+                helper[index].bill_paid_amount -
+                element.amount;
             });
           }
 

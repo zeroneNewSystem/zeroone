@@ -1,6 +1,15 @@
 <template>
   <div style="padding: 10px; padding-top: 50px">
     <v-row>
+      <v-col>
+    <v-toolbar flat color="white">
+          <v-toolbar-title>    {{ title}}</v-toolbar-title>
+          <v-divider class="mx-4" inset vertical></v-divider>
+          
+        </v-toolbar>
+      </v-col>
+    </v-row>
+    <v-row>
       <v-col cols="12" lg="6">
         <v-row>
           <v-col cols="12" lg="10" class="pt-0 pb-0">
@@ -9,19 +18,19 @@
               outlined
               autocomplete="off"
               v-model="receipt.receipt_reference"
-              prefix=" رقم الفاتورة | "
+              prefix=" رقم السند | "
               @blur="checkExicting()"
             ></v-text-field>
           </v-col>
           <v-col cols="12" lg="10" class="pt-0 pb-0">
             <v-autocomplete
               v-model="receipt.person_id"
-              :items="suppliers"
+              :items="people"
               item-text="name"
               item-value="id"
               outlined
               :rules="vld_selected"
-              prefix=" المورد | "
+              :prefix="persona + '|'"
               @change="getBills"
             >
             </v-autocomplete>
@@ -32,7 +41,7 @@
               outlined
               no-data
               no-data-text
-              prefix=" من حساب | "
+              prefix=" الحساب | "
               non-linear
               v-model="receipt.account_id"
               :items="from_accounts"
@@ -46,7 +55,7 @@
               class="receipt-info"
               outlined
               autocomplete="off"
-              v-model="receipt.type_id"
+              v-model="receipt.payment_type_id"
               :items="types"
               item-text="ar_name"
               item-value="id"
@@ -107,23 +116,23 @@
         <v-row>
           <v-card style="width: 100%; margin-left: 20px">
             <v-card-title style="background: lightgray">
-              معلومات المورد
+              {{ person_info }}
             </v-card-title>
             <v-card-text>
               <v-row>
                 <v-col cols="12" lg="6"> الاسم </v-col>
                 <v-col cols="12" lg="6">
-                  {{ supplierInfo() && supplierInfo().name }}
+                  {{ personInfo() && personInfo().name }}
                 </v-col>
                 <v-col cols="12" lg="6"> الهاتف </v-col>
                 <v-col cols="12" lg="6">
-                  {{ supplierInfo() && supplierInfo().phone01 }} </v-col
+                  {{ personInfo() && personInfo().phone01 }} </v-col
                 ><v-col cols="12" lg="6"> البريد الالكتروني </v-col>
                 <v-col cols="12" lg="6">
-                  {{ supplierInfo() && supplierInfo().email }} </v-col
+                  {{ personInfo() && personInfo().email }} </v-col
                 ><v-col cols="12" lg="6"> الرقم الضريبي </v-col>
                 <v-col cols="12" lg="6">
-                  {{ supplierInfo() && supplierInfo().tax_number }}
+                  {{ personInfo() && personInfo().tax_number }}
                 </v-col>
               </v-row>
             </v-card-text>
@@ -161,8 +170,11 @@
         class="elevation-1"
       >
         <template v-slot:top> </template>
-        <template v-slot:item.date="{ item }">
-          {{ item.date && item.date.split(" ")[0] }}
+        <template v-slot:item.issue_date="{ item }">
+          {{ item.issue_date && item.issue_date.split(" ")[0] }}
+        </template>
+        <template v-slot:item.maturity_date="{ item }">
+          {{ item.maturity_date && item.maturity_date.split(" ")[0] }}
         </template>
         <template v-slot:item.remainder="{ item }">
           {{ item.remainder.toFixed(3) }}
@@ -178,10 +190,16 @@
 <script>
 import Bill from "../../../apis/Bill";
 import Receipt from "../../../apis/Receipt";
-import Supplier from "../../../apis/Supplier";
 export default {
   data() {
     return {
+      title:'سند مورد جديد',
+      //----
+      person_info: "معلومات المورد",
+      person_type: "suppliers",
+      persona: "المورد",
+      //----
+      route: "",
       from_accounts: [],
       types: [
         { id: 1, ar_name: "صرف" },
@@ -196,7 +214,7 @@ export default {
       is_valid_date: [],
       vld_numbering: [(v) => /^-?\d+\.?\d*$/.test(v) || "أدخل قيمة عددية"],
 
-      suppliers: [],
+      people: [],
       supplier: "",
       receipts: [],
       bills: [],
@@ -213,7 +231,13 @@ export default {
           text: "تاريخ الاصدار",
           align: "center",
           sortable: false,
-          value: "date",
+          value: "issue_date",
+        },
+        {
+          text: "تاريخ الاستحقاق",
+          align: "center",
+          sortable: false,
+          value: "maturity_date",
         },
         { text: "قيمة الفاتورة", align: "center", value: "total_amount" },
         { text: "الباقي", align: "center", value: "remainder" },
@@ -229,23 +253,35 @@ export default {
         person_id: "",
         account_id: "",
         type_id: "",
+        payment_type_id: "",
         description: "",
         amount: "",
       },
     };
   },
-  
+
   methods: {
     getBills() {
       Bill.getAll({
         supplier_id: this.receipt.person_id,
         status_id: 0,
-      }).then((response) => (this.bills = response.data));
+        search: {
+          company_name: "",
+          reference: "",
+          minimum: "",
+          maximum: "",
+          status_id: "",
+          date_from: "",
+          date_to: "",
+          payment_type_id: 1,
+          type_id: this.receipt.type_id,
+        },
+      }).then((response) => (this.bills = response.data.data));
     },
-    supplierInfo() {
+    personInfo() {
       return (
-        this.suppliers &&
-        this.suppliers.find((elem) => elem.id == this.receipt.person_id)
+        this.people &&
+        this.people.find((elem) => elem.id == this.receipt.person_id)
       );
     },
     checkExicting() {},
@@ -259,12 +295,45 @@ export default {
         console.log(response.data)
       );
     },
+    createPage(to, status) {
+      this.route = to.fullPath.substr(
+        this.$route.fullPath.lastIndexOf("/") + 1
+      );
+
+      if (this.route == "supplier") {
+        this.title = "سند مورد جديد";
+        this.person_type = "supplier";
+        this.person_info = "معلومات المورد";
+        this.persona = "المورد";
+        this.receipt.type_id = 1;
+        
+      }
+      if (this.route == "customer") {
+        this.title = "سند عميل جديد";
+        this.person_type = "customers";
+        this.person_info = "معلومات العميل";
+        this.persona = "العميل";
+        this.receipt.type_id = 2;
+        
+      }
+      
+      Receipt.create({ type_id: this.receipt.type_id }).then((response) => {
+        this.people = response.data.people;
+        this.from_accounts = response.data.accounts.accounts;
+      });
+    },
+  },
+  watch: {
+    $route(to, from) {
+      this.createPage(to, "old");
+    },
   },
   created() {
-    Receipt.create().then((response) => {
-      this.suppliers = response.data.suppliers;
-      this.from_accounts = response.data.accounts.accounts;
-    });
+    this.route = this.$route.fullPath.substr(
+      this.$route.fullPath.lastIndexOf("/") + 1
+    );
+
+    this.createPage(this.$route, "new");
   },
 };
 </script>
