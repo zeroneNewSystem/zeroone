@@ -37,9 +37,12 @@ class BillController extends Controller
 
         $search  = json_decode($request->search, true);
 
-        
+
 
         $bills = Bill::where('bills.company_id', 1)->where('bills.type_id', $search['type_id']);
+
+        if ($request['person_id'])
+            $bills = $bills->where('bills.person_id', $request['person_id']);
         $bills = $bills->leftJoin('people', 'people.id', 'bills.company_id')
             ->select('bills.*', 'people.company_name');
 
@@ -492,35 +495,118 @@ class BillController extends Controller
         foreach ($document->bill_details as $bill_detail) {
 
             $bill_detail['document_type_id'] = $document->type_id;
+            $product = Product::find($bill_detail['id']);
+            $vat_account_id = 28;
+            if ($bill_detail['tax_value'] > 0) {
+                $entry = [
+                    "company_id" => 1,
+                    "account_id" => $vat_account_id,
+                    "debit" =>  $inventory_increase ? $bill_detail['tax_value'] : 0,
+                    "credit" => !$inventory_increase ? $bill_detail['tax_value'] : 0,
+                    "document_id" => $bill->id,
+                    "document_type_id" => $bill->type_id,
+                    "currency_code" => 1,
+                    "currency_rate" => 1,
+                    "description" => 'حساب الضريبة',
+                ];
+                $this->addTransactionEntry($entry);
+            }
 
 
-            //transaction  inventory-
-            $inventory_increase ?
-                Product::find($bill_detail['id'])->increment('quantity_in_minor_unit', $bill_detail['quantity_in_minor_unit']) :
-                Product::find($bill_detail['id'])->decrement('quantity_in_minor_unit', $bill_detail['quantity_in_minor_unit']);
 
 
 
-
-
-            //$account_id = (BillDetail::where()->get())['account_id'];
-
+            //  get new  (average) cost
 
             $inventory_account_id = Inventory::find($bill_detail['inventory_id'])['account_id'];
 
-            $entry = [
-                "company_id" => 1,
-                "account_id" => $inventory_account_id,
-                "debit" =>  $inventory_increase ? $bill_detail['total'] : 0,
-                "credit" => !$inventory_increase ? $bill_detail['total'] : 0,
-                "document_id" => $bill->id,
-                "document_type_id" => $bill->type_id,
-                "currency_code" => 1,
-                "currency_rate" => 1,
-                "description" => 'some description',
-            ];
-            $this->addTransactionEntry($entry);
 
+            // اولا نعالج المشتريات ومردودات المشتريات
+
+            if ($bill['type_id'] == 1 || $bill['type_id'] == 3) {
+
+                if ($bill['type_id'] == 1) {
+                    $product_quantity_sum = $bill_detail['quantity_in_minor_unit'] + $product['quantity_in_minor_unit'];
+                    $product_cost_sum = $bill_detail['total'] + $product['quantity_in_minor_unit'] * $product['average_cost'];
+                    $average_cost = $product_cost_sum / $product_quantity_sum;
+                }
+                if ($bill['type_id'] == 3) {
+                    $product_quantity_sum = $product['quantity_in_minor_unit'] -  $bill_detail['quantity_in_minor_unit']; // ألكمية المتبقية بعد أخذ مرتجع الشراء من الفاتورة
+                    $product_cost_sum = $product['quantity_in_minor_unit'] * $product['average_cost'] - $bill_detail['total'];
+                    $average_cost = $product_cost_sum / $product_quantity_sum;
+                }
+
+
+                $product->update(['average_cost' => $average_cost]);
+
+
+
+                $entry = [
+                    "company_id" => 1,
+                    "account_id" => $inventory_account_id,
+                    "debit" =>   $inventory_increase ? $bill_detail['total_befor_tax'] : 0,
+                    "credit" => !$inventory_increase ? $bill_detail['total_befor_tax'] : 0,
+                    "document_id" => $bill->id,
+                    "document_type_id" => $bill->type_id,
+                    "currency_code" => 1,
+                    "currency_rate" => 1,
+                    "description" => 'حساب المخزون',
+                ];
+                $this->addTransactionEntry($entry);
+            }
+            // ثانيا نعالج المبيعات  ومردودات المبيعات
+
+            if ($bill['type_id'] == 2 || $bill['type_id'] == 4) {
+
+
+                $cogs_account_id = $product['cogs_account_id'];
+                $sold_account_id = $product['sold_account_id'];
+                $average_cost = $product['average_cost'];
+
+                // حساب المبيعات للممنتج مع الاخذ بان العميل قد تم تحميله الفاتورة في الأعلى
+
+                $entry = [
+                    "company_id" => 1,
+                    "account_id" => $sold_account_id,
+                    "debit" =>   !$inventory_increase ? 0 : $bill_detail['total_befor_tax'],
+                    "credit" =>   $inventory_increase ? 0 : $bill_detail['total_befor_tax'],
+                    "document_id" => $bill->id,
+                    "document_type_id" => 2,
+                    "currency_code" => 1,
+                    "currency_rate" => 1,
+                    "description" => 'حساب المبيعات للمنتج',
+                ];
+                $this->addTransactionEntry($entry);
+                // الان نحاسب المخزون بالتكلفة (التكلفة يعني القيمة المنصرفة من المخزن)
+                $entry = [
+                    "company_id" => 1,
+                    "account_id" => $cogs_account_id,
+                    "debit" =>  $inventory_increase ? 0 : ($average_cost * $bill_detail['quantity_in_minor_unit']),
+                    "credit" => $inventory_increase ? ($average_cost * $bill_detail['quantity_in_minor_unit']) : 0,
+                    "document_id" => $bill->id,
+                    "document_type_id" => 2,
+                    "currency_code" => 1,
+                    "currency_rate" => 1,
+                    "description" => 'حساب تكلفة المبيعات',
+                ];
+                $this->addTransactionEntry($entry);
+                $entry = [
+                    "company_id" => 1,
+                    "account_id" => $inventory_account_id,
+                    "debit" =>  $inventory_increase ? ($average_cost * $bill_detail['quantity_in_minor_unit']) : 0,
+                    "credit" => $inventory_increase ? 0 : ($average_cost * $bill_detail['quantity_in_minor_unit']),
+                    "document_id" => $bill->id,
+                    "document_type_id" => $bill->type_id,
+                    "currency_code" => 1,
+                    "currency_rate" => 1,
+                    "description" => 'حساب المخزون',
+                ];
+                $this->addTransactionEntry($entry);
+            }
+
+            $inventory_increase ?
+                $product->increment('quantity_in_minor_unit', $bill_detail['quantity_in_minor_unit']) :
+                $product->decrement('quantity_in_minor_unit', $bill_detail['quantity_in_minor_unit']);
 
 
             $old_detail = BillDetail::where([

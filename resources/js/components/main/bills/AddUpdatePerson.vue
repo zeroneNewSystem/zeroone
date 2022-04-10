@@ -150,9 +150,10 @@ export default {
     },
     savePerson() {
       console.log(this.operation);
+      console.log(this.route);
       this.isloading = "blue";
       if (this.operation == "add") {
-        Person.store(this.person, this.route !="purchase"? "customers":"suppliers").then((response) => {
+        Person.store(this.person).then((response) => {
           this.person["id"] = response.data;
           this.isloading = false;
           this.$emit("addUpdatePerson", this.person);
@@ -168,46 +169,8 @@ export default {
         return;
       }
     },
-    onParentChange() {
-      let parent = this.$store.state.persons.find(
-        (elem) => elem.id == this.person.parent_id
-      );
-
-      console.log(parent.type_id);
-      let parent_type_code = this.$store.state.person_types.find(
-        (elem) => elem.id == parent.type_id
-      ).type_code;
-      console.log(parent_type_code);
-
-      this.person.level = parseInt(parent.level + 1);
-
-      this.person_types = this.$store.state.person_types.filter((elem) => {
-        let length = 2;
-
-        if (parent.level >= 2) {
-          length = 4;
-        }
-        //alert(length);
-        return (
-          elem.type_code.toString().startsWith(parent_type_code.toString()) &&
-          elem.type_code.toString().length == length
-        );
-      });
-    },
-
-    bgblue(item) {
-      if (Math.ceil(Math.log10(item.person_code + 1)) <= 2) {
-        $("#nib" + item.person_code)
-          .parent()
-          .addClass("first-level");
-      } else if (Math.ceil(Math.log10(item.person_code + 1)) <= 3) {
-        $("#nib" + item.person_code)
-          .parent()
-          .addClass("second-level");
-      }
-      if (this.person_div_update == 0) this.person_div_update += 1;
-      return "";
-    },
+  
+    
   },
 };
 </script>

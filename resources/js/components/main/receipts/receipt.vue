@@ -245,7 +245,7 @@ export default {
       supplier: "",
       date_is_down: false,
       receipt: {
-        supplier_id: "",
+        person_id: "",
         date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
           .toISOString()
           .substr(0, 10),
@@ -263,7 +263,7 @@ export default {
   methods: {
     getBills() {
       Bill.getAll({
-        supplier_id: this.receipt.person_id,
+        person_id: this.receipt.person_id,
         status_id: 0,
         search: {
           company_name: "",

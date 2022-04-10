@@ -269,7 +269,7 @@ __webpack_require__.r(__webpack_exports__);
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/types");
   },
   create: function create(type) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/types/", type);
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/types", type);
   },
   "delete": function _delete(id) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.delete("/types/" + id);

@@ -1,24 +1,32 @@
-الفواتير 
-1- فاتورة مشتريات 
-2- فاتورة مبيعات 
-3- مرتجع مشتريات 
-4- مرتجع مبيعات
 
-5- سند مورد 
-6- سند عميل
+الفواتير 
+
+
+documents (type_id)
+1- purchase bill
+2- invoice bill
+3- purchase_return  bill
+4- invoice_return bill
+
+5- supplier receipt
+6- customer receipt
 
 
 
 
 الحالات 
-1- غير مدفوعة 
-2- مدفوعة جزئيا 
-3- مدفوعة كاملة
+payments status
+
+
+1- غير مدفوعة - not paid
+2- مدفوعة جزئيا - partially paid
+3- مدفوعة كاملة - fully paid
 
 
 السندات 
-1- صرف 
-2- قبض
+payment_type_id 
+1- صرف -spend
+2- قبض- 
 
 recipts
 type_id = 1; for suppliers

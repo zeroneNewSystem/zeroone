@@ -56,8 +56,10 @@ class SupplierController extends Controller
 
 
         $person = 'supplier';
+        $type_id = $request->type_id;
         if ($request->type_id == 2) $person = 'customer';
-        if ($request->type_id == 3) $person = 'user';
+        if ($request->type_id == 3) $person = 'employee';
+        if ($request->type_id == 4) $person = 'user';
 
 
 
@@ -122,14 +124,14 @@ class SupplierController extends Controller
         // all maturity bills
         $people = $people->leftJoin(
             'bills',
-            function ($leftJoin) {
+            function ($leftJoin) use ($type_id) {
                 $leftJoin
                     ->on('trans.document_id', '=', 'bills.id')
                     ->where('trans.document_type_id', 1)
+                    ->where('bills.type_id', $type_id)
                     ->where('bills.maturity_date', '<', date('Y-m-d'))
                     ->where('bills.payment_status_id', '!=', 5);
             }
-
         );
         $people = $people->leftJoin(
             'supplemental_billings as supdoc',
@@ -140,26 +142,8 @@ class SupplierController extends Controller
             }
 
         );
-
-        $people = $people->orderBy('people.id', 'DESC')->paginate($request->itemsPerPage != -1 ? $request->itemsPerPage : '');
-
-        // $name = 'محمد';
-
-        // $people = Person::with('person')->whereHas('person', function (Builder $query) use ($name) {
-        //     $query->where('ar_name', $name);
-        // })->get();
-
-        // return $people;
-
-
-
-
-
+        $people = $people->orderBy('people.id', 'asc')->paginate($request->itemsPerPage != -1 ? $request->itemsPerPage : '');
         return response()->json(['people' => $people], 200);
-
-        //return Person::where('company_id','1')->where('is_supplier','1')->get();    
-
-
     }
 
 
@@ -182,24 +166,45 @@ class SupplierController extends Controller
      */
     public function store(Request $request)
     {
+
+
+        if ($request->type_id == 4) {
+            $person = Person::create($request->all());
+            return $person;
+        }
+
+        $person_type = 'supplier';
+        $account_code = '2101';
+        $description = 'حساب مورد';
+
+        if ($request->type_id == 2) {
+            $person_type = 'customer';
+            $account_code = '1103';
+            $description = 'حساب عميل';
+        }
+        if ($request->type_id == 3) {
+            $person_type = 'employee';
+            $account_code = '1103';
+            $description = 'حساب موظف';
+        }
+
         $request['company_id'] = 1;
         $request['person_id'] = 1;
-        $request['is_supplier'] = 1;
+        $request['is_' . $person_type] = 1;
 
-        $account_line = Account::where('account_code', 'like', '%2101%')->orderBy('account_code', 'DESC')->get();
+
+        $account_line = Account::where('account_code', 'like', '%' . $account_code . '%')->orderBy('account_code', 'DESC')->get();
 
 
 
         //if no suppliers before
         if ($account_line[0]['account_code'] == '2101')
-            $account_code = '210100001';
+            $account_code = $account_code . '00001';
         else
             $account_code = $account_line[0]['account_code'] + 1;
 
-
-        $supplier = Person::create($request->all());
-
-        $supplier_id = $supplier->id;
+        $person = Person::create($request->all());
+        $supplier_id = $person->id;
 
 
         $account_items =
@@ -211,19 +216,19 @@ class SupplierController extends Controller
                 'parent_id' => '24',
                 'ar_name' => '',
                 'en_name' => '',
-                'description' => 'حساب مورد',
+                'description' => $description,
                 'payable_receivable' => '1',
                 'editable' => '0',
                 'currency_id' => '1',
                 'is_active' => '1',
                 'is_visable_in_COA' => '0',
-                'accountable_id' => $supplier->id,
-                'accountable_type' => 'supplier',
+                'accountable_id' => $person->id,
+                'accountable_type' => $person_type,
                 'create_by_user_id' => '1'
             ];
 
         $account = Account::create($account_items);
-        $supplier = Person::find($supplier->id)->update(['supplier_account_id' => $account->id]);
+        $supplier = Person::find($person->id)->update([$person_type . '_account_id' => $account->id]);
 
 
         return  $supplier_id;
@@ -238,25 +243,37 @@ class SupplierController extends Controller
     public function show(Request $request)
 
     {
+        $person_type = 'supplier';
+        $type_id = $request->type_id;
+        if ($type_id == 2) $person_type = 'customer';
+        if ($type_id == 3) $person_type = 'employee';
+        if ($type_id == 4) $person_type = 'user';
+        
+
 
         if ($request->has('pur_itemsPerPage')) {
-            $bills  =  Bill::where('supplier_id', $request->id)->orderBy('id', 'DESC')->paginate($request->pur_itemsPerPage != -1 ? $request->pur_itemsPerPage : '', ['*'], 'pur_page');
+            $bills  =  Bill::where('person_id', $request->id)->where('bills.type_id', $type_id)->orderBy('id', 'DESC')->paginate($request->pur_itemsPerPage != -1 ? $request->pur_itemsPerPage : '', ['*'], 'pur_page');
             return ['bills' => $bills];
+        }
+        if ($request->has('ret_pur_itemsPerPage')) {
+            
+            $bills  =  Bill::where('person_id', $request->id)->where('bills.type_id', $type_id + 2)->orderBy('id', 'DESC')->paginate($request->pur_itemsPerPage != -1 ? $request->pur_itemsPerPage : '', ['*'], 'pur_page');
+            return ['ret_bills' => $bills];
         }
 
         if ($request->has('receipt_itemsPerPage')) {
 
-            $receipts  =  Receipt::where('person_id', $request->id)->orderBy('id', 'DESC')->paginate($request->receipt_itemsPerPage != -1 ? $request->receipt_itemsPerPage : '', ['*'], 'receipt_page');
+            $receipts  =  Receipt::where('person_id', $request->id)->where('receipts.type_id', $type_id)->orderBy('id', 'DESC')->paginate($request->receipt_itemsPerPage != -1 ? $request->receipt_itemsPerPage : '', ['*'], 'receipt_page');
             return ['receipts' => $receipts];
         }
 
 
-        $supplier = DB::table('people')->find($request->id);
+        $person = DB::table('people')->find($request->id);
         //return $supplier;
 
 
         $balance = 0;
-        $account = DB::table('accounts')->where('accountable_id', $request->id)->where('accountable_type', 'supplier')->get();
+        $account = DB::table('accounts')->where('accountable_id', $request->id)->where('accountable_type', $person_type)->get();
 
         $transactions = DB::table('transactions')->where('account_id', $account[0]->id)->get();
 
@@ -264,7 +281,7 @@ class SupplierController extends Controller
             $balance += $transaction->credit - $transaction->debit;
         }
 
-        $bills  =  Bill::where('supplier_id', $request->id)->get();
+        $bills  =  Bill::where('person_id', $request->id)->where('bills.type_id', $type_id)->get();
         $bills_count = $bills->count();
         $total_amount = 0;
         $total_amount_with_maturity_date = 0;
@@ -273,7 +290,7 @@ class SupplierController extends Controller
 
         foreach ($bills as $bills) {
             $total_amount += $bills->total_amount;
-            $supp_bills = DB::table('supplemental_billings')->where('bill_id', $bills->id)->where('bill_type_id', 1)->get();
+            $supp_bills = DB::table('supplemental_billings')->where('document_id', $bills->id)->where('document_type_id', 1)->get();
             if ($bills->maturity_date <  date('Y-m-d') && $bills->maturity_date != 5) {
                 $total_amount_with_maturity_date +=  $bills->total_amount;
                 $paid_amount_with_maturity_date +=  $bills->paid_amount;
@@ -299,7 +316,7 @@ class SupplierController extends Controller
                 'remain_amount' => $remain_amount,
                 'total_amount' => $total_amount,
                 'arrears' => $arrears,
-                'supplier' => $supplier,
+                'person' => $person,
                 'bills_count' => $bills_count,
                 'balance' => $balance,
 

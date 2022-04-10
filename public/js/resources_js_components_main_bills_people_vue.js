@@ -166,10 +166,11 @@ __webpack_require__.r(__webpack_exports__);
       var _this2 = this;
 
       console.log(this.operation);
+      console.log(this.route);
       this.isloading = "blue";
 
       if (this.operation == "add") {
-        _apis_Person__WEBPACK_IMPORTED_MODULE_0__.default.store(this.person, this.route != "purchase" ? "customers" : "suppliers").then(function (response) {
+        _apis_Person__WEBPACK_IMPORTED_MODULE_0__.default.store(this.person).then(function (response) {
           _this2.person["id"] = response.data;
           _this2.isloading = false;
 
@@ -186,39 +187,6 @@ __webpack_require__.r(__webpack_exports__);
         });
         return;
       }
-    },
-    onParentChange: function onParentChange() {
-      var _this3 = this;
-
-      var parent = this.$store.state.persons.find(function (elem) {
-        return elem.id == _this3.person.parent_id;
-      });
-      console.log(parent.type_id);
-      var parent_type_code = this.$store.state.person_types.find(function (elem) {
-        return elem.id == parent.type_id;
-      }).type_code;
-      console.log(parent_type_code);
-      this.person.level = parseInt(parent.level + 1);
-      this.person_types = this.$store.state.person_types.filter(function (elem) {
-        var length = 2;
-
-        if (parent.level >= 2) {
-          length = 4;
-        } //alert(length);
-
-
-        return elem.type_code.toString().startsWith(parent_type_code.toString()) && elem.type_code.toString().length == length;
-      });
-    },
-    bgblue: function bgblue(item) {
-      if (Math.ceil(Math.log10(item.person_code + 1)) <= 2) {
-        $("#nib" + item.person_code).parent().addClass("first-level");
-      } else if (Math.ceil(Math.log10(item.person_code + 1)) <= 3) {
-        $("#nib" + item.person_code).parent().addClass("second-level");
-      }
-
-      if (this.person_div_update == 0) this.person_div_update += 1;
-      return "";
     }
   }
 });
@@ -367,6 +335,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 
 
@@ -380,16 +354,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     var _ref;
 
     return _ref = {
-      route: window.location.pathname.replace(/^\/([^\/]*).*$/, "$1"),
+      route: "",
+      person: "supplier",
       type_id: 1,
       //1 person
       loading: false,
       dialog: false,
       person_status: [{
-        is_person_active: 0,
+        is_person_active: 1,
         status: "نشط"
       }, {
-        is_person_active: 1,
+        is_person_active: 0,
         status: "غير نشط"
       }],
       cities: [],
@@ -405,7 +380,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         company_name: "",
         name: "",
         phone: "",
-        is_person_active: ""
+        is_person_active: "",
+        type_id: this.type_id
       },
       options: {},
       status: "salam",
@@ -456,114 +432,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         var _this = this;
 
         this.getDataFromApi().then(function (response) {
-          var data = response.data.people.data;
-          var helper = [];
-          var elper = [];
-          var lper = [];
-          var arrears01 = [];
-          var arrears02 = []; //let balance = [];
-
-          if (data) {
-            data.forEach(function (element) {
-              element.arrears = 0; //amount null -> 0
-
-              if (!element.supdoc_id) element.amount = 0;
-
-              if (!element.bill_id) {
-                element.bill_paid_amount = 0;
-                element.bill_total_amount = 0;
-              } // no transactions yet!
-
-
-              if (!element.trans_id) {
-                element.debit = 0;
-                element.credit = 0;
-                element.deletable = true;
-                elper.push(element);
-                return;
-              } //الغاء التكرار
-
-
-              if (element.supdoc_id) {
-                if (!elper.find(function (elem) {
-                  return element.bill_id == elem.bill_id;
-                })) {
-                  console.log("nibsoc");
-                  elper.push(element);
-                } else {
-                  elper[elper.findIndex(function (elem) {
-                    return element.bill_id == elem.bill_id;
-                  })].amount += element.amount;
-                }
-
-                return;
-              }
-
-              elper.push(element);
-            });
-            console.log("elper", elper); //تجميع الفواتير
-
-            console.log("arrears01", arrears01);
-            console.log("arrears02", arrears02);
-            elper.forEach(function (element) {
-              if (!element.trans_id) {
-                lper.push(element);
-                return;
-              }
-
-              if (!element.bill_id) {
-                lper.push(element);
-                return;
-              }
-
-              if (!lper.find(function (elem) {
-                return element.bill_id == elem.bill_id;
-              })) {
-                lper.push(element);
-                return;
-              }
-
-              var index = lper.findIndex(function (elem) {
-                return elem.bill_id == element.bill_id;
-              });
-              if (element.debit != -1) lper[index].debit += element.debit;
-              lper[index].credit += element.credit;
-            });
-            console.log("lper");
-            console.log(lper);
-            console.log("lper");
-            lper.forEach(function (element) {
-              if (!element.trans_id) {
-                helper.push(element);
-                return;
-              }
-
-              if (!helper.find(function (elem) {
-                return element.id == elem.id;
-              })) {
-                helper.push(element);
-                return;
-              }
-
-              var index = helper.findIndex(function (elem) {
-                return elem.id == element.id;
-              });
-              if (element.debit != -1) helper[index].debit += element.debit;
-              helper[index].credit += element.credit;
-              helper[index].bill_total_amount += element.bill_total_amount;
-              helper[index].bill_paid_amount += element.bill_paid_amount;
-              helper[index].arrears = helper[index].bill_total_amount - helper[index].bill_paid_amount - element.amount;
-            });
-          }
-
-          _this.people = helper;
-          console.log("helper", helper);
-          _this.people_total = response.data.people.data.total;
-          _this.person_info_person = response.data.people.data[0];
-          console.log(_this.people_total);
+          _this.dataProcessing(response);
         });
       },
       deep: true
+    },
+    $route: function $route(to, from) {
+      console.log("from");
+      console.log(to);
+      this.createPage(to, "old");
     }
   },
   // mounted() {
@@ -572,199 +449,172 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   //   });
   // },
   methods: {
-    findpeople: function findpeople() {
+    dataProcessing: function dataProcessing(response) {
       var _this2 = this;
 
-      this.getDataFromApi().then(function (response) {
-        var data = response.data.people.data;
-        var helper = [];
-        var elper = [];
-        var arrears01 = [];
-        var arrears02 = []; //let balance = [];
+      var data = response.data.people.data;
+      var helper = [];
+      var elper = [];
+      var lper = [];
+      var arrears01 = [];
+      var arrears02 = []; //let balance = [];
 
-        if (data) {
-          data.forEach(function (element) {
-            //amount null -> 0
-            if (element.amount == null) element.amount = 0; // no transactions yet!
+      if (data) {
+        data.forEach(function (element) {
+          if (_this2.route == "suppliers") element.is_person_active = element.is_supplier_active;
+          if (_this2.route == "customers") element.is_person_active = element.is_customer_active;
+          if (_this2.route == "employee") element.is_person_active = element.is_employee_active;
+          if (_this2.route == "users") element.is_person_active = element.is_user_active;
+          element.arrears = 0; //amount null -> 0
 
-            if (!element.trans_id) {
-              element.deletable = true;
-              elper.push(element);
-              return;
-            } //الغاء التكرار
+          if (!element.supdoc_id) element.amount = 0;
+
+          if (!element.bill_id) {
+            element.bill_paid_amount = 0;
+            element.bill_total_amount = 0;
+          } // no transactions yet!
 
 
-            if (element.bill_id && element.supdoc_id) {
-              console.log("nibfir");
-
-              if (!elper.find(function (elem) {
-                return (// element.id +
-                  //   " " +
-                  element.bill_id + " " + element.trans_id == //elem.id + " " +
-                  elem.bill_id + " " + elem.trans_id
-                );
-              })) {
-                console.log("nibsoc");
-                elper.push(element);
-              } else {
-                elper[elper.findIndex(function (elem) {
-                  return (// element.id +
-                    //   " " +
-                    element.bill_id + " " + element.trans_id == //elem.id + " " +
-                    elem.bill_id + " " + elem.trans_id
-                  );
-                })].amount += element.amount;
-              }
-
-              return;
-            }
-
+          if (!element.trans_id) {
+            element.debit = 0;
+            element.credit = 0;
+            element.deletable = true;
             elper.push(element);
-          });
-          console.log("elper", elper); //تجميع الفواتير
+            return;
+          } //الغاء التكرار
 
-          console.log("arrears01", arrears01);
-          console.log("arrears02", arrears02);
-          elper.forEach(function (element) {
-            if (!element.trans_id) {
-              helper.push(element);
-              return;
-            }
 
-            if (!helper.find(function (elem) {
-              return element.id == elem.id;
+          if (element.supdoc_id) {
+            if (!elper.find(function (elem) {
+              return element.bill_id == elem.bill_id;
             })) {
-              helper.push(element);
-              return;
+              console.log("nibsoc");
+              elper.push(element);
+            } else {
+              elper[elper.findIndex(function (elem) {
+                return element.bill_id == elem.bill_id;
+              })].amount += element.amount;
             }
 
-            var index = helper.findIndex(function (elem) {
-              return elem.id == element.id;
-            });
-            if (element.debit != -1) helper[index].debit += element.debit;
-            helper[index].credit += element.credit;
-          });
-        }
+            return;
+          }
 
-        _this2.people = helper;
-        console.log("helper", helper.amount);
-        _this2.people_total = response.data.people.data.total;
-        _this2.person_info_person = response.data.people.data[0];
-        console.log(_this2.people_total);
+          elper.push(element);
+        });
+        console.log("elper", elper); //تجميع الفواتير
+
+        console.log("arrears01", arrears01);
+        console.log("arrears02", arrears02);
+        elper.forEach(function (element) {
+          if (!element.trans_id) {
+            lper.push(element);
+            return;
+          }
+
+          if (!element.bill_id) {
+            lper.push(element);
+            return;
+          }
+
+          if (!lper.find(function (elem) {
+            return element.bill_id == elem.bill_id;
+          })) {
+            lper.push(element);
+            return;
+          }
+
+          var index = lper.findIndex(function (elem) {
+            return elem.bill_id == element.bill_id;
+          });
+          if (element.debit != -1) lper[index].debit += element.debit;
+          lper[index].credit += element.credit;
+        });
+        console.log("lper");
+        console.log(lper);
+        console.log("lper");
+        lper.forEach(function (element) {
+          if (!element.trans_id) {
+            helper.push(element);
+            return;
+          }
+
+          if (!helper.find(function (elem) {
+            return element.id == elem.id;
+          })) {
+            helper.push(element);
+            return;
+          }
+
+          var index = helper.findIndex(function (elem) {
+            return elem.id == element.id;
+          });
+          if (element.debit != -1) helper[index].debit += element.debit;
+          helper[index].credit += element.credit;
+          helper[index].bill_total_amount += element.bill_total_amount;
+          helper[index].bill_paid_amount += element.bill_paid_amount;
+          helper[index].arrears = helper[index].bill_total_amount - helper[index].bill_paid_amount - element.amount;
+        });
+      }
+
+      this.people = helper;
+      console.log("helper", helper);
+      this.people_total = response.data.people.total;
+      this.person_info_person = response.data.people.data[0];
+      console.log(this.people_total);
+      console.log("this.people_total");
+    },
+    addpersonToList: function addpersonToList(person) {
+      console.log("person");
+      person.credit = 0;
+      person.debit = 0;
+      person.arrears = 0;
+      person.is_person_active = 1;
+      if (this.operation == "add") this.people.push(person);else if (this.operation == "update") {// this.people.splice(
+        //   this.people.indexOf((elem) => elem.id == person.id),
+        //   1,
+        //   person
+        // );
+      }
+      this.add_update_person_dialog = false;
+    },
+    close_person_dialog: function close_person_dialog() {
+      this.add_update_person_dialog = false;
+    },
+    findpeople: function findpeople() {
+      var _this3 = this;
+
+      this.getDataFromApi().then(function (response) {
+        _this3.dataProcessing(response);
       });
     },
     searchReset: function searchReset() {
-      var _this3 = this;
+      var _this4 = this;
 
       this.search = {
         company_name: "",
         name: "",
         phone: "",
-        is_person_active: ""
-      }, this.getDataFromApi().then(function (response) {
-        var data = response.data.people.data;
-        var helper = [];
-        var elper = [];
-        var arrears01 = [];
-        var arrears02 = []; //let balance = [];
-
-        if (data) {
-          data.forEach(function (element) {
-            //amount null -> 0
-            if (element.amount == null) element.amount = 0; // no transactions yet!
-
-            if (!element.trans_id) {
-              element.deletable = true;
-              elper.push(element);
-              return;
-            } //الغاء التكرار
-
-
-            if (element.bill_id && element.supdoc_id) {
-              console.log("nibfir");
-
-              if (!elper.find(function (elem) {
-                return (// element.id +
-                  //   " " +
-                  element.bill_id + " " + element.trans_id == //elem.id + " " +
-                  elem.bill_id + " " + elem.trans_id
-                );
-              })) {
-                console.log("nibsoc");
-                elper.push(element);
-              } else {
-                elper[elper.findIndex(function (elem) {
-                  return (// element.id +
-                    //   " " +
-                    element.bill_id + " " + element.trans_id == //elem.id + " " +
-                    elem.bill_id + " " + elem.trans_id
-                  );
-                })].amount += element.amount;
-              }
-
-              return;
-            }
-
-            elper.push(element);
-          });
-          console.log("elper", elper); //تجميع الفواتير
-
-          console.log("arrears01", arrears01);
-          console.log("arrears02", arrears02);
-          elper.forEach(function (element) {
-            if (!element.trans_id) {
-              helper.push(element);
-              return;
-            }
-
-            if (!helper.find(function (elem) {
-              return element.id == elem.id;
-            })) {
-              helper.push(element);
-              return;
-            }
-
-            var index = helper.findIndex(function (elem) {
-              return elem.id == element.id;
-            });
-            if (element.debit != -1) helper[index].debit += element.debit;
-            helper[index].credit += element.credit;
-          });
-        }
-
-        _this3.people = helper;
-        console.log("helper", helper.amount);
-        _this3.people_total = response.data.people.data.total;
-        _this3.person_info_person = response.data.people.data[0];
-        console.log(_this3.people_total);
+        is_person_active: "",
+        type_id: this.type_id
+      };
+      this.getDataFromApi().then(function (response) {
+        _this4.dataProcessing(response);
       });
     },
     loadCities: function loadCities(country_id) {
-      var _this4 = this;
+      var _this5 = this;
 
       this.cities = [];
       _apis_Country__WEBPACK_IMPORTED_MODULE_1__.default.loadCities(country_id).then(function (response) {
-        return _this4.cities = response.data.cities;
+        return _this5.cities = response.data.cities;
       });
-    },
-    addpersonToList: function addpersonToList(person) {
-      console.log("person");
-      if (this.operation == "add") this.people.push(person);else if (this.operation == "update") {
-        this.people.splice(this.people.indexOf(function (elem) {
-          return elem.id == person.id;
-        }), 1, person);
-      }
     },
     AddUpdatePerson: function AddUpdatePerson(item, operation) {
       this.operation = operation;
 
       if (operation == "add") {
         this.passed_person = {
-          parent_id: "",
-          type_id: "",
-          name: "",
-          account_code: "",
-          description: ""
+          type_id: this.type_id
         };
       }
 
@@ -783,7 +633,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.person_info_person = item;
     },
     deleteperson: function deleteperson(item) {
-      var _this5 = this;
+      var _this6 = this;
 
       if (!item.deletable) {
         this.dialog = true;
@@ -804,7 +654,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         itemsPerPage: itemsPerPage,
         search: this.search
       }).then(function (response) {
-        _this5.loading = false;
+        _this6.loading = false;
         var data = response.data.people.data;
         var helper = [];
         var elper = [];
@@ -875,50 +725,66 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           });
         }
 
-        _this5.people = helper;
+        _this6.people = helper;
         console.log("helper", helper.amount);
-        _this5.people_total = response.data.people.data.total;
-        _this5.person_info_person = response.data.people.data[0];
-        console.log(_this5.people_total);
+        _this6.people_total = response.data.people.data.total;
+        _this6.person_info_person = response.data.people.data[0];
+        console.log(_this6.people_total);
       });
     },
     getDataFromApi: function getDataFromApi() {
-      var _this6 = this;
+      var _this7 = this;
 
       this.loading = true;
       return new Promise(function (resolve, reject) {
-        var _this6$options = _this6.options,
-            sortBy = _this6$options.sortBy,
-            sortDesc = _this6$options.sortDesc,
-            page = _this6$options.page,
-            itemsPerPage = _this6$options.itemsPerPage; // let search = this.search.trim().toLowerCase();
+        var _this7$options = _this7.options,
+            sortBy = _this7$options.sortBy,
+            sortDesc = _this7$options.sortDesc,
+            page = _this7$options.page,
+            itemsPerPage = _this7$options.itemsPerPage; // let search = this.search.trim().toLowerCase();
 
         _apis_Person__WEBPACK_IMPORTED_MODULE_0__.default.get({
-          type_id: _this6.type_id,
+          type_id: _this7.type_id,
           page: page,
           itemsPerPage: itemsPerPage,
-          search: _this6.search
-        }, _this6.route).then(function (response) {
-          _this6.loading = false;
+          search: _this7.search
+        }).then(function (response) {
+          _this7.loading = false;
           resolve(response);
         });
       });
+    },
+    createPage: function createPage(to, status) {
+      this.route = to.fullPath.substr(this.$route.fullPath.lastIndexOf("/") + 1);
+      console.log(this.route);
+      console.log("to");
+
+      if (this.route == "suppliers") {
+        this.type_id = 1;
+        this.search.type_id = 1; // سند مورد
+
+        this.company_name = "اسم المورد";
+        this.title = "قائمة الموردين";
+        this.person_type = "supplier";
+        this.person_info = "معلومات المورد";
+        this.persona = "المورد";
+      }
+
+      if (this.route == "customers") {
+        this.type_id = 2;
+        this.search.type_id = 2; // سند من عميل
+
+        this.company_name = "اسم العميل";
+        this.title = "قائمة العملاء";
+        this.person_type = "customer";
+        this.person_info = "معلومات العميل";
+        this.persona = "العميل";
+      }
     }
   },
   created: function created() {
-    console.log(this.$route);
-    console.log(this.route);
-    console.log("patho");
-    console.log(this.route.split("/"));
-
-    if (this.route == "person") {
-      this.type_id = 1;
-      /* 
-        1- suppplier
-        2- customer
-        3 - user
-        */
-    }
+    this.route = this.$route.fullPath.substr(this.$route.fullPath.lastIndexOf("/") + 1);
+    this.createPage(this.$route, "new");
   }
 });
 
@@ -1179,6 +1045,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -1187,11 +1060,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   data: function data() {
     return {
+      title: "بيانات المورد",
+      type_id: "1",
       //---- tabs
       tab: null,
       items: ["الفواتير", "الاشعارات", "السندات"],
       //----
       pur_loading: false,
+      ret_pur_loading: false,
       remain_amount: 0,
       receipt_loading: false,
       headers: [{
@@ -1255,10 +1131,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         value: "actions"
       }],
       pur_options: {},
+      ret_pur_options: {},
       receipt_options: {},
       person: "",
       total_amount: 0,
       bills: [],
+      ret_bills: [],
       receipts: [],
       statuses: [{
         id: 1,
@@ -1290,6 +1168,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         ar_name: "مستعمل جزئيا"
       }],
       bills_total: 0,
+      ret_bills_total: 0,
       receipt_total: 0,
       arrears: 0,
       balance: 0,
@@ -1299,6 +1178,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   computed: {
     pur_params: function pur_params(nv) {
       return _objectSpread({}, this.pur_options);
+    },
+    ret_pur_params: function ret_pur_params(nv) {
+      return _objectSpread({}, this.ret_pur_options);
     },
     receipt_params: function receipt_params(nv) {
       return _objectSpread({}, this.receipt_options);
@@ -1316,16 +1198,41 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         _apis_Person__WEBPACK_IMPORTED_MODULE_0__.default.getOne({
           id: this.$route.params.id,
           pur_page: pur_page,
-          pur_itemsPerPage: pur_itemsPerPage
+          pur_itemsPerPage: pur_itemsPerPage,
+          type_id: this.type_id
         }).then(function (response) {
-          _this.DataProcessing(response, "pur");
+          _this.dataProcessing(response, "pur");
         });
       },
       deep: true
     },
-    receipt_params: {
+    ret_pur_params: {
       handler: function handler() {
         var _this2 = this;
+
+        var ret_pur_page = this.ret_pur_options.page;
+        var ret_pur_itemsPerPage = this.ret_pur_options.itemsPerPage; //console.log(this.options)
+
+        console.log("itemsPerPage", ret_pur_itemsPerPage);
+        _apis_Person__WEBPACK_IMPORTED_MODULE_0__.default.getOne({
+          id: this.$route.params.id,
+          ret_pur_page: ret_pur_page,
+          ret_pur_itemsPerPage: ret_pur_itemsPerPage,
+          type_id: this.type_id
+        }).then(function (response) {
+          _this2.dataProcessing(response, "ret_pur");
+        });
+      },
+      deep: true
+    },
+    $route: function $route(to, from) {
+      console.log("from");
+      console.log(to);
+      this.createPage(to, "old");
+    },
+    receipt_params: {
+      handler: function handler() {
+        var _this3 = this;
 
         var receipt_page = this.receipt_options.page;
         var receipt_itemsPerPage = this.receipt_options.itemsPerPage;
@@ -1333,30 +1240,56 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         _apis_Person__WEBPACK_IMPORTED_MODULE_0__.default.getOne({
           id: this.$route.params.id,
           receipt_page: receipt_page,
-          receipt_itemsPerPage: receipt_itemsPerPage
+          receipt_itemsPerPage: receipt_itemsPerPage,
+          type_id: this.type_id
         }).then(function (response) {
-          _this2.DataProcessing(response, "receipt");
+          _this3.dataProcessing(response, "receipt");
         });
       },
       deep: true
     }
   },
   created: function created() {
-    var _this3 = this;
-
-    _apis_Person__WEBPACK_IMPORTED_MODULE_0__.default.getOne({
-      id: this.$route.params.id
-    }).then(function (response) {
-      _this3.DataProcessing(response, "receipt");
-    });
+    this.route = this.$route.fullPath.substr(this.$route.fullPath.lastIndexOf("/") + 1);
+    this.createPage(this.$route, "new");
   },
   methods: {
-    DataProcessing: function DataProcessing(response, type) {
+    createPage: function createPage(to, status) {
+      var _this4 = this;
+
+      this.route = to.fullPath.replace(/^\/([^\/]*).*$/, "$1");
+      console.log(this.route);
+      console.log("to");
+
+      if (this.route == "suppliers") {
+        this.type_id = 1;
+        this.title = "بيانات المورد";
+      }
+
+      if (this.route == "customers") {
+        this.type_id = 2;
+        this.title = "بيانات العميل";
+      }
+
+      _apis_Person__WEBPACK_IMPORTED_MODULE_0__.default.getOne({
+        id: this.$route.params.id,
+        type_id: this.type_id
+      }).then(function (response) {
+        _this4.dataProcessing(response, "receipt");
+      });
+    },
+    dataProcessing: function dataProcessing(response, type) {
       console.log("response", response);
 
       if (response.data.bills) {
         this.bills = response.data.bills.data;
         this.bills_total = response.data.bills.total;
+        return;
+      }
+
+      if (response.data.ret_bills) {
+        this.ret_bills = response.data.ret_bills.data;
+        this.ret_bills_total = response.data.ret_bills.total;
         return;
       }
 
@@ -1368,6 +1301,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
 
       this.person = response.data.person;
+      console.log("this.person");
+      console.log(this.person);
       this.total_amount = response.data.total_amount;
       this.bills_count = response.data.bills_count;
       this.remain_amount = response.data.remain_amount;
@@ -1418,38 +1353,38 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Api */ "./resources/js/apis/Api.js");
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  store: function store(supplier, route) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/" + route, supplier);
+  store: function store(person) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("people", person);
   },
-  update: function update(supplier, route) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("/" + route, supplier);
+  update: function update(person) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("people", person);
   },
-  postCreate: function postCreate(supplier, route) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/" + route + "/create", supplier);
+  postCreate: function postCreate(person) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("people" + "/create", person);
   },
-  getOne: function getOne(params, route) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/" + route + "/getOne", {
+  getOne: function getOne(params) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("people" + "/getOne", {
       params: params
     });
   },
-  get: function get(params, route) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/" + route, {
+  get: function get(params) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("people", {
       params: params
     });
   },
-  getByProductID: function getByProductID(id, route) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/" + route + "/product/" + id);
+  getByProductID: function getByProductID(id) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("people" + "/product/" + id);
   },
-  search: function search(params, route) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/" + route + "/search", {
+  search: function search(params) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("people" + "/search", {
       params: params
     });
   },
-  barcodeSearch: function barcodeSearch(params, route) {
+  barcodeSearch: function barcodeSearch(params) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/router/" + params.barcode);
   },
-  "delete": function _delete(params, route) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.delete("/" + route + "/", {
+  "delete": function _delete(params) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.delete("people" + "/", {
       params: params
     });
   }
@@ -2309,14 +2244,16 @@ var render = function() {
     [
       _c("add-update-person", {
         attrs: {
+          route: _vm.route,
           dialog: _vm.add_update_person_dialog,
           person: _vm.passed_person,
           operation: _vm.operation,
           cities: _vm.cities
         },
         on: {
-          AddUpdatePerson: _vm.addpersonToList,
-          changeCountry: _vm.loadCities
+          addUpdatePerson: _vm.addpersonToList,
+          changeCountry: _vm.loadCities,
+          close_person_dialog: _vm.close_person_dialog
         }
       }),
       _vm._v(" "),
@@ -2589,7 +2526,11 @@ var render = function() {
               return [
                 _vm._v(
                   "\n      " +
-                    _vm._s(item.is_active ? "نشط" : "غير نشط") +
+                    _vm._s(
+                      _vm.person_status.find(function(elem) {
+                        return elem.is_person_active == item.is_person_active
+                      })["status"]
+                    ) +
                     "\n    "
                 )
               ]
@@ -2626,7 +2567,7 @@ var render = function() {
                 _vm._v(" "),
                 _c(
                   "router-link",
-                  { attrs: { to: "people/" + item.id } },
+                  { attrs: { to: _vm.route + "/" + item.id } },
                   [_c("v-icon", { attrs: { small: "" } }, [_vm._v("mdi-eye")])],
                   1
                 ),
@@ -2696,6 +2637,25 @@ var render = function() {
     "div",
     { staticStyle: { padding: "20px", "font-size": "14px" } },
     [
+      _c(
+        "v-row",
+        [
+          _c(
+            "v-col",
+            [
+              _c(
+                "v-toolbar",
+                { attrs: { flat: "", color: "white" } },
+                [_c("v-toolbar-title", [_vm._v(_vm._s(_vm.title) + " ")])],
+                1
+              )
+            ],
+            1
+          )
+        ],
+        1
+      ),
+      _vm._v(" "),
       _c(
         "v-row",
         {},
@@ -3169,15 +3129,15 @@ var render = function() {
                             staticClass: "elevation-1",
                             staticStyle: { width: "100%" },
                             attrs: {
-                              headers: _vm.receipt_headers,
-                              items: _vm.receipts,
-                              options: _vm.receipt_options,
-                              "server-items-length": _vm.receipt_total,
-                              loading: _vm.receipt_loading
+                              headers: _vm.headers,
+                              items: _vm.ret_bills,
+                              options: _vm.ret_pur_options,
+                              "server-items-length": _vm.ret_bills_total,
+                              loading: _vm.ret_pur_loading
                             },
                             on: {
                               "update:options": function($event) {
-                                _vm.receipt_options = $event
+                                _vm.ret_pur_options = $event
                               }
                             },
                             scopedSlots: _vm._u([
@@ -3189,6 +3149,19 @@ var render = function() {
                                 proxy: true
                               },
                               {
+                                key: "item.issue_date",
+                                fn: function(ref) {
+                                  var item = ref.item
+                                  return [
+                                    _vm._v(
+                                      "\n                " +
+                                        _vm._s(item.issue_date.split(" ")[0]) +
+                                        "\n              "
+                                    )
+                                  ]
+                                }
+                              },
+                              {
                                 key: "item.status",
                                 fn: function(ref) {
                                   var item = ref.item
@@ -3196,9 +3169,7 @@ var render = function() {
                                     _vm._v(
                                       "\n                " +
                                         _vm._s(
-                                          _vm.receipt_statuses.find(function(
-                                            elem
-                                          ) {
+                                          _vm.statuses.find(function(elem) {
                                             return elem.id == item.status_id
                                           }).ar_name
                                         ) +

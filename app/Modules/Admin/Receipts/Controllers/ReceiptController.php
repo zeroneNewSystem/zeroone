@@ -171,7 +171,7 @@ class ReceiptController extends Controller
 
         if ($request['amount'] > 0) {
 
-            
+
 
 
 
@@ -328,6 +328,8 @@ class ReceiptController extends Controller
 
         if ($search && $search['receipt_reference'])
             $receipts = $receipts->where('receipt_reference', 'like', '%' . $search['receipt_reference'] . '%');
+        if ($search && $search['type_id'])
+            $receipts = $receipts->where('receipts.type_id', $search['type_id']);
         if ($search && $search['payment_type_id'])
             $receipts = $receipts->where('receipts.payment_type_id', 'like', '%' . $search['payment_type_id'] . '%');
         if ($search && $search['date_from'])

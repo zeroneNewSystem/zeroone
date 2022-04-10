@@ -51,7 +51,7 @@ class AccountTypeSeeder extends Seeder
             ['company_id' => '1', 'type_code' => '3201', 'ar_name' => 'حقوق ملكية أخرى', 'en_name' => 'Other proprietary rights'],
             ['company_id' => '1', 'type_code' => '3301', 'ar_name' => 'الاحتياطيات', 'en_name' => 'reserves'],
             ['company_id' => '1', 'type_code' => '34', 'ar_name' => 'أرباح/خسائر مبقاة', 'en_name' => 'Retained profits/losses'],
-            ['company_id' => '1', 'type_code' => '3401', 'ar_name' => 'الأرباح المبقاة (أو الخسائر]', 'en_name' => 'Retained profits (or losses]'],
+            ['company_id' => '1', 'type_code' => '3401', 'ar_name' => 'الأرباح المبقاة (أو الخسائر)', 'en_name' => 'Retained profits (or losses]'],
             ['company_id' => '1', 'type_code' => '4', 'ar_name' => 'الايرادات', 'en_name' => 'Revenues'],
             ['company_id' => '1', 'type_code' => '41', 'ar_name' => 'الايرادات التشغيلية', 'en_name' => 'operating revenue'],
             ['company_id' => '1', 'type_code' => '4101', 'ar_name' => 'المبيعات', 'en_name' => 'the sales'],

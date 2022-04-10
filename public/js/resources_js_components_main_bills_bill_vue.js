@@ -177,10 +177,11 @@ __webpack_require__.r(__webpack_exports__);
       var _this2 = this;
 
       console.log(this.operation);
+      console.log(this.route);
       this.isloading = "blue";
 
       if (this.operation == "add") {
-        _apis_Person__WEBPACK_IMPORTED_MODULE_0__.default.store(this.person, this.route != "purchase" ? "customers" : "suppliers").then(function (response) {
+        _apis_Person__WEBPACK_IMPORTED_MODULE_0__.default.store(this.person).then(function (response) {
           _this2.person["id"] = response.data;
           _this2.isloading = false;
 
@@ -197,39 +198,6 @@ __webpack_require__.r(__webpack_exports__);
         });
         return;
       }
-    },
-    onParentChange: function onParentChange() {
-      var _this3 = this;
-
-      var parent = this.$store.state.persons.find(function (elem) {
-        return elem.id == _this3.person.parent_id;
-      });
-      console.log(parent.type_id);
-      var parent_type_code = this.$store.state.person_types.find(function (elem) {
-        return elem.id == parent.type_id;
-      }).type_code;
-      console.log(parent_type_code);
-      this.person.level = parseInt(parent.level + 1);
-      this.person_types = this.$store.state.person_types.filter(function (elem) {
-        var length = 2;
-
-        if (parent.level >= 2) {
-          length = 4;
-        } //alert(length);
-
-
-        return elem.type_code.toString().startsWith(parent_type_code.toString()) && elem.type_code.toString().length == length;
-      });
-    },
-    bgblue: function bgblue(item) {
-      if (Math.ceil(Math.log10(item.person_code + 1)) <= 2) {
-        $("#nib" + item.person_code).parent().addClass("first-level");
-      } else if (Math.ceil(Math.log10(item.person_code + 1)) <= 3) {
-        $("#nib" + item.person_code).parent().addClass("second-level");
-      }
-
-      if (this.person_div_update == 0) this.person_div_update += 1;
-      return "";
     }
   }
 });
@@ -1383,6 +1351,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
         selected_product.actual_quantity_in_minor_unit = parseInt(selected_product.actual_quantity * selected_product.units[selected_product.main_unit_id - 1].pivot.contains);
       }
 
+      selected_product = JSON.parse(JSON.stringify(selected_product));
       this.bill.bill_details.push(selected_product);
       return;
     },
@@ -2632,38 +2601,38 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Api */ "./resources/js/apis/Api.js");
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  store: function store(supplier, route) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/" + route, supplier);
+  store: function store(person) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("people", person);
   },
-  update: function update(supplier, route) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("/" + route, supplier);
+  update: function update(person) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("people", person);
   },
-  postCreate: function postCreate(supplier, route) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/" + route + "/create", supplier);
+  postCreate: function postCreate(person) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("people" + "/create", person);
   },
-  getOne: function getOne(params, route) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/" + route + "/getOne", {
+  getOne: function getOne(params) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("people" + "/getOne", {
       params: params
     });
   },
-  get: function get(params, route) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/" + route, {
+  get: function get(params) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("people", {
       params: params
     });
   },
-  getByProductID: function getByProductID(id, route) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/" + route + "/product/" + id);
+  getByProductID: function getByProductID(id) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("people" + "/product/" + id);
   },
-  search: function search(params, route) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/" + route + "/search", {
+  search: function search(params) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("people" + "/search", {
       params: params
     });
   },
-  barcodeSearch: function barcodeSearch(params, route) {
+  barcodeSearch: function barcodeSearch(params) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/router/" + params.barcode);
   },
-  "delete": function _delete(params, route) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.delete("/" + route + "/", {
+  "delete": function _delete(params) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.delete("people" + "/", {
       params: params
     });
   }
@@ -4589,7 +4558,7 @@ var render = function() {
         _vm._v(" "),
         _c("add-update-person", {
           attrs: {
-            route: _vm.route,
+            route: _vm.person_type,
             dialog: _vm.add_update_person_dialog,
             person: _vm.passed_person,
             operation: _vm.operation,

@@ -28,5 +28,27 @@ export default {
     },
     postCreate(product) {
         return Api.post("/products/create", product);
+    },
+
+    moneyMoveCreate(acount_types) {
+        return Api.get("/money_moves/create", { params: acount_types });
+    },
+    moneyMoveStore(money_move) {
+        return Api.post("/money_moves", money_move);
+    },
+    moneyMoveUpdate(money_move) {
+        return Api.put("/money_moves", money_move);
+    },
+    getMoneyMoves() {
+        return Api.get("/money_moves");
+    },
+    moneyMoveDelete(id) {
+        return Api.delete("/money_moves/" + id);
+    },
+    getJurnalEntries() {
+        return Api.get("/journal_entries");
+    },
+    getGeneralLedgers(params) {
+        return Api.get("/general_ledgers", { params: params });
     }
 };

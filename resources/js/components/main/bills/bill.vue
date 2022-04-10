@@ -77,7 +77,7 @@
       </v-dialog>
 
       <add-update-person
-        :route="route"
+        :route="person_type"
         :dialog="add_update_person_dialog"
         :person="passed_person"
         :operation="operation"
@@ -1204,6 +1204,7 @@ export default {
         );
       }
 
+      selected_product = JSON.parse(JSON.stringify(selected_product));
       this.bill.bill_details.push(selected_product);
       return;
     },

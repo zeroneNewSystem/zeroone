@@ -174,14 +174,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
-//
-//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
+      company_name: "اسم المورد",
+      person_type: "supplier",
       title: "سندات  الموردين",
       loading: false,
       menu1: false,
@@ -206,6 +204,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       search: {
         company_name: "",
         receipt_reference: "",
+        payment_type_id: "",
         type_id: "",
         status_id: "",
         date_from: "",
@@ -264,7 +263,35 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }]
     };
   },
+  created: function created() {
+    this.route = this.$route.fullPath.substr(this.$route.fullPath.lastIndexOf("/") + 1);
+    this.createPage(this.$route, "new");
+  },
   methods: {
+    createPage: function createPage(to, status) {
+      this.route = to.fullPath.substr(this.$route.fullPath.lastIndexOf("/") + 1);
+      console.log(to);
+
+      if (this.route == "supplier") {
+        this.search.type_id = 1; // سند مورد
+
+        this.company_name = "اسم المورد";
+        this.title = "سند مورد جديد";
+        this.person_type = "supplier";
+        this.person_info = "معلومات المورد";
+        this.persona = "المورد";
+      }
+
+      if (this.route == "customer") {
+        this.search.type_id = 2; // سند من عميل
+
+        this.company_name = "اسم العميل";
+        this.title = "سند عميل جديد";
+        this.person_type = "customer";
+        this.person_info = "معلومات العميل";
+        this.persona = "العميل";
+      }
+    },
     addUpdateReceipt: function addUpdateReceipt() {},
     deleteReceipt: function deleteReceipt(receipt) {
       var _this = this;
@@ -490,7 +517,7 @@ var render = function() {
                         attrs: {
                           elevation: "",
                           color: "primary",
-                          to: "/receipt",
+                          to: "/receipt/" + _vm.person_type,
                           link: ""
                         }
                       },
@@ -509,7 +536,7 @@ var render = function() {
                       [
                         _c("v-text-field", {
                           staticClass: "mx-4",
-                          attrs: { label: "اسم المورد" },
+                          attrs: { label: _vm.company_name },
                           model: {
                             value: _vm.search.company_name,
                             callback: function($$v) {
@@ -560,11 +587,11 @@ var render = function() {
                             }
                           },
                           model: {
-                            value: _vm.search.type_id,
+                            value: _vm.search.payment_type_id,
                             callback: function($$v) {
-                              _vm.$set(_vm.search, "type_id", $$v)
+                              _vm.$set(_vm.search, "payment_type_id", $$v)
                             },
-                            expression: "search.type_id"
+                            expression: "search.payment_type_id"
                           }
                         })
                       ],
@@ -834,7 +861,7 @@ var render = function() {
                   "\n      " +
                     _vm._s(
                       _vm.types.find(function(elem) {
-                        return elem.id == item.type_id
+                        return elem.id == item.payment_type_id
                       }).ar_name
                     ) +
                     "\n    "

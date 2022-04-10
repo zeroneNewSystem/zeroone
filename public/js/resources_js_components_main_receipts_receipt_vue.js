@@ -208,7 +208,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
-    var _ref;
+    var _receipt, _ref;
 
     return _ref = {
       title: 'سند مورد جديد',
@@ -276,24 +276,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         align: "center",
         value: "remainder"
       }]
-    }, _defineProperty(_ref, "supplier", ""), _defineProperty(_ref, "date_is_down", false), _defineProperty(_ref, "receipt", {
-      supplier_id: "",
-      date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10),
-      receipt_reference: "",
+    }, _defineProperty(_ref, "supplier", ""), _defineProperty(_ref, "date_is_down", false), _defineProperty(_ref, "receipt", (_receipt = {
       person_id: "",
-      account_id: "",
-      type_id: "",
-      payment_type_id: "",
-      description: "",
-      amount: ""
-    }), _ref;
+      date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substr(0, 10),
+      receipt_reference: ""
+    }, _defineProperty(_receipt, "person_id", ""), _defineProperty(_receipt, "account_id", ""), _defineProperty(_receipt, "type_id", ""), _defineProperty(_receipt, "payment_type_id", ""), _defineProperty(_receipt, "description", ""), _defineProperty(_receipt, "amount", ""), _receipt)), _ref;
   },
   methods: {
     getBills: function getBills() {
       var _this = this;
 
       _apis_Bill__WEBPACK_IMPORTED_MODULE_0__.default.getAll({
-        supplier_id: this.receipt.person_id,
+        person_id: this.receipt.person_id,
         status_id: 0,
         search: {
           company_name: "",

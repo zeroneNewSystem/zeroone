@@ -12,11 +12,7 @@
         <v-toolbar flat color="white">
           <v-toolbar-title>{{ title }}</v-toolbar-title>
           <v-divider class="mx-4" inset vertical></v-divider>
-          <v-btn
-            elevation
-            color="primary"
-            to="/receipt"
-            link
+          <v-btn elevation color="primary" :to="'/receipt/' + person_type" link
             >سند جديد</v-btn
           >
         </v-toolbar>
@@ -25,7 +21,7 @@
           <v-col cols="12" lg="2">
             <v-text-field
               v-model="search.company_name"
-              label="اسم المورد"
+              :label="company_name"
               class="mx-4"
             ></v-text-field>
           </v-col>
@@ -40,7 +36,7 @@
             <v-autocomplete
               class="receipt-info"
               autocomplete="off"
-              v-model="search.type_id"
+              v-model="search.payment_type_id"
               :items="types"
               item-text="ar_name"
               item-value="id"
@@ -128,7 +124,7 @@
       </template>
 
       <template v-slot:item.type="{ item }">
-        {{ types.find((elem) => elem.id == item.type_id).ar_name }}
+        {{ types.find((elem) => elem.id == item.payment_type_id).ar_name }}
       </template>
       <template v-slot:item.status="{ item }">
         {{ statuses.find((elem) => elem.id == item.status_id).ar_name }}
@@ -147,7 +143,7 @@
       <template v-slot:item.actions="{ item }">
         <router-link :to="'receipts/' + item.id"
           ><v-icon small>mdi-pencil</v-icon></router-link
-        > 
+        >
 
         <v-btn icon @click.stop="deleteReceipt(item, 'update')">
           <v-icon small class="outlined font-size-12">mdi-delete</v-icon>
@@ -162,10 +158,11 @@
 import Receipt from "../../../apis/Receipt";
 export default {
   data() {
-    
     return {
+      company_name: "اسم المورد",
+      person_type: "supplier",
       title: "سندات  الموردين",
-      loading:false,
+      loading: false,
       menu1: false,
       menu2: false,
       types: [
@@ -181,6 +178,7 @@ export default {
       search: {
         company_name: "",
         receipt_reference: "",
+        payment_type_id: "",
         type_id: "",
         status_id: "",
         date_from: "",
@@ -215,10 +213,44 @@ export default {
       ],
     };
   },
-  methods: {
-    addUpdateReceipt(){
+  created() {
+    this.route = this.$route.fullPath.substr(
+      this.$route.fullPath.lastIndexOf("/") + 1
+    );
 
+    this.createPage(this.$route, "new");
+  },
+
+  methods: {
+    createPage(to, status) {
+      this.route = to.fullPath.substr(
+        this.$route.fullPath.lastIndexOf("/") + 1
+      );
+
+      console.log(to);
+
+      if (this.route == "supplier") {
+        this.search.type_id = 1;// سند مورد
+        this.company_name = "اسم المورد";
+        this.title = "سند مورد جديد";
+        this.person_type = "supplier";
+        this.person_info = "معلومات المورد";
+        this.persona = "المورد";
+        
+      }
+      if (this.route == "customer") {
+        this.search.type_id = 2;// سند من عميل
+        this.company_name = "اسم العميل";
+        this.title = "سند عميل جديد";
+        this.person_type = "customer";
+        this.person_info = "معلومات العميل";
+        this.persona = "العميل";
+        
+      }
+
+      
     },
+    addUpdateReceipt() {},
     deleteReceipt(receipt) {
       const { sortBy, sortDesc, page, itemsPerPage } = this.options;
       Receipt.delete({

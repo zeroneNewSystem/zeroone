@@ -6,7 +6,7 @@ export default {
     },
 
     create(type) {
-        return Api.post("/types/", type);
+        return Api.post("/types", type);
     },
 
     delete(id) {

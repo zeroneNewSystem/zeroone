@@ -84,7 +84,7 @@ const router = new VueRouter({
                 {
                     path: "/types",
                     name: "types",
-                    meta: { requiresAuth: true },
+                    meta: { requiresAuth: true, onlyAdmin: true },
                     components: {
                         default: () =>
                             import ("./components/main/products/types"),
@@ -149,6 +149,28 @@ const router = new VueRouter({
                 },
                 {
                     path: "/receipts",
+                    name: "receipts",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import ("./components/main/receipts/receipts"),
+                        mainView: () =>
+                            import ("./components/main/receipts/receipts")
+                    }
+                },
+                {
+                    path: "/receipts/supplier",
+                    name: "receipts",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import ("./components/main/receipts/receipts"),
+                        mainView: () =>
+                            import ("./components/main/receipts/receipts")
+                    }
+                },
+                {
+                    path: "/receipts/customer",
                     name: "receipts",
                     meta: { requiresAuth: true },
                     components: {
@@ -306,6 +328,17 @@ const router = new VueRouter({
                     }
                 },
                 {
+                    path: "/customers/:id",
+                    name: "customers_with_id",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import ("./components/main/bills/person-info"),
+                        mainView: () =>
+                            import ("./components/main/bills/person-info")
+                    }
+                },
+                {
                     path: "/stock_takes",
                     name: "stock_takes",
                     meta: { requiresAuth: true },
@@ -328,6 +361,142 @@ const router = new VueRouter({
                         mainView: () =>
                             import (
                                 "./components/main/products/inventory_transfers"
+                            )
+                    }
+                },
+                {
+                    path: "/money_move",
+                    name: "money_move",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import (
+                                "./components/main/accounts/moneyMove"
+                            ),
+                        mainView: () =>
+                            import (
+                                "./components/main/accounts/moneyMove"
+                            )
+                    }
+                },
+
+                {
+                    path: "/additional_money",
+                    name: "additional_money",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import (
+                                "./components/main/accounts/moneyMove"
+                            ),
+                        mainView: () =>
+                            import (
+                                "./components/main/accounts/moneyMove"
+                            )
+                    }
+                },
+                {
+                    path: "/fixed_asset_depreciation",
+                    name: "fixed_asset_depreciation",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import (
+                                "./components/main/accounts/moneyMove"
+                            ),
+                        mainView: () =>
+                            import (
+                                "./components/main/accounts/moneyMove"
+                            )
+                    }
+                },
+                {
+                    path: "/owner_withdraw",
+                    name: "owner_withdraw",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import (
+                                "./components/main/accounts/moneyMove"
+                            ),
+                        mainView: () =>
+                            import (
+                                "./components/main/accounts/moneyMove"
+                            )
+                    }
+                },
+                {
+                    path: "/distribute_profits",
+                    name: "distribute_profits",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import (
+                                "./components/main/accounts/moneyMove"
+                            ),
+                        mainView: () =>
+                            import (
+                                "./components/main/accounts/moneyMove"
+                            )
+                    }
+                },
+                {
+                    path: "/money_transactions",
+                    name: "money_transactions",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import (
+                                "./components/main/accounts/moneyMoves"
+                            ),
+                        mainView: () =>
+                            import (
+                                "./components/main/accounts/moneyMoves"
+                            )
+                    }
+                },
+                {
+                    path: "/income_statement",
+                    name: "income_statement",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import (
+                                "./components/main/accounts/IncomeStatement"
+                            ),
+                        mainView: () =>
+                            import (
+                                "./components/main/accounts/IncomeStatement"
+                            )
+                    }
+                },
+                {
+                    path: "/journal_entries",
+                    name: "journal_entries",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import (
+                                "./components/main/accounts/JournalEntries"
+                            ),
+                        mainView: () =>
+                            import (
+                                "./components/main/accounts/JournalEntries"
+                            )
+                    }
+                },
+                {
+                    path: "/general_ledgers",
+                    name: "general_ledgers",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import (
+                                "./components/main/accounts/GeneralLedgers"
+                            ),
+                        mainView: () =>
+                            import (
+                                "./components/main/accounts/GeneralLedgers"
                             )
                     }
                 },
@@ -401,7 +570,7 @@ router.beforeEach((to, from, next) => {
                 query: { redirect: to.fullPath }
             });
         } else {
-            next();
+            if (!to.meta.onlyAdmin) next();
         }
     } else if (to.matched.some(record => record.meta.guest)) {
         if (loggedIn()) {

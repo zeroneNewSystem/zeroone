@@ -18,13 +18,12 @@ class CreateTransactionsTable extends Migration
             $table->id();
             $table->unsignedInteger('company_id');
 
-
-            
             $table->unsignedInteger('account_id',);
-            $table->double('debit');
-            $table->double('credit');
-            $table->unsignedInteger('document_id',);
-            $table->unsignedInteger('document_type_id',);
+            $table->double('debit')->default(0);
+            $table->double('credit')->default(0);
+            
+            $table->integer('document_id',);
+            $table->integer('document_type_id',);
             $table->unsignedInteger('currency_code')->default(1);
             $table->unsignedInteger('currency_rate')->default(1);
             

@@ -256,6 +256,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -264,11 +271,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   data: function data() {
     return {
+      title: "بيانات المورد",
+      type_id: "1",
       //---- tabs
       tab: null,
       items: ["الفواتير", "الاشعارات", "السندات"],
       //----
       pur_loading: false,
+      ret_pur_loading: false,
       remain_amount: 0,
       receipt_loading: false,
       headers: [{
@@ -332,10 +342,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         value: "actions"
       }],
       pur_options: {},
+      ret_pur_options: {},
       receipt_options: {},
       person: "",
       total_amount: 0,
       bills: [],
+      ret_bills: [],
       receipts: [],
       statuses: [{
         id: 1,
@@ -367,6 +379,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         ar_name: "مستعمل جزئيا"
       }],
       bills_total: 0,
+      ret_bills_total: 0,
       receipt_total: 0,
       arrears: 0,
       balance: 0,
@@ -376,6 +389,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   computed: {
     pur_params: function pur_params(nv) {
       return _objectSpread({}, this.pur_options);
+    },
+    ret_pur_params: function ret_pur_params(nv) {
+      return _objectSpread({}, this.ret_pur_options);
     },
     receipt_params: function receipt_params(nv) {
       return _objectSpread({}, this.receipt_options);
@@ -393,16 +409,41 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         _apis_Person__WEBPACK_IMPORTED_MODULE_0__.default.getOne({
           id: this.$route.params.id,
           pur_page: pur_page,
-          pur_itemsPerPage: pur_itemsPerPage
+          pur_itemsPerPage: pur_itemsPerPage,
+          type_id: this.type_id
         }).then(function (response) {
-          _this.DataProcessing(response, "pur");
+          _this.dataProcessing(response, "pur");
         });
       },
       deep: true
     },
-    receipt_params: {
+    ret_pur_params: {
       handler: function handler() {
         var _this2 = this;
+
+        var ret_pur_page = this.ret_pur_options.page;
+        var ret_pur_itemsPerPage = this.ret_pur_options.itemsPerPage; //console.log(this.options)
+
+        console.log("itemsPerPage", ret_pur_itemsPerPage);
+        _apis_Person__WEBPACK_IMPORTED_MODULE_0__.default.getOne({
+          id: this.$route.params.id,
+          ret_pur_page: ret_pur_page,
+          ret_pur_itemsPerPage: ret_pur_itemsPerPage,
+          type_id: this.type_id
+        }).then(function (response) {
+          _this2.dataProcessing(response, "ret_pur");
+        });
+      },
+      deep: true
+    },
+    $route: function $route(to, from) {
+      console.log("from");
+      console.log(to);
+      this.createPage(to, "old");
+    },
+    receipt_params: {
+      handler: function handler() {
+        var _this3 = this;
 
         var receipt_page = this.receipt_options.page;
         var receipt_itemsPerPage = this.receipt_options.itemsPerPage;
@@ -410,30 +451,56 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         _apis_Person__WEBPACK_IMPORTED_MODULE_0__.default.getOne({
           id: this.$route.params.id,
           receipt_page: receipt_page,
-          receipt_itemsPerPage: receipt_itemsPerPage
+          receipt_itemsPerPage: receipt_itemsPerPage,
+          type_id: this.type_id
         }).then(function (response) {
-          _this2.DataProcessing(response, "receipt");
+          _this3.dataProcessing(response, "receipt");
         });
       },
       deep: true
     }
   },
   created: function created() {
-    var _this3 = this;
-
-    _apis_Person__WEBPACK_IMPORTED_MODULE_0__.default.getOne({
-      id: this.$route.params.id
-    }).then(function (response) {
-      _this3.DataProcessing(response, "receipt");
-    });
+    this.route = this.$route.fullPath.substr(this.$route.fullPath.lastIndexOf("/") + 1);
+    this.createPage(this.$route, "new");
   },
   methods: {
-    DataProcessing: function DataProcessing(response, type) {
+    createPage: function createPage(to, status) {
+      var _this4 = this;
+
+      this.route = to.fullPath.replace(/^\/([^\/]*).*$/, "$1");
+      console.log(this.route);
+      console.log("to");
+
+      if (this.route == "suppliers") {
+        this.type_id = 1;
+        this.title = "بيانات المورد";
+      }
+
+      if (this.route == "customers") {
+        this.type_id = 2;
+        this.title = "بيانات العميل";
+      }
+
+      _apis_Person__WEBPACK_IMPORTED_MODULE_0__.default.getOne({
+        id: this.$route.params.id,
+        type_id: this.type_id
+      }).then(function (response) {
+        _this4.dataProcessing(response, "receipt");
+      });
+    },
+    dataProcessing: function dataProcessing(response, type) {
       console.log("response", response);
 
       if (response.data.bills) {
         this.bills = response.data.bills.data;
         this.bills_total = response.data.bills.total;
+        return;
+      }
+
+      if (response.data.ret_bills) {
+        this.ret_bills = response.data.ret_bills.data;
+        this.ret_bills_total = response.data.ret_bills.total;
         return;
       }
 
@@ -445,6 +512,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
 
       this.person = response.data.person;
+      console.log("this.person");
+      console.log(this.person);
       this.total_amount = response.data.total_amount;
       this.bills_count = response.data.bills_count;
       this.remain_amount = response.data.remain_amount;
@@ -470,38 +539,38 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Api */ "./resources/js/apis/Api.js");
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  store: function store(supplier, route) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/" + route, supplier);
+  store: function store(person) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("people", person);
   },
-  update: function update(supplier, route) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("/" + route, supplier);
+  update: function update(person) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.put("people", person);
   },
-  postCreate: function postCreate(supplier, route) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("/" + route + "/create", supplier);
+  postCreate: function postCreate(person) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.post("people" + "/create", person);
   },
-  getOne: function getOne(params, route) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/" + route + "/getOne", {
+  getOne: function getOne(params) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("people" + "/getOne", {
       params: params
     });
   },
-  get: function get(params, route) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/" + route, {
+  get: function get(params) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("people", {
       params: params
     });
   },
-  getByProductID: function getByProductID(id, route) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/" + route + "/product/" + id);
+  getByProductID: function getByProductID(id) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("people" + "/product/" + id);
   },
-  search: function search(params, route) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/" + route + "/search", {
+  search: function search(params) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("people" + "/search", {
       params: params
     });
   },
-  barcodeSearch: function barcodeSearch(params, route) {
+  barcodeSearch: function barcodeSearch(params) {
     return _Api__WEBPACK_IMPORTED_MODULE_0__.default.get("/router/" + params.barcode);
   },
-  "delete": function _delete(params, route) {
-    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.delete("/" + route + "/", {
+  "delete": function _delete(params) {
+    return _Api__WEBPACK_IMPORTED_MODULE_0__.default.delete("people" + "/", {
       params: params
     });
   }
@@ -781,6 +850,25 @@ var render = function() {
     "div",
     { staticStyle: { padding: "20px", "font-size": "14px" } },
     [
+      _c(
+        "v-row",
+        [
+          _c(
+            "v-col",
+            [
+              _c(
+                "v-toolbar",
+                { attrs: { flat: "", color: "white" } },
+                [_c("v-toolbar-title", [_vm._v(_vm._s(_vm.title) + " ")])],
+                1
+              )
+            ],
+            1
+          )
+        ],
+        1
+      ),
+      _vm._v(" "),
       _c(
         "v-row",
         {},
@@ -1254,15 +1342,15 @@ var render = function() {
                             staticClass: "elevation-1",
                             staticStyle: { width: "100%" },
                             attrs: {
-                              headers: _vm.receipt_headers,
-                              items: _vm.receipts,
-                              options: _vm.receipt_options,
-                              "server-items-length": _vm.receipt_total,
-                              loading: _vm.receipt_loading
+                              headers: _vm.headers,
+                              items: _vm.ret_bills,
+                              options: _vm.ret_pur_options,
+                              "server-items-length": _vm.ret_bills_total,
+                              loading: _vm.ret_pur_loading
                             },
                             on: {
                               "update:options": function($event) {
-                                _vm.receipt_options = $event
+                                _vm.ret_pur_options = $event
                               }
                             },
                             scopedSlots: _vm._u([
@@ -1274,6 +1362,19 @@ var render = function() {
                                 proxy: true
                               },
                               {
+                                key: "item.issue_date",
+                                fn: function(ref) {
+                                  var item = ref.item
+                                  return [
+                                    _vm._v(
+                                      "\n                " +
+                                        _vm._s(item.issue_date.split(" ")[0]) +
+                                        "\n              "
+                                    )
+                                  ]
+                                }
+                              },
+                              {
                                 key: "item.status",
                                 fn: function(ref) {
                                   var item = ref.item
@@ -1281,9 +1382,7 @@ var render = function() {
                                     _vm._v(
                                       "\n                " +
                                         _vm._s(
-                                          _vm.receipt_statuses.find(function(
-                                            elem
-                                          ) {
+                                          _vm.statuses.find(function(elem) {
                                             return elem.id == item.status_id
                                           }).ar_name
                                         ) +

@@ -17,6 +17,8 @@ class PrdctTypeSeeder extends Seeder
         $items = [
             ['company_id' => 1, 'ar_name' => 'منتج', 'en_name' => 'product'],
             ['company_id' => 1, 'ar_name' => 'خدمة', 'en_name' => 'service'],
+            ['company_id' => 1, 'ar_name' => 'منتج مجمع', 'en_name' => 'compounded product'],
+            ['company_id' => 1, 'ar_name' => 'مادة أولية', 'en_name' => 'raw material'],
             
         ];
 

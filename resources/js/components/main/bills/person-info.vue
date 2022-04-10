@@ -1,5 +1,12 @@
 <template>
   <div style="padding: 20px; font-size: 14px">
+    <v-row>
+      <v-col>
+        <v-toolbar flat color="white">
+          <v-toolbar-title>{{ title }} </v-toolbar-title>
+        </v-toolbar>
+      </v-col>
+    </v-row>
     <v-row style="">
       <v-col cols="12" lg="6">
         <v-row
@@ -50,7 +57,7 @@
         >
           <v-col cols="3" style="text-align: start" class="pa-1">الحالة</v-col>
           <v-col cols="9" style="text-align: start" class="pa-1">
-            {{ person.is_person_active == 1? 'نشط':'غير نشط' }}
+            {{ person.is_person_active == 1 ? "نشط" : "غير نشط" }}
           </v-col>
 
           <v-col cols="3" style="text-align: start" class="pa-1">
@@ -115,7 +122,6 @@
       </v-col>
     </v-row>
     <v-row>
-
       <v-card color="basil" style="width: 100%">
         <v-card-title class="text-center justify-center py-6">
           <p class="basil--text">التعاملات</p>
@@ -145,8 +151,7 @@
                 </template>
                 <template v-slot:item.status="{ item }">
                   {{
-                    statuses.find((elem) => elem.id == item.status_id)
-                      .ar_name
+                    statuses.find((elem) => elem.id == item.status_id).ar_name
                   }}
                 </template>
               </v-data-table>
@@ -156,18 +161,20 @@
             <v-row>
               <v-data-table
                 style="width: 100%"
-                :headers="receipt_headers"
-                :items="receipts"
-                :options.sync="receipt_options"
-                :server-items-length="receipt_total"
-                :loading="receipt_loading"
+                :headers="headers"
+                :items="ret_bills"
+                :options.sync="ret_pur_options"
+                :server-items-length="ret_bills_total"
+                :loading="ret_pur_loading"
                 class="elevation-1"
               >
                 <template v-slot:top> </template>
+                <template v-slot:item.issue_date="{ item }">
+                  {{ item.issue_date.split(" ")[0] }}
+                </template>
                 <template v-slot:item.status="{ item }">
                   {{
-                    receipt_statuses.find((elem) => elem.id == item.status_id)
-                      .ar_name
+                    statuses.find((elem) => elem.id == item.status_id).ar_name
                   }}
                 </template>
               </v-data-table>
@@ -222,12 +229,15 @@ export default {
   },
   data() {
     return {
+      title: "بيانات المورد",
+      type_id: "1",
       //---- tabs
       tab: null,
       items: ["الفواتير", "الاشعارات", "السندات"],
 
       //----
       pur_loading: false,
+      ret_pur_loading: false,
       remain_amount: 0,
       receipt_loading: false,
       headers: [
@@ -271,10 +281,12 @@ export default {
         { text: "لتحكم ", align: "center", value: "actions" },
       ],
       pur_options: {},
+      ret_pur_options: {},
       receipt_options: {},
       person: "",
       total_amount: 0,
       bills: [],
+      ret_bills: [],
       receipts: [],
       statuses: [
         { id: 1, ar_name: "موافق عليه" },
@@ -290,6 +302,7 @@ export default {
         { id: 3, ar_name: "مستعمل جزئيا" },
       ],
       bills_total: 0,
+      ret_bills_total: 0,
       receipt_total: 0,
       arrears: 0,
       balance: 0,
@@ -300,6 +313,11 @@ export default {
     pur_params(nv) {
       return {
         ...this.pur_options,
+      };
+    },
+    ret_pur_params(nv) {
+      return {
+        ...this.ret_pur_options,
       };
     },
     receipt_params(nv) {
@@ -318,15 +336,45 @@ export default {
 
         console.log("itemsPerPage", pur_itemsPerPage);
 
-        person.getOne({
-          id: this.$route.params.id,
-          pur_page,
-          pur_itemsPerPage,
-        }).then((response) => {
-          this.DataProcessing(response, "pur");
-        });
+        person
+          .getOne({
+            id: this.$route.params.id,
+            pur_page,
+            pur_itemsPerPage,
+            type_id:this.type_id,
+          })
+          .then((response) => {
+            this.dataProcessing(response, "pur");
+          });
       },
       deep: true,
+    },
+    ret_pur_params: {
+      handler() {
+        let ret_pur_page = this.ret_pur_options.page;
+        let ret_pur_itemsPerPage = this.ret_pur_options.itemsPerPage;
+
+        //console.log(this.options)
+
+        console.log("itemsPerPage", ret_pur_itemsPerPage);
+
+        person
+          .getOne({
+            id: this.$route.params.id,
+            ret_pur_page,
+            ret_pur_itemsPerPage,
+            type_id:this.type_id,
+          })
+          .then((response) => {
+            this.dataProcessing(response, "ret_pur");
+          });
+      },
+      deep: true,
+    },
+    $route(to, from) {
+      console.log("from");
+      console.log(to);
+      this.createPage(to, "old");
     },
     receipt_params: {
       handler() {
@@ -335,29 +383,60 @@ export default {
 
         console.log("itemsPerPage", receipt_itemsPerPage);
 
-        person.getOne({
-          id: this.$route.params.id,
-          receipt_page,
-          receipt_itemsPerPage,
-        }).then((response) => {
-          this.DataProcessing(response, "receipt");
-        });
+        person
+          .getOne({
+            id: this.$route.params.id,
+            receipt_page,
+            receipt_itemsPerPage,
+            type_id:this.type_id,
+          })
+          .then((response) => {
+            this.dataProcessing(response, "receipt");
+          });
       },
       deep: true,
     },
   },
   created() {
-    person.getOne({ id: this.$route.params.id }).then((response) => {
-      this.DataProcessing(response, "receipt");
-    });
+    this.route = this.$route.fullPath.substr(
+      this.$route.fullPath.lastIndexOf("/") + 1
+    );
+
+    this.createPage(this.$route, "new");
+
+    
   },
   methods: {
-    DataProcessing(response, type) {
+    createPage(to, status) {
+      this.route = to.fullPath.replace(/^\/([^\/]*).*$/, "$1");
+
+      console.log(this.route);
+      console.log("to");
+
+      if (this.route == "suppliers") {
+        this.type_id = 1;
+        this.title = "بيانات المورد";
+      }
+      if (this.route == "customers") {
+        this.type_id = 2;
+        this.title = "بيانات العميل";
+      }
+
+      person.getOne({ id: this.$route.params.id,type_id: this.type_id }).then((response) => {
+      this.dataProcessing(response, "receipt");
+    });
+    },
+    dataProcessing(response, type) {
       console.log("response", response);
 
       if (response.data.bills) {
         this.bills = response.data.bills.data;
         this.bills_total = response.data.bills.total;
+        return;
+      }
+      if (response.data.ret_bills) {
+        this.ret_bills = response.data.ret_bills.data;
+        this.ret_bills_total = response.data.ret_bills.total;
         return;
       }
 
@@ -368,6 +447,9 @@ export default {
         return;
       }
       this.person = response.data.person;
+
+      console.log("this.person");
+      console.log(this.person);
       this.total_amount = response.data.total_amount;
       this.bills_count = response.data.bills_count;
       this.remain_amount = response.data.remain_amount;

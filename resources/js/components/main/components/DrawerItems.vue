@@ -88,7 +88,7 @@ export default {
           },
           {
             name: "سندات العملاء",
-            link: "/bonds",
+            link: "/receipts/customer",
             icon: "",
           },
         ],
@@ -113,14 +113,14 @@ export default {
             link: "/purchase",
             icon: "",
           },
-          {
-            name: "أوامر الشراء",
-            link: "/orders",
-            icon: "",
-          },
+          // {
+          //   name: "أوامر الشراء",
+          //   link: "/orders",
+          //   icon: "",
+          // },
           {
             name: "سندات الموردين",
-            link: "/receipts",
+            link: "/receipts/supplier",
             icon: "",
           },
         ],
@@ -134,13 +134,13 @@ export default {
             link: "/units",
             icon: "",
           },
+          // {
+          //   name: " الأنواع",
+          //   link: "/types",
+          //   icon: "",
+          // },
           {
             name: "المجموعات",
-            link: "/types",
-            icon: "",
-          },
-          {
-            name: "الأنواع",
             link: "/forms",
             icon: "",
           },
@@ -161,28 +161,33 @@ export default {
         icon: "mdi-source-fork",
         sub_menu: [
           {
+            name: "قيود حركة الأموال",
+            link: "/money_transactions",
+            icon: "",
+          },
+          {
             name: "حركة أموال",
-            link: "/units",
+            link: "/money_move",
             icon: "",
           },
           {
             name: "إضافة رأس مال",
-            link: "/types",
+            link: "/additional_money",
             icon: "",
           },
           {
             name: "إهلاك أصل ثابت",
-            link: "/forms",
+            link: "/fixed_asset_depreciation",
             icon: "",
           },
           {
             name: "سحب المالك",
-            link: "/product",
+            link: "/owner_withdraw",
             icon: "",
           },
           {
             name: "توزيع أرباح",
-            link: "/products",
+            link: "/distribute_profits",
             icon: "",
           },
 

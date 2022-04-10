@@ -1,35 +1,34 @@
 import Api from "./Api";
 
 export default {
-    store(supplier, route) {
-        return Api.post("/" + route, supplier);
+    store(person) {
+        return Api.post("people", person);
     },
-    update(supplier, route) {
-        return Api.put("/" + route, supplier);
+    update(person) {
+        return Api.put("people", person);
     },
-    postCreate(supplier, route) {
-        return Api.post("/" + route + "/create", supplier);
+    postCreate(person) {
+        return Api.post("people" + "/create", person);
     },
-    getOne(params, route) {
-        return Api.get("/" + route + "/getOne", { params: params });
+    getOne(params) {
+        return Api.get("people" + "/getOne", { params: params });
     },
-    get(params, route) {
-
-        return Api.get("/" + route, { params: params });
+    get(params) {
+        return Api.get("people", { params: params });
     },
-    getByProductID(id, route) {
-        return Api.get("/" + route + "/product/" + id);
-    },
-
-    search(params, route) {
-        return Api.get("/" + route + "/search", { params: params });
+    getByProductID(id) {
+        return Api.get("people" + "/product/" + id);
     },
 
-    barcodeSearch(params, route) {
+    search(params) {
+        return Api.get("people" + "/search", { params: params });
+    },
+
+    barcodeSearch(params) {
         return Api.get("/router/" + params.barcode);
     },
 
-    delete(params, route) {
-        return Api.delete("/" + route + "/", { params: params });
+    delete(params) {
+        return Api.delete("people" + "/", { params: params });
     }
 };
