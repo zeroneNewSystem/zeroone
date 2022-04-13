@@ -202,7 +202,8 @@ __webpack_require__.r(__webpack_exports__);
         3: "",
         12: "",
         34: "",
-        52: ""
+        52: "",
+        1: ""
       },
       from_account_disabled: false,
       date_is_down: false,
@@ -357,7 +358,7 @@ __webpack_require__.r(__webpack_exports__);
       this.money_move = JSON.parse(JSON.stringify(item));
       this.dialog = true;
       this.from_accounts = this.accounts[from_account_type];
-      console.log('sdsdsdsd');
+      console.log("sdsdsdsd");
       console.log(this.from_accounts);
       this.to_accounts = this.accounts[to_account_type];
       this.from_account_disabled = false;
@@ -423,6 +424,7 @@ __webpack_require__.r(__webpack_exports__);
         }
       });
       _this4.money_moves = arr;
+      console.log('arr');
       console.log(arr);
       _this4.table_loading = false;
       _this4.units = response.data.units;

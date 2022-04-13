@@ -24,16 +24,29 @@ const router = new VueRouter({
                             import ("./components/main/dashboard")
                     }
                 },
-
                 {
-                    path: "/settings",
-                    name: "settings",
+                    path: "/about",
+                    name: "about",
                     meta: { requiresAuth: true },
                     components: {
                         default: () =>
-                            import ("./components/main/settings/settings"),
+                            import ("./components/main/about"),
                         mainView: () =>
-                            import ("./components/main/settings/settings")
+                            import ("./components/main/about")
+                    }
+                },
+
+                {
+                    path: "/general_settings",
+                    name: "general_settings",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import (
+                                "./components/main/settings/GeneralSettings"
+                            ),
+                        mainView: () =>
+                            import ("./components/main/settings/GeneralSettings")
                     }
                 },
 
@@ -370,13 +383,9 @@ const router = new VueRouter({
                     meta: { requiresAuth: true },
                     components: {
                         default: () =>
-                            import (
-                                "./components/main/accounts/moneyMove"
-                            ),
+                            import ("./components/main/accounts/moneyMove"),
                         mainView: () =>
-                            import (
-                                "./components/main/accounts/moneyMove"
-                            )
+                            import ("./components/main/accounts/moneyMove")
                     }
                 },
 
@@ -386,13 +395,9 @@ const router = new VueRouter({
                     meta: { requiresAuth: true },
                     components: {
                         default: () =>
-                            import (
-                                "./components/main/accounts/moneyMove"
-                            ),
+                            import ("./components/main/accounts/moneyMove"),
                         mainView: () =>
-                            import (
-                                "./components/main/accounts/moneyMove"
-                            )
+                            import ("./components/main/accounts/moneyMove")
                     }
                 },
                 {
@@ -401,13 +406,9 @@ const router = new VueRouter({
                     meta: { requiresAuth: true },
                     components: {
                         default: () =>
-                            import (
-                                "./components/main/accounts/moneyMove"
-                            ),
+                            import ("./components/main/accounts/moneyMove"),
                         mainView: () =>
-                            import (
-                                "./components/main/accounts/moneyMove"
-                            )
+                            import ("./components/main/accounts/moneyMove")
                     }
                 },
                 {
@@ -416,13 +417,9 @@ const router = new VueRouter({
                     meta: { requiresAuth: true },
                     components: {
                         default: () =>
-                            import (
-                                "./components/main/accounts/moneyMove"
-                            ),
+                            import ("./components/main/accounts/moneyMove"),
                         mainView: () =>
-                            import (
-                                "./components/main/accounts/moneyMove"
-                            )
+                            import ("./components/main/accounts/moneyMove")
                     }
                 },
                 {
@@ -431,13 +428,9 @@ const router = new VueRouter({
                     meta: { requiresAuth: true },
                     components: {
                         default: () =>
-                            import (
-                                "./components/main/accounts/moneyMove"
-                            ),
+                            import ("./components/main/accounts/moneyMove"),
                         mainView: () =>
-                            import (
-                                "./components/main/accounts/moneyMove"
-                            )
+                            import ("./components/main/accounts/moneyMove")
                     }
                 },
                 {
@@ -446,28 +439,35 @@ const router = new VueRouter({
                     meta: { requiresAuth: true },
                     components: {
                         default: () =>
-                            import (
-                                "./components/main/accounts/moneyMoves"
-                            ),
+                            import ("./components/main/accounts/moneyMoves"),
                         mainView: () =>
-                            import (
-                                "./components/main/accounts/moneyMoves"
-                            )
+                            import ("./components/main/accounts/moneyMoves")
                     }
                 },
                 {
-                    path: "/income_statement",
-                    name: "income_statement",
+                    path: "/income_statements",
+                    name: "income_statements",
                     meta: { requiresAuth: true },
                     components: {
                         default: () =>
                             import (
-                                "./components/main/accounts/IncomeStatement"
+                                "./components/main/accounts/IncomeStatements"
                             ),
                         mainView: () =>
                             import (
-                                "./components/main/accounts/IncomeStatement"
+                                "./components/main/accounts/IncomeStatements"
                             )
+                    }
+                },
+                {
+                    path: "/reports",
+                    name: "reports",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import ("./components/main/Reports"),
+                        mainView: () =>
+                            import ("./components/main/Reports")
                     }
                 },
                 {
@@ -476,13 +476,9 @@ const router = new VueRouter({
                     meta: { requiresAuth: true },
                     components: {
                         default: () =>
-                            import (
-                                "./components/main/accounts/JournalEntries"
-                            ),
+                            import ("./components/main/accounts/JournalEntries"),
                         mainView: () =>
-                            import (
-                                "./components/main/accounts/JournalEntries"
-                            )
+                            import ("./components/main/accounts/JournalEntries")
                     }
                 },
                 {
@@ -491,13 +487,9 @@ const router = new VueRouter({
                     meta: { requiresAuth: true },
                     components: {
                         default: () =>
-                            import (
-                                "./components/main/accounts/GeneralLedgers"
-                            ),
+                            import ("./components/main/accounts/GeneralLedgers"),
                         mainView: () =>
-                            import (
-                                "./components/main/accounts/GeneralLedgers"
-                            )
+                            import ("./components/main/accounts/GeneralLedgers")
                     }
                 },
                 {

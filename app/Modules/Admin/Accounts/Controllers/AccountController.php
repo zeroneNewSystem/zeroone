@@ -130,7 +130,7 @@ class AccountController extends Controller
 
 
 
-        return $documents;
+        return (array) $documents;
     }
 
     public function money_moves_index()
@@ -148,6 +148,8 @@ class AccountController extends Controller
             ->where('document_type_id', '<', 0)
             ->leftjoin('accounts', 'transactions.account_id', '=', 'accounts.id')
             ->get();
+
+
 
         foreach ($money_moves as &$money_move) {
             $money_move->amount = $money_move->debit == 0 ? $money_move->credit : $money_move->debit;
@@ -198,6 +200,43 @@ class AccountController extends Controller
         return response()->json(['accounts' => AccountResource::collection($accounts)], 200);
         //
 
+    }
+    public function income_statements_index(Request $request)
+    {
+        $accounts = DB::table('transactions')
+            ->select(
+                'transactions.*',
+                'accounts.ar_name',
+                'accounts.account_code',
+            );
+        $accounts = $accounts->where('accounts.account_code', 'like', '5%');
+        $accounts = $accounts->orwhere('accounts.account_code', 'like', '4%');
+
+        if ($request->date_from)
+            $accounts = $accounts->where('transactions.created_at', '>=', $request->date_from);
+        if ($request->date_to)
+            $accounts = $accounts->where('transactions.created_at', '<=', $request->date_to);
+
+        $accounts = $accounts->leftjoin('accounts', 'transactions.account_id', '=', 'accounts.id')
+            ->get();
+        $summed_accounts = [];
+
+        foreach ($accounts as &$account) {
+
+            if (!array_key_exists($account->account_id, $summed_accounts)) {
+                $summed_accounts[$account->account_id] = (array) $account;
+                continue;
+            }
+            $summed_accounts[$account->account_id]['credit'] += $account->credit;
+            $summed_accounts[$account->account_id]['debit']  += $account->debit;
+        }
+        $result=[];
+        foreach ($summed_accounts as $summed_account) {
+            $result[]= $summed_account;
+
+        }
+
+        return $result;
     }
     public function general_ledgers_index(Request $request)
     {

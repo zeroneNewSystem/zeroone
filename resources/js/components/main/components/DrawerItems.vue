@@ -30,7 +30,7 @@
         <v-list-item-title v-text="sub_item.name"></v-list-item-title>
       </v-list-item>
     </v-list-group>
-    <v-list-item color="black--text" to="/" class="text-right align-self-start">
+    <v-list-item color="black--text" to="/reports" class="text-right align-self-start">
       <v-list-item-icon>
         <v-icon>mdi-view-dashboard</v-icon>
       </v-list-item-icon>
@@ -216,7 +216,7 @@ export default {
         sub_menu: [
           {
             name: "إعدادت عامة",
-            link: "/suppliers",
+            link: "/general_settings",
             icon: "",
           },
           {

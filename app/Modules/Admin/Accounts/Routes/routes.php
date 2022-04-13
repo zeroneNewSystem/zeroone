@@ -31,6 +31,9 @@ Route::group(["prefix" => "journal_entries"], function () {
 Route::group(["prefix" => "general_ledgers"], function () {
     Route::get('/', 'AccountController@general_ledgers_index');
 });
+Route::group(["prefix" => "income_statements"], function () {
+    Route::get('/', 'AccountController@income_statements_index');
+});
 Route::group(["prefix" => "money_moves"], function () {
     Route::get('/', 'AccountController@money_moves_index');
     Route::get('/create', 'AccountController@money_moves_create');

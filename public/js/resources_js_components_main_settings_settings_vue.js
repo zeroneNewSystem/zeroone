@@ -16,6 +16,17 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
@@ -168,7 +179,49 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", [_vm._v("simple")])
+  return _c(
+    "div",
+    [
+      _c(
+        "v-row",
+        [
+          _c(
+            "v-toolbar",
+            { attrs: { flat: "", color: "white" } },
+            [
+              _c("v-toolbar-title", [_vm._v("الاعدادات العامة")]),
+              _vm._v(" "),
+              _c("v-divider", {
+                staticClass: "mx-4",
+                attrs: { inset: "", vertical: "" }
+              }),
+              _vm._v(" "),
+              _c("v-spacer"),
+              _vm._v(" "),
+              _c(
+                "v-btn",
+                {
+                  attrs: { primary: "" },
+                  on: {
+                    click: function($event) {
+                      $event.stopPropagation()
+                      return _vm.showDialog()
+                    }
+                  }
+                },
+                [_vm._v(" إضافة وحدة ")]
+              ),
+              _vm._v(" "),
+              _c("v-spacer")
+            ],
+            1
+          )
+        ],
+        1
+      )
+    ],
+    1
+  )
 }
 var staticRenderFns = []
 render._withStripped = true

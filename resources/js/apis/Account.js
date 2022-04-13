@@ -50,5 +50,8 @@ export default {
     },
     getGeneralLedgers(params) {
         return Api.get("/general_ledgers", { params: params });
+    },
+    getIncomeStatements(params) {
+        return Api.get("/income_statements", { params: params });
     }
 };

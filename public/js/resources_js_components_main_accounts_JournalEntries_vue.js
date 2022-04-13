@@ -76,6 +76,23 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
@@ -89,8 +106,8 @@ __webpack_require__.r(__webpack_exports__);
         accounts: [{
           ar_name: "",
           detail: "",
-          debit: "",
-          credit: ""
+          debit: 0,
+          credit: 0
         }]
       }]
     };
@@ -115,9 +132,9 @@ __webpack_require__.r(__webpack_exports__);
     var _this = this;
 
     _apis_Account__WEBPACK_IMPORTED_MODULE_0__.default.getJurnalEntries().then(function (response) {
+      _this.documents = response.data;
       _this.query = false;
       _this.show = false;
-      _this.documents = response.data;
     });
   }
 });
@@ -283,7 +300,7 @@ var render = function() {
         return _c(
           "v-row",
           {
-            key: document.name,
+            key: document.accounts[0].id,
             staticClass: "ma-2",
             staticStyle: { "font-size": "small", border: "1px solid lightgrey" }
           },
@@ -367,7 +384,7 @@ var render = function() {
                             "border-left": "1px solid white"
                           }
                         },
-                        [_vm._v(" " + _vm._s(account.detail))]
+                        [_vm._v("\n          " + _vm._s(account.detail))]
                       ),
                       _vm._v(" "),
                       _c(
@@ -378,7 +395,11 @@ var render = function() {
                             "border-left": "1px solid white"
                           }
                         },
-                        [_vm._v(" " + _vm._s(account.debit.toFixed(2)))]
+                        [
+                          _vm._v(
+                            "\n          " + _vm._s(account.debit.toFixed(2))
+                          )
+                        ]
                       ),
                       _vm._v(" "),
                       _c(
@@ -389,7 +410,11 @@ var render = function() {
                             "border-left": "1px solid white"
                           }
                         },
-                        [_vm._v(" " + _vm._s(account.credit.toFixed(2)))]
+                        [
+                          _vm._v(
+                            "\n          " + _vm._s(account.credit.toFixed(2))
+                          )
+                        ]
                       )
                     ],
                     1

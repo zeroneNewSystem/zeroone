@@ -12,6 +12,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _apis_Account__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../apis/Account */ "./resources/js/apis/Account.js");
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 //
 //
 //
@@ -159,7 +161,7 @@ __webpack_require__.r(__webpack_exports__);
         type_id: 1,
         from_account_id: "",
         to_account_id: "",
-        document_type_id: 1,
+        document_type_id: -1,
         created_at: ""
       },
       title: "حركة الأموال"
@@ -174,7 +176,8 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     createPage: function createPage(to, status) {
-      var _this2 = this;
+      var _Account$moneyMoveCre,
+          _this2 = this;
 
       this.query = true;
       this.show = true;
@@ -219,21 +222,18 @@ __webpack_require__.r(__webpack_exports__);
         this.title = "توزيع الأرباح";
       }
 
-      _apis_Account__WEBPACK_IMPORTED_MODULE_0__.default.moneyMoveCreate({
-        from_account_type: from_account_type,
-        to_account_type: to_account_type
-      }).then(function (response) {
-        _this2.from_accounts = response.data.from_accounts;
-        _this2.to_accounts = response.data.to_accounts;
+      _apis_Account__WEBPACK_IMPORTED_MODULE_0__.default.moneyMoveCreate((_Account$moneyMoveCre = {}, _defineProperty(_Account$moneyMoveCre, from_account_type, from_account_type), _defineProperty(_Account$moneyMoveCre, to_account_type, to_account_type), _Account$moneyMoveCre)).then(function (response) {
+        _this2.from_accounts = response.data[from_account_type];
+        _this2.to_accounts = response.data[to_account_type];
         _this2.from_account_disabled = false;
 
         if (_this2.route == "distribute_profits") {
-          _this2.from_accounts = response.data.from_accounts.find(function (elem) {
+          _this2.from_accounts = _this2.from_accounts.find(function (elem) {
             return elem.account_code == "3402";
           });
           _this2.money_move.from_account_id = 50;
           _this2.from_account_disabled = true;
-          _this2.to_accounts = response.data.to_accounts.filter(function (elem) {
+          _this2.to_accounts = _this2.to_accounts.filter(function (elem) {
             return elem.account_code != "3402";
           });
         }

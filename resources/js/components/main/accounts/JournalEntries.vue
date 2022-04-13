@@ -23,16 +23,16 @@
     <div style="height: 10px"></div>
     <v-row
       v-for="document in documents"
-      :key="document.name"
+      :key="document.accounts[0].id"
       class="ma-2"
-      style="font-size: small;border: 1px solid lightgrey;"
+      style="font-size: small; border: 1px solid lightgrey"
     >
       <v-col>
-        <v-row style="background: #ffeaf5;border-bottom: 1px solid lightgrey">
+        <v-row style="background: #ffeaf5; border-bottom: 1px solid lightgrey">
           <v-col> {{ document.name }} رقم: {{ document.id }} </v-col>
           <v-col> تاريخ الفاتورة: {{ document.date }} </v-col>
         </v-row>
-        <v-row style="background: #ffeae0; ">
+        <v-row style="background: #ffeae0">
           <v-col>الحساب</v-col>
           <v-col>التفصيل</v-col>
           <v-col>مدين</v-col>
@@ -44,12 +44,29 @@
           style="background: #eaf3f2"
           class="father-account"
         >
-          <v-col style="text-align: start; border-top: 1px solid white;border-left: 1px solid white"
+          <v-col
+            style="
+              text-align: start;
+              border-top: 1px solid white;
+              border-left: 1px solid white;
+            "
             >{{ account.account_code }} - {{ account.ar_name }}</v-col
           >
-          <v-col style="border-top: 1px solid white;border-left: 1px solid white"> {{ account.detail }}</v-col>
-          <v-col style="border-top: 1px solid white;border-left: 1px solid white"> {{ account.debit.toFixed(2) }}</v-col>
-          <v-col style="border-top: 1px solid white;border-left: 1px solid white"> {{ account.credit.toFixed(2) }}</v-col>
+          <v-col
+            style="border-top: 1px solid white; border-left: 1px solid white"
+          >
+            {{ account.detail }}</v-col
+          >
+          <v-col
+            style="border-top: 1px solid white; border-left: 1px solid white"
+          >
+            {{ account.debit.toFixed(2) }}</v-col
+          >
+          <v-col
+            style="border-top: 1px solid white; border-left: 1px solid white"
+          >
+            {{ account.credit.toFixed(2) }}</v-col
+          >
         </v-row>
         <v-row>
           <v-col>المجموع</v-col>
@@ -75,7 +92,7 @@ export default {
         {
           name: "",
           date: "",
-          accounts: [{ ar_name: "", detail: "", debit: "", credit: "" }],
+          accounts: [{ ar_name: "", detail: "", debit: 0, credit: 0 }],
         },
       ],
     };
@@ -98,9 +115,9 @@ export default {
   },
   created() {
     Account.getJurnalEntries().then((response) => {
+      this.documents = response.data;
       this.query = false;
       this.show = false;
-      this.documents = response.data;
     });
   },
 };

@@ -190,6 +190,7 @@ export default {
         12: "",
         34: "",
         52: "",
+        1: "",
       },
 
       from_account_disabled: false,
@@ -313,7 +314,6 @@ export default {
       });
     },
     showDialog(item) {
-      
       let from_account_type = "11";
       let to_account_type = "11";
 
@@ -342,9 +342,9 @@ export default {
 
       this.dialog = true;
       this.from_accounts = this.accounts[from_account_type];
-      console.log('sdsdsdsd');
+      console.log("sdsdsdsd");
       console.log(this.from_accounts);
-      
+
       this.to_accounts = this.accounts[to_account_type];
 
       this.from_account_disabled = false;
@@ -359,8 +359,6 @@ export default {
           (elem) => elem.account_code != "3402"
         );
       }
-
-      
     },
 
     canBeModefied(item) {
@@ -411,6 +409,7 @@ export default {
         }
       });
       this.money_moves = arr;
+      console.log('arr');
       console.log(arr);
       this.table_loading = false;
       this.units = response.data.units;

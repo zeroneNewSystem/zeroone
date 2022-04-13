@@ -147,7 +147,7 @@ export default {
         type_id: 1,
         from_account_id: "",
         to_account_id: "",
-        document_type_id: 1,
+        document_type_id: -1,
 
         created_at: "",
       },
@@ -205,27 +205,28 @@ export default {
         this.title = "توزيع الأرباح";
       }
 
-      Account.moneyMoveCreate({ from_account_type, to_account_type }).then(
-        (response) => {
-          this.from_accounts = response.data.from_accounts;
-          this.to_accounts = response.data.to_accounts;
+      Account.moneyMoveCreate({
+        [from_account_type]: from_account_type,
+        [to_account_type]: to_account_type,
+      }).then((response) => {
+        this.from_accounts = response.data[from_account_type];
+        this.to_accounts = response.data[to_account_type];
 
-          this.from_account_disabled = false;
-          if (this.route == "distribute_profits") {
-            this.from_accounts = response.data.from_accounts.find(
-              (elem) => elem.account_code == "3402"
-            );
-            this.money_move.from_account_id = 50;
-            this.from_account_disabled = true;
+        this.from_account_disabled = false;
+        if (this.route == "distribute_profits") {
+          this.from_accounts = this.from_accounts.find(
+            (elem) => elem.account_code == "3402"
+          );
+          this.money_move.from_account_id = 50;
+          this.from_account_disabled = true;
 
-            this.to_accounts = response.data.to_accounts.filter(
-              (elem) => elem.account_code != "3402"
-            );
-          }
-          this.query = false;
-          this.show = false;
+          this.to_accounts = this.to_accounts.filter(
+            (elem) => elem.account_code != "3402"
+          );
         }
-      );
+        this.query = false;
+        this.show = false;
+      });
     },
   },
   created() {
