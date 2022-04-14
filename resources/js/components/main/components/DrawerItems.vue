@@ -229,27 +229,7 @@ export default {
             link: "/orders",
             icon: "",
           },
-          {
-            name: "بيانات",
-            link: "/receipts",
-            icon: "",
-          },{
-            name: "بيانات الشركة",
-            link: "/receipts",
-            icon: "",
-          },{
-            name: "شروط الدفع",
-            link: "/receipts",
-            icon: "",
-          },{
-            name: "بيانات",
-            link: "/receipts",
-            icon: "",
-          },{
-            name: "بيانات",
-            link: "/receipts",
-            icon: "",
-          },
+         
         ],
       },
 
@@ -259,12 +239,12 @@ export default {
         sub_menu: [
           {
             name: "عن النظام",
-            link: "/suppliers",
+            link: "/about",
             icon: "",
           },
           {
             name: "أرسل ملاحظاتك",
-            link: "/bills",
+            link: "/send_notes",
             icon: "",
           },
           

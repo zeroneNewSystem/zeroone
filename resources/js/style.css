@@ -284,6 +284,7 @@ input[type="date"]::-webkit-input-placeholder {
 
 input {
     text-align: center;
+    pointer-events: none;
 }
 
 .headline {

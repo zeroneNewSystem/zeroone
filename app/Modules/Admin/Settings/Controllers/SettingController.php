@@ -44,6 +44,43 @@ class SettingController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function company_settings(Request $request)
+    {
+        Setting::setCompanyID(1);
+
+        foreach ($request as $key => $item) {
+
+            $setting = Setting::set($key, json_encode($item));
+        }
+        return $setting;
+    }
+    public function product_settings(Request $request)
+    {
+        Setting::setCompanyID(1);
+        $request = $request->all();
+        Setting::set('salam ', 'ljkjskj');
+        foreach ($request as $key => $item) {
+
+            $setting = Setting::set($key, json_encode($item));
+        }
+
+
+        // $setting = Setting::getAllSettings();
+        // $setting = Setting::has('nib');
+        // $setting = setting(['fff', 'ooo']);
+
+        // Setting::set('nib', 'ljkjskj');
+        // $setting = setting('ar_key');
+
+
+        return $setting;
+
+        return 1;
+        // app('valuestore')->put('EUR', 20);
+        // app('valuestore')->put('products_grouped', true);
+
+        // return app('settings')['EUR'];
+    }
     public function index()
     {
 
@@ -54,10 +91,14 @@ class SettingController extends Controller
         $setting = setting(['fff', 'ooo']);
 
         Setting::set('nib', 'ljkjskj');
-        $setting = setting('ar_key');
+        $product_settings = setting('product');
+        $company_settings = setting('company');
 
 
-        return $setting;
+        return  [
+            'product_settings' => json_decode($product_settings),
+            'company_settings' => json_decode($company_settings)
+        ];
 
         return 1;
         // app('valuestore')->put('EUR', 20);
@@ -88,6 +129,14 @@ class SettingController extends Controller
      */
     public function store(Request $request)
     {
+
+        Setting::setCompanyID(1);
+        $request = $request->all();
+        foreach ($request as $key => $item) {
+
+            $setting = Setting::set($key, json_encode($item));
+        }
+        return $setting;
     }
 
     /**

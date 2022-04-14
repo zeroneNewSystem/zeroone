@@ -250,6 +250,17 @@ const router = new VueRouter({
                     }
                 },
                 {
+                    path: "/bill/print/{id}",
+                    name: "bill",
+                    meta: { requiresAuth: true },
+                    components: {
+                        default: () =>
+                            import ("./components/main/bills/bill"),
+                        mainView: () =>
+                            import ("./components/main/bills/bill")
+                    }
+                },
+                {
                     path: "/purchases",
                     name: "purchases",
                     meta: { requiresAuth: true },
